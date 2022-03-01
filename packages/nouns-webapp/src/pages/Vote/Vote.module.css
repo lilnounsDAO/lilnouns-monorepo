@@ -1,0 +1,65 @@
+.votePage a {
+  color: var(--brand-dark-red);
+}
+
+.proposal {
+  margin-top: 1em;
+  background-color: white;
+}
+
+.backArrow {
+  height: 1rem;
+}
+
+.votingButton {
+  margin-top: 1rem;
+}
+
+.voteCountCard {
+  margin-top: 1rem;
+}
+
+.proposalId {
+  margin: 1rem 0;
+}
+
+.voteCountCard p {
+  display: flex;
+  justify-content: space-between;
+}
+
+.section {
+  border-top: 1px solid #e9ecef;
+  word-wrap: break-word;
+  padding-top: 2rem;
+  margin-top: 2rem;
+}
+
+.markdown h1 {
+  font-size: 1.7rem;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.markdown h2 {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.markdown h3 {
+  font-size: 1.3rem;
+}
+
+.markdown img {
+  max-width: 100%;
+  height: auto;
+}
+
+.voterIneligibleAlert {
+  margin: 1rem 0 0 0;
+}
+
+.blockRestrictionAlert {
+  margin: 1rem 0 0 0;
+}
