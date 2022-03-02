@@ -16,6 +16,7 @@ export enum AuctionHouseContractFunction {
   settleCurrentAndCreateNewAuction = 'settleCurrentAndCreateNewAuction',
 }
 
+
 export interface Auction {
   amount: EthersBN;
   bidder: string;
