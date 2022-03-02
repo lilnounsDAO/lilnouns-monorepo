@@ -18,7 +18,7 @@ const SettleManuallyBtn: React.FC<{
   const auctionTimerRef = useRef(auctionTimer); // to access within setTimeout
   auctionTimerRef.current = auctionTimer;
 
-  const timerDuration = dayjs.duration(auctionTimerRef.current, 's');
+  //const timerDuration = dayjs.duration(auctionTimerRef.current, 's');
 
   // timer logic
   useEffect(() => {
