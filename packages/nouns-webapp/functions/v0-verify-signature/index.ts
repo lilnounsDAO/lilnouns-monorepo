@@ -1,4 +1,4 @@
-// import { Handler } from '@netlify/functions';
+import { Handler } from '@netlify/functions';
 import { verifyMessage } from '@ethersproject/wallet';
 import { has } from 'ramda';
 import { bigNumbersEqual, sharedResponseHeaders } from '../utils';
@@ -23,63 +23,21 @@ const invalidBodyCheck = (body: string | undefined | null): false | ErrorReason 
   return false;
 };
 
-// const handler: Handler = async (event, context) => {
-//   const checkResult = invalidBodyCheck(event.body);
-//   if (checkResult) {
-//     return {
-//       statusCode: 400,
-//       body: JSON.stringify(checkResult),
-//     };
-//   }
-//   const { message, signature, signer } = JSON.parse(event.body);
-//   const recoveredAddress = verifyMessage(message, signature);
-//   const validSignature = bigNumbersEqual(signer, recoveredAddress);
-
-//   // check for ownership and delegation
-//   let participantData = {};
-//   if (event.queryStringParameters.fetchParticipation && validSignature) {
-//     const normalizedNouns = await nounsQuery();
-//     participantData = {
-//       isNounDelegate: isNounDelegate(signer, normalizedNouns),
-//       isNounOwner: isNounOwner(signer, normalizedNouns),
-//     };
-//   }
-
-//   return {
-//     statusCode: 200,
-//     headers: {
-//       'Content-Type': 'application/json',
-//       ...sharedResponseHeaders,
-//     },
-//     body: JSON.stringify({
-//       message,
-//       signature,
-//       providedSigner: signer,
-//       recoveredAddress,
-//       validSignature,
-//       ...participantData,
-//     }),
-//   };
-// };
-
-// export { handler };
-
-
-module.exports = async (req, res) => {
-  const checkResult = invalidBodyCheck(req.body);
+const handler: Handler = async (event, context) => {
+  const checkResult = invalidBodyCheck(event.body);
   if (checkResult) {
     return {
       statusCode: 400,
       body: JSON.stringify(checkResult),
     };
   }
-  const { message, signature, signer } = JSON.parse(req.body);
+  const { message, signature, signer } = JSON.parse(event.body);
   const recoveredAddress = verifyMessage(message, signature);
   const validSignature = bigNumbersEqual(signer, recoveredAddress);
 
   // check for ownership and delegation
   let participantData = {};
-  if (req.queryStringParameters.fetchParticipation && validSignature) {
+  if (event.queryStringParameters.fetchParticipation && validSignature) {
     const normalizedNouns = await nounsQuery();
     participantData = {
       isNounDelegate: isNounDelegate(signer, normalizedNouns),
@@ -87,7 +45,7 @@ module.exports = async (req, res) => {
     };
   }
 
-  res.send( {
+  return {
     statusCode: 200,
     headers: {
       'Content-Type': 'application/json',
@@ -101,5 +59,47 @@ module.exports = async (req, res) => {
       validSignature,
       ...participantData,
     }),
-  });
+  };
 };
+
+export { handler };
+
+
+// module.exports = async (req, res) => {
+//   const checkResult = invalidBodyCheck(req.body);
+//   if (checkResult) {
+//     return {
+//       statusCode: 400,
+//       body: JSON.stringify(checkResult),
+//     };
+//   }
+//   const { message, signature, signer } = JSON.parse(req.body);
+//   const recoveredAddress = verifyMessage(message, signature);
+//   const validSignature = bigNumbersEqual(signer, recoveredAddress);
+
+//   // check for ownership and delegation
+//   let participantData = {};
+//   if (req.queryStringParameters.fetchParticipation && validSignature) {
+//     const normalizedNouns = await nounsQuery();
+//     participantData = {
+//       isNounDelegate: isNounDelegate(signer, normalizedNouns),
+//       isNounOwner: isNounOwner(signer, normalizedNouns),
+//     };
+//   }
+
+//   res.send( {
+//     statusCode: 200,
+//     headers: {
+//       'Content-Type': 'application/json',
+//       ...sharedResponseHeaders,
+//     },
+//     body: JSON.stringify({
+//       message,
+//       signature,
+//       providedSigner: signer,
+//       recoveredAddress,
+//       validSignature,
+//       ...participantData,
+//     }),
+//   });
+// };

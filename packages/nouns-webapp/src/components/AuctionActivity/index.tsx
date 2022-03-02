@@ -15,19 +15,19 @@ import AuctionActivityWrapper from '../AuctionActivityWrapper';
 import AuctionTitleAndNavWrapper from '../AuctionTitleAndNavWrapper';
 import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
 import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
-import BidHistoryBtn from '../BidHistoryBtn';
+// import BidHistoryBtn from '../BidHistoryBtn';
 import StandaloneNoun from '../StandaloneNoun';
-import config from '../../config';
-import { buildEtherscanAddressLink } from '../../utils/etherscan';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+// import config from '../../config';
+// import { buildEtherscanAddressLink } from '../../utils/etherscan';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import NounInfoCard from '../NounInfoCard';
 import { useAppSelector } from '../../hooks';
 
-const openEtherscanBidHistory = () => {
-  const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
-  window.open(url);
-};
+// const openEtherscanBidHistory = () => {
+//   const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
+//   window.open(url);
+// };
 
 interface AuctionActivityProps {
   auction: Auction;

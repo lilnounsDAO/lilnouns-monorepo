@@ -43,7 +43,7 @@ const SettleManuallyBtn: React.FC<{
   }, [auction, auctionTimer]);
 
   const mins = timerDuration.minutes();
-  const minsContent = () => `${mins + 1} minute${mins !== 0 ? 's' : ''}`;
+  // const minsContent = () => `${mins + 1} minute${mins !== 0 ? 's' : ''}`;
 
   return (
     <p className={classes.emergencySettleWrapper}>

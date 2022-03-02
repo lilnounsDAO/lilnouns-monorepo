@@ -1,4 +1,4 @@
-// import { Handler } from '@netlify/functions';
+import { Handler } from '@netlify/functions';
 import { NormalizedNoun, NormalizedVote, nounsQuery } from '../theGraph';
 import { sharedResponseHeaders } from '../utils';
 
@@ -30,28 +30,28 @@ const reduceProposalVotes = (nouns: NormalizedNoun[]) =>
     return acc;
   }, {});
 
-// const handler: Handler = async (event, context) => {
-//   const nouns = await nounsQuery();
-//   return {
-//     statusCode: 200,
-//     headers: {
-//       'Content-Type': 'application/json',
-//       ...sharedResponseHeaders,
-//     },
-//     body: JSON.stringify(reduceProposalVotes(nouns)),
-//   };
-// };
-
-// export { handler };
-
-module.exports = async (req, res) => {
+const handler: Handler = async (event, context) => {
   const nouns = await nounsQuery();
-  res.send({
+  return {
     statusCode: 200,
     headers: {
       'Content-Type': 'application/json',
       ...sharedResponseHeaders,
     },
     body: JSON.stringify(reduceProposalVotes(nouns)),
-  });
+  };
 };
+
+export { handler };
+
+// module.exports = async (req, res) => {
+//   const nouns = await nounsQuery();
+//   res.send({
+//     statusCode: 200,
+//     headers: {
+//       'Content-Type': 'application/json',
+//       ...sharedResponseHeaders,
+//     },
+//     body: JSON.stringify(reduceProposalVotes(nouns)),
+//   });
+// };
