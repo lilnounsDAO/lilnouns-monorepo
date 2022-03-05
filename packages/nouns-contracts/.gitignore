@@ -28,3 +28,4 @@ abi/contracts/governance
 abi/contracts/interfaces
 abi/contracts/proxies
 abi/contracts/test
+deployrinkeby.ts

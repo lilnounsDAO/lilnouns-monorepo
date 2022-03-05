@@ -24,7 +24,9 @@ interface Contract {
 }
 
 task('deploy-local', 'Deploy contracts to hardhat')
-  .addOptionalParam('noundersdao', 'The nounders DAO contract address')
+  .addOptionalParam('lilnoundersDAO', 'The lilnounders DAO contract address')
+  .addOptionalParam('nounsDAO', 'The nounsDAO contract address')
+
   .addOptionalParam('auctionTimeBuffer', 'The auction time buffer (seconds)', 30, types.int) // Default: 30 seconds
   .addOptionalParam('auctionReservePrice', 'The auction reserve price (wei)', 1, types.int) // Default: 1 wei
   .addOptionalParam(
@@ -72,7 +74,9 @@ task('deploy-local', 'Deploy contracts to hardhat')
       NounsSeeder: {},
       NounsToken: {
         args: [
-          args.noundersdao || deployer.address,
+          args.lilnoundersDAO || deployer.address,
+          args.nounsDAO || deployer.address,
+          // args.noundersdao || deployer.address,
           expectedAuctionHouseProxyAddress,
           () => contracts['NounsDescriptor'].instance?.address,
           () => contracts['NounsSeeder'].instance?.address,
@@ -108,7 +112,8 @@ task('deploy-local', 'Deploy contracts to hardhat')
         args: [
           () => contracts['NounsDAOExecutor'].instance?.address,
           () => contracts['NounsToken'].instance?.address,
-          args.noundersdao || deployer.address,
+          // args.noundersdao || deployer.address,
+          args.lilnoundersDAO || deployer.address,
           () => contracts['NounsDAOExecutor'].instance?.address,
           () => contracts['NounsDAOLogicV1'].instance?.address,
           args.votingPeriod,
