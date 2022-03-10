@@ -3,7 +3,7 @@ import classes from './AuctionActivityNounTitle.module.css';
 
 const AuctionActivityNounTitle: React.FC<{ nounId: BigNumber; isCool?: boolean }> = props => {
   const { nounId, isCool } = props;
-  const nounIdContent = `Noun ${nounId.toString()}`;
+  const nounIdContent = `Lil Noun ${nounId.toString()}`;
   return (
     <div className={classes.wrapper}>
       <h1 style={{ color: isCool ? 'var(--brand-cool-dark-text)' : 'var(--brand-warm-dark-text)' }}>
