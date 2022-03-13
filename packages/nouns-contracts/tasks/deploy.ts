@@ -74,7 +74,6 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
       NounsSeeder: {},
       NounsToken: {
         args: [
-          // args.noundersdao,
           args.lilnoundersDAO,
           args.nounsDAO,
           expectedAuctionHouseProxyAddress,
@@ -112,7 +111,6 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
         args: [
           () => contracts['NounsDAOExecutor'].address,
           () => contracts['NounsToken'].address,
-          // args.noundersdao,
           args.lilnoundersDAO,
           () => contracts['NounsDAOExecutor'].address,
           () => contracts['NounsDAOLogicV1'].address,

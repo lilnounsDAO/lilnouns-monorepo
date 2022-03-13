@@ -76,7 +76,6 @@ task('deploy-local', 'Deploy contracts to hardhat')
         args: [
           args.lilnoundersDAO || deployer.address,
           args.nounsDAO || deployer.address,
-          // args.noundersdao || deployer.address,
           expectedAuctionHouseProxyAddress,
           () => contracts['NounsDescriptor'].instance?.address,
           () => contracts['NounsSeeder'].instance?.address,
@@ -112,7 +111,6 @@ task('deploy-local', 'Deploy contracts to hardhat')
         args: [
           () => contracts['NounsDAOExecutor'].instance?.address,
           () => contracts['NounsToken'].instance?.address,
-          // args.noundersdao || deployer.address,
           args.lilnoundersDAO || deployer.address,
           () => contracts['NounsDAOExecutor'].instance?.address,
           () => contracts['NounsDAOLogicV1'].instance?.address,

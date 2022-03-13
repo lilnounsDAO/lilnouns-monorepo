@@ -168,7 +168,7 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
             _mintTo(lilnoundersDAO, _currentNounId++);
         }
 
-        if (_currentNounId <= 175301 && _currentNounId - (1 % 10) == 0) {
+        if (_currentNounId <= 175301 && _currentNounId % 10 == 1) {
             _mintTo(nounsDAO, _currentNounId++);
         }
 
