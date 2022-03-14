@@ -27,7 +27,7 @@ import { IERC721 } from '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import { IProxyRegistry } from './external/opensea/IProxyRegistry.sol';
 
 contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
-    // The nounders DAO address (creators org)
+    // The lilnounders DAO address (creators org)
     address public lilnoundersDAO;
 
     // The nouns DAO address
@@ -118,7 +118,7 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
         INounsDescriptor _descriptor,
         INounsSeeder _seeder,
         IProxyRegistry _proxyRegistry
-    ) ERC721('Nouns', 'NOUN') {
+    ) ERC721("LilNoun", "LILNOUNS")
         lilnoundersDAO = _lilnoundersDAO;
         nounsDAO = _nounsDAO;
         minter = _minter;
