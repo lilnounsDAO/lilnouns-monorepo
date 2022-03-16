@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-comment-textnodes */
 import { Button, Row, Col } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
 import classes from './Winner.module.css';
@@ -10,11 +9,10 @@ import { isMobileScreen } from '../../utils/isMobile';
 interface WinnerProps {
   winner: string;
   isNounders?: boolean;
-  isNounsDAO?: boolean
 }
 
 const Winner: React.FC<WinnerProps> = props => {
-  const { winner, isNounders, isNounsDAO } = props;
+  const { winner, isNounders } = props;
   const activeAccount = useAppSelector(state => state.account.activeAccount);
 
   const isCool = useAppSelector(state => state.application.isCoolBackground);
@@ -47,8 +45,7 @@ const Winner: React.FC<WinnerProps> = props => {
     <ShortAddress size={40} address={winner} avatar={true} />
   );
 
-  const nounsDAOContent = <h2>NounsDAO</h2>;
-  const lilnounderNounContent = <h2>lilnounders.eth</h2>;
+  const nounderNounContent = <h2>nounders.eth</h2>;
 
   return (
     <>
@@ -69,8 +66,7 @@ const Winner: React.FC<WinnerProps> = props => {
               color: isCool ? 'var(--brand-cool-dark-text)' : 'var(--brand-warm-dark-text)',
             }}
           >
-             
-            {isNounders ? lilnounderNounContent : isNounsDAO ? nounsDAOContent : nonNounderNounContent}
+            {isNounders ? nounderNounContent : nonNounderNounContent}
           </h2>
         </Col>
       </Row>

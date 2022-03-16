@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Auction } from '../../wrappers/nounsAuction';
 import classes from './SettleManuallyBtn.module.css';
 import dayjs from 'dayjs';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 const SettleManuallyBtn: React.FC<{
   settleAuctionHandler: () => void;
@@ -11,14 +11,14 @@ const SettleManuallyBtn: React.FC<{
 }> = props => {
   const { settleAuctionHandler, auction } = props;
 
-  const MINS_TO_ENABLE_MANUAL_SETTLEMENT = 0.5;
+  const MINS_TO_ENABLE_MANUAL_SETTLEMENT = 5;
 
   const [settleEnabled, setSettleEnabled] = useState(false);
   const [auctionTimer, setAuctionTimer] = useState(MINS_TO_ENABLE_MANUAL_SETTLEMENT * 60);
   const auctionTimerRef = useRef(auctionTimer); // to access within setTimeout
   auctionTimerRef.current = auctionTimer;
 
-  //const timerDuration = dayjs.duration(auctionTimerRef.current, 's');
+  const timerDuration = dayjs.duration(auctionTimerRef.current, 's');
 
   // timer logic
   useEffect(() => {
@@ -42,8 +42,8 @@ const SettleManuallyBtn: React.FC<{
     }
   }, [auction, auctionTimer]);
 
-  // const mins = timerDuration.minutes();
-  // const minsContent = () => `${mins + 1} minute${mins !== 0 ? 's' : ''}`;
+  const mins = timerDuration.minutes();
+  const minsContent = () => `${mins + 1} minute${mins !== 0 ? 's' : ''}`;
 
   return (
     <p className={classes.emergencySettleWrapper}>
@@ -52,15 +52,14 @@ const SettleManuallyBtn: React.FC<{
         className={classes.emergencySettleButton}
         disabled={!settleEnabled}
       >
-        <>{` Settle manually`}</>
-        {/* {settleEnabled ? (
+        {settleEnabled ? (
           <>{` Settle manually`}</>
         ) : (
           <>
             <FontAwesomeIcon icon={faInfoCircle} />
             {` You can settle manually in ${minsContent()}`}
           </>
-        )} */}
+        )}
       </button>
     </p>
   );
