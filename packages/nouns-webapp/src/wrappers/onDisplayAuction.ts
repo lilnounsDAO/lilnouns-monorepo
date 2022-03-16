@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { useAppSelector } from '../hooks';
-import { generateEmptyNounderAuction, isNounderNoun } from '../utils/nounderNoun';
+import { generateEmptyNounderAuction, isNounderNoun, isNounsDAONoun } from '../utils/nounderNoun';
 import { Bid, BidEvent } from '../utils/types';
 import { Auction } from './nounsAuction';
 
@@ -54,7 +54,7 @@ const useOnDisplayAuction = (): Auction | undefined => {
     return deserializeAuction(currentAuction);
   } else {
     // nounder auction
-    if (isNounderNoun(BigNumber.from(onDisplayAuctionNounId))) {
+    if (isNounderNoun(BigNumber.from(onDisplayAuctionNounId)) || isNounsDAONoun(BigNumber.from(onDisplayAuctionNounId))) {
       const emptyNounderAuction = generateEmptyNounderAuction(
         BigNumber.from(onDisplayAuctionNounId),
         pastAuctions,
