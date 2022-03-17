@@ -8,8 +8,7 @@ export const isNounderNoun = (nounId: BigNumber) => {
 
 //? checks for nounsdao gifted nouns
 export const isNounsDAONoun = (nounId: BigNumber) => {
-  const adjustedNounId = BigNumber.from(nounId.toNumber() - 1)
-  return adjustedNounId.mod(10).eq(0) || adjustedNounId.eq(0);
+  return nounId.mod(10).eq(1) || nounId.eq(1);
 };
 
 const emptyNounderAuction = (onDisplayAuctionId: number): Auction => {

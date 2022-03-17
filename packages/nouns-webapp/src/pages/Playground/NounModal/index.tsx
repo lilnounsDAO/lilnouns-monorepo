@@ -59,7 +59,7 @@ const NounModal: React.FC<{ onDismiss: () => void; svg: string }> = props => {
             />
           )}
           <div className={classes.displayNounFooter}>
-            <span>Use this Noun as your profile picture!</span>
+            <span>Use this Lil Noun as your profile picture!</span>
             {!isMobile && png && (
               <Button
                 onClick={() => {

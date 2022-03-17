@@ -3,7 +3,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_noundersDAO",
+        "name": "_lilnoundersDAO",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_nounsDAO",
         "type": "address"
       },
       {
@@ -151,6 +156,19 @@
   },
   {
     "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "lilnoundersDAO",
+        "type": "address"
+      }
+    ],
+    "name": "LilNoundersDAOUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [],
     "name": "MinterLocked",
     "type": "event"
@@ -233,11 +251,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "noundersDAO",
+        "name": "nounsDAO",
         "type": "address"
       }
     ],
-    "name": "NoundersDAOUpdated",
+    "name": "NounsDAOUpdated",
     "type": "event"
   },
   {
@@ -663,6 +681,19 @@
   },
   {
     "inputs": [],
+    "name": "lilnoundersDAO",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "lockDescriptor",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -742,7 +773,7 @@
   },
   {
     "inputs": [],
-    "name": "noundersDAO",
+    "name": "nounsDAO",
     "outputs": [
       {
         "internalType": "address",
@@ -975,6 +1006,19 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_lilnoundersDAO",
+        "type": "address"
+      }
+    ],
+    "name": "setLilNoundersDAO",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_minter",
         "type": "address"
       }
@@ -988,11 +1032,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_noundersDAO",
+        "name": "_nounsDAO",
         "type": "address"
       }
     ],
-    "name": "setNoundersDAO",
+    "name": "setNounsDAO",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

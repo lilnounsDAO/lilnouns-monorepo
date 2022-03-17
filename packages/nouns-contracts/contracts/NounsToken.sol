@@ -27,7 +27,7 @@ import { IERC721 } from '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import { IProxyRegistry } from './external/opensea/IProxyRegistry.sol';
 
 contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
-    // The nounders DAO address (creators org)
+    // The lilnounders DAO address (creators org)
     address public lilnoundersDAO;
 
     // The nouns DAO address
@@ -118,7 +118,7 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
         INounsDescriptor _descriptor,
         INounsSeeder _seeder,
         IProxyRegistry _proxyRegistry
-    ) ERC721('Nouns', 'NOUN') {
+    ) ERC721("LilNoun", "LILNOUNS") {
         lilnoundersDAO = _lilnoundersDAO;
         nounsDAO = _nounsDAO;
         minter = _minter;
@@ -163,12 +163,12 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
      * @dev Call _mintTo with the to address(es).
      */
     function mint() public override onlyMinter returns (uint256) {
-     
-        if (_currentNounId <= 175190 && _currentNounId % 10 == 0) {
+
+        if (_currentNounId <= 175300  && _currentNounId % 10 == 0) {
             _mintTo(lilnoundersDAO, _currentNounId++);
         }
 
-        if (_currentNounId <= 175191 && _currentNounId - 1 % 10 == 0) {
+        if (_currentNounId <= 175301 && _currentNounId % 10 == 1) {
             _mintTo(nounsDAO, _currentNounId++);
         }
 

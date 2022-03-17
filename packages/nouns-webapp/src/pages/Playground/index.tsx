@@ -167,7 +167,7 @@ const Playground: React.FC = () => {
               })}
             <p className={classes.nounYearsFooter}>
               You've generated {nounSvgs ? (nounSvgs.length / 365).toFixed(2) : '0'} years worth of
-              Nouns
+              Lil Nouns
             </p>
           </Col>
           <Col lg={9}>

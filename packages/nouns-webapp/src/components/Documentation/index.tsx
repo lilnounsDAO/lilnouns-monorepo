@@ -25,13 +25,13 @@ const Documentation = () => {
         <div className={classes.headerWrapper}>
           <h1>WTF?</h1>
           <p className={classes.aboutText}>
-            Nouns are an experimental attempt to improve the formation of on-chain avatar
+            Lil Nouns are an experimental attempt to improve the formation of on-chain avatar
             communities. While projects such as {cryptopunksLink} have attempted to bootstrap
-            digital community and identity, Nouns attempt to bootstrap identity, community,
+            digital community and identity, Lil Nouns attempt to bootstrap identity, community,
             governance, and a treasury that can be used by the community.
           </p>
           <p className={classes.aboutText} style={{ paddingBottom: '4rem' }}>
-            Learn more below, or start creating Nouns off-chain using the {playgroundLink}.
+            Learn more below, or start creating Lil Nouns off-chain using the {playgroundLink}.
           </p>
         </div>
         <Accordion flush>
@@ -39,18 +39,25 @@ const Documentation = () => {
             <Accordion.Header className={classes.accordionHeader}>Summary</Accordion.Header>
             <Accordion.Body>
               <ul>
-                <li>Nouns artwork is in the {publicDomainLink}.</li>
-                <li>One Noun is trustlessly auctioned every 24 hours, forever.</li>
-                <li>100% of Noun auction proceeds are trustlessly sent to the treasury.</li>
+                <li>Lil Nouns artwork is in the {publicDomainLink}.</li>
+                <li>One Lil Noun is trustlessly auctioned every 24 hours, forever.</li>
+                <li>100% of Lil Noun auction proceeds are trustlessly sent to the treasury.</li>
                 <li>Settlement of one auction kicks off the next.</li>
-                <li>All Nouns are members of Nouns DAO.</li>
-                <li>Nouns DAO uses a fork of {compoundGovLink}.</li>
-                <li>One Noun is equal to one vote.</li>
-                <li>The treasury is controlled exclusively by Nouns via governance.</li>
+                <li>All Lil Nouns are members of Lil Nouns DAO.</li>
+                <li>Lil Nouns DAO uses Nouns DAO's fork of {compoundGovLink}.</li>
+                <li>One Lil Noun is equal to one vote.</li>
+                <li>The treasury is controlled exclusively by Lil Nouns via governance.</li>
                 <li>Artwork is generative and stored directly on-chain (not IPFS).</li>
-                <li>No explicit rules exist for attribute scarcity; all Nouns are equally rare.</li>
                 <li>
-                  Nounders receive rewards in the form of Nouns (10% of supply for first 5 years).
+                  No explicit rules exist for attribute scarcity; all Lil Nouns are equally rare.
+                </li>
+                <li>
+                  Lil Nounders receive rewards in the form of Lil Nouns (10% of supply for first 5
+                  years).
+                </li>
+                <li>
+                  NounsDAO receives rewards in the form of Lil Nouns (10% of supply for first 5
+                  years).
                 </li>
               </ul>
             </Accordion.Body>
@@ -60,32 +67,32 @@ const Documentation = () => {
             <Accordion.Header className={classes.accordionHeader}>Daily Auctions</Accordion.Header>
             <Accordion.Body>
               <p className={classes.aboutText}>
-                The Nouns Auction Contract will act as a self-sufficient Noun generation and
-                distribution mechanism, auctioning one Noun every 24 hours, forever. 100% of auction
-                proceeds (ETH) are automatically deposited in the Nouns DAO treasury, where they are
-                governed by Noun owners.
+                The Lil Nouns Auction Contract will act as a self-sufficient Lil Noun generation and
+                distribution mechanism, auctioning one Lil Noun every 24 hours, forever. 100% of auction
+                proceeds (ETH) are automatically deposited in the Lil Nouns DAO treasury, where they
+                are governed by Lil Noun owners.
               </p>
 
               <p className={classes.aboutText}>
                 Each time an auction is settled, the settlement transaction will also cause a new
-                Noun to be minted and a new 24 hour auction to begin.{' '}
+                Lil Noun to be minted and a new 24 hour auction to begin.{' '}
               </p>
               <p>
                 While settlement is most heavily incentivized for the winning bidder, it can be
-                triggered by anyone, allowing the system to trustlessly auction Nouns as long as
+                triggered by anyone, allowing the system to trustlessly auction Lil Nouns as long as
                 Ethereum is operational and there are interested bidders.
               </p>
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="2" className={classes.accordionItem}>
-            <Accordion.Header className={classes.accordionHeader}>Nouns DAO</Accordion.Header>
+            <Accordion.Header className={classes.accordionHeader}>Lil Nouns DAO</Accordion.Header>
             <Accordion.Body>
-              Nouns DAO utilizes a fork of {compoundGovLink} and is the main governing body of the
-              Nouns ecosystem. The Nouns DAO treasury receives 100% of ETH proceeds from daily Noun
-              auctions. Each Noun is an irrevocable member of Nouns DAO and entitled to one vote in
-              all governance matters. Noun votes are non-transferable (if you sell your Noun the
-              vote goes with it) but delegatable, which means you can assign your vote to someone
-              else as long as you own your Noun.
+              Lil Nouns DAO utilizes Nouns DAO's fork of {compoundGovLink} and is the main governing body of
+              the Lil Nouns ecosystem. The Lil Nouns DAO treasury receives 100% of ETH proceeds from
+              daily Lil Noun auctions. Each Lil Noun is an irrevocable member of Lil Nouns DAO and entitled
+              to one vote in all governance matters. Noun votes are non-transferable (if you sell
+              your Lil Noun the vote goes with it) but delegatable, which means you can assign your vote
+              to someone else as long as you own your Lil Noun.
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="3" className={classes.accordionItem}>
@@ -94,25 +101,25 @@ const Documentation = () => {
             </Accordion.Header>
             <Accordion.Body>
               <p>
-                In addition to the precautions taken by Compound Governance, Nounders have given
+                In addition to the precautions taken by Compound Governance, Lil Nounders have given
                 themselves a special veto right to ensure that no malicious proposals can be passed
-                while the Noun supply is low. This veto right will only be used if an obviously
+                while the Lil Noun supply is low. This veto right will only be used if an obviously
                 harmful governance proposal has been passed, and is intended as a last resort.
               </p>
               <p>
-                Nounders will proveably revoke this veto right when they deem it safe to do so. This
-                decision will be based on a healthy Noun distribution and a community that is
+                Lil Nounders will proveably revoke this veto right when they deem it safe to do so. This
+                decision will be based on a healthy Lil Noun distribution and a community that is
                 engaged in the governance process.
               </p>
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="4" className={classes.accordionItem}>
-            <Accordion.Header className={classes.accordionHeader}>Noun Traits</Accordion.Header>
+            <Accordion.Header className={classes.accordionHeader}>Lil Noun Traits</Accordion.Header>
             <Accordion.Body>
               <p>
-                Nouns are generated randomly based Ethereum block hashes. There are no 'if'
-                statements or other rules governing Noun trait scarcity, which makes all Nouns
-                equally rare. As of this writing, Nouns are made up of:
+                Lil Nouns are generated randomly based Ethereum block hashes. There are no 'if'
+                statements or other rules governing Lil Noun trait scarcity, which makes all Lil Nouns
+                equally rare. As of this writing, Lil Nouns are made up of:
               </p>
               <ul>
                 <li>backgrounds (2) </li>
@@ -121,7 +128,7 @@ const Documentation = () => {
                 <li>heads (234) </li>
                 <li>glasses (21)</li>
               </ul>
-              You can experiment with off-chain Noun generation at the {playgroundLink}.
+              You can experiment with off-chain Lil Noun generation at the {playgroundLink}.
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="5" className={classes.accordionItem}>
@@ -130,9 +137,10 @@ const Documentation = () => {
             </Accordion.Header>
             <Accordion.Body>
               <p>
-                Nouns are stored directly on Ethereum and do not utilize pointers to other networks
-                such as IPFS. This is possible because Noun parts are compressed and stored on-chain
-                using a custom run-length encoding (RLE), which is a form of lossless compression.
+                Lil Nouns are stored directly on Ethereum and do not utilize pointers to other
+                networks such as IPFS. This is possible because Lil Noun parts are compressed and stored
+                on-chain using a custom run-length encoding (RLE), which is a form of lossless
+                compression.
               </p>
 
               <p>
@@ -145,87 +153,78 @@ const Documentation = () => {
           </Accordion.Item>
           <Accordion.Item eventKey="6" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>
-              Noun Seeder Contract
+              Lil Noun Seeder Contract
             </Accordion.Header>
             <Accordion.Body>
               <p>
-                The Noun Seeder contract is used to determine Noun traits during the minting
+                The Lil Noun Seeder contract is used to determine Lil Noun traits during the minting
                 process. The seeder contract can be replaced to allow for future trait generation
-                algorithm upgrades. Additionally, it can be locked by the Nouns DAO to prevent any
-                future updates. Currently, Noun traits are determined using pseudo-random number
+                algorithm upgrades. Additionally, it can be locked by the Lil Nouns DAO to prevent
+                any future updates. Currently, Lil Noun traits are determined using pseudo-random number
                 generation:
               </p>
               <code>keccak256(abi.encodePacked(blockhash(block.number - 1), nounId))</code>
               <br />
               <br />
               <p>
-                Trait generation is not truly random. Traits can be predicted when minting a Noun on
+                Trait generation is not truly random. Traits can be predicted when minting a Lil Noun on
                 the pending block.
               </p>
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="7" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>
-              Nounder's Reward
+              Lil Nounder's Reward
             </Accordion.Header>
             <Accordion.Body>
               <p>
-                'Nounders' are the group of ten builders that initiated Nouns. Here are the
-                Nounders:
+                'Lil Nounders' are the group of builders that initiated Lil Nouns. Here are the
+                Lil Nounders:
               </p>
               <ul>
                 <li>
-                  <Link
-                    text="@cryptoseneca"
-                    url="https://twitter.com/cryptoseneca"
-                    leavesPage={true}
+                  <Link text="@0xsvg" 
+                  url="https://twitter.com/0xsvg" 
+                  leavesPage={true} 
                   />
                 </li>
                 <li>
                   <Link
-                    text="@supergremplin"
-                    url="https://twitter.com/supergremplin"
-                    leavesPage={true}
-                  />
-                </li>
-                <li>
-                  <Link text="@punk4156" url="https://twitter.com/punk4156" leavesPage={true} />
-                </li>
-                <li>
-                  <Link text="@eboyarts" url="https://twitter.com/eBoyArts" leavesPage={true} />
-                </li>
-                <li>
-                  <Link text="@punk4464" url="https://twitter.com/punk4464" leavesPage={true} />
-                </li>
-                <li>solimander</li>
-                <li>
-                  <Link text="@dhof" url="https://twitter.com/dhof" leavesPage={true} />
-                </li>
-                <li>
-                  <Link text="@devcarrot" url="https://twitter.com/carrot_init" leavesPage={true} />
-                </li>
-                <li>
-                  <Link text="@TimpersHD" url="https://twitter.com/TimpersHD" leavesPage={true} />
-                </li>
-                <li>
-                  <Link
-                    text="@lastpunk9999"
-                    url="https://twitter.com/lastpunk9999"
+                    text="@adelidusiam"
+                    url="https://twitter.com/adelidusiam"
                     leavesPage={true}
                   />
                 </li>
               </ul>
               <p>
-                Because 100% of Noun auction proceeds are sent to Nouns DAO, Nounders have chosen to
-                compensate themselves with Nouns. Every 10th Noun for the first 5 years of the
-                project (Noun ids #0, #10, #20, #30 and so on) will be automatically sent to the
-                Nounder's multisig to be vested and shared among the founding members of the
-                project.
+                Because 100% of Lil Noun auction proceeds are sent to Lil Nouns DAO, Lil Nounders have
+                chosen to compensate themselves with Lil Nouns. Every 10th Lil Noun for the first 5
+                years of the project (Lil Noun ids #0, #10, #20, #30 and so on) will be automatically
+                sent to the Lil Nounder's multisig to be vested and shared among the founding
+                members of the project.
               </p>
               <p>
-                Nounder distributions don't interfere with the cadence of 24 hour auctions. Nouns
-                are sent directly to the Nounder's Multisig, and auctions continue on schedule with
-                the next available Noun ID.
+                Lil Nounder distributions don't interfere with the cadence of 24 hour auctions. Lil
+                Nouns are sent directly to the Lil Nounder's Multisig, and auctions continue on schedule
+                with the next available Lil Noun ID.
+              </p>
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="8" className={classes.accordionItem}>
+            <Accordion.Header className={classes.accordionHeader}>
+              NounsDAO's Reward
+              </Accordion.Header>
+            <Accordion.Body>
+              <p>
+                For being selfless stewards of cc0, Lil Nounders chosen to 
+                chosen to compensate the NounsDAO with Lil Nouns. Every 11th Lil Noun for the first 5
+                years of the project (Lil Noun ids #1, #11, #21, #31 and so on) will be automatically
+                sent to the NounsDAO to be vested and shared among members of the project.
+              </p>
+              <p>
+                NounsDAO distributions don't interfere with the cadence of 24 hour auctions. Lil
+                Nouns are sent directly to the NoundDAO Treasry, and auctions
+                continue on schedule with the next available Lil Noun ID.
               </p>
             </Accordion.Body>
           </Accordion.Item>

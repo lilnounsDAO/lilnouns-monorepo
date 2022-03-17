@@ -55,7 +55,9 @@ export const deployNounsSeeder = async (deployer?: SignerWithAddress): Promise<N
 
 export const deployNounsToken = async (
   deployer?: SignerWithAddress,
-  noundersDAO?: string,
+  lilnoundersDAO?: string,
+  lilnounsDAO?: string,
+  // noundersDAO?: string,
   minter?: string,
   descriptor?: string,
   seeder?: string,
@@ -65,7 +67,9 @@ export const deployNounsToken = async (
   const factory = new NounsTokenFactory(signer);
 
   return factory.deploy(
-    noundersDAO || signer.address,
+    lilnoundersDAO || signer.address,
+    lilnounsDAO || signer.address,
+    // noundersDAO || signer.address,
     minter || signer.address,
     descriptor || (await deployNounsDescriptor(signer)).address,
     seeder || (await deployNounsSeeder(signer)).address,

@@ -1,4 +1,6 @@
+import { Interface } from 'ethers/lib/utils';
 import { task } from 'hardhat/config';
+import { default as NounsAuctionHouseABI } from '../abi/contracts//NounsAuctionHouse.sol/NounsAuctionHouse.json';
 
 type ContractName =
   | 'NFTDescriptor'
@@ -12,6 +14,17 @@ type ContractName =
   | 'NounsDAOProxy'
   | 'NounsAuctionHouseProxy';
 
+
+  const bytes = new Interface(NounsAuctionHouseABI).encodeFunctionData('initialize', [
+    "0xF0ea2Ef2E31c9A4A74471cA6101BD755262c940a", // nouns token
+    "0xc778417E063141139Fce010982780140Aa0cD5Ab", // weth (testnet)
+    "90", // auctionTimeBuffer,
+    "1", // auctionReservePrice,
+    "5", // auctionMinIncrementBidPercentage,
+    "900", // auctionDuration,
+   ])
+  
+
 interface VerifyArgs {
   address: string;
   constructorArguments?: (string | number)[];
@@ -20,60 +33,61 @@ interface VerifyArgs {
 
 const contracts: Record<ContractName, VerifyArgs> = {
   NFTDescriptor: {
-    address: '0x0bbad8c947210ab6284699605ce2a61780958264',
+    address: '0x1A1251F943E3C3Fd09a0aafEfDa4e3309032779c',
   },
   NounsDescriptor: {
-    address: '0x0Cfdb3Ba1694c2bb2CFACB0339ad7b1Ae5932B63',
+    address: '0x43D17060Bd13a1DBb18aE54958C13eEccbf2017B',
     libraries: {
-      NFTDescriptor: '0x0bbad8c947210ab6284699605ce2a61780958264',
+      NFTDescriptor: '0x1A1251F943E3C3Fd09a0aafEfDa4e3309032779c',
     },
   },
   NounsSeeder: {
-    address: '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515',
+    address: '0x4451D889B6B8c9b0f11E3C9C2d5d27ddF4057a00',
   },
   NounsToken: {
-    address: '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
+    address: '0xF0ea2Ef2E31c9A4A74471cA6101BD755262c940a',
     constructorArguments: [
-      '0x2573C60a6D127755aA2DC85e342F7da2378a0Cc5',
-      '0x830BD73E4184ceF73443C15111a1DF14e495C706',
-      '0x0Cfdb3Ba1694c2bb2CFACB0339ad7b1Ae5932B63',
-      '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515',
-      '0xa5409ec958c83c3f309868babaca7c86dcb077c1',
+      '0x9c1049c2d5fCB8dBB736Fd87E7E0198b03F6EEB3', // lilnounders dao multisig
+      '0xd301FBaffd9b81f4Ed47B90360f2137E642111a8', // nouns dao treasury (rinkeby == deployer adderss)
+      '0xbE66dc5a75F81a78932009AD263C29f9248D638d', // nounsAuctionHouseProxy
+      '0x43D17060Bd13a1DBb18aE54958C13eEccbf2017B', // nounsDescriptor
+      '0x4451D889B6B8c9b0f11E3C9C2d5d27ddF4057a00', // nounsSeeder
+      '0xf57b2c51ded3a29e6891aba85459d600256cf317', // rinkeby opensea registry
     ],
   },
   NounsAuctionHouse: {
-    address: '0xF15a943787014461d94da08aD4040f79Cd7c124e',
+    address: '0x91BACcA4AC068fddBBAA0ABfa00E1718Baa6f047',
   },
   NounsAuctionHouseProxyAdmin: {
-    address: '0xC1C119932d78aB9080862C5fcb964029f086401e',
+    address: '0x1075083AE2E9Cf121a64A682C36F8e82dAb0B3B1',
   },
   NounsAuctionHouseProxy: {
-    address: '0x830BD73E4184ceF73443C15111a1DF14e495C706',
+    address: '0xbE66dc5a75F81a78932009AD263C29f9248D638d',
     constructorArguments: [
-      '0x2C128FF70de543A3d20f56a8241a6a1E6541C7BA',
-      '0x4cF3a897D8B3D854B87875882278B4c09dDA40c9',
-      '0x87f49f540000000000000000000000009C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000000000000000000000000000000000000000012c00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000001518',
+      '0x91BACcA4AC068fddBBAA0ABfa00E1718Baa6f047', // NounAuctionHouse
+      '0x1075083AE2E9Cf121a64A682C36F8e82dAb0B3B1', // nounsAuctionHouseProxyAdmin
+      bytes,
     ],
   },
   NounsDAOExecutor: {
-    address: '0x0BC3807Ec262cB779b38D65b38158acC3bfedE10',
-    constructorArguments: ['0x6f3E6272A167e8AcCb32072d08E0957F9c79223d', 172800],
+    address: '0x17E7b56953C39d3b2869E936e6D4D7bb04d5323E',
+    constructorArguments: ['0xEF3d6a6c4dc884Cd0f360886A592b811F2C29278', 172800], // nounsDAOProxy, timelock-delay
   },
   NounsDAOLogicV1: {
-    address: '0xa43aFE317985726E4e194eb061Af77fbCb43F944',
+    address: '0x72Efac273bd36A82DF3a32013c6A136726A9581f', // nounsDAOLogicV1
   },
   NounsDAOProxy: {
-    address: '0x6f3E6272A167e8AcCb32072d08E0957F9c79223d',
+    address: '0xEF3d6a6c4dc884Cd0f360886A592b811F2C29278', // nounsDAOProxy
     constructorArguments: [
-      '0x0BC3807Ec262cB779b38D65b38158acC3bfedE10',
-      '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
-      '0x2573C60a6D127755aA2DC85e342F7da2378a0Cc5',
-      '0x0BC3807Ec262cB779b38D65b38158acC3bfedE10',
-      '0xa43aFE317985726E4e194eb061Af77fbCb43F944',
-      19710,
-      13140,
-      500,
-      1000,
+      '0x17E7b56953C39d3b2869E936e6D4D7bb04d5323E', // nounsDaoExecutor
+      '0xF0ea2Ef2E31c9A4A74471cA6101BD755262c940a', // nounsToken
+      '0x9c1049c2d5fCB8dBB736Fd87E7E0198b03F6EEB3', // lilnounders dao multisig
+      '0x17E7b56953C39d3b2869E936e6D4D7bb04d5323E', // nounsDaoExecutor
+      '0x72Efac273bd36A82DF3a32013c6A136726A9581f', // nounsDAOLogicV1
+      17280, // voting-period 
+      1, // voting-delay
+      500, // proposal-threshold-bps
+      1000, // quorum-votes-bps
     ],
   },
 };

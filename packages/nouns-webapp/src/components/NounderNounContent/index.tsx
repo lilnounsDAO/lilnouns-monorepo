@@ -64,7 +64,7 @@ const NounderNounContent: React.FC<{
     );
   }
 
-  if (nounIdNumber - 1 % 10 === 0) {
+  if (nounIdNumber % 10 === 1) {
     isNoundersNoun = false
     isNounsDAONoun = true
 
@@ -82,7 +82,7 @@ const NounderNounContent: React.FC<{
           </Link>
           {" "} for being selfless stewards of cc0 we, the project's founders (‘Lil Nounders’) have chosen to compensate
           the NounsDAO with Lil Nouns. Every 11th Lil Noun for the first 5 years of the project will be
-          sent to the NounsDAO, where they'll be distributed to individual Nouns, Nouners, and community members alike.
+          sent to the NounsDAO, where they'll be distributed to individual Nouns, Nounders, and community members alike.
         </li>
       </ul>
     );

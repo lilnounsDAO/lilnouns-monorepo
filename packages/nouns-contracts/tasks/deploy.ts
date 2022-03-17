@@ -27,9 +27,10 @@ interface Contract {
 }
 
 task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsToken')
-  .addParam('noundersdao', 'The nounders DAO contract address', undefined, types.string)
+  .addOptionalParam('lilnoundersDAO', 'The lilnounders DAO contract address', undefined, types.string)
+  .addOptionalParam('nounsDAO', 'The nounsDAO contract address', undefined, types.string)
   .addParam('weth', 'The WETH contract address', undefined, types.string)
-  .addOptionalParam('auctionTimeBuffer', 'The auction time buffer (seconds)', 5 * 60, types.int)
+  .addOptionalParam('auctionTimeBuffer', 'The auction time buffer (seconds)', 1.5 * 60, types.int)
   .addOptionalParam('auctionReservePrice', 'The auction reserve price (wei)', 1, types.int)
   .addOptionalParam(
     'auctionMinIncrementBidPercentage',
@@ -37,7 +38,7 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
     5,
     types.int,
   )
-  .addOptionalParam('auctionDuration', 'The auction duration (seconds)', 60 * 60 * 24, types.int) // Default: 24 hours
+  .addOptionalParam('auctionDuration', 'The auction duration (seconds)', 60 * 60 * 0.25, types.int) // Default: 15 minutes hours
   .addOptionalParam('timelockDelay', 'The timelock delay (seconds)', 60 * 60 * 24 * 2, types.int) // Default: 2 days
   .addOptionalParam('votingPeriod', 'The voting period (blocks)', 4 * 60 * 24 * 3, types.int) // Default: 3 days
   .addOptionalParam('votingDelay', 'The voting delay (blocks)', 1, types.int) // Default: 1 block
@@ -73,7 +74,8 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
       NounsSeeder: {},
       NounsToken: {
         args: [
-          args.noundersdao,
+          args.lilnoundersDAO,
+          args.nounsDAO,
           expectedAuctionHouseProxyAddress,
           () => contracts['NounsDescriptor'].address,
           () => contracts['NounsSeeder'].address,
@@ -109,7 +111,7 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
         args: [
           () => contracts['NounsDAOExecutor'].address,
           () => contracts['NounsToken'].address,
-          args.noundersdao,
+          args.lilnoundersDAO,
           () => contracts['NounsDAOExecutor'].address,
           () => contracts['NounsDAOLogicV1'].address,
           args.votingPeriod,
