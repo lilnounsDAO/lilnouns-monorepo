@@ -4,6 +4,7 @@ import classes from './Documentation.module.css';
 import Accordion from 'react-bootstrap/Accordion';
 import Link from '../Link';
 
+//TODO: update copy
 const Documentation = () => {
   const cryptopunksLink = (
     <Link text="CryptoPunks" url="https://www.larvalabs.com/cryptopunks" leavesPage={true} />
