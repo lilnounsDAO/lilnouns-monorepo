@@ -30,15 +30,16 @@ const config: HardhatUserConfig = {
     },
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-
+      accounts: process.env.MNEMONIC
+        ? { mnemonic: process.env.MNEMONIC }
+        : [process.env.WALLET_PRIVATE_KEY!].filter(Boolean),
     },
     hardhat: {
-      chainId: 4,
-      forking: {
-        url: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-
-      },
       initialBaseFeePerGas: 0,
+      // chainId: 4,
+      // forking: {
+      //   url: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      // },
     },
   },
   etherscan: {

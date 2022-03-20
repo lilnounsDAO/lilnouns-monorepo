@@ -16,7 +16,6 @@ export enum AuctionHouseContractFunction {
   settleCurrentAndCreateNewAuction = 'settleCurrentAndCreateNewAuction',
 }
 
-
 export interface Auction {
   amount: EthersBN;
   bidder: string;
@@ -58,11 +57,11 @@ export const useAuctionMinBidIncPercentage = () => {
  * @param nounId TokenId of Noun
  * @returns Unix timestamp after which Noun could vote
  */
+//TODO: Check if + 2 on nextNounId works
 export const useNounCanVoteTimestamp = (nounId: number) => {
   const nextNounId = nounId + 1;
 
-  const nextNounIdForQuery = isNounderNoun(EthersBN.from(nextNounId)) ? nextNounId + 1 : isNounsDAONoun(EthersBN.from(nextNounId)) ? nextNounId + 1 : nextNounId;
-
+  const nextNounIdForQuery = isNounderNoun(EthersBN.from(nextNounId)) ? nextNounId + 2 : isNounsDAONoun(EthersBN.from(nextNounId)) ? nextNounId + 1 : nextNounId;
 
   const pastAuctions = useAppSelector(state => state.pastAuctions.pastAuctions);
 

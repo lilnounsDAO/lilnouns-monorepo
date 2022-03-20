@@ -28,6 +28,9 @@ const findAuction = (id: BigNumber, auctions: AuctionState[]): Auction | undefin
   })?.activeAuction;
 };
 
+
+
+//TODO: checkout
 /**
  *
  * @param nounId
