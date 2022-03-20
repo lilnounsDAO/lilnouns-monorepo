@@ -26,17 +26,3 @@ const handler: Handler = async (event, context) => {
 };
 
 export { handler };
-
-
-// module.exports = async (req, res) => {
-//   const nouns = await nounsQuery();
-//   const seededNouns: SeededNoun[] = buildSeededNouns(nouns);
-//   res.send({
-//     statusCode: 200,
-//     headers: {
-//       'Content-Type': 'application/json',
-//       ...sharedResponseHeaders,
-//     },
-//     body: JSON.stringify(seededNouns),
-//   });
-// };
