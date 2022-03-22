@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import React from 'react';
-import { isNounderNoun, isNounsDAONoun } from '../../utils/nounderNoun';
+import { isNounderNoun } from '../../utils/nounderNoun';
 
 import classes from './NounInfoRowBirthday.module.css';
 import _BirthdayIcon from '../../assets/icons/Birthday.svg';
