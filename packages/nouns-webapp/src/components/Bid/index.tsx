@@ -236,10 +236,6 @@ const Bid: React.FC<{
     placeBidState.status === 'Mining' || settleAuctionState.status === 'Mining' || !activeAccount;
 
   const minBidCopy = `Ξ ${minBidEth(minBid)} or more`;
-  const fomoNounsBtnOnClickHandler = () => {
-    // Open Fomo Nouns in a new tab
-    window.open('https://fomonouns.wtf', '_blank')?.focus();
-  };
 
   const isWalletConnected = activeAccount !== undefined;
 
@@ -274,17 +270,22 @@ const Bid: React.FC<{
           </Button>
         ) : (
           <>
-            <Col lg={12} className={classes.voteForNextNounBtnWrapper}>
+            {/* <Col lg={12} className={classes.voteForNextNounBtnWrapper}>
               <Button className={classes.bidBtnAuctionEnded} onClick={fomoNounsBtnOnClickHandler}>
                 Vote for the next Noun ⌐◧-◧
               </Button>
-            </Col>
+            </Col> */}
             {/* Only show force settle button if wallet connected */}
-            {isWalletConnected && (
+            {isWalletConnected ? (
               <Col lg={12}>
                 <SettleManuallyBtn settleAuctionHandler={settleAuctionHandler} auction={auction} />
               </Col>
-            )}
+              ) : ( 
+              <Col lg={12}>
+                connect wallet to settle and start the next auction
+                </Col>
+                )
+            }
           </>
         )}
       </InputGroup>
