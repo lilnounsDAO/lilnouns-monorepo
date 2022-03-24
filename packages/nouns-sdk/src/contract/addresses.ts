@@ -21,8 +21,8 @@ const chainIdToAddresses: { [chainId: number]: ContractAddresses } = {
     nounsAuctionHouse: '0x91BACcA4AC068fddBBAA0ABfa00E1718Baa6f047', 
     nounsAuctionHouseProxy: '0xbE66dc5a75F81a78932009AD263C29f9248D638d',
     nounsAuctionHouseProxyAdmin: '0x1075083AE2E9Cf121a64A682C36F8e82dAb0B3B1',
-    nounsDaoExecutor: '0x17E7b56953C39d3b2869E936e6D4D7bb04d5323E', 
-    nounsDAOProxy: '0xEF3d6a6c4dc884Cd0f360886A592b811F2C29278', 
+    nounsDaoExecutor: '0x9B1ee03A107da76f7CF6F29018E8de98034ee579',
+    nounsDAOProxy: '0x49467bc5E00BA0AB09e1B2f2Ea97b4413805B9A2', 
     nounsDAOLogicV1: '0x72Efac273bd36A82DF3a32013c6A136726A9581f', 
   },
   [ChainId.Local]: {

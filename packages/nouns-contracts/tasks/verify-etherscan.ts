@@ -70,19 +70,19 @@ const contracts: Record<ContractName, VerifyArgs> = {
     ],
   },
   NounsDAOExecutor: {
-    address: '0x17E7b56953C39d3b2869E936e6D4D7bb04d5323E',
-    constructorArguments: ['0xEF3d6a6c4dc884Cd0f360886A592b811F2C29278', 172800], // nounsDAOProxy, timelock-delay
+    address: '0x9B1ee03A107da76f7CF6F29018E8de98034ee579',
+    constructorArguments: ['0x49467bc5E00BA0AB09e1B2f2Ea97b4413805B9A2', 172800], // nounsDAOProxy, timelock-delay
   },
   NounsDAOLogicV1: {
     address: '0x72Efac273bd36A82DF3a32013c6A136726A9581f', // nounsDAOLogicV1
   },
   NounsDAOProxy: {
-    address: '0xEF3d6a6c4dc884Cd0f360886A592b811F2C29278', // nounsDAOProxy
+    address: '0x49467bc5E00BA0AB09e1B2f2Ea97b4413805B9A2', // nounsDAOProxy
     constructorArguments: [
-      '0x17E7b56953C39d3b2869E936e6D4D7bb04d5323E', // nounsDaoExecutor
+      '0x9B1ee03A107da76f7CF6F29018E8de98034ee579', // nounsDaoExecutor
       '0xF0ea2Ef2E31c9A4A74471cA6101BD755262c940a', // nounsToken
       '0x9c1049c2d5fCB8dBB736Fd87E7E0198b03F6EEB3', // lilnounders dao multisig
-      '0x17E7b56953C39d3b2869E936e6D4D7bb04d5323E', // nounsDaoExecutor
+      '0x9B1ee03A107da76f7CF6F29018E8de98034ee579', // nounsDaoExecutor
       '0x72Efac273bd36A82DF3a32013c6A136726A9581f', // nounsDAOLogicV1
       17280, // voting-period 
       1, // voting-delay
