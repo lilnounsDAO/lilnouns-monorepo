@@ -56,7 +56,7 @@ const Documentation = () => {
                   years).
                 </li>
                 <li>
-                  NounsDAO receives rewards in the form of Lil Nouns (10% of supply for first 5
+                  Nouns DAO receives rewards in the form of Lil Nouns (10% of supply for first 5
                   years).
                 </li>
               </ul>
@@ -212,18 +212,18 @@ const Documentation = () => {
           </Accordion.Item>
           <Accordion.Item eventKey="8" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>
-              NounsDAO's Reward
+              Nouns DAO's Reward
               </Accordion.Header>
             <Accordion.Body>
               <p>
                 For being selfless stewards of cc0, Lil Nounders chosen to 
-                chosen to compensate the NounsDAO with Lil Nouns. Every 11th Lil Noun for the first 5
+                chosen to compensate the Nouns DAO with Lil Nouns. Every 11th Lil Noun for the first 5
                 years of the project (Lil Noun ids #1, #11, #21, #31 and so on) will be automatically
-                sent to the NounsDAO to be vested and shared among members of the project.
+                sent to the Nouns DAO to be vested and shared among members of the project.
               </p>
               <p>
-                NounsDAO distributions don't interfere with the cadence of 24 hour auctions. Lil
-                Nouns are sent directly to the NoundDAO Treasry, and auctions
+                Nouns DAO distributions don't interfere with the cadence of 24 hour auctions. Lil
+                Nouns are sent directly to the Nouns DAO Treasry, and auctions
                 continue on schedule with the next available Lil Noun ID.
               </p>
             </Accordion.Body>
