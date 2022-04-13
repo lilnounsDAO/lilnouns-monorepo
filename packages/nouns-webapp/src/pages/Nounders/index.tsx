@@ -2,78 +2,23 @@ import React from 'react';
 import classes from './NoundersPage.module.css';
 import Section from '../../layout/Section';
 import { Col, Row, Card } from 'react-bootstrap';
-import pfp4156 from '../../assets/nounder-pfps/4156.png';
-import pfp9999 from '../../assets/nounder-pfps/9999.png';
-import pfpCryptoseneca from '../../assets/nounder-pfps/cryptoseneca.png';
-import pfpDevcarrot from '../../assets/nounder-pfps/devcarrot.png';
-import pfpDom from '../../assets/nounder-pfps/dom.png';
-import pfpKai from '../../assets/nounder-pfps/kai.png';
-import pfpSolimander from '../../assets/nounder-pfps/solimander.png';
-import pfpGremplin from '../../assets/nounder-pfps/gremplin.png';
-import pfpTimpers from '../../assets/nounder-pfps/timpers.png';
-import pfpVapeape from '../../assets/nounder-pfps/vapeape.png';
+import pfp0xsvg from '../../assets/nounder-pfps/0xsvg.png';
+import pfpadelidusiam from '../../assets/nounder-pfps/adelidusiam.jpg';
 
 const bios = [
   {
-    name: '4156',
-    image: pfp4156,
+    name: 'adelidusiam',
+    image: pfpadelidusiam,
     description: undefined,
-    handle: 'punk4156',
+    handle: 'adelidusiam',
   },
   {
-    name: 'cryptoseneca',
-    image: pfpCryptoseneca,
+    name: '0xsvg',
+    image: pfp0xsvg,
     description: undefined,
-    handle: 'cryptoseneca',
+    handle: '0xsvg',
   },
-  {
-    name: 'Kai@eboy',
-    image: pfpKai,
-    description: undefined,
-    handle: 'eBoyArts',
-  },
-  {
-    name: 'dom',
-    image: pfpDom,
-    description: undefined,
-    handle: 'dhof',
-  },
-  {
-    name: 'vapeape',
-    image: pfpVapeape,
-    description: undefined,
-    handle: 'punk4464',
-  },
-  {
-    name: 'gremplin',
-    image: pfpGremplin,
-    description: undefined,
-    handle: 'supergremplin',
-  },
-  {
-    name: 'solimander',
-    image: pfpSolimander,
-    description: undefined,
-    handle: '_solimander_',
-  },
-  {
-    name: 'devcarrot',
-    image: pfpDevcarrot,
-    description: undefined,
-    handle: 'carrot_init',
-  },
-  {
-    name: 'timpers',
-    image: pfpTimpers,
-    description: undefined,
-    handle: 'TimpersHD',
-  },
-  {
-    name: '9999',
-    image: pfp9999,
-    description: undefined,
-    handle: 'lastpunk9999',
-  },
+
 ];
 
 const BioCard: React.FC<{
@@ -129,24 +74,22 @@ const NoundersPage = () => {
   return (
     <Section fullWidth={true} className={classes.noundersPage}>
       <Col lg={{ span: 6, offset: 3 }}>
-        <h2 style={{ marginBottom: '2rem' }}>The Nounders</h2>
-        <h3 style={{ marginBottom: '2rem' }}>3.5 artists, 6.5 technologists</h3>
+        <h2 style={{ marginBottom: '2rem' }}>The Lil Nounders</h2>
         <Row style={{ marginBottom: '0rem' }}>
           <BioCards min={0} max={5} />
           <BioCards min={5} max={10} />
         </Row>
-        <h3>Nounders' Reward</h3>
+        <h3>Lil Nounders' Reward</h3>
         <p style={{ textAlign: 'justify' }}>
-          All Noun auction proceeds are sent to the Nouns DAO. For this reason, we, the project's
-          founders (‘Nounders’) have chosen to compensate ourselves with Nouns. Every 10th noun for
-          the first 5 years of the project will be sent to our multisig (5/10), where it will be
-          vested and distributed to individual Nounders.
+          All Lil Noun auction proceeds are sent to the Lil Nouns DAO. For this reason, we, the project's
+          founders (‘Lil Nounders’) have chosen to compensate ourselves with Lil Nouns. Every 10th noun for
+          the first 5 years of the project will be sent to our multisig, where it will be
+          vested and distributed to individual Lil Nounders.
         </p>
         <p style={{ textAlign: 'justify' }}>
-          The Nounders reward is intended as compensation for our pre and post-launch contributions
+          The Lil Nounders reward is intended as compensation for our pre and post-launch contributions
           to the project, and to help us participate meaningfully in governance as the project
-          matures. Since there are 10 Nounders, after 5 years each Nounder could receive up to 1% of
-          the Noun supply.
+          matures.
         </p>
       </Col>
     </Section>

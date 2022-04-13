@@ -51,10 +51,10 @@ function App() {
           <Route exact path="/" component={AuctionPage} />
           <Route
             exact
-            path="/noun/:id"
+            path="/lilnoun/:id"
             render={props => <AuctionPage initialAuctionId={Number(props.match.params.id)} />}
           />
-          <Route exact path="/nounders" component={NoundersPage} />
+          <Route exact path="/lilnounders" component={NoundersPage} />
           <Route exact path="/sign" component={VerifyPage} />
           <Route exact path="/verify" component={VerifyPage} />
           <Route exact path="/create-proposal" component={CreateProposalPage} />

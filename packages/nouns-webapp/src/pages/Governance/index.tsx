@@ -11,7 +11,7 @@ const GovernancePage = () => {
   const { data: proposals } = useAllProposals();
   const threshold = useProposalThreshold();
   const nounsRequired = threshold !== undefined ? threshold + 1 : '...';
-  const nounThresholdCopy = `${nounsRequired} ${threshold === 0 ? 'Noun' : 'Nouns'}`;
+  const nounThresholdCopy = `${nounsRequired} ${threshold === 0 ? 'Lil Noun' : 'Lil Nouns'}`;
 
   const treasuryBalance = useTreasuryBalance();
   const treasuryBalanceUSD = useTreasuryUSDValue();
@@ -21,10 +21,10 @@ const GovernancePage = () => {
       <Col lg={10} className={classes.wrapper}>
         <Row className={classes.headerRow}>
           <span>Governance</span>
-          <h1>Nouns DAO</h1>
+          <h1>Lil Nouns DAO</h1>
         </Row>
         <p className={classes.subheading}>
-          Nouns govern <span className={classes.boldText}>Nouns DAO</span>. Nouns can vote on
+          Lil Nouns govern <span className={classes.boldText}>Lil Nouns DAO</span>. Lil Nouns can vote on
           proposals or delegate their vote to a third party. A minimum of{' '}
           <span className={classes.boldText}>{nounThresholdCopy}</span> is required to submit
           proposals.
@@ -55,8 +55,8 @@ const GovernancePage = () => {
             </Row>
           </Col>
           <Col className={classes.treasuryInfoText}>
-            This treasury exists for <span className={classes.boldText}>Nouns DAO</span>{' '}
-            participants to allocate resources for the long-term growth and prosperity of the Nouns
+            This treasury exists for <span className={classes.boldText}>Lil Nouns DAO</span>{' '}
+            participants to allocate resources for the long-term growth and prosperity of the Lil Nouns
             project.
           </Col>
         </Row>
