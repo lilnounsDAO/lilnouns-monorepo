@@ -78,7 +78,7 @@ const getAddresses = (): ContractAddresses => {
 
 const config = {
   app: app[CHAIN_ID],
-  isPreLaunch: process.env.IS_PRELAUNCH || 'false',
+  isPreLaunch: process.env.REACT_APP_IS_PRELAUNCH || 'true',
   addresses: getAddresses(),
 };
 
