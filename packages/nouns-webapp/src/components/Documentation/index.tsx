@@ -69,14 +69,14 @@ const Documentation = () => {
             <Accordion.Body>
               <p className={classes.aboutText}>
                 The Lil Nouns Auction Contract will act as a self-sufficient Lil Noun generation and
-                distribution mechanism, auctioning one Lil Noun every 24 hours, forever. 100% of
+                distribution mechanism, auctioning one Lil Noun every 15 minutes, forever. 100% of
                 auction proceeds (ETH) are automatically deposited in the Lil Nouns DAO treasury,
                 where they are governed by Lil Noun owners.
               </p>
 
               <p className={classes.aboutText}>
                 Each time an auction is settled, the settlement transaction will also cause a new
-                Lil Noun to be minted and a new 24 hour auction to begin.{' '}
+                Lil Noun to be minted and a new 15 minute auction to begin.{' '}
               </p>
               <p>
                 While settlement is most heavily incentivized for the winning bidder, it can be
@@ -91,7 +91,7 @@ const Documentation = () => {
               Lil Nouns DAO utilizes Nouns DAO's fork of {compoundGovLink} and is the main governing
               body of the Lil Nouns ecosystem. The Lil Nouns DAO treasury receives 100% of ETH
               proceeds from daily Lil Noun auctions. Each Lil Noun is an irrevocable member of Lil
-              Nouns DAO and entitled to one vote in all governance matters. Noun votes are
+              Nouns DAO and entitled to one vote in all governance matters. Lil Noun votes are
               non-transferable (if you sell your Lil Noun the vote goes with it) but delegatable,
               which means you can assign your vote to someone else as long as you own your Lil Noun.
             </Accordion.Body>
@@ -202,7 +202,7 @@ const Documentation = () => {
                 founding members of the project.
               </p>
               <p>
-                Lil Nounder distributions don't interfere with the cadence of 24 hour auctions. Lil
+                Lil Nounder distributions don't interfere with the cadence of 15 minute auctions. Lil
                 Nouns are sent directly to the Lil Nounder's Multisig, and auctions continue on
                 schedule with the next available Lil Noun ID.
               </p>
@@ -214,13 +214,13 @@ const Documentation = () => {
             </Accordion.Header>
             <Accordion.Body>
               <p>
-                For being selfless stewards of cc0, Lil Nounders chosen to chosen to compensate the
+                For being selfless stewards of cc0, Lil Nounders have chosen to compensate the
                 Nouns DAO with Lil Nouns. Every 11th Lil Noun for the first 5 years of the project
                 (Lil Noun ids #1, #11, #21, #31 and so on) will be automatically sent to the Nouns
                 DAO to be vested and shared among members of the project.
               </p>
               <p>
-                Nouns DAO distributions don't interfere with the cadence of 24 hour auctions. Lil
+                Nouns DAO distributions don't interfere with the cadence of 15 minute auctions. Lil
                 Nouns are sent directly to the Nouns DAO Treasry, and auctions continue on schedule
                 with the next available Lil Noun ID.
               </p>
