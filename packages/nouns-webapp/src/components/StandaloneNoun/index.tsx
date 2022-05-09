@@ -24,8 +24,8 @@ interface StandaloneNounWithSeedProps {
 
 const getNoun = (nounId: string | EthersBN, seed: INounSeed) => {
   const id = nounId.toString();
-  const name = `Lil Noun ${id}`;
-  const description = `Lil Noun ${id} is a member of the Lil Nouns DAO`;
+  const name = `Noun ${id}`;
+  const description = `Noun ${id} is a member of the Nouns DAO`;
   const { parts, background } = getNounData(seed);
   const image = `data:image/svg+xml;base64,${btoa(buildSVG(parts, data.palette, background))}`;
 
@@ -49,7 +49,7 @@ const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProp
 
   return (
     <Link
-      to={'/lilnoun/' + nounId.toString()}
+      to={'/noun/' + nounId.toString()}
       className={classes.clickableNoun}
       onClick={onClickHandler}
     >
@@ -72,7 +72,7 @@ export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
 
   return (
     <Link
-      to={'/lilnoun/' + nounId.toString()}
+      to={'/noun/' + nounId.toString()}
       className={classes.clickableNoun}
       onClick={onClickHandler}
     >
@@ -93,8 +93,9 @@ export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
 
   const dispatch = useDispatch();
   const seed = useNounSeed(nounId);
+  const seedIsInvalid = Object.values(seed || {}).every(v => v === 0);
 
-  if (!seed || !nounId || !onLoadSeed) return <Noun imgPath="" alt="Noun" />;
+  if (!seed || seedIsInvalid || !nounId || !onLoadSeed) return <Noun imgPath="" alt="Noun" />;
 
   onLoadSeed(seed);
 
@@ -107,7 +108,7 @@ export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
   const noun = <Noun imgPath={image} alt={description} />;
   const nounWithLink = (
     <Link
-      to={'/lilnoun/' + nounId.toString()}
+      to={'/noun/' + nounId.toString()}
       className={classes.clickableNoun}
       onClick={onClickHandler}
     >

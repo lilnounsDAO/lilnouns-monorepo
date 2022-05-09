@@ -8,8 +8,12 @@ export const useShortAddress = (address: string) => {
 };
 
 const ShortAddress: React.FC<{ address: string; avatar?: boolean; size?: number }> = props => {
-  const { address, avatar, size = 24 } = props;
+  let { address, avatar, size = 24 } = props;
   const { library: provider } = useEthers();
+
+  if (!address){
+    address = "0x0000000000000000000000000000000000000000"
+  }
 
   const ens = useReverseENSLookUp(address);
   const shortAddress = useShortAddress(address);

@@ -40,8 +40,16 @@ const Modal: React.FC<{
         <ModalOverlay title={title} content={content} onDismiss={onDismiss} />,
         document.getElementById('overlay-root')!,
       )}
+      
+       {/* <StyledApp>{emojiMarkup}</StyledApp>
+        {emojiBubbleMarkup} */}
+        
     </>
   );
 };
 
 export default Modal;
+
+function timeout(delay: number) {
+  return new Promise( res => setTimeout(res, delay) );
+}

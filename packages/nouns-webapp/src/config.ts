@@ -45,8 +45,7 @@ const app: Record<SupportedChains, AppConfig> = {
   [ChainId.Mainnet]: {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
     wsRpcUri: createNetworkWsUrl('mainnet'),
-    //TODO: CHANGE to lil nouns prod subgraph uri
-    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph',
+    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/lilnounsdao/lil-nouns-subgraph',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
   },
   [ChainId.Hardhat]: {
@@ -79,6 +78,7 @@ const getAddresses = (): ContractAddresses => {
 
 const config = {
   app: app[CHAIN_ID],
+  isPreLaunch: process.env.IS_PRELAUNCH || 'false',
   addresses: getAddresses(),
 };
 
