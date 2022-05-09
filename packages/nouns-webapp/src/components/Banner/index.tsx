@@ -1,28 +1,23 @@
 import classes from './Banner.module.css';
 import Section from '../../layout/Section';
-import { Col } from 'react-bootstrap';
-import calendar_noun from '../../assets/calendar_noun.png';
-import Noun from '../Noun';
+import Image from 'react-bootstrap/Image';
+import bannerImage from '../../assets/LilNounClassroom.png';
 
 const Banner = () => {
   return (
     <Section fullWidth={false} className={classes.bannerSection}>
-      <Col lg={6}>
         <div className={classes.wrapper}>
-          <h1>
-            ONE NOUN,
+          <h1 style={{textAlign:'center'}}>
+            ONE LIL NOUN,
             <br />
-            EVERY DAY,
+            EVERY 15 MINUTES,
             <br />
             FOREVER.
           </h1>
         </div>
-      </Col>
-      <Col lg={6}>
-        <div style={{ padding: '2rem' }}>
-          <Noun imgPath={calendar_noun} alt="noun" />
+        <div style={{ padding: '2rem', paddingBottom: '8rem'}}>
+          <Image  src={bannerImage} alt={'Banner Image'} fluid />
         </div>
-      </Col>
     </Section>
   );
 };

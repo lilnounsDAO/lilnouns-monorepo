@@ -2,7 +2,20 @@ import { ethers } from 'ethers';
 import sharp from 'sharp';
 import { isError, tryF } from 'ts-try';
 import { nounsTokenContract } from './clients';
-import { Bid, TokenMetadata } from './types';
+import { Bid, Proposal, TokenMetadata, Vote, VoteDirection } from './types';
+import { extractProposalTitle } from './utils/proposals';
+
+const shortAddress = (address: string) =>
+  `${address.substr(0, 4)}...${address.substr(address.length - 4)}`;
+
+const voteDirectionToText = (direction: VoteDirection) => {
+  const map = {
+    [VoteDirection.FOR]: 'for',
+    [VoteDirection.AGAINST]: 'against',
+    [VoteDirection.ABSTAIN]: 'to abstain on',
+  };
+  return map[direction];
+};
 
 /**
  * Try to reverse resolve an ENS domain and return it for display,
@@ -11,10 +24,7 @@ import { Bid, TokenMetadata } from './types';
  * @returns The resolved ENS lookup domain or a formatted address
  */
 export async function resolveEnsOrFormatAddress(address: string) {
-  return (
-    (await ethers.getDefaultProvider().lookupAddress(address)) ||
-    `${address.substr(0, 4)}...${address.substr(address.length - 4)}`
-  );
+  return (await ethers.getDefaultProvider().lookupAddress(address)) || shortAddress(address);
 }
 
 /**
@@ -24,10 +34,10 @@ export async function resolveEnsOrFormatAddress(address: string) {
  * @returns Text to be used in tweet when auction starts.
  */
 export function formatAuctionStartedTweetText(auctionId: number) {
-  return `＊Bleep Bloop Blop＊
+  return `＊Lil Bleep Bloop Blop＊
         
- An auction has started for Noun #${auctionId}
- Learn more at https://nouns.wtf`;
+ An auction has started for Lil Noun #${auctionId}
+ Learn more at https://lilnouns.wtf`;
 }
 
 /**
@@ -46,7 +56,33 @@ export async function formatBidMessageText(id: number, bid: Bid) {
  * @returns The auction ending soon text
  */
 export function getAuctionEndingSoonTweetText() {
-  return `This auction is ending soon! Bid now at https://nouns.wtf`;
+  return `This auction is ending soon! Bid now at https://lilnouns.wtf`;
+}
+
+export function formatNewGovernanceProposalText(proposal: Proposal) {
+  return `A new Lil Nouns DAO proposal (#${proposal.id}) has been created: ${extractProposalTitle(
+    proposal,
+  )}`;
+}
+
+export function formatUpdatedGovernanceProposalStatusText(proposal: Proposal) {
+  return `Lil Nouns DAO proposal #${proposal.id} (${extractProposalTitle(
+    proposal,
+  )}) has changed to status: ${proposal.status.toLocaleLowerCase()}`;
+}
+
+export function formatProposalAtRiskOfExpiryText(proposal: Proposal) {
+  return `Lil Nouns DAO proposal #${proposal.id} (${extractProposalTitle(
+    proposal,
+  )}) expires in less than two days. Please execute it immediately!`;
+}
+
+export async function formatNewGovernanceVoteText(proposal: Proposal, vote: Vote) {
+  return `${await resolveEnsOrFormatAddress(vote.voter.id)} has voted ${voteDirectionToText(
+    vote.supportDetailed,
+  )} Proposal #${proposal.id} (${extractProposalTitle(proposal)})${
+    vote.reason ? `\n\nReason: ${vote.reason}` : ''
+  }`;
 }
 
 /**

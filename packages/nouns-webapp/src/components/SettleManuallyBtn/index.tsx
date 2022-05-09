@@ -4,6 +4,7 @@ import classes from './SettleManuallyBtn.module.css';
 import dayjs from 'dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { CHAIN_ID } from '../../config';
 
 const SettleManuallyBtn: React.FC<{
   settleAuctionHandler: () => void;
@@ -11,7 +12,7 @@ const SettleManuallyBtn: React.FC<{
 }> = props => {
   const { settleAuctionHandler, auction } = props;
 
-  const MINS_TO_ENABLE_MANUAL_SETTLEMENT = 0.5;
+  const MINS_TO_ENABLE_MANUAL_SETTLEMENT = 5;
 
   const [settleEnabled, setSettleEnabled] = useState(false);
   const [auctionTimer, setAuctionTimer] = useState(MINS_TO_ENABLE_MANUAL_SETTLEMENT * 60);
@@ -22,9 +23,15 @@ const SettleManuallyBtn: React.FC<{
 
   // timer logic
   useEffect(() => {
-    const timeLeft =
-      MINS_TO_ENABLE_MANUAL_SETTLEMENT * 60 -
-      (dayjs().unix() - (auction && Number(auction.endTime)));
+    // Allow immediate manual settlement when testing
+    if (CHAIN_ID !== 1) {
+      setSettleEnabled(true);
+      setAuctionTimer(0);
+      return;
+    }
+
+    // prettier-ignore
+    const timeLeft = MINS_TO_ENABLE_MANUAL_SETTLEMENT * 60 - (dayjs().unix() - (auction && Number(auction.endTime)));
 
     setAuctionTimer(auction && timeLeft);
 
@@ -34,7 +41,7 @@ const SettleManuallyBtn: React.FC<{
     } else {
       const timer = setTimeout(() => {
         setAuctionTimer(auctionTimerRef.current - 1);
-      }, 1000);
+      }, 1_000);
 
       return () => {
         clearTimeout(timer);
@@ -53,11 +60,11 @@ const SettleManuallyBtn: React.FC<{
         disabled={!settleEnabled}
       >
         {settleEnabled ? (
-          <>{` Settle to start the next auction`}</>
+          <>{` Settle manually`}</>
         ) : (
           <>
             <FontAwesomeIcon icon={faInfoCircle} />
-            {` You can settle to start the next auction in ${minsContent()}`}
+            {` You can settle manually in ${minsContent()}`}
           </>
         )}
       </button>

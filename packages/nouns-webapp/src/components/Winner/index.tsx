@@ -37,14 +37,18 @@ const Winner: React.FC<WinnerProps> = props => {
       </Col>
       {!isMobile && (
         <Col>
-          <Link to="/verify" className={classes.verifyLink}>
-            <Button className={classes.verifyButton}>Get Verified</Button>
+          <Link to="/lilnouners">
+            <Button className={classes.verifyButton}>What now?</Button>
           </Link>
         </Col>
       )}
     </Row>
   ) : (
-    <ShortAddress size={40} address={winner} avatar={true} />
+   
+    
+    <ShortAddress size={40} address={winner} avatar={true}
+     />
+      
   );
 
   const nounsDAOContent = <h2>NounsDAO</h2>;
@@ -76,8 +80,8 @@ const Winner: React.FC<WinnerProps> = props => {
       </Row>
       {isWinnerYou && isMobile && (
         <Row>
-          <Link to="/verify" className={classes.verifyLink}>
-            <Button className={classes.verifyButton}>Get Verified</Button>
+          <Link to="/lilnouners">
+            <Button className={classes.verifyButton}>What now?</Button>
           </Link>
         </Row>
       )}

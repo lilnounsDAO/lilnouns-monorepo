@@ -62,15 +62,16 @@ const useOnDisplayAuction = (): Auction | undefined => {
 
       return deserializeAuction(emptyNounderAuction);
     } else {
-      // past auction
-      const reduxSafeAuction: Auction | undefined = pastAuctions.find(auction => {
-        const nounId = auction.activeAuction && BigNumber.from(auction.activeAuction.nounId);
-        return nounId && nounId.toNumber() === onDisplayAuctionNounId;
-      })?.activeAuction;
 
-      return reduxSafeAuction ? deserializeAuction(reduxSafeAuction) : undefined;
-    }
-  }
+  // past auction
+  const reduxSafeAuction: Auction | undefined = pastAuctions.find(auction => {
+    const nounId = auction.activeAuction && BigNumber.from(auction.activeAuction.nounId);
+    return nounId && nounId.toNumber() === onDisplayAuctionNounId;
+  })?.activeAuction;
+
+  return reduxSafeAuction ? deserializeAuction(reduxSafeAuction) : undefined;
+}
+}
 };
 
 export const useAuctionBids = (auctionNounId: BigNumber): Bid[] | undefined => {

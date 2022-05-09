@@ -2,16 +2,16 @@ import { ChainId, ContractAddresses } from './types';
 
 const chainIdToAddresses: { [chainId: number]: ContractAddresses } = {
   [ChainId.Mainnet]: {
-    nounsToken: '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
+    nounsToken: '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B',
     nounsSeeder: '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515',
-    nounsDescriptor: '0x0Cfdb3Ba1694c2bb2CFACB0339ad7b1Ae5932B63',
+    nounsDescriptor: '0x11fb55d9580cdbfb83de3510ff5ba74309800ad1 ',
     nftDescriptor: '0x0BBAd8c947210ab6284699605ce2a61780958264',
-    nounsAuctionHouse: '0xF15a943787014461d94da08aD4040f79Cd7c124e',
-    nounsAuctionHouseProxy: '0x830BD73E4184ceF73443C15111a1DF14e495C706',
-    nounsAuctionHouseProxyAdmin: '0xC1C119932d78aB9080862C5fcb964029f086401e',
-    nounsDaoExecutor: '0x0BC3807Ec262cB779b38D65b38158acC3bfedE10',
-    nounsDAOProxy: '0x6f3E6272A167e8AcCb32072d08E0957F9c79223d',
-    nounsDAOLogicV1: '0xa43aFE317985726E4e194eb061Af77fbCb43F944',
+    nounsAuctionHouse: '0x5B2003cA8FE9FfB93684cE377f52B415C7dC0216',
+    nounsAuctionHouseProxy: '0x55e0F7A3bB39a28Bd7Bcc458e04b3cF00Ad3219E',
+    nounsAuctionHouseProxyAdmin: '0xA4BebeC5bf3670Bb47a55ff705c91956C703237B',
+    nounsDaoExecutor: '0xd5f279ff9EB21c6D40C8f345a66f2751C4eeA1fB',
+    nounsDAOProxy: '0x5d2C31ce16924C2a71D317e5BbFd5ce387854039',
+    nounsDAOLogicV1: '0x8b20b261BDF0f97cfc6D3bD4903beb9D17794Ed8',
   },
   [ChainId.Rinkeby]: {
     nounsToken: '0xF0ea2Ef2E31c9A4A74471cA6101BD755262c940a', 
@@ -21,8 +21,8 @@ const chainIdToAddresses: { [chainId: number]: ContractAddresses } = {
     nounsAuctionHouse: '0x91BACcA4AC068fddBBAA0ABfa00E1718Baa6f047', 
     nounsAuctionHouseProxy: '0xbE66dc5a75F81a78932009AD263C29f9248D638d',
     nounsAuctionHouseProxyAdmin: '0x1075083AE2E9Cf121a64A682C36F8e82dAb0B3B1',
-    nounsDaoExecutor: '0x17E7b56953C39d3b2869E936e6D4D7bb04d5323E', 
-    nounsDAOProxy: '0xEF3d6a6c4dc884Cd0f360886A592b811F2C29278', 
+    nounsDaoExecutor: '0x9B1ee03A107da76f7CF6F29018E8de98034ee579',
+    nounsDAOProxy: '0x49467bc5E00BA0AB09e1B2f2Ea97b4413805B9A2', 
     nounsDAOLogicV1: '0x72Efac273bd36A82DF3a32013c6A136726A9581f', 
   },
   [ChainId.Local]: {

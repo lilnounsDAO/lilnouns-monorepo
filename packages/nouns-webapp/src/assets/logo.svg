@@ -1,8 +1,20 @@
-<svg width="167" height="215" viewBox="0 0 167 215" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M28.2256 52.3599V0H82.7946V25.9483H55.0397V52.3599H28.2256Z" fill="#D63C5E"/>
-<path d="M28.2256 215V162.64H82.7946V188.588H55.0397V215H28.2256Z" fill="#D63C5E"/>
-<path d="M137.363 -0.000133514L137.363 52.3597L82.7943 52.3597L82.7943 26.4115L110.549 26.4115L110.549 -0.000135823L137.363 -0.000133514Z" fill="#D63C5E"/>
-<path d="M137.363 162.64L137.363 215L82.7943 215L82.7943 189.052L110.549 189.052L110.549 162.64L137.363 162.64Z" fill="#D63C5E"/>
-<path d="M110.549 81.5516H82.7944V134.375H167V81.5516H138.304V107.963H110.549V81.5516Z" fill="#D63C5E"/>
-<rect y="80.1615" width="55.5099" height="54.6767" fill="#D63C5E"/>
+<svg width="290px" height="90px" viewBox="0 0 290 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>logo</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-28.000000, -23.000000)">
+            <g id="logo" transform="translate(28.000000, 23.000000)">
+                <polygon id="Path" fill="#FFFF" points="0 50 40 50 40 70 20 70 20 90 0 90"></polygon>
+                <polygon id="Path" fill="#FFFF" points="60 50 80 50 80 90 40 90 40 70 60 70"></polygon>
+                <polygon id="Path" fill="#FFFF" points="130 90 90 90 90 50 130 50"></polygon>
+                <polygon id="Path" fill="#FFFF" points="180 50 200 50 200 90 140 90 140 50 160 50 160 70 180 70"></polygon>
+                <polygon id="Path" fill="#FFFF" points="210 50 250 50 250 70 230 70 230 90 210 90"></polygon>
+                <path d="M270,50 L290,50 L290,90 C280.033,90 259.967,90 250,90 L250,70 L270,70 L270,50 Z" id="Path" fill="#FFFF"></path>
+                <polygon id="Path" fill="#FF638D" points="20 20 40 20 40 40 0 40 0 0 20 0"></polygon>
+                <polygon id="Path" fill="#FFEF16" points="50 0 70 0 70 40 50 40"></polygon>
+                <polygon id="Path" fill="#2B83F6" points="100 20 120 20 120 40 80 40 80 0 100 0"></polygon>
+            </g>
+        </g>
+    </g>
 </svg>

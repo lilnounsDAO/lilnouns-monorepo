@@ -118,7 +118,7 @@ const Bid: React.FC<{
     const value = utils.parseEther(bidInputRef.current.value.toString());
     const contract = connectContractToSigner(nounsAuctionHouseContract, undefined, library);
     const gasLimit = await contract.estimateGas.createBid(auction.nounId, {
-      value,
+      value,      
     });
     placeBid(auction.nounId, {
       value,
@@ -149,6 +149,7 @@ const Bid: React.FC<{
       setModal({
         title: 'Success',
         message: `Bid was placed successfully!`,
+        isMilestone: auction.amount.toString().includes("69"),
         show: true,
       });
       setBidButtonContent({ loading: false, content: 'Place bid' });
