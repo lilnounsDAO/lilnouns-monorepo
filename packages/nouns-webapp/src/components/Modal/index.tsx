@@ -50,6 +50,6 @@ const Modal: React.FC<{
 
 export default Modal;
 
-function timeout(delay: number) {
-  return new Promise( res => setTimeout(res, delay) );
-}
+// function timeout(delay: number) {
+//   return new Promise( res => setTimeout(res, delay) );
+// }
