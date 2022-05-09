@@ -9,7 +9,7 @@ import { Backdrop } from '../../../components/Modal';
 const downloadNounPNG = (png: string) => {
   const downloadEl = document.createElement('a');
   downloadEl.href = png;
-  downloadEl.download = 'noun.png';
+  downloadEl.download = 'lilnoun.png';
   downloadEl.click();
 };
 
