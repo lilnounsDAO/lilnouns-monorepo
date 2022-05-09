@@ -61,7 +61,7 @@ export const useAuctionMinBidIncPercentage = () => {
 export const useNounCanVoteTimestamp = (nounId: number) => {
   const nextNounId = nounId + 1;
 
-  const nextNounIdForQuery = isNounderNoun(EthersBN.from(nextNounId)) ? nextNounId + 2 : isNounsDAONoun(EthersBN.from(nextNounId)) ? nextNounId + 1 : nextNounId;
+  const nextNounIdForQuery = isNounderNoun(EthersBN.from(nextNounId)) ? nextNounId + 1 : isNounsDAONoun(EthersBN.from(nextNounId)) ? nextNounId + 1 : nextNounId;
 
   const pastAuctions = useAppSelector(state => state.pastAuctions.pastAuctions);
 
