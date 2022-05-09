@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useEffect } from 'react';
 import { useEthers } from '@usedapp/core';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { setActiveAccount } from './state/slices/account';
@@ -37,16 +38,16 @@ function App() {
   const alertModal = useAppSelector(state => state.application.alertModal);
 
   const [emojiQueue, setEmojiQueue] = useState(['']);
-  const [isFirst, setIsFirst] = useState(false);
+  // const [isFirst, setIsFirst] = useState(false);
 
-  const randomSize = (min: number, max: number) =>
-    (Math.random() * (max - min + 1) + min).toFixed(2);
+  // const randomSize = (min: number, max: number) =>
+  //   (Math.random() * (max - min + 1) + min).toFixed(2);
 
-  const randomLeft = () => {
-    const maths = Math.floor(Math.random() * 97 + 1);
-    console.log(`RANDOMLEFT: ${maths}`);
-    return maths;
-  };
+  // const randomLeft = () => {
+  //   const maths = Math.floor(Math.random() * 97 + 1);
+  //   console.log(`RANDOMLEFT: ${maths}`);
+  //   return maths;
+  // };
 
   const isPreLaunch = config.isPreLaunch === 'true'
 
@@ -122,6 +123,6 @@ function App() {
 
 export default App;
 
-function timeout(delay: number) {
-  return new Promise(res => setTimeout(res, delay));
-}
+// function timeout(delay: number) {
+//   return new Promise(res => setTimeout(res, delay));
+// }

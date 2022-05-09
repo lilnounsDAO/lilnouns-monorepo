@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 // import styled from 'styled-components';
 // import background from '../assets/back.jpg';
-import Emoji from '../../components/EmojiShower/Emoji';
+// import Emoji from '../../components/EmojiShower/Emoji';
 import EmojiBubble from '../../components/EmojiShower/EmojiBubble.jsx';
 
 
@@ -13,25 +13,25 @@ import EmojiBubble from '../../components/EmojiShower/EmojiBubble.jsx';
 // `;
 
 const Emojis = () => {
-	const emojiList = ['👏', '💩', '😂', '😡', '🤌'];
+	// const emojiList = ['👏', '💩', '😂', '😡', '🤌'];
 
 	const [emojiQueue, setEmojiQueue] = useState([""]);
-	const [isFirst, setIsFirst] = useState(true);
+	// const [isFirst, setIsFirst] = useState(true);
 
 	const randomSize = (min: number, max: number) =>
 		(Math.random() * (max - min + 1) + min).toFixed(2);
 
-	const randomLeft = () => {
-		const maths = Math.floor(Math.random() * 97 + 1)
-		console.log(`RANDOMLEFT: ${maths}`);
-		return maths
-	};
+	// const randomLeft = () => {
+	// 	const maths = Math.floor(Math.random() * 97 + 1)
+	// 	console.log(`RANDOMLEFT: ${maths}`);
+	// 	return maths
+	// };
 
-	const inputRef = React.useRef<HTMLButtonElement>(null)
+	// const inputRef = React.useRef<HTMLButtonElement>(null)
 
-	const handleClick = (emoji: any) => {
-		animate(emoji)
-	};
+	// const handleClick = (emoji: any) => {
+	// 	animate(emoji)
+	// };
 
 	useEffect(() => {
 		// if(isFirst == true) {
@@ -41,7 +41,7 @@ const Emojis = () => {
 
 		animate("hf")
 		
-	},[setIsFirst])
+	})//[setIsFirst])
 
 	async function animate(emoji: any){
 
@@ -76,9 +76,9 @@ const Emojis = () => {
 		setEmojiQueue((prevState: any[]) => [ ...prevState, { emoji, size: randomSize(2.2, 4.1), left: 85 }, ])
 	}
 
-	const emojiMarkup = emojiList.map((emoji, i) => (
-		<Emoji refer={inputRef} key={i} emoji={emoji} handleClick={handleClick} />
-	));
+	// const emojiMarkup = emojiList.map((emoji, i) => (
+	// 	<Emoji refer={inputRef} key={i} emoji={emoji} handleClick={handleClick} />
+	// ));
 
 	const emojiBubbleMarkup = emojiQueue.map((emojiVals, i) => (
 		<EmojiBubble key={i} {...emojiVals} />

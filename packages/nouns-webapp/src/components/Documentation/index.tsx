@@ -5,9 +5,6 @@ import Accordion from 'react-bootstrap/Accordion';
 import Link from '../Link';
 
 const Documentation = () => {
-  const cryptopunksLink = (
-    <Link text="CryptoPunks" url="https://www.larvalabs.com/cryptopunks" leavesPage={true} />
-  );
   const playgroundLink = <Link text="Playground" url="/playground" leavesPage={false} />;
   const nounsDao = <Link text="Nouns DAO" url="https://nouns.wtf" leavesPage={true} />;
   const publicDomainLink = (
