@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="290px" height="90px" viewBox="0 0 290 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>logo</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-28.000000, -23.000000)">
+            <g id="logo" transform="translate(28.000000, 23.000000)">
+                <polygon id="Path" fill="#2B83F6" points="0 50 40 50 40 70 20 70 20 90 0 90"></polygon>
+                <polygon id="Path" fill="#2B83F6" points="60 50 80 50 80 90 40 90 40 70 60 70"></polygon>
+                <polygon id="Path" fill="#2B83F6" points="130 90 90 90 90 50 130 50"></polygon>
+                <polygon id="Path" fill="#2B83F6" points="180 50 200 50 200 90 140 90 140 50 160 50 160 70 180 70"></polygon>
+                <polygon id="Path" fill="#2B83F6" points="210 50 250 50 250 70 230 70 230 90 210 90"></polygon>
+                <path d="M270,50 L290,50 L290,90 C280.033,90 259.967,90 250,90 L250,70 L270,70 L270,50 Z" id="Path" fill="#2B83F6"></path>
+                <polygon id="Path" fill="#FF638D" points="20 20 40 20 40 40 0 40 0 0 20 0"></polygon>
+                <polygon id="Path" fill="#FFEF16" points="50 0 70 0 70 40 50 40"></polygon>
+                <polygon id="Path" fill="#2B83F6" points="100 20 120 20 120 40 80 40 80 0 100 0"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

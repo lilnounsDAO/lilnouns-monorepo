@@ -118,7 +118,7 @@ const Bid: React.FC<{
     const value = utils.parseEther(bidInputRef.current.value.toString());
     const contract = connectContractToSigner(nounsAuctionHouseContract, undefined, library);
     const gasLimit = await contract.estimateGas.createBid(auction.nounId, {
-      value,
+      value,      
     });
     placeBid(auction.nounId, {
       value,
@@ -149,6 +149,7 @@ const Bid: React.FC<{
       setModal({
         title: 'Success',
         message: `Bid was placed successfully!`,
+        isMilestone: auction.amount.toString().includes("69"),
         show: true,
       });
       setBidButtonContent({ loading: false, content: 'Place bid' });
@@ -236,10 +237,6 @@ const Bid: React.FC<{
     placeBidState.status === 'Mining' || settleAuctionState.status === 'Mining' || !activeAccount;
 
   const minBidCopy = `Ξ ${minBidEth(minBid)} or more`;
-  // const fomoNounsBtnOnClickHandler = () => {
-  //   // Open Fomo Nouns in a new tab
-  //   window.open('https://fomonouns.wtf', '_blank')?.focus();
-  // };
 
   const isWalletConnected = activeAccount !== undefined;
 
@@ -280,11 +277,16 @@ const Bid: React.FC<{
               </Button>
             </Col> */}
             {/* Only show force settle button if wallet connected */}
-            {isWalletConnected && (
+            {isWalletConnected ? (
               <Col lg={12}>
                 <SettleManuallyBtn settleAuctionHandler={settleAuctionHandler} auction={auction} />
               </Col>
-            )}
+              ) : ( 
+              <Col lg={12}>
+                connect wallet to settle and start the next auction
+                </Col>
+                )
+            }
           </>
         )}
       </InputGroup>

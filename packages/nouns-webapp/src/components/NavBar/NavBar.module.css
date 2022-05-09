@@ -10,8 +10,8 @@
 }
 
 .navBarLogo {
-  width: 75px;
-  height: 75px;
+  width: 135px;
+  height: 135px;
 }
 
 .navBarCustom {
@@ -20,8 +20,8 @@
 
 @media (max-width: 992px) {
   .navBarLogo {
-    width: 65px;
-    height: 65px;
+    width: 95px;
+    height: 95px;
   }
 
   .navBarCustom {

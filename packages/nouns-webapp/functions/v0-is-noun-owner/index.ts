@@ -15,15 +15,3 @@ const handler: Handler = async (event, context) => {
 };
 
 export { handler };
-
-// module.exports = async (req, res) => {
-//   const nouns = await nounsQuery();
-//   res.send( {
-//     statusCode: 200,
-//     headers: {
-//       'Content-Type': 'application/json',
-//       ...sharedResponseHeaders,
-//     },
-//     body: JSON.stringify(isNounOwner(req.body, nouns)),
-//   });
-// };

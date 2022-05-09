@@ -2,7 +2,6 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import dotenv from 'dotenv';
 import '@nomiclabs/hardhat-waffle';
-import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-etherscan';
 import '@float-capital/solidity-coverage';
 import 'hardhat-typechain';
@@ -36,6 +35,10 @@ const config: HardhatUserConfig = {
     },
     hardhat: {
       initialBaseFeePerGas: 0,
+      // chainId: 1,
+      forking: {
+        url: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      },
     },
   },
   etherscan: {

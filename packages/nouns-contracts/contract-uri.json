@@ -1,8 +1,8 @@
 {
   "name": "Nouns",
-  "description": "One Noun, every day, forever.\r\n\r\nnouns.wtf",
-  "image": "ipfs://QmNdUibRHNqX2byJLtCD3ofn65cfCtvXdQnV87wRjqWf96",
-  "external_link": "https://nouns.wtf",
+  "description": "One Lil Noun, every 15 minutes, forever.\r\n\r\nlilnouns.wtf",
+  "image": "ipfs://QmSGB2Be21LZrq6mqhdxSeLQUQNpD1FRKa2C4Nv8j9b9YJ",
+  "external_link": "https://lilnouns.wtf",
   "seller_fee_basis_points": 0,
   "fee_recipient": "0x0000000000000000000000000000000000000000"
 }

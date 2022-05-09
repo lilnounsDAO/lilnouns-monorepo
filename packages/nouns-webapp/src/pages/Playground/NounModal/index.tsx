@@ -9,7 +9,7 @@ import { Backdrop } from '../../../components/Modal';
 const downloadNounPNG = (png: string) => {
   const downloadEl = document.createElement('a');
   downloadEl.href = png;
-  downloadEl.download = 'noun.png';
+  downloadEl.download = 'lilnoun.png';
   downloadEl.click();
 };
 
@@ -59,15 +59,15 @@ const NounModal: React.FC<{ onDismiss: () => void; svg: string }> = props => {
             />
           )}
           <div className={classes.displayNounFooter}>
-            <span>Use this Noun as your profile picture!</span>
+            <span>Use this Lil Noun as your profile picture!</span>
             {!isMobile && png && (
-              <Button
-                onClick={() => {
-                  downloadNounPNG(png);
-                }}
-              >
-                Download
-              </Button>
+                <Button
+                  onClick={() => {
+                    downloadNounPNG(png);
+                  }}
+                >
+                  Download
+                </Button>
             )}
           </div>
         </div>,

@@ -35,11 +35,11 @@ const Auction: React.FC<AuctionProps> = props => {
 
   const prevAuctionHandler = () => {
     dispatch(setPrevOnDisplayAuctionNounId());
-    currentAuction && history.push(`/noun/${currentAuction.nounId.toNumber() - 1}`);
+    currentAuction && history.push(`/lilnoun/${currentAuction.nounId.toNumber() - 1}`);
   };
   const nextAuctionHandler = () => {
     dispatch(setNextOnDisplayAuctionNounId());
-    currentAuction && history.push(`/noun/${currentAuction.nounId.toNumber() + 1}`);
+    currentAuction && history.push(`/lilnoun/${currentAuction.nounId.toNumber() + 1}`);
   };
 
   const nounContent = currentAuction && (
@@ -78,8 +78,7 @@ const Auction: React.FC<AuctionProps> = props => {
       onNextAuctionClick={nextAuctionHandler}
     />
   );
-
-
+  //TODO:: come back to this
 
   return (
     <div style={{ backgroundColor: stateBgColor }} className={classes.wrapper}>
@@ -90,13 +89,9 @@ const Auction: React.FC<AuctionProps> = props => {
           </Col>
           <Col lg={{ span: 6 }} className={classes.auctionActivityCol}>
             {currentAuction &&
-              (isNounderNoun(currentAuction.nounId)
+              (isNounderNoun(currentAuction.nounId) || isNounsDAONoun(currentAuction.nounId)
                 ? nounderNounContent
-                :isNounsDAONoun
-                (currentAuction.nounId)
-                ? nounderNounContent: currentAuctionActivityContent)}
-
-
+                : currentAuctionActivityContent)}
           </Col>
         </Row>
       </Container>

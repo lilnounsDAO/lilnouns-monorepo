@@ -4,7 +4,7 @@ This package contains the source for the Nouns webapp at [nouns.wtf](https://nou
 
 ## Quickstart
 
-_From the base of the `lilnouns-monorepo`_
+_From the base of the `nouns-monorepo`_
 
 In the first shell:
 
