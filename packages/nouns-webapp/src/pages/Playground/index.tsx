@@ -251,7 +251,7 @@ const Playground: React.FC = () => {
             <span>Explore</span>
             <h1>Playground</h1>
             <p>
-              The playground was built using the a fork of {nounsProtocolLink}. Lil Noun's traits are determined
+              The playground was built using a fork of {nounsProtocolLink}. Lil Noun's traits are determined
               by the Noun Seed. The seed was generated using {nounsAssetsLink} and rendered using
               the {nounsSDKLink}.
             </p>
@@ -266,7 +266,7 @@ const Playground: React.FC = () => {
                 }}
                 className={classes.primaryBtn}
               >
-                Generate Nouns
+                Generate Lil Nouns
               </Button>
             </Col>
             <Row>

@@ -17,7 +17,7 @@ const Footer = () => {
         <footer className={classes.footerSignature}>
           <Link text="Discord" url={discordURL} leavesPage={true} />
           <Link text="Twitter" url={twitterURL} leavesPage={true} />
-          {/* <Link text="Etherscan" url={etherscanURL} leavesPage={true} /> */}
+          <Link text="Etherscan" url={etherscanURL} leavesPage={true} />
           {/* <Link text="Forums" url={discourseURL} leavesPage={false} /> */}
         </footer>
       </Container>
