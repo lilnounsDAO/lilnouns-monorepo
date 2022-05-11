@@ -68,6 +68,8 @@ const ProfileActivityFeed: React.FC<ProfileActivityFeedProps> = props => {
     );
   });
 
+  //TODO: Fix copy "This Noun has no activity,"
+
   return (
     <Section fullWidth={false}>
       <Col lg={{ span: 10, offset: 1 }}>
