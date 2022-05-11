@@ -8,7 +8,7 @@ import { Proposal, useAllProposals } from '../../wrappers/nounsDao';
 import { createTimestampAllProposals, nounVotingHistoryQuery } from '../../wrappers/subgraph';
 import NounProfileVoteRow from '../NounProfileVoteRow';
 import { LoadingNoun } from '../Noun';
-import { useNounCanVoteTimestamp } from '../../wrappers/nounsAuction';
+// import { useNounCanVoteTimestamp } from '../../wrappers/nounsAuction';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -39,10 +39,10 @@ const ProfileActivityFeed: React.FC<ProfileActivityFeedProps> = props => {
   const {
     loading: proposalTimestampLoading,
     error: proposalTimestampError,
-    data: proposalCreatedTimestamps,
+    // data: proposalCreatedTimestamps,
   } = useQuery(createTimestampAllProposals());
 
-  const nounCanVoteTimestamp = useNounCanVoteTimestamp(nounId);
+  // const nounCanVoteTimestamp = useNounCanVoteTimestamp(nounId);
 
   const { data: proposals } = useAllProposals();
 
@@ -59,11 +59,12 @@ const ProfileActivityFeed: React.FC<ProfileActivityFeedProps> = props => {
       return acc;
     }, {});
 
+    //TODO FIX: Error - TypeError: proposalCreatedTimestamps.proposals[id] is undefined
   const filteredProposals = proposals.filter((p: Proposal, id: number) => {
-    return (
-      parseInt(proposalCreatedTimestamps.proposals[id].createdTimestamp) >
-        nounCanVoteTimestamp.toNumber() ||
-      (p.id && nounVotes[p.id])
+    return (0
+      // parseInt(proposalCreatedTimestamps.proposals[id].createdTimestamp) >
+      //   nounCanVoteTimestamp.toNumber() ||
+      // (p.id && nounVotes[p.id])
     );
   });
 
