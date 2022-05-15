@@ -171,3 +171,83 @@
   margin: 0;
   padding: 0;
 }
+
+.infoButton {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  /* text-decoration: underline; */
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+.infoButton:disabled {
+  color: #8c8d92;
+  text-decoration: none;
+  cursor: default;
+}
+
+.infoButton:hover,
+.infoButton:hover {
+  text-decoration: none;
+  color: rgb(95, 95, 95);
+  opacity: 1;
+} 
+
+.headerWrapper h1 {
+  font-family: 'Londrina Solid';
+  font-size: 4rem;
+}
+
+.headerWrapper p {
+  font-family: 'PT Root UI', sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.25px;
+  line-height: 28px;
+  margin: 3rem 0;
+}
+
+.accordionItem {
+  font-family: 'PT Root UI', sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.25px;
+  line-height: 28px;
+  font-size: 1.2rem !important;
+}
+
+@media (max-width: 992px) {
+  .headerWrapper {
+    padding: 1rem;
+  }
+}
+
+.accordionItem {
+  margin-bottom: 2.5rem;
+  border: none;
+}
+
+.aboutText {
+  margin: 0px !important;
+}
+
+.nounInfoRow {
+  font-family: 'PT Root UI';
+  font-weight: 500;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  font-size: 18px;
+  display: flex;
+}
+
+.nounInfoRowText {
+  padding-left: 4;
+  font-family: 'PT Root UI';
+  font-family: bold;
+  color: rgb(95, 95, 95);
+}
+
+.nounButtonContents {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
