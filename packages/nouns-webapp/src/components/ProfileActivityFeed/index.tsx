@@ -59,7 +59,7 @@ const ProfileActivityFeed: React.FC<ProfileActivityFeedProps> = props => {
       return acc;
     }, {});
 
-    //TODO FIX: Error - TypeError: proposalCreatedTimestamps.proposals[id] is undefined
+  //TODO FIX: Error - TypeError: proposalCreatedTimestamps.proposals[id] is undefined
   const filteredProposals = proposals.filter((p: Proposal, id: number) => {
     return (0
       // parseInt(proposalCreatedTimestamps.proposals[id].createdTimestamp) >
@@ -68,9 +68,9 @@ const ProfileActivityFeed: React.FC<ProfileActivityFeedProps> = props => {
     );
   });
 
-  //TODO: Fix copy "This Noun has no activity,"
-
-  return (
+ //TODO: Fix copy "This Noun has no activity,"
+  
+ return (
     <Section fullWidth={false}>
       <Col lg={{ span: 10, offset: 1 }}>
         <div className={classes.headerWrapper}>
@@ -140,7 +140,7 @@ const ProfileActivityFeed: React.FC<ProfileActivityFeedProps> = props => {
           </>
         ) : (
           <div className={classes.nullStateCopy}>
-            This Noun has no activity, since it was just created. Check back soon!
+            This Lil Noun has no activity, since it was just created. Check back soon!
           </div>
         )}
       </Col>
