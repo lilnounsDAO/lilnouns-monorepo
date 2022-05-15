@@ -51,11 +51,11 @@ const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProp
 
   return (
     <Link
-      to={'/noun/' + nounId.toString()}
+      to={'/lilnoun/' + nounId.toString()}
       className={classes.clickableNoun}
       onClick={onClickHandler}
     >
-      <Noun imgPath={noun ? noun.image : ''} alt={noun ? noun.description : 'Noun'} />
+      <Noun imgPath={noun ? noun.image : ''} alt={noun ? noun.description : 'Lil Noun'} />
     </Link>
   );
 };
@@ -74,15 +74,42 @@ export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
 
   return (
     <Link
-      to={'/noun/' + nounId.toString()}
+      to={'/lilnoun/' + nounId.toString()}
       className={classes.clickableNoun}
       onClick={onClickHandler}
     >
       <Noun
         imgPath={noun ? noun.image : ''}
-        alt={noun ? noun.description : 'Noun'}
+        alt={noun ? noun.description : 'Lil Noun'}
         wrapperClassName={nounClasses.circularNounWrapper}
         className={nounClasses.circular}
+      />
+    </Link>
+  );
+};
+
+export const StandaloneNounRoundedCorners: React.FC<StandaloneNounProps> = (
+  props: StandaloneNounProps,
+) => {
+  const { nounId } = props;
+  const seed = useNounSeed(nounId);
+  const noun = seed && getNoun(nounId, seed);
+
+  const dispatch = useDispatch();
+  const onClickHandler = () => {
+    dispatch(setOnDisplayAuctionNounId(nounId.toNumber()));
+  };
+
+  return (
+    <Link
+      to={'/lilnoun/' + nounId.toString()}
+      className={classes.clickableNoun}
+      onClick={onClickHandler}
+    >
+      <Noun
+        imgPath={noun ? noun.image : ''}
+        alt={noun ? noun.description : 'Lil Noun'}
+        className={nounClasses.rounded}
       />
     </Link>
   );
@@ -95,9 +122,8 @@ export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
 
   const dispatch = useDispatch();
   const seed = useNounSeed(nounId);
-  const seedIsInvalid = Object.values(seed || {}).every(v => v === 0);
 
-  if (!seed || seedIsInvalid || !nounId || !onLoadSeed) return <Noun imgPath="" alt="Noun" />;
+  if (!seed || !nounId || !onLoadSeed) return <Noun imgPath="" alt="Lil Noun" />;
 
   onLoadSeed(seed);
 
@@ -110,7 +136,7 @@ export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
   const noun = <Noun imgPath={image} alt={description} />;
   const nounWithLink = (
     <Link
-      to={'/noun/' + nounId.toString()}
+      to={'/lilnoun/' + nounId.toString()}
       className={classes.clickableNoun}
       onClick={onClickHandler}
     >

@@ -23,18 +23,27 @@ export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID
 
 export const ETHERSCAN_API_KEY = process.env.REACT_APP_ETHERSCAN_API_KEY ?? '';
 
-// const INFURA_PROJECT_ID = process.env.REACT_APP_INFURA_PROJECT_ID;
-//TODO: replaced infura
+const INFURA_PROJECT_ID = process.env.REACT_APP_INFURA_PROJECT_ID;
+
+//TODO: replaced infura for prod
 export const createNetworkHttpUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_JSONRPC`];
-  return custom || `https://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0`
-  //`https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
+
+  if (network === "rinkeby") {
+    return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
+  } else {
+    return custom || `https://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0`
+  }
 };
 
 export const createNetworkWsUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_WSRPC`];
-  return custom || 'wss://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0'
-  //  `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
+  
+  if (network === "rinkeby") {
+    return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
+  } else {
+    return custom || 'wss://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0'
+  }
 };
 
 const app: Record<SupportedChains, AppConfig> = {

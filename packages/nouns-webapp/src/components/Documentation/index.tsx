@@ -66,7 +66,7 @@ const Documentation = () => {
           </Accordion.Item>
 
           <Accordion.Item eventKey="1" className={classes.accordionItem}>
-            <Accordion.Header className={classes.accordionHeader}>Daily Auctions</Accordion.Header>
+            <Accordion.Header className={classes.accordionHeader}>15 Minute Auctions</Accordion.Header>
             <Accordion.Body>
               <p className={classes.aboutText}>
                 The Lil Nouns Auction Contract will act as a self-sufficient Lil Noun generation and
@@ -87,6 +87,40 @@ const Documentation = () => {
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="2" className={classes.accordionItem}>
+            <Accordion.Header className={classes.accordionHeader}>Bidding and Settling Auctions</Accordion.Header>
+            <Accordion.Body>
+            <p className={classes.aboutText}>
+            <h3>Bids</h3>
+              Once an auction starts, everyone has 15 minutes to bid. Anyone can bid an amount
+              at/above 0.01 eth. The Amount bid is returned to bidder if they lose the auction
+              (minus gas spent on bid transaction).
+              <br />
+              <br />
+              Bids at the very last minute increase the auction time by 1 and a half minutes.
+              Sometimes, multiple bids are sent at the same time. This may result in bids coming in
+              and winning an auction at the very last minute/seconds (irrespective of time
+              increase).
+              <br />
+
+              <p className={classes.aboutText}>
+              <h3>Bid Refunds</h3>
+              Unsuccessful bids are refunded in full. The timing of refunds may be offset by 1 bidder. This means that a refund is processed for an unsuccessful bid, when a higher bid is submitted.
+              </p>
+            </p>
+            
+            <p className={classes.aboutText}>
+            <h3>Settlement</h3>
+              When an auction ends, a gas-only transaction is required to mint the current Lil Noun
+              to the winners wallet and start the next auction. Anyone can settle an auction. As gas
+              price fluctuates, the cost of settlement also fluctuates.
+              <br />
+              <br />
+              Settlement gas price of every 9th Lil Noun is higher. This is due to the transaction
+              also triggering 2 free Lil Noun mints: The Lil Nounders mint and The Nouns DAO mint.
+            </p>
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="3" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>Lil Nouns DAO</Accordion.Header>
             <Accordion.Body>
               Lil Nouns DAO utilizes Nouns DAO's fork of {compoundGovLink} and is the main governing
@@ -97,7 +131,7 @@ const Documentation = () => {
               which means you can assign your vote to someone else as long as you own your Lil Noun.
             </Accordion.Body>
           </Accordion.Item>
-          <Accordion.Item eventKey="3" className={classes.accordionItem}>
+          <Accordion.Item eventKey="4" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>
               Governance ‘Slow Start’
             </Accordion.Header>
@@ -115,7 +149,7 @@ const Documentation = () => {
               </p>
             </Accordion.Body>
           </Accordion.Item>
-          <Accordion.Item eventKey="4" className={classes.accordionItem}>
+          <Accordion.Item eventKey="5" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>Lil Noun Traits</Accordion.Header>
             <Accordion.Body>
               <p>
@@ -133,7 +167,7 @@ const Documentation = () => {
               You can experiment with off-chain Lil Noun generation at the {playgroundLink}.
             </Accordion.Body>
           </Accordion.Item>
-          <Accordion.Item eventKey="5" className={classes.accordionItem}>
+          <Accordion.Item eventKey="6" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>
               On-Chain Artwork
             </Accordion.Header>
@@ -153,7 +187,7 @@ const Documentation = () => {
               </p>
             </Accordion.Body>
           </Accordion.Item>
-          <Accordion.Item eventKey="6" className={classes.accordionItem}>
+          <Accordion.Item eventKey="7" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>
               Lil Noun Seeder Contract
             </Accordion.Header>
@@ -174,7 +208,7 @@ const Documentation = () => {
               </p>
             </Accordion.Body>
           </Accordion.Item>
-          <Accordion.Item eventKey="7" className={classes.accordionItem}>
+          <Accordion.Item eventKey="8" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>
               Lil Nounder's Reward
             </Accordion.Header>
@@ -209,7 +243,7 @@ const Documentation = () => {
               </p>
             </Accordion.Body>
           </Accordion.Item>
-          <Accordion.Item eventKey="8" className={classes.accordionItem}>
+          <Accordion.Item eventKey="9" className={classes.accordionItem}>
             <Accordion.Header className={classes.accordionHeader}>
               Nouns DAO's Reward
             </Accordion.Header>
@@ -222,7 +256,7 @@ const Documentation = () => {
               </p>
               <p>
                 Nouns DAO distributions don't interfere with the cadence of 15 minute auctions. Lil
-                Nouns are sent directly to the Nouns DAO Treasry, and auctions continue on schedule
+                Nouns are sent directly to the Nouns DAO Treasury, and auctions continue on schedule
                 with the next available Lil Noun ID.
               </p>
             </Accordion.Body>
