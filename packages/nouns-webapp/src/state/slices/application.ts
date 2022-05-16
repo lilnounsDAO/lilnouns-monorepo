@@ -5,7 +5,10 @@ export interface AlertModal {
   show: boolean;
   title?: string;
   message?: string;
-  isMilestone?: boolean
+  isMilestone?: boolean;
+  isActionPrompt?: boolean;
+  actionMessage?: string;
+  action?: () => void
 }
 
 interface ApplicationState {

@@ -51,10 +51,10 @@ export const internalDiscordWebhook = new Discord.WebhookClient(
  * Discord webhook client for sending messages to the public
  * Discord channel
  */
-export const publicDiscordWebhook = new Discord.WebhookClient(
-  config.discordPublicWebhookId,
-  config.discordPublicWebhookToken,
-);
+// export const publicDiscordWebhook = new Discord.WebhookClient(
+//   config.discordPublicWebhookId,
+//   config.discordPublicWebhookToken,
+// );
 
 /**
  * Increment one of the Nouns infra counters

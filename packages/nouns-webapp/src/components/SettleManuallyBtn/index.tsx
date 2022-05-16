@@ -55,10 +55,10 @@ const SettleManuallyBtn: React.FC<{
     <p className={classes.emergencySettleWrapper}>
       <Button className={classes.bidBtnAuctionEnded} onClick={settleAuctionHandler} disabled={!settleEnabled}>
         {settleEnabled ? (
-          <>{` Settle manually`}</>
+          <>{` Settle auction`}</>
         ) : (
           <>
-            {` You can settle manually in ${minsContent()}`}
+            {` You can settle auction in ${minsContent()}`}
           </>
         )}
         </Button>
