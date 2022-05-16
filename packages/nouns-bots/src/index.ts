@@ -1,5 +1,5 @@
 import { buildCounterName } from './utils';
-import { internalDiscordWebhook, incrementCounter, publicDiscordWebhook } from './clients';
+import { internalDiscordWebhook, incrementCounter } from './clients';
 import { getAllProposals, getLastAuctionBids } from './subgraph';
 import {
   getAuctionCache,
@@ -29,7 +29,7 @@ if (config.twitterEnabled) {
 }
 if (config.discordEnabled) {
   auctionLifecycleHandlers.push(
-    new DiscordAuctionLifecycleHandler([internalDiscordWebhook, publicDiscordWebhook]),
+    new DiscordAuctionLifecycleHandler([internalDiscordWebhook]),
   );
 }
 
