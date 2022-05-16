@@ -23,6 +23,7 @@ import NotFoundPage from './pages/NotFound';
 import Playground from './pages/Playground';
 import Nouniverse from './pages/Nouniverse';
 import config, { CHAIN_ID } from './config';
+import { Col, Row } from 'react-bootstrap';
 
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
@@ -49,7 +50,7 @@ function App() {
   //   return maths;
   // };
 
-  const isPreLaunch = config.isPreLaunch === 'true'
+  const isPreLaunch = config.isPreLaunch === 'true';
 
   useEffect(() => {
     // Local account array updated
@@ -68,52 +69,72 @@ function App() {
           <AlertModal
             title={alertModal.title}
             content={
-              <p>{alertModal.message}</p>
+              <>
+                <p>{alertModal.message}</p>
+
+                {alertModal.isActionPrompt && (
+                  <>
+                    {
+                      <Row>
+                        <Col>
+                          <button
+                            className={classes.alertButton}
+                            onClick={() => dispatch(setAlertModal({ ...alertModal, show: false }))}
+                          >
+                            Cancel
+                          </button>
+                        </Col>
+                        <Col>
+                          <button className={classes.alertButton}
+                          onClick={alertModal.action}
+                          >
+                            {alertModal.actionMessage}
+                          </button>
+                        </Col>
+                      </Row>
+                    }
+                  </>
+                )}
+              </>
             }
             onDismiss={() => dispatch(setAlertModal({ ...alertModal, show: false }))}
           />
-      
-          {alertModal.isMilestone && <> 
-            {emojiBubbleMarkup}
-          </>}
 
+          {alertModal.isMilestone && <>{emojiBubbleMarkup}</>}
         </>
       )}
       <BrowserRouter>
         <NavBar />
 
         {isPreLaunch ? (
-              <Switch>
-              <Route exact path="/" component={PreLaunch} />
-              <Route exact path="/lilnounders" component={NoundersPage} />
-              <Route exact path="/lilnouners" component={NounersPage} />
-              <Route exact path="/playground" component={Playground} />
-              <Route exact path="/nouniverse/:id" component={Nouniverse} />
-              <Route exact path="/nouniverse" component={Nouniverse} />
-              <Route component={NotFoundPage} />
-            </Switch>
+          <Switch>
+            <Route exact path="/" component={PreLaunch} />
+            <Route exact path="/lilnounders" component={NoundersPage} />
+            <Route exact path="/lilnouners" component={NounersPage} />
+            <Route exact path="/playground" component={Playground} />
+            <Route exact path="/nouniverse/:id" component={Nouniverse} />
+            <Route exact path="/nouniverse" component={Nouniverse} />
+            <Route component={NotFoundPage} />
+          </Switch>
         ) : (
           <Switch>
-          <Route exact path="/" component={AuctionPage} />
-          <Route
-            exact
-            path="/lilnoun/:id"
-            render={props => <AuctionPage initialAuctionId={Number(props.match.params.id)} />}
-          />
-          <Route exact path="/lilnounders" component={NoundersPage} />
-          <Route exact path="/lilnouners" component={NounersPage} />
-          <Route exact path="/create-proposal" component={CreateProposalPage} />
-          <Route exact path="/vote" component={GovernancePage} />
-          <Route exact path="/vote/:id" component={VotePage} />
-          <Route exact path="/playground" component={Playground} />
-          <Route exact path="/nouniverse/:id" component={Nouniverse} />
-          <Route exact path="/nouniverse" component={Nouniverse} />
-          <Route component={NotFoundPage} />
-        </Switch>
+            <Route exact path="/" component={AuctionPage} />
+            <Route
+              exact
+              path="/lilnoun/:id"
+              render={props => <AuctionPage initialAuctionId={Number(props.match.params.id)} />}
+            />
+            <Route exact path="/lilnounders" component={NoundersPage} />
+            <Route exact path="/lilnouners" component={NounersPage} />
+            <Route exact path="/create-proposal" component={CreateProposalPage} />
+            <Route exact path="/vote" component={GovernancePage} />
+            <Route exact path="/vote/:id" component={VotePage} />
+            <Route exact path="/playground" component={Playground} />
+            <Route exact path="/nouniverse/:id" component={Nouniverse} />
+            <Route exact path="/nouniverse" component={Nouniverse} />
+            <Route component={NotFoundPage} />
+          </Switch>
         )}
-
-    
-
 
         <Footer />
       </BrowserRouter>
