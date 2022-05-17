@@ -13,19 +13,19 @@ import auctionActivityClasses from '../AuctionActivity/BidHistory.module.css';
 import _trophy from '../../assets/icons/trophy.svg';
 import Davatar from '@davatar/react';
 import { useEthers } from '@usedapp/core';
-// import { useReverseENSLookUp } from '../../utils/ensLookup';
+import { useReverseENSLookUp } from '../../utils/ensLookup';
 
 interface BidHistoryModalRowProps {
   bid: Bid;
   index: number;
 }
 
-// const shortENS = (ens: string) => {
-//   if (ens.length < 15 || window.innerWidth > 480) {
-//     return ens;
-//   }
-//   return [ens.substr(0, 4), ens.substr(ens.length - 8, 8)].join('...');
-// };
+const shortENS = (ens: string) => {
+  if (ens.length < 15 || window.innerWidth > 480) {
+    return ens;
+  }
+  return [ens.substr(0, 4), ens.substr(ens.length - 8, 8)].join('...');
+};
 
 const BidHistoryModalRow: React.FC<BidHistoryModalRowProps> = props => {
   const { bid, index } = props;
@@ -37,8 +37,8 @@ const BidHistoryModalRow: React.FC<BidHistoryModalRowProps> = props => {
     bid.timestamp.toNumber() * 1000,
   ).format('hh:mm a')}`;
 
-  //TODO: Add reverse lookup after stable rpc plan
-  // const ens = useReverseENSLookUp(bid.sender);
+  //DONE: Add reverse lookup after stable rpc plan (temp fix)
+  const ens = useReverseENSLookUp(bid.sender);
   const shortAddress = useShortAddress(bid.sender);
 
   return (
@@ -50,8 +50,8 @@ const BidHistoryModalRow: React.FC<BidHistoryModalRowProps> = props => {
               <Davatar size={40} address={bid.sender} provider={provider} />
               <div className={classes.bidderInfoText}>
                 <span>
-                  {/* {ens ? shortENS(ens) : shortAddress} */}
-                  { shortAddress }
+                  {ens ? shortENS(ens) : shortAddress}
+                  {/* { shortAddress } */}
                   {index === 0 && (
                     <img src={_trophy} alt="Winning bidder" className={classes.trophy} />
                   )}
