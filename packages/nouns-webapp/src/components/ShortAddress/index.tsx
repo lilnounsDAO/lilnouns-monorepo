@@ -1,4 +1,4 @@
-// import { useReverseENSLookUp } from '../../utils/ensLookup';
+import { useReverseENSLookUp } from '../../utils/ensLookup';
 import { useEthers } from '@usedapp/core';
 import Davatar from '@davatar/react';
 import classes from './ShortAddress.module.css';
@@ -15,8 +15,8 @@ const ShortAddress: React.FC<{ address: string; avatar?: boolean; size?: number 
     address = "0x0000000000000000000000000000000000000000"
   }
 
-  // const ens = useReverseENSLookUp(address);
-     //TODO: Add reverse lookup after stable rpc plan
+  const ens = useReverseENSLookUp(address);
+     //DONE: Add reverse lookup after stable rpc plan (temp fix)
   const shortAddress = useShortAddress(address);
 
   if (avatar) {
@@ -27,8 +27,8 @@ const ShortAddress: React.FC<{ address: string; avatar?: boolean; size?: number 
             <Davatar size={size} address={address} provider={provider} />
           </div>
         )}
-        {/* <span>{ens ? ens : shortAddress}</span> */}
-        <span>{shortAddress}</span>
+        <span>{ens ? ens : shortAddress}</span>
+        {/* <span>{shortAddress}</span> */}
       </div>
     );
   }
