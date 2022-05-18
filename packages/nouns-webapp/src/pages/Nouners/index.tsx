@@ -27,7 +27,7 @@ const NounersPage = () => {
             </Row>
             <Row>
               <Col>
-                So you just won a lil noun.... Cool! Be sure to go over how everything works and head over to our discord server to verify your lil noun!
+                So you just won a lil noun.... Cool! Be sure to go over how everything works and head over to our discord server to verify your lil noun! If you were already a member of the server, you have to leave and re-enter
               </Col>
             </Row>
           </Col>
@@ -35,7 +35,7 @@ const NounersPage = () => {
           <Col className={classes.treasuryInfoText}>
             <div className={classes.verifyButtonWrapper}>
               <a href={`https://discord.gg/3FEvctHmw6`}>
-            <Button className={classes.generateBtn}>Head to #verify-lil-nouner</Button>
+            <Button className={classes.generateBtn}>Head to #entry-channel</Button>
           </a>
             </div>
           </Col>
