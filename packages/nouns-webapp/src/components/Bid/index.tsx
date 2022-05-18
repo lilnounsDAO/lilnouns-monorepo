@@ -310,6 +310,7 @@ const Bid: React.FC<{
             </span>
             <FormControl
               className={classes.bidInput}
+              onWheel={ event => event.currentTarget.blur() }
               type="number"
               min="0"
               onChange={bidInputHandler}
