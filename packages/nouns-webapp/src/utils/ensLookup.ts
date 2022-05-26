@@ -1,9 +1,30 @@
 import { useEthers } from '@usedapp/core';
+// import { useEnsName } from 'wagmi';
 import { useEffect, useState } from 'react';
 
 export const useReverseENSLookUp = (address: string) => {
   const { library } = useEthers();
   const [ens, setEns] = useState<string>();
+  // const { data: ensName, error: ensNameError } = useEnsName({ address: address, cacheTime: 86400000})
+  
+   // 86400000ms = 24hrs
+
+  // useEffect(() => {
+  //   let mounted = true;
+  //   if (address) {
+
+  //     if (!ensName) return;
+  //     if (mounted && ensName) {
+  //       setEns(ensName);
+  //     } else {
+  //       console.log(`error resolving reverse ens lookup: `, ensNameError?.message);
+  //     }
+  //   }
+  //   return () => {
+  //     setEns('');
+  //     mounted = false;
+  //   };
+  // }, [address, ensName, ensNameError?.message]);
 
   useEffect(() => {
     let mounted = true;

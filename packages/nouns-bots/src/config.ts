@@ -21,11 +21,15 @@ export const config = {
 
   nounsTokenAddress:
     process.env.NOUNS_TOKEN_ADDRESS ?? '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B', //todo: rinkeby
-  jsonRpcUrl: process.env.JSON_RPC_URL ?? 'http://localhost:8545',
+    jsonRpcUrl: process.env.JSON_RPC_URL ?? 'http://localhost:8545',
 
   discordEnabled: process.env.DISCORD_ENABLED === 'true',
   discordWebhookToken: process.env.DISCORD_WEBHOOK_TOKEN ?? '',
   discordWebhookId: process.env.DISCORD_WEBHOOK_ID ?? '',
+  
+  propDiscordWebhookToken: process.env.PROP_DISCORD_WEBHOOK_TOKEN ?? '',
+  propDiscordWebhookId: process.env.PROP_DISCORD_WEBHOOK_ID ?? '',
+
   discordPublicWebhookToken: process.env.DISCORD_PUBLIC_WEBHOOK_TOKEN ?? '',
   discordPublicWebhookId: process.env.DISCORD_PUBLIC_WEBHOOK_ID ?? '',
 
