@@ -12,7 +12,7 @@ export const externalURL = (externalURL: ExternalURL) => {
     case ExternalURL.twitter:
       return 'https://twitter.com/lilnounsdao';
     case ExternalURL.notion:
-      return 'https://nouns.notion.site/Explore-Nouns-a2a9dceeb1d54e10b9cbf3f931c2266f';
+      return 'https://lilnouns.notion.site/Explore-Lil-Nouns-db990658e6ab4cf19121b22642645032';
     case ExternalURL.discourse:
       return 'https://discourse.lilnouns.wtf/';
   }
