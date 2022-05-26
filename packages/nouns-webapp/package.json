@@ -47,6 +47,7 @@
     "react-stepz": "^1.0.2",
     "redux": "^4.1.0",
     "remark-breaks": "^3.0.1",
+    "wagmi": "^0.4.1",
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {

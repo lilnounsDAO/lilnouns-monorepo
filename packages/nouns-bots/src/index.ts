@@ -1,5 +1,5 @@
 import { buildCounterName } from './utils';
-import { internalDiscordWebhook, incrementCounter } from './clients';
+import { internalDiscordWebhook, internalDiscordWebhookForProposals, incrementCounter } from './clients';
 import { getAllProposals, getLastAuctionBids } from './subgraph';
 import {
   getAuctionCache,
@@ -24,12 +24,18 @@ import R from 'ramda';
  * Create configured `IAuctionLifecycleHandler`s
  */
 const auctionLifecycleHandlers: IAuctionLifecycleHandler[] = [];
+const propLifecycleHandlers: IAuctionLifecycleHandler[] = [];
+
 if (config.twitterEnabled) {
   auctionLifecycleHandlers.push(new TwitterAuctionLifecycleHandler());
 }
 if (config.discordEnabled) {
   auctionLifecycleHandlers.push(
     new DiscordAuctionLifecycleHandler([internalDiscordWebhook]),
+  );
+
+  propLifecycleHandlers.push(
+    new DiscordAuctionLifecycleHandler([internalDiscordWebhookForProposals]),
   );
 }
 
@@ -99,26 +105,26 @@ async function processGovernanceTick() {
 
     if (cachedProposal === null) {
       // New proposal
-      await Promise.all(auctionLifecycleHandlers.map(h => h.handleNewProposal?.(proposal)));
+      await Promise.all(propLifecycleHandlers.map(h => h.handleNewProposal?.(proposal)));
     } else {
       // Proposal has changed status
       if (cachedProposal.status !== proposal.status) {
         await Promise.all(
-          auctionLifecycleHandlers.map(h => h.handleUpdatedProposalStatus?.(proposal)),
+          propLifecycleHandlers.map(h => h.handleUpdatedProposalStatus?.(proposal)),
         );
       }
       const newVotes = extractNewVotes(cachedProposal, proposal);
       R.map(async newVote => {
         // New proposal votes
         await Promise.all(
-          auctionLifecycleHandlers.map(h => h.handleGovernanceVote?.(proposal, newVote)),
+          propLifecycleHandlers.map(h => h.handleGovernanceVote?.(proposal, newVote)),
         );
       }, newVotes);
 
       // Proposal is at-risk of expiry
       if (isAtRiskOfExpiry(proposal) && !(await hasWarnedOfExpiry(proposal.id))) {
         await Promise.all(
-          auctionLifecycleHandlers.map(h => h.handleProposalAtRiskOfExpiry?.(proposal)),
+          propLifecycleHandlers.map(h => h.handleProposalAtRiskOfExpiry?.(proposal)),
         );
         await setProposalExpiryWarningSent(proposal.id);
       }

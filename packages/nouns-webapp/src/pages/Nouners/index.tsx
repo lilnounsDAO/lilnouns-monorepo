@@ -34,7 +34,7 @@ const NounersPage = () => {
 
           <Col className={classes.treasuryInfoText}>
             <div className={classes.verifyButtonWrapper}>
-              <a href={`https://discord.gg/3FEvctHmw6`}>
+              <a href={`https://discord.gg/xjARUcB3tJ`}>
             <Button className={classes.generateBtn}>Head to #entry-channel</Button>
           </a>
             </div>

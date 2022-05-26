@@ -25,11 +25,16 @@ import Nouniverse from './pages/Nouniverse';
 import config, { CHAIN_ID } from './config';
 import { Col, Row } from 'react-bootstrap';
 
+
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
 
 // import emojiPage from './pages/Emojis';
 import EmojiBubble from './components/EmojiShower/EmojiBubble';
+
+// import { WagmiConfig, createClient } from 'wagmi'
+
+// const client = createClient()
 
 function App() {
   const { account, chainId } = useEthers();
@@ -103,6 +108,7 @@ function App() {
           {alertModal.isMilestone && <>{emojiBubbleMarkup}</>}
         </>
       )}
+      {/* <WagmiConfig client={client}> */}
       <BrowserRouter>
         <NavBar />
 
@@ -138,6 +144,7 @@ function App() {
 
         <Footer />
       </BrowserRouter>
+      {/* </WagmiConfig> */}
     </div>
   );
 }
