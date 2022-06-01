@@ -2,6 +2,7 @@ import classes from './Noun.module.css';
 import React from 'react';
 import loadingNoun from '../../assets/lil-loading-skull.gif';
 import Image from 'react-bootstrap/Image';
+import NounTraitsOverlay from '../NounTraitsOverlay';
 
 export const LoadingNoun = () => {
   return (
@@ -16,16 +17,19 @@ const Noun: React.FC<{
   alt: string;
   className?: string;
   wrapperClassName?: string;
+  parts?: { filename: string }[];
 }> = props => {
-  const { imgPath, alt, className, wrapperClassName } = props;
+  const { imgPath, alt, className, wrapperClassName, parts } = props;
+
   return (
-    <div className={`${classes.imgWrapper} ${wrapperClassName}`}>
+    <div className={`${classes.imgWrapper} ${wrapperClassName}`} data-tip data-for="noun-traits">
       <Image
         className={`${classes.img} ${className}`}
         src={imgPath ? imgPath : loadingNoun}
         alt={alt}
         fluid
       />
+      {Boolean(parts?.length) && <NounTraitsOverlay parts={parts!} />}
     </div>
   );
 };
