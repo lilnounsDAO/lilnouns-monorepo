@@ -3,16 +3,16 @@ import { useEthers } from '@usedapp/core';
 import Davatar from '@davatar/react';
 import classes from './ShortAddress.module.css';
 
-export const useShortAddress = (address: string) => {
+export const useShortAddress = (address: string): string => {
   return address && [address.substr(0, 4), address.substr(38, 4)].join('...');
 };
 
 const ShortAddress: React.FC<{ address: string; avatar?: boolean; size?: number }> = props => {
-  let { address, avatar, size = 24 } = props;
+  const { address, avatar, size = 24 } = props;
   const { library: provider } = useEthers();
 
   if (!address){
-    address = "0x0000000000000000000000000000000000000000"
+    props.address = "0x0000000000000000000000000000000000000000"
   }
 
   const ens = useReverseENSLookUp(address);

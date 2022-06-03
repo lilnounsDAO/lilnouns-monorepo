@@ -6,12 +6,12 @@
  */
 export const svg2png = (
   svgString: string,
-  newWidth: number = 320,
-  newHeight: number = 320,
+  newWidth = 320,
+  newHeight = 320,
 ): Promise<string | null> => {
   return new Promise(resolve => {
-    var parser = new DOMParser();
-    var doc = parser.parseFromString(svgString, 'image/svg+xml');
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgString, 'image/svg+xml');
     const modSvg = doc.documentElement;
     const width = Number(modSvg.getAttribute('width'));
     const height = Number(modSvg.getAttribute('height'));

@@ -31,8 +31,11 @@ import dayjs from 'dayjs';
 // import emojiPage from './pages/Emojis';
 import EmojiBubble from './components/EmojiShower/EmojiBubble';
 
+import { AvatarProvider } from '@davatar/react';
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function App() {
-  const { account, chainId } = useEthers();
+  const { account, chainId, library } = useEthers();
   const dispatch = useAppDispatch();
   dayjs.extend(relativeTime);
 
@@ -101,43 +104,44 @@ function App() {
           {alertModal.isMilestone && <>{emojiBubbleMarkup}</>}
         </>
       )}
-      {/* <WagmiConfig client={client}> */}
+
       <BrowserRouter>
-        <NavBar />
+        <AvatarProvider provider={chainId === 1 ? (library as any) : undefined} batchLookups={true}>
+          <NavBar />
 
-        {isPreLaunch ? (
-          <Switch>
-            <Route exact path="/" component={PreLaunch} />
-            <Route exact path="/lilnounders" component={NoundersPage} />
-            <Route exact path="/lilnouners" component={NounersPage} />
-            <Route exact path="/playground" component={Playground} />
-            <Route exact path="/nouniverse/:id" component={Nouniverse} />
-            <Route exact path="/nouniverse" component={Nouniverse} />
-            <Route component={NotFoundPage} />
-          </Switch>
-        ) : (
-          <Switch>
-            <Route exact path="/" component={AuctionPage} />
-            <Route
-              exact
-              path="/lilnoun/:id"
-              render={props => <AuctionPage initialAuctionId={Number(props.match.params.id)} />}
-            />
-            <Route exact path="/lilnounders" component={NoundersPage} />
-            <Route exact path="/lilnouners" component={NounersPage} />
-            <Route exact path="/create-proposal" component={CreateProposalPage} />
-            <Route exact path="/vote" component={GovernancePage} />
-            <Route exact path="/vote/:id" component={VotePage} />
-            <Route exact path="/playground" component={Playground} />
-            <Route exact path="/nouniverse/:id" component={Nouniverse} />
-            <Route exact path="/nouniverse" component={Nouniverse} />
-            <Route component={NotFoundPage} />
-          </Switch>
-        )}
+          {isPreLaunch ? (
+            <Switch>
+              <Route exact path="/" component={PreLaunch} />
+              <Route exact path="/lilnounders" component={NoundersPage} />
+              <Route exact path="/lilnouners" component={NounersPage} />
+              <Route exact path="/playground" component={Playground} />
+              <Route exact path="/nouniverse/:id" component={Nouniverse} />
+              <Route exact path="/nouniverse" component={Nouniverse} />
+              <Route component={NotFoundPage} />
+            </Switch>
+          ) : (
+            <Switch>
+              <Route exact path="/" component={AuctionPage} />
+              <Route
+                exact
+                path="/lilnoun/:id"
+                render={props => <AuctionPage initialAuctionId={Number(props.match.params.id)} />}
+              />
+              <Route exact path="/lilnounders" component={NoundersPage} />
+              <Route exact path="/lilnouners" component={NounersPage} />
+              <Route exact path="/create-proposal" component={CreateProposalPage} />
+              <Route exact path="/vote" component={GovernancePage} />
+              <Route exact path="/vote/:id" component={VotePage} />
+              <Route exact path="/playground" component={Playground} />
+              <Route exact path="/nouniverse/:id" component={Nouniverse} />
+              <Route exact path="/nouniverse" component={Nouniverse} />
+              <Route component={NotFoundPage} />
+            </Switch>
+          )}
 
-        <Footer />
+          <Footer />
+        </AvatarProvider>
       </BrowserRouter>
-      {/* </WagmiConfig> */}
     </div>
   );
 }

@@ -84,7 +84,7 @@ const Playground: React.FC = () => {
   const customTraitFileRef = useRef<HTMLInputElement>(null);
 
   const generateNounSvg = React.useCallback(
-    (amount: number = 1) => {
+    (amount = 1) => {
       for (let i = 0; i < amount; i++) {
         const seed = { ...getRandomNounSeed(), ...modSeed };
         const { parts, background } = getNounData(seed);
@@ -94,7 +94,6 @@ const Playground: React.FC = () => {
         });
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [pendingTrait, modSeed],
   );
 
@@ -137,7 +136,7 @@ const Playground: React.FC = () => {
     setModSeed(prev => {
       // -1 traitIndex = random
       if (traitIndex < 0) {
-        let state = { ...prev };
+        const state = { ...prev };
         delete state[trait.title];
         return state;
       }
@@ -174,6 +173,7 @@ const Playground: React.FC = () => {
     const reader = new FileReader();
     reader.onload = e => {
       try {
+          // eslint-disable-next-line  @typescript-eslint/no-non-null-asserted-optional-chain
         const buffer = Buffer.from(e?.target?.result!);
         const png = PNG.sync.read(buffer);
         if (png.width !== 32 || png.height !== 32) {
@@ -251,9 +251,9 @@ const Playground: React.FC = () => {
             <span>Explore</span>
             <h1>Playground</h1>
             <p>
-              The playground was built using a fork of {nounsProtocolLink}. Lil Noun's traits are determined
-              by the Noun Seed. The seed was generated using {nounsAssetsLink} and rendered using
-              the {nounsSDKLink}.
+              The playground was built using a fork of {nounsProtocolLink}. Lil Noun's traits are
+              determined by the Noun Seed. The seed was generated using {nounsAssetsLink} and
+              rendered using the {nounsSDKLink}.
             </p>
           </Col>
         </Row>
@@ -286,7 +286,7 @@ const Playground: React.FC = () => {
                             className={classes.traitFormBtn}
                             value={trait.traitNames[selectIndexes?.[trait.title]] ?? -1}
                             onChange={e => {
-                              let index = e.currentTarget.selectedIndex;
+                              const index = e.currentTarget.selectedIndex;
                               traitButtonHandler(trait, index - 1); // - 1 to account for 'random'
                               setSelectIndexes({
                                 ...selectIndexes,
@@ -351,8 +351,8 @@ const Playground: React.FC = () => {
               </>
             )}
             <p className={classes.nounYearsFooter}>
-              You've generated {nounSvgs ? (nounSvgs.length / (96 * 365)).toFixed(5) : '0'} years worth of
-              Lil Nouns
+              You've generated {nounSvgs ? (nounSvgs.length / (96 * 365)).toFixed(5) : '0'} years
+              worth of Lil Nouns
             </p>
           </Col>
           <Col lg={9}>

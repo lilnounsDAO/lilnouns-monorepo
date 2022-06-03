@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 import { BigNumberish } from '@ethersproject/bignumber';
 import BigNumber from 'bignumber.js';
