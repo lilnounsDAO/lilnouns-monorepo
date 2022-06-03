@@ -29,7 +29,7 @@ import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
 import config, { CHAIN_ID, createNetworkHttpUrl } from './config';
 import { WebSocketProvider } from '@ethersproject/providers';
-import { BigNumber, BigNumberish } from 'ethers';
+import { BigNumber, BigNumberish, providers } from 'ethers';
 import { NounsAuctionHouseFactory } from '@nouns/sdk';
 import dotenv from 'dotenv';
 import { useAppDispatch, useAppSelector } from './hooks';
@@ -42,6 +42,7 @@ import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
+import { createClient, WagmiConfig } from 'wagmi';
 
 dotenv.config();
 
@@ -87,6 +88,14 @@ const useDappConfig = {
     [ChainId.Hardhat]: 'http://localhost:8545',
   },
 };
+
+const alchemyId = 'tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0';
+
+const wagmiClient = createClient({
+  provider(config) {
+    return new providers.AlchemyProvider(config.chainId, alchemyId);
+  },
+});
 
 const client = clientFactory(config.app.subgraphApiUri);
 
@@ -190,26 +199,28 @@ const PastAuctions: React.FC = () => {
 };
 
 ReactDOM.render(
-  <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <ChainSubscriber />
-      <React.StrictMode>
-        <Web3ReactProvider
-          getLibrary={
-            provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
-          }
-        >
-          <ApolloProvider client={client}>
-            <PastAuctions />
-            <DAppProvider config={useDappConfig}>
-              <App />
-              <Updaters />
-            </DAppProvider>
-          </ApolloProvider>
-        </Web3ReactProvider>
-      </React.StrictMode>
-    </ConnectedRouter>
-  </Provider>,
+  <WagmiConfig client={wagmiClient}>
+    <Provider store={store}>
+      <ConnectedRouter history={history}>
+        <ChainSubscriber />
+        <React.StrictMode>
+          <Web3ReactProvider
+            getLibrary={
+              provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
+            }
+          >
+            <ApolloProvider client={client}>
+              <PastAuctions />
+              <DAppProvider config={useDappConfig}>
+                <App />
+                <Updaters />
+              </DAppProvider>
+            </ApolloProvider>
+          </Web3ReactProvider>
+        </React.StrictMode>
+      </ConnectedRouter>
+    </Provider>
+  </WagmiConfig>,
   document.getElementById('root'),
 );
 
