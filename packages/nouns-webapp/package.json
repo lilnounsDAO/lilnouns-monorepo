@@ -76,8 +76,8 @@
     "react-app-rewired": "^2.2.1"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "CI=false react-app-rewired start",
+    "build": "CI=false react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
