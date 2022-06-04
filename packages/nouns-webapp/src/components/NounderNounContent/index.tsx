@@ -39,8 +39,8 @@ const NounderNounContent: React.FC<{
 
   const nounIdNumber: number = nounId.toNumber();
   let block: any;
-  let isNoundersNoun: boolean = false
-  let isNounsDAONoun: boolean = false
+  let isNoundersNoun = false
+  let isNounsDAONoun = false
 
   const nounsDao = <Link text="Nouns DAO" url="https://nouns.wtf" leavesPage={true} />;
 
