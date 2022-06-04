@@ -46,6 +46,7 @@ const NounModal: React.FC<{ onDismiss: () => void; svg: string }> = props => {
             onDismiss();
           }}
         />,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         document.getElementById('backdrop-root')!,
       )}
       {ReactDOM.createPortal(
@@ -71,6 +72,7 @@ const NounModal: React.FC<{ onDismiss: () => void; svg: string }> = props => {
             )}
           </div>
         </div>,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         document.getElementById('overlay-root')!,
       )}
     </>
