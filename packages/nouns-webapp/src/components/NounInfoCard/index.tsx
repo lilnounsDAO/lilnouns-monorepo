@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Col } from 'react-bootstrap';
 
 import classes from './NounInfoCard.module.css';
 
 import _AddressIcon from '../../assets/icons/Address.svg';
 import _BidsIcon from '../../assets/icons/Bids.svg';
+import _DownloadIcon from '../../assets/icons/Download.svg';
 
 import NounInfoRowBirthday from '../NounInfoRowBirthday';
 import NounInfoRowHolder from '../NounInfoRowHolder';
@@ -13,6 +14,8 @@ import { useAppSelector } from '../../hooks';
 
 import config from '../../config';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
+import { useNounData } from '../StandaloneNoun';
+import { svg2png } from '../../utils/svg2png';
 
 interface NounInfoCardProps {
   nounId: number;
@@ -22,9 +25,34 @@ interface NounInfoCardProps {
 const NounInfoCard: React.FC<NounInfoCardProps> = props => {
   const { nounId, bidHistoryOnClickHandler } = props;
 
-  const etherscanBaseURL = buildEtherscanAddressLink(config.addresses.nounsToken);
+  const noun = useNounData(nounId);
 
-  const etherscanButtonClickHandler = () => window.open(`${etherscanBaseURL}/${nounId}`, '_blank');
+  const etherscanBaseURL = useMemo(
+    () => buildEtherscanAddressLink(config.addresses.nounsToken),
+    [config.addresses.nounsToken],
+  );
+
+  const etherscanButtonClickHandler = useCallback(
+    () => window.open(`${etherscanBaseURL}/${nounId}`, '_blank'),
+    [etherscanBaseURL, nounId],
+  );
+
+  const downloadPngClicked = useCallback(async () => {
+    if (!noun) {
+      return;
+    }
+
+    console.log(noun);
+    const png = await svg2png(noun.svg, 500, 500)
+    if (!png) {
+      return;
+    }
+
+    const downloadEl = document.createElement('a');
+    downloadEl.href = png;
+    downloadEl.download = `lilnoun-${nounId}.png`;
+    downloadEl.click();
+  }, [noun, nounId]);
 
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
 
@@ -47,6 +75,13 @@ const NounInfoCard: React.FC<NounInfoCardProps> = props => {
           btnText={'Etherscan'}
           onClickHandler={etherscanButtonClickHandler}
         />
+        <div style={{opacity: noun ? '1' : '0.4'}}>
+          <NounInfoRowButton
+            iconImgSource={_DownloadIcon}
+            btnText="Download PNG"
+            onClickHandler={downloadPngClicked}
+          />
+        </div>
       </Col>
     </>
   );
