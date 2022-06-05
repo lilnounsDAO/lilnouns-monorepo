@@ -1,0 +1,12 @@
+.traitList {
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+  }
+  
+  .traitList li {
+    padding: 4px 0;
+    text-transform: capitalize;
+    font-family: 'Londrina Solid';
+    font-size: 23px;
+  }
