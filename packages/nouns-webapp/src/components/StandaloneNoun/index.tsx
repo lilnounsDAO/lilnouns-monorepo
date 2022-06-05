@@ -1,6 +1,6 @@
 import { ImageData as data, getNounData } from '@nouns/assets';
 import { buildSVG } from '@nouns/sdk';
-import { BigNumber as EthersBN } from 'ethers';
+import { BigNumber, BigNumber as EthersBN } from 'ethers';
 import { INounSeed, useNounSeed } from '../../wrappers/nounToken';
 import Noun from '../Noun';
 import { Link } from 'react-router-dom';
@@ -8,6 +8,7 @@ import classes from './StandaloneNoun.module.css';
 import { useDispatch } from 'react-redux';
 import { setOnDisplayAuctionNounId } from '../../state/slices/onDisplayAuction';
 import nounClasses from '../Noun/Noun.module.css';
+import { useMemo } from 'react';
 
 interface StandaloneNounProps {
   nounId: EthersBN;
@@ -22,19 +23,26 @@ interface StandaloneNounWithSeedProps {
   shouldLinkToProfile: boolean;
 }
 
-const getNoun = (nounId: string | EthersBN, seed: INounSeed) => {
+const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
   const id = nounId.toString();
   const name = `Noun ${id}`;
   const description = `Noun ${id} is a member of the Nouns DAO`;
   const { parts, background } = getNounData(seed);
-  const image = `data:image/svg+xml;base64,${btoa(buildSVG(parts, data.palette, background))}`;
+  const svg = buildSVG(parts, data.palette, background);
+  const image = `data:image/svg+xml;base64,${btoa(svg)}`;
 
   return {
     name,
+    svg,
     description,
     image,
     parts,
   };
+};
+
+export const useNounData = (nounId: string | EthersBN | number) => {
+  const seed = useNounSeed(BigNumber.from(nounId));
+  return useMemo(() => seed && getNoun(nounId, seed), [nounId, seed]);
 };
 
 const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProps) => {
