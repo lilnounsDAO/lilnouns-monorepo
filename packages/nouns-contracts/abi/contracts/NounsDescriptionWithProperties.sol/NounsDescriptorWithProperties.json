@@ -1,0 +1,512 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "contract INounsDescriptor",
+        "name": "_previousDescriptor",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "CannotRename",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OwnershipNeedsToBeAcceptedByNewOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TypeNotRecognized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WrongIndex",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "elementType",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "elementId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "NamedElement",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "fallback"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "elType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "elementId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "elementData",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct INounsDescriptorWithProperties.NameElementData",
+        "name": "element",
+        "type": "tuple"
+      }
+    ],
+    "name": "_addName",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "acceptOwnershipTransfer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "elType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "elementId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "elementData",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct INounsDescriptorWithProperties.NameElementData[]",
+        "name": "newElements",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addElementsWithName",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "elType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "elementId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "elementData",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct INounsDescriptorWithProperties.NameElementData[]",
+        "name": "newNames",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addNames",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint48",
+            "name": "background",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "body",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "accessory",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "head",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "glasses",
+            "type": "uint48"
+          }
+        ],
+        "internalType": "struct INounsSeeder.Seed",
+        "name": "seed",
+        "type": "tuple"
+      }
+    ],
+    "name": "dataURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "elementTypeValues",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "BODY",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "ACCESSORY",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "HEAD",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "GLASSES",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "BACKGROUND",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "PALETTE",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint48",
+            "name": "background",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "body",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "accessory",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "head",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "glasses",
+            "type": "uint48"
+          }
+        ],
+        "internalType": "struct INounsSeeder.Seed",
+        "name": "seed",
+        "type": "tuple"
+      }
+    ],
+    "name": "generateSVGImage",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint48",
+            "name": "background",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "body",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "accessory",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "head",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "glasses",
+            "type": "uint48"
+          }
+        ],
+        "internalType": "struct INounsSeeder.Seed",
+        "name": "seed",
+        "type": "tuple"
+      }
+    ],
+    "name": "genericDataURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "names",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "previousDescriptor",
+    "outputs": [
+      {
+        "internalType": "contract INounsDescriptor",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "reclaimOriginalOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint48",
+            "name": "background",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "body",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "accessory",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "head",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "glasses",
+            "type": "uint48"
+          }
+        ],
+        "internalType": "struct INounsSeeder.Seed",
+        "name": "seed",
+        "type": "tuple"
+      }
+    ],
+    "name": "tokenURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
