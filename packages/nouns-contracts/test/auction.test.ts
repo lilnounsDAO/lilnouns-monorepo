@@ -255,7 +255,7 @@ describe('NounsAuctionHouse', () => {
 
     const { nounId } = await nounsAuctionHouse.auction();
 
-    expect(nounId).to.equal(1);
+    expect(nounId).to.equal(2);
   });
 
   it('should create a new auction if the auction house is paused and unpaused after an auction is settled', async () => {
@@ -324,5 +324,34 @@ describe('NounsAuctionHouse', () => {
     await expect(tx)
       .to.emit(nounsAuctionHouse, 'AuctionSettled')
       .withArgs(nounId, '0x0000000000000000000000000000000000000000', 0);
+  });
+
+  it('should allow auction duration to be updated but only in the next auction', async () => {
+    await (await nounsAuctionHouse.unpause()).wait();
+
+    const { nounId } = await nounsAuctionHouse.auction();
+
+    await nounsAuctionHouse.connect(bidderA).createBid(nounId, {
+      value: RESERVE_PRICE,
+    });
+
+    await expect(nounsAuctionHouse.setDuration(60))
+      .to.emit(nounsAuctionHouse, 'AuctionDurationUpdated')
+      .withArgs(60);
+
+    await expect(nounsAuctionHouse.setTimeBuffer(0))
+      .to.emit(nounsAuctionHouse, 'AuctionTimeBufferUpdated')
+      .withArgs(0);
+
+    await ethers.provider.send('evm_increaseTime', [60 * 60 * 25]); // Add 25 hours
+    const tx1 = await nounsAuctionHouse.connect(bidderA).settleCurrentAndCreateNewAuction();
+    await tx1.wait();
+
+    await nounsAuctionHouse.connect(bidderA).createBid(nounId.add(1), {
+      value: RESERVE_PRICE,
+    });
+    await ethers.provider.send('evm_increaseTime', [60]); // Add 5 mins 1 second
+    const tx2 = await nounsAuctionHouse.connect(bidderA).settleCurrentAndCreateNewAuction();
+    await tx2.wait();
   });
 });

@@ -61,6 +61,8 @@ interface INounsAuctionHouse {
 
     function setTimeBuffer(uint256 timeBuffer) external;
 
+    function setDuration(uint256 _duration) external;
+
     function setReservePrice(uint256 reservePrice) external;
 
     function setMinBidIncrementPercentage(uint8 minBidIncrementPercentage) external;
