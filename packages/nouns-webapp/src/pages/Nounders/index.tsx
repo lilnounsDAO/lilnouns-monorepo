@@ -4,6 +4,8 @@ import Section from '../../layout/Section';
 import { Col, Row, Card } from 'react-bootstrap';
 import pfp0xsvg from '../../assets/nounder-pfps/0xsvg.png';
 import pfpadelidusiam from '../../assets/nounder-pfps/adelidusiam.jpg';
+import pfpblequity from '../../assets/nounder-pfps/pfpblequity.webp';
+import pfpjacob from '../../assets/nounder-pfps/pfpjacob.webp';
 
 const bios = [
   {
@@ -18,7 +20,18 @@ const bios = [
     description: undefined,
     handle: '0xsvg',
   },
-
+  {
+    name: 'Jacob.eth',
+    image: pfpjacob,
+    description: undefined,
+    handle: 'js_horne',
+  },
+  {
+    name: 'Blequity',
+    image: pfpblequity,
+    description: undefined,
+    handle: 'dg_goens',
+  },
 ];
 
 const BioCard: React.FC<{
@@ -81,15 +94,15 @@ const NoundersPage = () => {
         </Row>
         <h3>Lil Nounders' Reward</h3>
         <p style={{ textAlign: 'justify' }}>
-          All Lil Noun auction proceeds are sent to the Lil Nouns DAO. For this reason, we, the project's
-          founders (‘Lil Nounders’) have chosen to compensate ourselves with Lil Nouns. Every 10th noun for
-          the first 5 years of the project will be sent to our multisig, where it will be
-          vested and distributed to individual Lil Nounders.
+          All Lil Noun auction proceeds are sent to the Lil Nouns DAO. For this reason, we, the
+          project's founders (‘Lil Nounders’) have chosen to compensate ourselves with Lil Nouns.
+          Every 10th noun for the first 5 years of the project will be sent to our multisig, where
+          it will be vested and distributed to individual Lil Nounders.
         </p>
         <p style={{ textAlign: 'justify' }}>
-          The Lil Nounders reward is intended as compensation for our pre and post-launch contributions
-          to the project, and to help us participate meaningfully in governance as the project
-          matures.
+          The Lil Nounders reward is intended as compensation for our pre and post-launch
+          contributions to the project, and to help us participate meaningfully in governance as the
+          project matures.
         </p>
       </Col>
     </Section>
