@@ -42,8 +42,14 @@ export const generateEmptyNounderAuction = (
   pastAuctions: AuctionState[],
 ): Auction => {
   const nounderAuction = emptyNounderAuction(nounId.toNumber());
-  // use nounderAuction.nounId + 1 to get mint time
-  const auctionAbove = findAuction(nounId.add(1), pastAuctions);
+
+  // When the 9th Lil Noun's auction is settled, three events occur:
+  // (1) a newly minted Lil Noun is sent to the Lil Nouns DAO
+  // (2) a newly minted Lil Noun is sent to the Nouns DAO
+  // (3) a new Lil Noun auction is started (`auctionAbove`)
+  // Since neither (1) nor (2) go through an auction, their `startTime` is derived from the `auctionAbove`.
+  const distanceToAuctionAbove = isNounderNoun(BigNumber.from(nounId)) ? 2 : 1;
+  const auctionAbove = findAuction(nounId.add(distanceToAuctionAbove), pastAuctions);
   const auctionAboveStartTime = auctionAbove && BigNumber.from(auctionAbove.startTime);
   if (auctionAboveStartTime) nounderAuction.startTime = auctionAboveStartTime.toJSON();
 
