@@ -125,9 +125,12 @@ export const nounsIndex = () => gql`
   }
 `;
 
-export const latestAuctionsQuery = () => gql`
+// Subgraph queries are limited by 1000. 
+// As a result, site doesn't load auction when user attempts to fetch lil noun ids < latest 1000.
+// To ensure lil noun Ids < latest 1000 are fetchable, fetch backwards by 1000 using given lil noun auction startTime.
+export const latestAuctionsQuery = (auctionStartTime: number) => gql`
   {
-    auctions(orderBy: startTime, orderDirection: desc, first: 1000) {
+    auctions(orderBy: startTime, orderDirection: desc, first: 1000, where: {startTime_lte: ${auctionStartTime}} ) {
       id
       amount
       settled
@@ -152,6 +155,16 @@ export const latestAuctionsQuery = () => gql`
           id
         }
       }
+    }
+  }
+`;
+
+// Used to fetch startTime for lil noun at given id
+export const singularAuctionQuery = (auctionNounId: string) => gql`
+  {
+    auctions(where: {id: ${auctionNounId}}) {
+      id
+      startTime
     }
   }
 `;

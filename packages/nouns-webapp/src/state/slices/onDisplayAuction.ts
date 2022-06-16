@@ -2,12 +2,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface OnDisplayAuctionState {
   lastAuctionNounId: number | undefined;
+  lastAuctionStartTime: number | undefined;
   onDisplayAuctionNounId: number | undefined;
+  onDisplayAuctionStartTime: number | undefined;
 }
 
 const initialState: OnDisplayAuctionState = {
   lastAuctionNounId: undefined,
+  lastAuctionStartTime: undefined,
   onDisplayAuctionNounId: undefined,
+  onDisplayAuctionStartTime: undefined,
 };
 
 const onDisplayAuction = createSlice({
@@ -17,8 +21,14 @@ const onDisplayAuction = createSlice({
     setLastAuctionNounId: (state, action: PayloadAction<number>) => {
       state.lastAuctionNounId = action.payload;
     },
+    setLastAuctionStartTime: (state, action: PayloadAction<number>) => {
+      state.lastAuctionStartTime = action.payload;
+    },
     setOnDisplayAuctionNounId: (state, action: PayloadAction<number>) => {
       state.onDisplayAuctionNounId = action.payload;
+    },
+    setOnDisplayAuctionStartTime: (state, action: PayloadAction<number>) => {
+      state.onDisplayAuctionStartTime = action.payload;
     },
     setPrevOnDisplayAuctionNounId: state => {
       if (!state.onDisplayAuctionNounId) return;
@@ -35,6 +45,8 @@ const onDisplayAuction = createSlice({
 
 export const {
   setLastAuctionNounId,
+  setLastAuctionStartTime,
+  setOnDisplayAuctionStartTime,
   setOnDisplayAuctionNounId,
   setPrevOnDisplayAuctionNounId,
   setNextOnDisplayAuctionNounId,
