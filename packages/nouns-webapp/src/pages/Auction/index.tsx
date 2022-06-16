@@ -2,7 +2,7 @@ import Banner from '../../components/Banner';
 import Auction from '../../components/Auction';
 import Documentation from '../../components/Documentation';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { setOnDisplayAuctionNounId } from '../../state/slices/onDisplayAuction';
+import { setOnDisplayAuctionNounId, setOnDisplayAuctionStartTime } from '../../state/slices/onDisplayAuction';
 import { push } from 'connected-react-router';
 import { nounPath } from '../../utils/history';
 import useOnDisplayAuction from '../../wrappers/onDisplayAuction';
@@ -17,17 +17,21 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
   const { initialAuctionId } = props;
   const onDisplayAuction = useOnDisplayAuction();
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
+  const lastAuctionStartTime = useAppSelector(state => state.onDisplayAuction.lastAuctionStartTime);
   const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!lastAuctionNounId) return;
+    if (!lastAuctionStartTime) return;
 
-    if (initialAuctionId !== undefined) {
+    if (initialAuctionId !== undefined && lastAuctionStartTime !== undefined) {
+
       // handle out of bounds noun path ids
       if (initialAuctionId > lastAuctionNounId || initialAuctionId < 0) {
         dispatch(setOnDisplayAuctionNounId(lastAuctionNounId));
+        dispatch(setOnDisplayAuctionStartTime(lastAuctionStartTime!));
         dispatch(push(nounPath(lastAuctionNounId)));
       } else {
         if (onDisplayAuction === undefined) {
@@ -37,11 +41,12 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
       }
     } else {
       // no noun path id set
-      if (lastAuctionNounId) {
+      if (lastAuctionNounId && lastAuctionStartTime) {
         dispatch(setOnDisplayAuctionNounId(lastAuctionNounId));
+        dispatch(setOnDisplayAuctionStartTime(lastAuctionStartTime!));
       }
     }
-  }, [lastAuctionNounId, dispatch, initialAuctionId, onDisplayAuction]);
+  }, [lastAuctionNounId, lastAuctionStartTime, dispatch, initialAuctionId, onDisplayAuction]);
 
   return (
     <>

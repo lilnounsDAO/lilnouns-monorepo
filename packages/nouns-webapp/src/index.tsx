@@ -20,10 +20,12 @@ import auction, {
 } from './state/slices/auction';
 import onDisplayAuction, {
   setLastAuctionNounId,
+  setLastAuctionStartTime,
   setOnDisplayAuctionNounId,
+  setOnDisplayAuctionStartTime,
 } from './state/slices/onDisplayAuction';
 import { ApolloProvider, useQuery } from '@apollo/client';
-import { clientFactory, latestAuctionsQuery } from './wrappers/subgraph';
+import { clientFactory, latestAuctionsQuery, singularAuctionQuery } from './wrappers/subgraph';
 import { useEffect } from 'react';
 import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
@@ -145,9 +147,14 @@ const ChainSubscriber: React.FC = () => {
         setActiveAuction(reduxSafeNewAuction({ nounId, startTime, endTime, settled: false })),
       );
       const nounIdNumber = BigNumber.from(nounId).toNumber();
+      const startTimeNumber = BigNumber.from(startTime).toNumber();
       dispatch(push(nounPath(nounIdNumber)));
       dispatch(setOnDisplayAuctionNounId(nounIdNumber));
+      dispatch(setOnDisplayAuctionStartTime(startTimeNumber));
+      
       dispatch(setLastAuctionNounId(nounIdNumber));
+      dispatch(setLastAuctionStartTime(startTimeNumber));
+      
     };
     const processAuctionExtended = (nounId: BigNumberish, endTime: BigNumberish) => {
       dispatch(setAuctionExtended({ nounId, endTime }));
@@ -160,6 +167,8 @@ const ChainSubscriber: React.FC = () => {
     const currentAuction = await nounsAuctionHouseContract.auction();
     dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
     dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
+
+    dispatch(setLastAuctionStartTime(currentAuction.startTime.toNumber()));
 
     // Fetch the previous 24hours of  bids
     const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
@@ -186,14 +195,21 @@ const ChainSubscriber: React.FC = () => {
   return <></>;
 };
 
+//UPDATE: Using Auction start timestmap to fetch backwards beyond last 1000 aucitons 
 const PastAuctions: React.FC = () => {
   const latestAuctionId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
-  const { data } = useQuery(latestAuctionsQuery());
+  const latestAuctionStartTime = useAppSelector(state => state.onDisplayAuction.lastAuctionStartTime);
+  const onDisplayAuctionNounId = useAppSelector(state => state.onDisplayAuction.onDisplayAuctionNounId);
+  const onDisplayAuctionStartTime = useAppSelector(state => state.onDisplayAuction.onDisplayAuctionStartTime);
+
+  const { data } = useQuery(latestAuctionsQuery(onDisplayAuctionStartTime || 0));
+  const { data: auctionData } = useQuery(singularAuctionQuery(onDisplayAuctionNounId?.toString() || "0"));
+  
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    data && dispatch(addPastAuctions({ data }));
-  }, [data, latestAuctionId, dispatch]);
+    data && auctionData && dispatch(setOnDisplayAuctionStartTime(auctionData?.auctions?.[0]?.startTime)) && dispatch(addPastAuctions({ data }));
+  }, [data, auctionData, latestAuctionId, latestAuctionStartTime, dispatch]);
 
   return <></>;
 };
