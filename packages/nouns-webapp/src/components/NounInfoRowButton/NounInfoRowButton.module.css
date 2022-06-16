@@ -78,6 +78,15 @@
   justify-content: space-between;
 }
 
+@media only screen and (max-width: 600px) {
+  .nounButtonContents {
+    display: flex;
+    font-size: small;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
 .buttonIcon {
   margin-right: 5px;
 }
