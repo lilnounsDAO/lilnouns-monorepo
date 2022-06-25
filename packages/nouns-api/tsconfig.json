@@ -2,11 +2,16 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "typeRoots": [
+      "./typing-stubs",
+      "./node_modules/@types",
+      "../../node_modules/@types"
+    ],
   },
   "references": [
     {
       "path": "../nouns-contracts/tsconfig.build.json"
     }
-  ]
+  ],
 }
