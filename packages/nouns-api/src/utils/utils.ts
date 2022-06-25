@@ -1,5 +1,5 @@
-import { nounsTokenContract, redis, storage } from './clients';
-import { TokenMetadata } from './types';
+import { nounsTokenContract, redis, storage } from '../clients';
+import { TokenMetadata } from '../types';
 import { tryF, isError } from 'ts-try';
 import sharp from 'sharp';
 
@@ -32,7 +32,7 @@ export const getTokenMetadata = async (tokenId: string): Promise<undefined | Tok
   );
   const svg = Buffer.from(data.image.substring(26), 'base64');
   const png = await sharp(svg).png().toBuffer();
-  const imageCID = await storage.storeBlob(png);
+  const imageCID = await storage.storeBlob(png as any);
 
   const metadata = {
     name: data.name,
@@ -43,3 +43,12 @@ export const getTokenMetadata = async (tokenId: string): Promise<undefined | Tok
 
   return metadata;
 };
+
+export const hasNounToken = async (account: string) => {
+  const data = await tryF(() => nounsTokenContract.getCurrentVotes(account));
+  if (isError(data)) {
+    console.error(`Error fetching votes for account ${account}: ${data.message}`);
+    return;
+  }
+  return data.votes?.toNumber();
+}

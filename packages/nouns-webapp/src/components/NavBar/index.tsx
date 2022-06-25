@@ -14,7 +14,7 @@ import { ExternalURL, externalURL } from '../../utils/externalURL';
 import useLidoBalance from '../../hooks/useLidoBalance';
 import NavBarButton, { NavBarButtonStyle } from '../NavBarButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpen, faUsers, faPlay, faComments } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpen, faUsers, faPlay, faComments, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import NavBarTreasury from '../NavBarTreasury';
 import NavWallet from '../NavWallet';
 
@@ -122,6 +122,13 @@ const NavBar = () => {
               </>
             ) : (
               <>
+                <Nav.Link as={Link} to="/ideas" className={classes.nounsNavLink}>
+                  <NavBarButton
+                    buttonText={'Ideas'}
+                    buttonIcon={<FontAwesomeIcon icon={faLightbulb} />}
+                    buttonStyle={nonWalletButtonStyle}
+                  />
+                </Nav.Link>
                 <Nav.Link as={Link} to="/vote" className={classes.nounsNavLink}>
                   <NavBarButton
                     buttonText={'DAO'}
