@@ -109,7 +109,7 @@ const Ideas = () => {
           <div className={classes.submitIdeaButtonWrapper}>
             <Button
               className={classes.generateBtn}
-              onClick={() => (!isLoggedIn ? handleLogin() : alert('Create Idea Form'))}
+              onClick={() => (!isLoggedIn ? handleLogin() : history.push('/ideas/create'))}
             >
               Submit Idea
             </Button>

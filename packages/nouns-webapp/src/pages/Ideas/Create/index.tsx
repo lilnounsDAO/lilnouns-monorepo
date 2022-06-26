@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 import Section from '../../../layout/Section';
 import Modal from '../../../components/Modal';
 import classes from '../Ideas.module.css';
@@ -8,6 +9,7 @@ import Cookies from 'js-cookie';
 const HOST = 'http://localhost:5001';
 
 const CreateIdeaPage = () => {
+  const history = useHistory();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const token = Cookies.get('lil-noun-token');
 
@@ -49,7 +51,11 @@ const CreateIdeaPage = () => {
       )}
       <Col lg={10} className={classes.wrapper}>
         <Row className={classes.headerRow}>
-          <span>Back</span>
+          <div>
+            <span className="cursor-pointer inline-block" onClick={() => history.push('/ideas')}>
+              Back
+            </span>
+          </div>
           <h1>Submit an Idea</h1>
         </Row>
         <p className={classes.subheading}>
