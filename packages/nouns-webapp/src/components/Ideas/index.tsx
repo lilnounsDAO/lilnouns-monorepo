@@ -8,15 +8,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { SiweMessage } from 'siwe';
+import Cookies from 'js-cookie'
 
 const HOST = "http://localhost:5001";
-
-const getIdeaId = (idea: any) => {
-  if (!idea.ref) {
-    return null
-  }
-  return idea.ref['@ref'].id
-}
 
 // Lots going on in here for now
 const Ideas = () => {
@@ -36,20 +30,12 @@ const Ideas = () => {
   };
 
   useEffect(() => {
-    const getSession = async () => {
-      const res = await fetch(`${HOST}/session`, {
-          credentials: 'include',
-      });
-      const data = await res.json();
-  
-      if (data?.type === 'AUTHENTICATED') {
-        setLoggedIn(true);
-      }
-    }
-
+    const token = Cookies.get('lil-noun-token');
     const getIdeas = async () => {
       const res = await fetch(`${HOST}/ideas`, {
-          credentials: 'include',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
       });
       const { data } = await res.json();
   
@@ -58,17 +44,20 @@ const Ideas = () => {
       }
     }
 
-    getSession();
     getIdeas();
+    if (token) {
+      setLoggedIn(true);
+    }
   }, []);
 
 
   // Use to submit an idea
   const submitIdea = async () => {
+    const token = Cookies.get('lil-noun-token');
     const res = await fetch(`${HOST}/ideas`, {
-        credentials: 'include',
         method: 'POST',
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ data: {
@@ -85,9 +74,9 @@ const Ideas = () => {
 
   // Create message for user to sign to authenticate.
   const createSiweMessage = async (address: string | undefined, statement: string) => {
-    const res = await fetch(`${HOST}/nonce`, {
-        credentials: 'include',
-    });
+    const res = await fetch(`${HOST}/nonce`);
+    const { data } = await res.json()
+
     const message = new SiweMessage({
         domain: window.location.host,
         address,
@@ -95,7 +84,7 @@ const Ideas = () => {
         uri: window.location.origin,
         version: '1',
         chainId,
-        nonce: await res.text()
+        nonce: data.nonce,
     });
     return message.prepareMessage();
   }
@@ -109,13 +98,12 @@ const Ideas = () => {
     );
     const signature = await signer?.signMessage(message);
 
-    const res = await fetch(`${HOST}/auth`, {
+    const res = await fetch(`${HOST}/login`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ message, signature }),
-        credentials: 'include'
     });
 
     if(res.status !== 200) {
@@ -125,14 +113,13 @@ const Ideas = () => {
 
     const data = await res.json();
 
-    if (data?.type === 'SIGN_IN_SUCCESS') {
-      setLoggedIn(true);
-      if (triggerFormOnSuccess) {
-        alert('Authenticated: Now Show Create Idea Form');
-      }
+    const one_hour = new Date(new Date().getTime() +  3600 * 1000);
+    Cookies.set('lil-noun-token', data.data.accessToken, { expires: one_hour });
+    setLoggedIn(true);
+    if (triggerFormOnSuccess) {
+      alert('Authenticated: Now Show Create Idea Form');
     }
   }
-
 
   // set to true for testing
   const hasNouns = true || connectedAccountNounVotes  > 0
@@ -160,8 +147,7 @@ const Ideas = () => {
       {ideas?.length ? (
         ideas
           .map((idea: any, i) => {
-            const {created_by: createdBy, title, tldr, upvotes } = idea.data
-            const id = getIdeaId(idea);
+            const {id, creatorId, title, tldr, upvotes = [] } = idea
             return (
               <div
                 className={classes.ideaLink}
@@ -177,7 +163,7 @@ const Ideas = () => {
                   </span>
                 )}
                 <span className={classes.metaData}>
-                  <span className={classes.userDetails}>{createdBy}</span>
+                  <span className={classes.userDetails}>{creatorId}</span>
                   <span className={classes.linkDiscourse}>See Full Details <FontAwesomeIcon icon={faArrowAltCircleRight} /></span>
                 </span>
               </div>
