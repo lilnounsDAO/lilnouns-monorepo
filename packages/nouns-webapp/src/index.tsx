@@ -45,6 +45,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
 import { createClient, WagmiConfig } from 'wagmi';
+import { AuthProvider } from './hooks/useAuth';
 
 dotenv.config();
 
@@ -226,11 +227,13 @@ ReactDOM.render(
             }
           >
             <ApolloProvider client={client}>
-              <PastAuctions />
-              <DAppProvider config={useDappConfig}>
-                <App />
-                <Updaters />
-              </DAppProvider>
+                <PastAuctions />
+                <DAppProvider config={useDappConfig}>
+                  <AuthProvider>
+                    <App />
+                    <Updaters />
+                  </AuthProvider>
+                </DAppProvider>
             </ApolloProvider>
           </Web3ReactProvider>
         </React.StrictMode>
