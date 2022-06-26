@@ -2,6 +2,7 @@ import { keccak256 as solidityKeccak256 } from '@ethersproject/solidity';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { NounSeed, NounData } from './types';
 import { images, bgcolors } from './image-data.json';
+import { images as bigNounImages, bgcolors as bigNounBgcolors} from './big-noun-image-data.json';
 
 const { bodies, accessories, heads, glasses } = images;
 
@@ -18,6 +19,23 @@ export const getNounData = (seed: NounSeed): NounData => {
       glasses[seed.glasses],
     ],
     background: bgcolors[seed.background],
+  };
+};
+
+/**
+ * Data fetch for Nouns propper
+ * Get encoded part and background information using a Noun seed
+ * @param seed The Noun seed
+ */
+ export const getBigNounData = (seed: NounSeed): NounData => {
+  return {
+    parts: [
+      bigNounImages.bodies[seed.body],
+      bigNounImages.accessories[seed.accessory],
+      bigNounImages.heads[seed.head],
+      bigNounImages.glasses[seed.glasses],
+    ],
+    background: bigNounBgcolors[seed.background],
   };
 };
 

@@ -7,6 +7,12 @@ import { utils } from 'ethers/lib/ethers';
 import clsx from 'clsx';
 import { useTreasuryBalance, useTreasuryUSDValue } from '../../hooks/useTreasuryBalance';
 
+import NounImageInllineTable from '../../components/NounImageInllineTable';
+import { isMobileScreen } from '../../utils/isMobile';
+import config from '../../config';
+import { useEffect, useState } from 'react';
+import { createClient } from 'urql';
+
 const GovernancePage = () => {
   const { data: proposals } = useAllProposals();
   const threshold = useProposalThreshold();
@@ -16,6 +22,46 @@ const GovernancePage = () => {
   const treasuryBalance = useTreasuryBalance();
   const treasuryBalanceUSD = useTreasuryUSDValue();
 
+  const isMobile = isMobileScreen();
+
+  const [bigNounBalance, setBigNounBalance] = useState('0');
+  const [bigNounIds, setBigNounIds] = useState([]);
+
+  const fetchNounsQuery = `
+  query {
+      accounts(where: {id: "0xd5f279ff9eb21c6d40c8f345a66f2751c4eea1fb" }) {
+      id
+      tokenBalance
+      nouns {
+        id
+      }
+    }
+  }
+    `;
+
+  async function fetchData() {
+    const repsonse = await createClient({ url: config.app.nounsDAOSubgraphApiUri })
+      .query(fetchNounsQuery)
+      .toPromise();
+    return repsonse.data.accounts[0];
+  }
+
+  useEffect(() => {
+    fetchData()
+      .then(async repsonse => {
+        const tokenBalance = repsonse.tokenBalance;
+        const nounIds = repsonse.nouns.flatMap((obj: { id: any }) => obj.id);
+
+        setBigNounBalance(tokenBalance);
+        setBigNounIds(nounIds);
+        return;
+      })
+      .catch(error => {
+        console.log(`Nouns Owned Error ${error}`);
+        return;
+      });
+  }, []);
+
   return (
     <Section fullWidth={false} className={classes.section}>
       <Col lg={10} className={classes.wrapper}>
@@ -24,8 +70,8 @@ const GovernancePage = () => {
           <h1>Lil Nouns DAO</h1>
         </Row>
         <p className={classes.subheading}>
-          Lil Nouns govern <span className={classes.boldText}>Lil Nouns DAO</span>. Lil Nouns can vote on
-          proposals or delegate their vote to a third party. A minimum of{' '}
+          Lil Nouns govern <span className={classes.boldText}>Lil Nouns DAO</span>. Lil Nouns can
+          vote on proposals or delegate their vote to a third party. A minimum of{' '}
           <span className={classes.boldText}>{nounThresholdCopy}</span> is required to submit
           proposals.
         </p>
@@ -53,11 +99,25 @@ const GovernancePage = () => {
                 </h1>
               </Col>
             </Row>
+            <Row>
+              <Col className={clsx(classes.ethTreasuryAmt)} lg={3}>
+                <h1 className={classes.BigNounBalance}>{bigNounBalance}</h1>
+                <h1>{' Nouns'}</h1>
+              </Col>
+
+              {!isMobile && (
+                <Col className={classes.usdTreasuryAmt}>
+                  <Row className={classes.nounProfilePics}>
+                    <NounImageInllineTable nounIds={bigNounIds} />
+                  </Row>
+                </Col>
+              )}
+            </Row>
           </Col>
           <Col className={classes.treasuryInfoText}>
             This treasury exists for <span className={classes.boldText}>Lil Nouns DAO</span>{' '}
-            participants to allocate resources for the long-term growth and prosperity of the Lil Nouns
-            project.
+            participants to allocate resources for the long-term growth and prosperity of the Lil
+            Nouns project.
           </Col>
         </Row>
         <Proposals proposals={proposals} />
