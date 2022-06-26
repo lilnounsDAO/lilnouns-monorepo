@@ -16,6 +16,7 @@ import { useShortAddress } from '../ShortAddress';
 import { isMobileScreen } from '../../utils/isMobile';
 import { usePickByState } from '../../utils/colorResponsiveUIUtils';
 import WalletConnectButton from './WalletConnectButton';
+import { useAuth } from '../../hooks/useAuth';
 
 interface NavWalletProps {
   address: string;
@@ -42,9 +43,9 @@ const NavWallet: React.FC<NavWalletProps> = props => {
   const [buttonUp, setButtonUp] = useState(false);
   const [showConnectModal, setShowConnectModal] = useState(false);
   const history = useHistory();
-  const { library: provider } = useEthers();
+  const { library: provider, deactivate, account } = useEthers();
+  const { logout } = useAuth();
   const activeAccount = useAppSelector(state => state.account.activeAccount);
-  const { deactivate } = useEthers();
    //TODO: Add reverse lookup after stable rpc plan
   // const ens = useReverseENSLookUp(address);
   const shortAddress = useShortAddress(address);
@@ -57,6 +58,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
     setShowConnectModal(false);
     setButtonUp(false);
     deactivate();
+    logout()
     setShowConnectModal(false);
     setShowConnectModal(true);
   };
@@ -65,6 +67,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
     setShowConnectModal(false);
     setButtonUp(false);
     deactivate();
+    logout()
   };
 
   const statePrimaryButtonClass = usePickByState(
