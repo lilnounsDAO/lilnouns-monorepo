@@ -48,6 +48,16 @@ export const useNounSeed = (nounId: EthersBN) => {
   return seed;
 };
 
+export const useBigNounSeed = (nounId: EthersBN) => {
+  const seed = useContractCall<INounSeed>({
+    abi,
+    address: "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
+    method: 'seeds',
+    args: [nounId],
+  });
+  return seed;
+};
+
 export const useUserVotes = (): number | undefined => {
   const { account } = useEthers();
   const [votes] =
