@@ -5,10 +5,58 @@ import { isMobileScreen } from '../../utils/isMobile';
 import clsx from 'clsx';
 import { useUserVotes } from '../../wrappers/nounToken';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
-import { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useIdeas } from '../../hooks/useIdeas';
+import { faArrowAltCircleRight, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState } from 'react';
+
+const HOST = 'http://localhost:5001';
+
+const getIdeaId = (idea: any) => {
+  if (!idea.ref) {
+    return null;
+  }
+  return idea.ref['@ref'].id;
+};
+
+const IdeaContainer = ({ idea }) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const { created_by: createdBy, title, tldr, upvotes, downvotes } = idea.data;
+  const id = getIdeaId(idea);
+
+  return (
+    <>
+      <div className={classes.ideaContainer} onClick={() => setIsOpen(!isOpen)}>
+        <span className={classes.ideaContainerCreatedBy}>{createdBy}</span>
+        <span className={classes.ideaContainerTitle}>{title}</span>
+        <div className={classes.ideaContainerVotingContainer}>
+          <span className={classes.ideaContainerUpvotes}>{upvotes.length - downvotes.length}</span>
+          <div className={classes.votingContainer}>
+            <span onClick={() => alert('upvoting')} className={classes.voteIcon}>
+              <FontAwesomeIcon icon={faCaretUp} size="2x" />
+            </span>
+            <span onClick={() => alert('downvoting')} className={classes.voteIcon}>
+              <FontAwesomeIcon icon={faCaretDown} size="2x" />
+            </span>
+          </div>
+        </div>
+        {isOpen && (
+          <>
+            <span
+              className={classes.ideaContainerTldr}
+              dangerouslySetInnerHTML={{ __html: tldr }}
+            />
+            <span className={classes.ideaContainerDetails}>{createdBy}</span>
+            <span className={classes.ideaContainerLearnMore}>
+              See Full Details <FontAwesomeIcon icon={faArrowAltCircleRight} />
+            </span>
+          </>
+        )}
+      </div>
+    </>
+  );
+};
 
 // Lots going on in here for now
 const Ideas = () => {
@@ -63,30 +111,7 @@ const Ideas = () => {
       {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
       {ideas?.length ? (
         ideas.map((idea: any, i) => {
-          const { id, creatorId, title, tldr, upvotes = [] } = idea;
-          return (
-            <div
-              className={classes.ideaLink}
-              onClick={() => console.log(`Open new page for ${id}`)}
-              key={id}
-            >
-              <span className={classes.ideaTitle}>
-                <span className={classes.titleSpan}>{title}</span>{' '}
-                <span className={classes.likeSpan}>Upvotes: {upvotes.length}</span>
-              </span>
-              {Boolean(tldr) && (
-                <span className={classes.tldr}>
-                  <span dangerouslySetInnerHTML={{ __html: tldr }} />
-                </span>
-              )}
-              <span className={classes.metaData}>
-                <span className={classes.userDetails}>{creatorId}</span>
-                <span className={classes.linkDiscourse}>
-                  See Full Details <FontAwesomeIcon icon={faArrowAltCircleRight} />
-                </span>
-              </span>
-            </div>
-          );
+          return <IdeaContainer idea={idea} key={`idea-${i}`} />;
         })
       ) : (
         <Alert variant="secondary">

@@ -45,6 +45,70 @@
   box-shadow: none;
 }
 
+.ideaContainer {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  row-gap: 1.5rem;
+  border: 1px solid #e2e3e8;
+  border-radius: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.ideaContainerTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  place-self: center;
+  grid-column: span 4 / span 4;
+}
+
+.ideaContainerCreatedBy {
+  align-self: center;
+  justify-self: start;
+}
+
+.ideaContainerUpvotes {
+  align-self: center;
+  justify-self: end;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.ideaContainerDetails {
+  grid-column: span 3 / span 3;
+}
+
+.ideaContainerLearnMore {
+  grid-column: span 3 / span 3;
+  color: #2b83f6;
+}
+
+.ideaContainerTldr {
+  border: 1px solid #e2e3e8;
+  background: #f4f4f8;
+  padding: 1rem;
+  border-radius: 1rem;
+  grid-column: span 6 / span 6;
+}
+
+.ideaContainerVotingContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+}
+
+.votingContainer {
+  margin-left: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.voteIcon {
+  color: #8c8d92;
+}
+
 .ideaLink {
   cursor: pointer;
   padding: 1rem;
@@ -144,7 +208,7 @@
   color: var(--brand-gray-light-text);
 }
 
-.linkDiscourse{
+.linkDiscourse {
   white-space: pre-wrap;
   justify-content: end;
   align-self: flex-end;

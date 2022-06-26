@@ -17,9 +17,9 @@ const IdeasPage = () => {
           <h1>Submit & Vote on New Ideas</h1>
         </Row>
         <p className={classes.subheading}>
-          A minimum of{' '}
-          <span className={classes.boldText}>{nounThresholdCopy}</span> is required to submit
-          an idea and vote on others. There is no limit to the number of ideas you can submit and vote on.
+          A minimum of <span className={classes.boldText}>{nounThresholdCopy}</span> is required to
+          submit an idea and vote on others. There is no limit to the number of ideas you can submit
+          and vote on.
         </p>
         <Ideas />
       </Col>

@@ -62,6 +62,7 @@
     "redux-devtools-extension": "^2.13.9",
     "remark-breaks": "^3.0.1",
     "sharp": "^0.30.6",
+    "siwe": "^1.1.6",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "url": "^0.11.0",
