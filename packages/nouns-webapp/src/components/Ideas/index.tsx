@@ -1,7 +1,6 @@
 import { Alert, Button } from 'react-bootstrap';
-import classes from './Ideas.module.css';
 import { useEthers } from '@usedapp/core';
-import { isMobileScreen } from '../../utils/isMobile';
+import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { useUserVotes } from '../../wrappers/nounToken';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,6 +8,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useIdeas } from '../../hooks/useIdeas';
 import { faArrowAltCircleRight, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
+import classes from './Ideas.module.css';
+import { isMobileScreen } from '../../utils/isMobile';
 
 const HOST = 'http://localhost:5001';
 
@@ -73,6 +74,7 @@ const IdeaContainer = ({ idea }) => {
 
 // Lots going on in here for now
 const Ideas = () => {
+  const history = useHistory();
   const { account } = useEthers();
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { ideas, getIdeas } = useIdeas();
