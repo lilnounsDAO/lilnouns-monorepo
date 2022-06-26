@@ -1,13 +1,11 @@
 import { Col, Row } from 'react-bootstrap';
 import Section from '../../layout/Section';
 import Ideas from '../../components/Ideas';
-import { useProposalThreshold } from '../../wrappers/nounsDao';
 import classes from './Ideas.module.css';
 
 const IdeasPage = () => {
-  const threshold = useProposalThreshold();
-  const nounsRequired = threshold !== undefined ? threshold + 1 : '...';
-  const nounThresholdCopy = `${nounsRequired} ${threshold === 0 ? 'Lil Noun' : 'Lil Nouns'}`;
+  const nounsRequired = 1;
+  const nounThresholdCopy = `${nounsRequired} Lil Noun`;
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -17,9 +15,9 @@ const IdeasPage = () => {
           <h1>Submit & Vote on New Ideas</h1>
         </Row>
         <p className={classes.subheading}>
-          A minimum of{' '}
-          <span className={classes.boldText}>{nounThresholdCopy}</span> is required to submit
-          an idea and vote on others. There is no limit to the number of ideas you can submit and vote on.
+          A minimum of <span className={classes.boldText}>{nounThresholdCopy}</span> is required to
+          submit an idea and vote on others. There is no limit to the number of ideas you can submit
+          and vote on.
         </p>
         <Ideas />
       </Col>

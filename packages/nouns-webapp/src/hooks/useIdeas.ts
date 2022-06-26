@@ -1,39 +1,60 @@
 import { useState } from 'react';
 import { useAuth } from './useAuth';
+import { useApiError } from './useApiError';
+import { useHistory } from 'react-router-dom';
 
 const HOST = 'http://localhost:5001';
 
-interface IdeaFormData {
+export interface VoteFormData {
+  direction: number;
+  ideaId: number;
+}
+
+export interface Vote {
+  id: number;
+  voterId: string;
+  ideaId: number;
+  direction: number;
+}
+
+export interface Idea {
+  id: number;
   title: string;
   tldr: string;
   description: string;
+  votes: Vote[];
+  creatorId: string;
 }
 
 export const useIdeas = () => {
-  const { getAuthHeader } = useAuth();
-  const [ideas, setIdeas] = useState([]);
+  const { getAuthHeader, isLoggedIn, triggerSignIn } = useAuth();
+  const { setError } = useApiError();
+  const history = useHistory();
 
-  const getIdeas = async () => {
-    try {
-      const res = await fetch(`${HOST}/ideas`, {
-        headers: {
-          ...getAuthHeader(),
-        },
-      });
-      const { data } = await res.json();
+  const [ideas, setIdeas] = useState([] as Idea[]);
 
-      if (res.status === 200) {
-        setIdeas(data);
+  // Update the vote count for an idea after a new vote is recorded.
+  const updateVotesState = ({ id, ideaId, direction }: Vote) => {
+    const updatedIdeas = ideas.map(idea => {
+      if (idea.id === ideaId) {
+        const newIdeaVotes = idea.votes.map(vote => {
+          if (id === vote.id) {
+            return { ...vote, direction };
+          }
+        });
+
+        return { ...idea, votes: newIdeaVotes };
       }
-    } catch (e) {
-      console.log(e);
-    }
+
+      return idea;
+    }) as Idea[];
+
+    return setIdeas(updatedIdeas);
   };
 
-  // Use to submit an idea
-  const submitIdea = async (formData: IdeaFormData) => {
+  const voteOnIdea = async (formData: VoteFormData) => {
     try {
-      const res = await fetch(`${HOST}/ideas`, {
+      const res = await fetch(`${HOST}/idea/vote`, {
         method: 'POST',
         headers: {
           ...getAuthHeader(),
@@ -42,17 +63,99 @@ export const useIdeas = () => {
         body: JSON.stringify(formData),
       });
       const { data } = await res.json();
+
+      return updateVotesState(data as Vote);
+    } catch (e: any) {
+      const error = {
+        message: e.message || 'Failed to submit your vote!',
+        status: e.status || 500,
+      };
+      setError(error);
+    }
+  };
+
+  const getIdeas = async () => {
+    try {
+      const res = await fetch(`${HOST}/ideas`, {
+        method: 'GET',
+        headers: {
+          ...getAuthHeader(),
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const { data } = await res.json();
+
+      setIdeas(data);
+    } catch (e: any) {
+      const error = {
+        message: e.message || 'Failed to fetch ideas!',
+        status: e.status || 500,
+      };
+      setError(error);
+    }
+  };
+
+  // Use to submit an idea
+  const submitIdea = async (event: React.FormEvent<HTMLFormElement>) => {
+    interface FormDataElements extends HTMLFormControlsCollection {
+      title: HTMLInputElement;
+      tldr: HTMLTextAreaElement;
+      description: HTMLTextAreaElement;
+    }
+    event.preventDefault();
+
+    const { title, tldr, description } = event.currentTarget.elements as FormDataElements;
+
+    try {
+      const res = await fetch(`${HOST}/ideas`, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeader(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: title.value,
+          tldr: tldr.value,
+          description: description.value,
+        }),
+      });
+
       if (res.status === 200) {
-        setIdeas(data);
+        const { data } = await res.json();
+        history.push(`/ideas/${data.id}`);
       }
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      const error = {
+        message: e.message || 'Failed to submit your idea!',
+        status: e.status || 500,
+      };
+      setError(error);
     }
   };
 
   return {
-    ideas,
+    voteOnIdea: async (formData: VoteFormData) => {
+      if (!isLoggedIn) {
+        try {
+          await triggerSignIn();
+          voteOnIdea(formData);
+        } catch (e) {}
+      } else {
+        voteOnIdea(formData);
+      }
+    },
+    submitIdea: async (event: React.FormEvent<HTMLFormElement>) => {
+      if (!isLoggedIn) {
+        try {
+          await triggerSignIn();
+          submitIdea(event);
+        } catch (e) {}
+      } else {
+        submitIdea(event);
+      }
+    },
     getIdeas,
-    submitIdea,
+    ideas,
   };
 };

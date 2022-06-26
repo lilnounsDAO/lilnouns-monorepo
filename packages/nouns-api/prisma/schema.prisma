@@ -11,19 +11,49 @@ datasource db {
 }
 
 model Idea {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(130)
-  tldr      String   @db.VarChar(255)
-  description String @db.VarChar(500)
-  createdBy  User     @relation(fields: [creatorId], references: [wallet])
-  creatorId  String
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  title       String    @db.VarChar(130)
+  tldr        String    @db.VarChar(255)
+  description String    @db.VarChar(500)
+  createdBy   User      @relation(fields: [creatorId], references: [wallet])
+  creatorId   String
+  comments    Comment[]
+  votes       Vote[]
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  wallet  String   @unique
-  ens     String?
-  ideas   Idea[]
+  id       Int       @id @default(autoincrement())
+  wallet   String    @unique
+  ens      String?
+  ideas    Idea[]
+  votes    Vote[]
+  comments Comment[]
+}
+
+// direction
+// +1 for up
+// -1 for down
+// sum of direction = total score
+model Vote {
+  id        Int    @id @default(autoincrement())
+  direction Int
+  idea      Idea   @relation(fields: [ideaId], references: [id])
+  ideaId    Int
+  voter     User   @relation(fields: [voterId], references: [wallet])
+  voterId   String
+
+  @@unique([ideaId, voterId])
+}
+
+model Comment {
+  id       Int    @id @default(autoincrement())
+  body     String
+  idea     Idea   @relation(fields: [ideaId], references: [id])
+  ideaId   Int
+  author   User   @relation(fields: [authorId], references: [wallet])
+  authorId String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }

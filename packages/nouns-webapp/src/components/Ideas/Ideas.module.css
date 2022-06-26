@@ -144,7 +144,7 @@
   color: var(--brand-gray-light-text);
 }
 
-.linkDiscourse{
+.linkDiscourse {
   white-space: pre-wrap;
   justify-content: end;
   align-self: flex-end;
