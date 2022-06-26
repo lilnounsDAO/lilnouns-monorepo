@@ -1,5 +1,5 @@
-import { nounsTokenContract, redis, storage } from './clients';
-import { TokenMetadata } from './types';
+import { nounsTokenContract, redis, storage } from '../clients';
+import { TokenMetadata } from '../types';
 import { tryF, isError } from 'ts-try';
 import sharp from 'sharp';
 
@@ -32,8 +32,7 @@ export const getTokenMetadata = async (tokenId: string): Promise<undefined | Tok
   );
   const svg = Buffer.from(data.image.substring(26), 'base64');
   const png = await sharp(svg).png().toBuffer();
-  const blob = new Blob([png]);
-  const imageCID = await storage.storeBlob(blob);
+  const imageCID = await storage.storeBlob(png as any);
 
   const metadata = {
     name: data.name,
