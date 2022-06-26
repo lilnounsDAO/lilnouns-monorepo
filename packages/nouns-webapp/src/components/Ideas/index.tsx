@@ -12,49 +12,62 @@ import { useEffect, useState } from 'react';
 
 const HOST = 'http://localhost:5001';
 
-const getIdeaId = (idea: any) => {
-  if (!idea.ref) {
-    return null;
-  }
-  return idea.ref['@ref'].id;
-};
-
 const IdeaContainer = ({ idea }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  const { created_by: createdBy, title, tldr, upvotes, downvotes } = idea.data;
-  const id = getIdeaId(idea);
+  const { id, description, tldr, title, creatorId } = idea;
 
   return (
-    <>
-      <div className={classes.ideaContainer} onClick={() => setIsOpen(!isOpen)}>
-        <span className={classes.ideaContainerCreatedBy}>{createdBy}</span>
-        <span className={classes.ideaContainerTitle}>{title}</span>
-        <div className={classes.ideaContainerVotingContainer}>
-          <span className={classes.ideaContainerUpvotes}>{upvotes.length - downvotes.length}</span>
-          <div className={classes.votingContainer}>
-            <span onClick={() => alert('upvoting')} className={classes.voteIcon}>
-              <FontAwesomeIcon icon={faCaretUp} size="2x" />
-            </span>
-            <span onClick={() => alert('downvoting')} className={classes.voteIcon}>
-              <FontAwesomeIcon icon={faCaretDown} size="2x" />
-            </span>
-          </div>
+    <div
+      className="grid grid-cols-6 gap-y-4 border border-[#e2e3e8] rounded-lg cursor-pointer pt-2 px-3 pb-3"
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <span className="lodrina self-center justify-self-center text-2xl text-[#8C8D92]">
+        <span className="mr-4">{id}</span>
+        <span>Creator.eth </span>
+      </span>
+      <span className="text-[#212529] col-span-4 font-bold text-2xl place-self-center lodrina">
+        {title}
+      </span>
+      <div className="flex flex-row justify-end">
+        <span className="text-2xl font-bold lodrina self-center justify-end">{0}</span>
+        <div className="flex flex-col ml-4">
+          <FontAwesomeIcon
+            icon={faCaretUp}
+            onClick={e => {
+              // this prevents the click from bubbling up and opening / closing the hidden section
+              e.stopPropagation();
+              alert('upvoting');
+            }}
+            className="text-[#8c8d92] text-2xl"
+          />
+
+          <FontAwesomeIcon
+            icon={faCaretDown}
+            onClick={e => {
+              e.stopPropagation();
+              alert('downvoting');
+            }}
+            className="text-[#8c8d92] text-2xl"
+          />
         </div>
-        {isOpen && (
-          <>
-            <span
-              className={classes.ideaContainerTldr}
-              dangerouslySetInnerHTML={{ __html: tldr }}
-            />
-            <span className={classes.ideaContainerDetails}>{createdBy}</span>
-            <span className={classes.ideaContainerLearnMore}>
+      </div>
+      {isOpen && (
+        <>
+          <span
+            className="border border-[#e2e3e8] bg-[#f4f4f8] p-4 rounded-lg col-span-6"
+            dangerouslySetInnerHTML={{ __html: tldr }}
+          />
+          <span className="col-span-3 font-bold text-sm text-[#8c8d92]">
+            creator.eth | 12 lil nouns | 134 votes
+          </span>
+          <span className="col-span-3 text-[#2b83f6] text-sm font-bold flex justify-end">
+            <span>
               See Full Details <FontAwesomeIcon icon={faArrowAltCircleRight} />
             </span>
-          </>
-        )}
-      </div>
-    </>
+          </span>
+        </>
+      )}
+    </div>
   );
 };
 
@@ -110,9 +123,11 @@ const Ideas = () => {
       </div>
       {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
       {ideas?.length ? (
-        ideas.map((idea: any, i) => {
-          return <IdeaContainer idea={idea} key={`idea-${i}`} />;
-        })
+        <span className="space-y-4">
+          {ideas.map((idea: any, i) => {
+            return <IdeaContainer idea={idea} key={`idea-${i}`} />;
+          })}
+        </span>
       ) : (
         <Alert variant="secondary">
           <Alert.Heading>No ideas found.</Alert.Heading>
