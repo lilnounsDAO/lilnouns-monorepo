@@ -14,18 +14,24 @@ class AuthController {
       });
     }
     catch (e: any) {
-      res.status(e.statusCode).json({
+      return res.status(e.statusCode || 500).json({
         message: e.message,
-      });
+      }).end();
     }
   }
   static nonce = async (req: Request, res: Response, next: any) => {
-    const requestedNonce = await AuthService.getNonce();
-    res.status(200).json({
-      status: true,
-      message: "Account login successful",
-      data: { nonce: requestedNonce },
-    })
+    try {
+      const requestedNonce = await AuthService.getNonce();
+      res.status(200).json({
+        status: true,
+        message: "Account login successful",
+        data: { nonce: requestedNonce },
+      })
+    } catch(e: any) {
+      return res.status(e.statusCode || 500).json({
+        message: e.message,
+      }).end();
+    }
   }
 
   static login = async (req: Request, res: Response, next: any) => {
@@ -33,7 +39,7 @@ class AuthController {
       if (!req.body.message) {
         return res.status(422).json({
           message: 'User does not have a lil noun',
-        });
+        }).end();
       }
 
       const message = new SiweMessage(req.body.message);
@@ -53,9 +59,9 @@ class AuthController {
         data
       });
     } catch (e: any) {
-      res.status(e.statusCode).json({
+      return res.status(e.statusCode || 500).json({
         message: e.message,
-      });
+      }).end();
     }
   }
   static all = async (req: Request, res: Response, next: any) => {
@@ -68,9 +74,9 @@ class AuthController {
       });
     }
     catch (e: any) {
-      res.status(e.statusCode).json({
+      return res.status(e.statusCode || 500).json({
         message: e.message,
-      });
+      }).end();
     }
   }
 }
