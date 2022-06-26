@@ -3,26 +3,27 @@ import { Request, Response } from 'express';
 
 const authMiddleware = async (req: Request, res: Response, next: any) => {
   if (!req.headers.authorization) {
-    res.status(401).json({
+    return res.status(401).json({
       message: 'Unauthorized: Auth Header missing'
-    })
-    return next()
+    }).end();
   }
 
   const token = req.headers.authorization.split(' ')[1]
-  if (!token) {
-    res.status(401).json({
+  if (!token || token === "undefined") {
+    return res.status(401).json({
       message: 'Unauthorized: Access token is required'
-    })
-    return next()
+    }).end();
   }
-  await verifyAccessToken(token).then((user: any) => {
-    console.log('USER', user)
+
+  try {
+    const user: any = await verifyAccessToken(token);
     req.user = user
     next()
-  }).catch (e => {
-    next(e)
-  })
+  } catch(e) {
+    res.status(401).json({
+      message: 'Unauthorized: Failed to validate token',
+    }).end()
+  }
 }
 
 export default authMiddleware
