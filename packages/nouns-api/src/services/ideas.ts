@@ -6,6 +6,14 @@ class IdeasService {
     return allIdeas;
   }
 
+  static async get(id: number) {
+    const idea = await prisma.idea.findUnique({
+      where: { id: id },
+    });
+
+    return idea;
+  }
+
   static async createIdea(data: any) {
     try {
       const idea = await prisma.idea.create({

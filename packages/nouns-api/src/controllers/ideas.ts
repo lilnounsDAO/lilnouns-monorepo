@@ -18,6 +18,21 @@ class IdeasController {
     }
   };
 
+  static getIdeaById = async (req: Request, res: Response, next: any) => {
+    try {
+      const idea = await IdeasService.get(parseInt(req.params.id));
+      res.status(200).json({
+        status: true,
+        message: 'All ideas',
+        data: idea,
+      });
+    } catch (e: any) {
+      res.status(e.statusCode).json({
+        message: e.message,
+      });
+    }
+  };
+
   static createIdea = async (req: Request, res: Response, next: any) => {
     try {
       const idea = await IdeasService.createIdea(req.body);

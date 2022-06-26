@@ -15,7 +15,7 @@ import WalletConnectModal from '../WalletConnectModal';
 import SettleManuallyBtn from '../SettleManuallyBtn';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import InfoModal from "../InfoModal"
+import InfoModal from '../InfoModal';
 
 const computeMinimumNextBid = (
   currentBid: BigNumber,
@@ -34,9 +34,7 @@ const computeFatFingerNextBid = (
   currentBid: BigNumber,
   minBidIncPercentage: BigNumber | undefined,
 ): BigNumber => {
-  return !minBidIncPercentage
-    ? new BigNumber(0)
-    : currentBid.times(10);
+  return !minBidIncPercentage ? new BigNumber(0) : currentBid.times(10);
 };
 
 const minBidEth = (minBid: BigNumber): string => {
@@ -139,27 +137,32 @@ const Bid: React.FC<{
     const gasLimit = await contract.estimateGas.createBid(auction.nounId, {
       value,
     });
-  
 
     const placeBidWarned = () => {
       placeBid(auction.nounId, {
         value,
         gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
       });
-    }
+    };
 
     //TODO: fat finger check here 900% increase
     //Operator '>' cannot be applied to types 'BigNumber' and 'number'.
     //0.01 = 10000000000000000
     //0.1 = 100000000000000000
-    if (minBid.gt("10000000000000000") && value.gte("100000000000000000") && value.gte(fatFingerBid.toString())) { 
+    if (
+      minBid.gt('10000000000000000') &&
+      value.gte('100000000000000000') &&
+      value.gte(fatFingerBid.toString())
+    ) {
       setModal({
         show: true,
         title: `Woah there!`,
-        message: `The bid you're about to place is ${utils.formatEther(value)} Eth which is over 10x the bid before. Sure this wasn't fat-fingered?`,
+        message: `The bid you're about to place is ${utils.formatEther(
+          value,
+        )} Eth which is over 10x the bid before. Sure this wasn't fat-fingered?`,
         isActionPrompt: true,
-        actionMessage: "Place bid",
-        action: placeBidWarned
+        actionMessage: 'Place bid',
+        action: placeBidWarned,
       });
     } else {
       placeBid(auction.nounId, {
@@ -167,8 +170,6 @@ const Bid: React.FC<{
         gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
       });
     }
-  
-    
   };
 
   const settleAuctionHandler = () => {
@@ -296,9 +297,7 @@ const Bid: React.FC<{
 
   return (
     <>
-      {showBidHistoryModal && (
-        <InfoModal onDismiss={dismissBidModalHanlder} />
-      )}
+      {showBidHistoryModal && <InfoModal onDismiss={dismissBidModalHanlder} />}
 
       {showConnectModal && activeAccount === undefined && (
         <WalletConnectModal onDismiss={hideModalHandler} />
@@ -311,7 +310,7 @@ const Bid: React.FC<{
             </span>
             <FormControl
               className={classes.bidInput}
-              onWheel={ event => event.currentTarget.blur() }
+              onWheel={event => event.currentTarget.blur()}
               type="number"
               min="0"
               onChange={bidInputHandler}

@@ -30,6 +30,23 @@ export const useIdeas = () => {
     }
   };
 
+  const getIdea = async id => {
+    try {
+      const res = await fetch(`${HOST}/idea/${id}`, {
+        headers: {
+          ...getAuthHeader(),
+        },
+      });
+      const { data } = await res.json();
+
+      if (res.status === 200) {
+        return data;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   // Use to submit an idea
   const submitIdea = async (formData: IdeaFormData) => {
     try {
@@ -52,6 +69,7 @@ export const useIdeas = () => {
 
   return {
     ideas,
+    getIdea,
     getIdeas,
     submitIdea,
   };

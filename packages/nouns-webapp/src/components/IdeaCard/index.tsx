@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 const IdeaCard = ({ idea }) => {
+  const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { id, description, title } = idea;
 
@@ -51,7 +53,11 @@ const IdeaCard = ({ idea }) => {
             creator.eth | 12 lil nouns | 134 votes
           </span>
           <span className="col-span-3 text-[#2b83f6] text-sm font-bold flex justify-end">
-            <span>
+            <span
+              onClick={() => {
+                history.push(`/ideas/${id}`);
+              }}
+            >
               See Full Details <FontAwesomeIcon icon={faArrowAltCircleRight} />
             </span>
           </span>

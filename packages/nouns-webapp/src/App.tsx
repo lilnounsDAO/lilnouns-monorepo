@@ -33,6 +33,7 @@ import EmojiBubble from './components/EmojiShower/EmojiBubble';
 
 import { AvatarProvider } from '@davatar/react';
 import IdeasPage from './pages/Ideas';
+import IdeaPage from './pages/Ideas/:id';
 import CreateIdeaPage from './pages/Ideas/Create';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -135,6 +136,7 @@ function App() {
               <Route exact path="/vote" component={GovernancePage} />
               <Route exact path="/ideas" component={IdeasPage} />
               <Route exact path="/ideas/create" component={CreateIdeaPage} />
+              <Route exact path="/ideas/:id" component={IdeaPage} />
               <Route exact path="/vote/:id" component={VotePage} />
               <Route exact path="/playground" component={Playground} />
               <Route exact path="/nouniverse/:id" component={Nouniverse} />
