@@ -1,5 +1,4 @@
 import { prisma } from '../api';
-import { User } from '@prisma/client';
 
 class IdeasService {
   static async all() {
@@ -20,14 +19,17 @@ class IdeasService {
     return idea;
   }
 
-  static async createIdea(data: any) {
+  static async createIdea(data: any, user?: { wallet: string }) {
     try {
+      if (!user) {
+        throw new Error('Failed to save idea: missing user details');
+      }
       const idea = await prisma.idea.create({
         data: {
           title: data.title,
           tldr: data.tldr,
           description: data.description,
-          creatorId: '0x65A3870F48B5237f27f674Ec42eA1E017E111D63',
+          creatorId: user.wallet,
         },
       });
 
@@ -38,12 +40,15 @@ class IdeasService {
     }
   }
 
-  static async voteOnIdea(data: any) {
+  static async voteOnIdea(data: any, user?: { wallet: string }) {
     try {
+      if (!user) {
+        throw new Error('Failed to save vote: missing user details');
+      }
       const vote = prisma.vote.upsert({
         where: {
           ideaId_voterId: {
-            voterId: data.voterAddress,
+            voterId: user.wallet,
             ideaId: data.ideaId,
           },
         },
@@ -52,7 +57,7 @@ class IdeasService {
         },
         create: {
           direction: data.direction,
-          voterId: data.voterAddress,
+          voterId: user.wallet,
           ideaId: data.ideaId,
         },
       });
@@ -79,12 +84,16 @@ class IdeasService {
     }
   }
 
-  static async commentOnIdea(data: any) {
+  static async commentOnIdea(data: any, user?: { wallet: string }) {
     try {
+      if (!user) {
+        throw new Error('Failed to save comment: missing user details');
+      }
+
       const comment = prisma.comment.create({
         data: {
           body: data.body,
-          authorId: data.authorId,
+          authorId: user.wallet,
           ideaId: data.ideaId,
         },
       });

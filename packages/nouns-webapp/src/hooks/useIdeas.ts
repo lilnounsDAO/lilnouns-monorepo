@@ -11,7 +11,6 @@ interface IdeaFormData {
 interface VoteFormData {
   direction: number;
   ideaId: number;
-  voterAddress: string;
 }
 
 export const useIdeas = () => {

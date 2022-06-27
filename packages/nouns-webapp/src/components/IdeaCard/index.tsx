@@ -23,7 +23,6 @@ const IdeaCard = ({ idea }) => {
     const v = await voteOnIdea({
       direction: dir,
       ideaId: id,
-      voterAddress: account,
     });
     mutate('http://localhost:5001/ideas');
   };
