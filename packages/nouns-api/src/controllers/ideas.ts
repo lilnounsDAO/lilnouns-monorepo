@@ -35,7 +35,7 @@ class IdeasController {
 
   static createIdea = async (req: Request, res: Response, next: any) => {
     try {
-      const idea = await IdeasService.createIdea(req.body);
+      const idea = await IdeasService.createIdea(req.body, req.user);
       res.status(200).json({
         status: true,
         message: 'Idea created',
@@ -50,7 +50,7 @@ class IdeasController {
 
   static voteOnIdea = async (req: Request, res: Response, next: any) => {
     try {
-      const idea = await IdeasService.voteOnIdea(req.body);
+      const idea = await IdeasService.voteOnIdea(req.body, req.user);
       res.status(200).json({
         status: true,
         message: 'Voted on idea',
@@ -65,7 +65,7 @@ class IdeasController {
 
   static commentOnIdea = async (req: Request, res: Response, next: any) => {
     try {
-      const idea = await IdeasService.commentOnIdea(req.body);
+      const idea = await IdeasService.commentOnIdea(req.body, req.user);
       res.status(200).json({
         status: true,
         message: 'Commented on idea',
