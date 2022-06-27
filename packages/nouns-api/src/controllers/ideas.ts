@@ -62,6 +62,21 @@ class IdeasController {
       });
     }
   };
+
+  static getVotesByIdea = async (req: Request, res: Response, next: any) => {
+    try {
+      const votes = await IdeasService.getVotesByIdea(parseInt(req.params.id));
+      res.status(200).json({
+        status: true,
+        message: 'Voted on idea',
+        data: votes,
+      });
+    } catch (e: any) {
+      res.status(e.statusCode).json({
+        message: e.message,
+      });
+    }
+  };
 }
 
 export default IdeasController;

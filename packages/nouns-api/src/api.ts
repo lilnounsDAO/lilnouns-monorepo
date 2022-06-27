@@ -44,6 +44,7 @@ export const createAPI = (): Express => {
   app.get('/nonce', AuthController.nonce);
   app.post('/login', AuthController.login);
   app.get('/idea/:id', IdeasController.getIdeaById);
+  app.get('/idea/:id/votes', IdeasController.getVotesByIdea);
   app.post('/idea/vote', IdeasController.voteOnIdea);
   app.get('/ideas', IdeasController.getAllIdeas);
   app.post('/ideas', authMiddleware, IdeasController.createIdea);

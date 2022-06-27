@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useSWRConfig } from 'swr';
-import { Col, Row, Button } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import { useEthers } from '@usedapp/core';
 import Section from '../../../layout/Section';
 import { useIdeas } from '../../../hooks/useIdeas';
 import classes from '../Ideas.module.css';
-import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { faArrowAltCircleLeft, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { useIdeaAPI } from '../../../api/Idea';
 
 interface Vote {
   direction: number;
@@ -22,32 +21,28 @@ interface Idea {
   votes: Vote[];
 }
 
-const HOST = 'http://localhost:5001';
-
 const IdeaPage = () => {
-  const { mutate } = useSWRConfig();
-  const { getIdea, voteOnIdea } = useIdeas();
+  const IdeaAPI = useIdeaAPI();
+  const { voteOnIdea } = useIdeas();
   const { id } = useParams() as { id: string };
   const history = useHistory();
   const { account } = useEthers();
-  const [idea, setIdea] = useState<Idea>();
   const [userVote, setUserVote] = useState<Vote>();
   const [ideaScore, setIdeaScore] = useState<number>(0);
-  const token = Cookies.get('lil-noun-token');
+
+  const idea = IdeaAPI.getIdea(id);
+  const votes = IdeaAPI.getVotes(id);
 
   useEffect(() => {
-    getIdea(id).then(res => {
-      setIdea(res);
-      setUserVote(res.votes.find(vote => vote.voterId === account));
+    if (votes) {
+      setUserVote(votes.find(vote => vote.voterId === account));
       setIdeaScore(
-        res.votes.reduce((sum, vote) => {
+        votes.reduce((sum, vote) => {
           return sum + vote.direction;
         }, 0),
       );
-    });
-  }, [id]);
-
-  console.log(idea);
+    }
+  }, [votes, account]);
 
   const vote = async dir => {
     const v = await voteOnIdea({
@@ -55,7 +50,7 @@ const IdeaPage = () => {
       ideaId: parseInt(id),
       voterAddress: account,
     });
-    // mutate('http://localhost:5001/ideas');
+    IdeaAPI.revalidateVotes(id);
   };
 
   if (!idea) {
@@ -68,13 +63,19 @@ const IdeaPage = () => {
         <Row className={classes.headerRow}>
           <div>
             <span className="cursor-pointer inline-block" onClick={() => history.push('/ideas')}>
+              <FontAwesomeIcon
+                icon={faArrowAltCircleLeft}
+                className={`mr-2 text-2xl cursor-pointer`}
+              />
               Back
             </span>
           </div>
           <div className="flex flex-row justify-between items-center mb-12">
-            <h1 className="">{idea.title}</h1>
+            <h1 className="mb-0">{idea.title}</h1>
             <div className="flex flex-row justify-end">
-              <h5 className="text-4xl font-bold lodrina self-center justify-end">{ideaScore}</h5>
+              <h5 className="text-4xl font-bold lodrina self-center justify-end mb-0">
+                {ideaScore}
+              </h5>
               <div className="flex flex-col ml-4">
                 <FontAwesomeIcon
                   icon={faCaretUp}
@@ -83,7 +84,7 @@ const IdeaPage = () => {
                     e.stopPropagation();
                     vote(1);
                   }}
-                  className={` text-4xl ${
+                  className={` text-4xl cursor-pointer ${
                     userVote && userVote.direction === 1 ? 'text-blue-500' : 'text-[#8c8d92]'
                   }`}
                 />
@@ -94,7 +95,7 @@ const IdeaPage = () => {
                     e.stopPropagation();
                     vote(-1);
                   }}
-                  className={` text-4xl ${
+                  className={` text-4xl cursor-pointer ${
                     userVote && userVote.direction === -1 ? 'text-red-500' : 'text-[#8c8d92]'
                   }`}
                 />

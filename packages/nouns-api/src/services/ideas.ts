@@ -63,6 +63,21 @@ class IdeasService {
       return e;
     }
   }
+
+  static async getVotesByIdea(id: number) {
+    try {
+      const votes = prisma.vote.findMany({
+        where: {
+          ideaId: id,
+        },
+      });
+
+      return votes;
+    } catch (e) {
+      console.log(e);
+      return e;
+    }
+  }
 }
 
 export default IdeasService;

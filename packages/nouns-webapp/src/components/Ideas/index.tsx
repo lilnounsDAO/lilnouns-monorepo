@@ -1,4 +1,3 @@
-import useSWR from 'swr';
 import { Alert, Button } from 'react-bootstrap';
 import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
@@ -8,11 +7,14 @@ import { useAuth } from '../../hooks/useAuth';
 import classes from './Ideas.module.css';
 import { isMobileScreen } from '../../utils/isMobile';
 import IdeaCard from '../IdeaCard';
+import { useIdeaAPI } from '../../api/Idea';
 
 const Ideas = () => {
+  const IdeaAPI = useIdeaAPI();
   const history = useHistory();
   const { account } = useEthers();
   const { isLoggedIn, triggerSignIn } = useAuth();
+  const ideas = IdeaAPI.getIdeas();
 
   const handleLogin = async () => {
     await triggerSignIn(() => alert('Logged in, move to submit page'));
@@ -28,10 +30,6 @@ const Ideas = () => {
     }
     return 'Connect wallet to submit an idea.';
   };
-
-  const fetcher = (...args) => fetch(...args).then(res => res.json());
-  const { data, error } = useSWR('http://localhost:5001/ideas', fetcher);
-  const ideas = data?.data;
 
   // set to true for testing
   const hasNouns = connectedAccountNounVotes > 0;
