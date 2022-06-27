@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useAuth } from './useAuth';
 
 const HOST = 'http://localhost:5001';
@@ -17,24 +16,6 @@ interface VoteFormData {
 
 export const useIdeas = () => {
   const { getAuthHeader } = useAuth();
-  const [ideas, setIdeas] = useState([]);
-
-  const getIdeas = async () => {
-    try {
-      const res = await fetch(`${HOST}/ideas`, {
-        headers: {
-          ...getAuthHeader(),
-        },
-      });
-      const { data } = await res.json();
-
-      if (res.status === 200) {
-        setIdeas(data);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   const voteOnIdea = async (formData: VoteFormData) => {
     try {
@@ -45,23 +26,6 @@ export const useIdeas = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-      });
-      const { data } = await res.json();
-
-      if (res.status === 200) {
-        return data;
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const getIdea = async id => {
-    try {
-      const res = await fetch(`${HOST}/idea/${id}`, {
-        headers: {
-          ...getAuthHeader(),
-        },
       });
       const { data } = await res.json();
 
@@ -86,7 +50,7 @@ export const useIdeas = () => {
       });
       const { data } = await res.json();
       if (res.status === 200) {
-        setIdeas(data);
+        // pass
       }
     } catch (e) {
       console.log(e);
@@ -94,9 +58,6 @@ export const useIdeas = () => {
   };
 
   return {
-    ideas,
-    getIdea,
-    getIdeas,
     voteOnIdea,
     submitIdea,
   };

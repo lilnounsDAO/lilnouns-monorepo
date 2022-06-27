@@ -14,7 +14,7 @@ class IdeasService {
   static async get(id: number) {
     const idea = await prisma.idea.findUnique({
       where: { id: id },
-      include: { votes: true },
+      include: { votes: true, comments: true },
     });
 
     return idea;
@@ -73,6 +73,23 @@ class IdeasService {
       });
 
       return votes;
+    } catch (e) {
+      console.log(e);
+      return e;
+    }
+  }
+
+  static async commentOnIdea(data: any) {
+    try {
+      const comment = prisma.comment.create({
+        data: {
+          body: data.body,
+          authorId: data.authorId,
+          ideaId: data.ideaId,
+        },
+      });
+
+      return comment;
     } catch (e) {
       console.log(e);
       return e;

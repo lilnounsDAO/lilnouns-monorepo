@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row, Button } from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import { useEthers } from '@usedapp/core';
 import Section from '../../../layout/Section';
@@ -14,13 +14,6 @@ interface Vote {
   voterId: string;
 }
 
-interface Idea {
-  title: string;
-  tldr: string;
-  description: string;
-  votes: Vote[];
-}
-
 const IdeaPage = () => {
   const IdeaAPI = useIdeaAPI();
   const { voteOnIdea } = useIdeas();
@@ -29,9 +22,12 @@ const IdeaPage = () => {
   const { account } = useEthers();
   const [userVote, setUserVote] = useState<Vote>();
   const [ideaScore, setIdeaScore] = useState<number>(0);
+  const [comment, setComment] = useState<string>();
 
   const idea = IdeaAPI.getIdea(id);
   const votes = IdeaAPI.getVotes(id);
+
+  console.log(idea);
 
   useEffect(() => {
     if (votes) {
@@ -44,7 +40,7 @@ const IdeaPage = () => {
     }
   }, [votes, account]);
 
-  const vote = async dir => {
+  const castVote = async dir => {
     const v = await voteOnIdea({
       direction: dir,
       ideaId: parseInt(id),
@@ -56,6 +52,15 @@ const IdeaPage = () => {
   if (!idea) {
     return <div>loading</div>;
   }
+
+  const submitComment = async () => {
+    const response = await IdeaAPI.commentOnIdea({
+      body: comment,
+      authorId: account,
+      ideaId: parseInt(id),
+    });
+    setComment('');
+  };
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -82,7 +87,7 @@ const IdeaPage = () => {
                   onClick={e => {
                     // this prevents the click from bubbling up and opening / closing the hidden section
                     e.stopPropagation();
-                    vote(1);
+                    castVote(1);
                   }}
                   className={` text-4xl cursor-pointer ${
                     userVote && userVote.direction === 1 ? 'text-blue-500' : 'text-[#8c8d92]'
@@ -93,7 +98,7 @@ const IdeaPage = () => {
                   icon={faCaretDown}
                   onClick={e => {
                     e.stopPropagation();
-                    vote(-1);
+                    castVote(-1);
                   }}
                   className={` text-4xl cursor-pointer ${
                     userVote && userVote.direction === -1 ? 'text-red-500' : 'text-[#8c8d92]'
@@ -112,6 +117,39 @@ const IdeaPage = () => {
             <h3 className="lodrina font-bold text-2xl mb-2">Description</h3>
             <p>{idea.description}</p>
           </div>
+        </div>
+
+        <div className="mt-12 mb-2">
+          <h3 className="text-2xl lodrina font-bold">
+            {idea.comments.length} {idea.comments.length === 1 ? 'comment' : 'comments'}
+          </h3>
+        </div>
+
+        <input
+          value={comment}
+          onChange={e => setComment(e.target.value)}
+          type="text"
+          className="border rounded-lg w-full p-2 mt-4"
+          placeholder="Type your commment..."
+        />
+        <div className="flex justify-end mt-4">
+          <Button
+            onClick={() => {
+              submitComment();
+            }}
+          >
+            Submit
+          </Button>
+        </div>
+        <div className="mt-12 space-y-8">
+          {idea.comments.map(comment => {
+            return (
+              <div>
+                <span className="text-xl lodrina text-gray-400">{comment.authorId}</span>
+                <p>{comment.body}</p>
+              </div>
+            );
+          })}
         </div>
       </Col>
     </Section>

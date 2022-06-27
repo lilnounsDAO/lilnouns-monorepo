@@ -20,7 +20,9 @@ const Ideas = () => {
     await triggerSignIn(() => alert('Logged in, move to submit page'));
   };
 
+  // doesn't seem to be working, but makes sense, since I don't have any ln on rinkeby
   const connectedAccountNounVotes = useUserVotes() || 0;
+  console.log(connectedAccountNounVotes);
 
   const isMobile = isMobileScreen();
 

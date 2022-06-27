@@ -63,6 +63,22 @@ class IdeasController {
     }
   };
 
+  static commentOnIdea = async (req: Request, res: Response, next: any) => {
+    try {
+      const idea = await IdeasService.commentOnIdea(req.body);
+      res.status(200).json({
+        status: true,
+        message: 'Commented on idea',
+        data: idea,
+      });
+    } catch (e: any) {
+      console.log(e);
+      res.status(e.statusCode).json({
+        message: e.message,
+      });
+    }
+  };
+
   static getVotesByIdea = async (req: Request, res: Response, next: any) => {
     try {
       const votes = await IdeasService.getVotesByIdea(parseInt(req.params.id));
