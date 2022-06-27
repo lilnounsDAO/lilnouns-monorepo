@@ -44,7 +44,6 @@ const IdeaPage = () => {
     const v = await voteOnIdea({
       direction: dir,
       ideaId: parseInt(id),
-      voterAddress: account,
     });
     IdeaAPI.revalidateVotes(id);
   };
@@ -56,7 +55,6 @@ const IdeaPage = () => {
   const submitComment = async () => {
     const response = await IdeaAPI.commentOnIdea({
       body: comment,
-      authorId: account,
       ideaId: parseInt(id),
     });
     setComment('');
