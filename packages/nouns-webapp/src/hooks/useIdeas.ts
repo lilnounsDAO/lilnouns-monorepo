@@ -9,6 +9,12 @@ interface IdeaFormData {
   description: string;
 }
 
+interface VoteFormData {
+  direction: number;
+  ideaId: number;
+  voterAddress: string;
+}
+
 export const useIdeas = () => {
   const { getAuthHeader } = useAuth();
   const [ideas, setIdeas] = useState([]);
@@ -24,6 +30,26 @@ export const useIdeas = () => {
 
       if (res.status === 200) {
         setIdeas(data);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const voteOnIdea = async (formData: VoteFormData) => {
+    try {
+      const res = await fetch(`${HOST}/idea/vote`, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeader(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const { data } = await res.json();
+
+      if (res.status === 200) {
+        return data;
       }
     } catch (e) {
       console.log(e);
@@ -71,6 +97,7 @@ export const useIdeas = () => {
     ideas,
     getIdea,
     getIdeas,
+    voteOnIdea,
     submitIdea,
   };
 };

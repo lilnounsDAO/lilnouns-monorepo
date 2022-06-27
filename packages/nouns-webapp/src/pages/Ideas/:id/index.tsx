@@ -1,54 +1,61 @@
 import { useState, useEffect } from 'react';
+import { useSWRConfig } from 'swr';
 import { Col, Row, Button } from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
+import { useEthers } from '@usedapp/core';
 import Section from '../../../layout/Section';
 import { useIdeas } from '../../../hooks/useIdeas';
 import classes from '../Ideas.module.css';
 import Cookies from 'js-cookie';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+
+interface Vote {
+  direction: number;
+  voterId: string;
+}
 
 interface Idea {
   title: string;
   tldr: string;
   description: string;
+  votes: Vote[];
 }
 
 const HOST = 'http://localhost:5001';
 
 const IdeaPage = () => {
-  const { getIdea } = useIdeas();
+  const { mutate } = useSWRConfig();
+  const { getIdea, voteOnIdea } = useIdeas();
   const { id } = useParams() as { id: string };
   const history = useHistory();
+  const { account } = useEthers();
   const [idea, setIdea] = useState<Idea>();
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [userVote, setUserVote] = useState<Vote>();
+  const [ideaScore, setIdeaScore] = useState<number>(0);
   const token = Cookies.get('lil-noun-token');
 
   useEffect(() => {
     getIdea(id).then(res => {
       setIdea(res);
+      setUserVote(res.votes.find(vote => vote.voterId === account));
+      setIdeaScore(
+        res.votes.reduce((sum, vote) => {
+          return sum + vote.direction;
+        }, 0),
+      );
     });
   }, [id]);
 
-  const submitIdea = async () => {
-    const form = document.getElementById('submit-form') as HTMLFormElement;
-    const formData = new FormData(form);
-    const params = {};
-    formData.forEach((value, key) => (params[key] = value));
+  console.log(idea);
 
-    const res = await fetch(`${HOST}/ideas`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(params),
+  const vote = async dir => {
+    const v = await voteOnIdea({
+      direction: dir,
+      ideaId: parseInt(id),
+      voterAddress: account,
     });
-
-    if (res.status === 200) {
-      // const { data } = await res.json();
-      setModalOpen(true);
-    } else {
-      // error
-    }
+    // mutate('http://localhost:5001/ideas');
   };
 
   if (!idea) {
@@ -64,7 +71,36 @@ const IdeaPage = () => {
               Back
             </span>
           </div>
-          <h1 className="mb-12">{idea.title}</h1>
+          <div className="flex flex-row justify-between items-center mb-12">
+            <h1 className="">{idea.title}</h1>
+            <div className="flex flex-row justify-end">
+              <h5 className="text-4xl font-bold lodrina self-center justify-end">{ideaScore}</h5>
+              <div className="flex flex-col ml-4">
+                <FontAwesomeIcon
+                  icon={faCaretUp}
+                  onClick={e => {
+                    // this prevents the click from bubbling up and opening / closing the hidden section
+                    e.stopPropagation();
+                    vote(1);
+                  }}
+                  className={` text-4xl ${
+                    userVote && userVote.direction === 1 ? 'text-blue-500' : 'text-[#8c8d92]'
+                  }`}
+                />
+
+                <FontAwesomeIcon
+                  icon={faCaretDown}
+                  onClick={e => {
+                    e.stopPropagation();
+                    vote(-1);
+                  }}
+                  className={` text-4xl ${
+                    userVote && userVote.direction === -1 ? 'text-red-500' : 'text-[#8c8d92]'
+                  }`}
+                />
+              </div>
+            </div>
+          </div>
         </Row>
         <div className="space-y-8">
           <div className="flex flex-col">

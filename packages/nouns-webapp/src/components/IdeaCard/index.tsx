@@ -1,12 +1,32 @@
+import { useSWRConfig } from 'swr';
 import { useState } from 'react';
+import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
+import { useIdeas } from '../../hooks/useIdeas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 const IdeaCard = ({ idea }) => {
+  const { mutate } = useSWRConfig();
+  const { voteOnIdea } = useIdeas();
   const history = useHistory();
+  const { account } = useEthers();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { id, description, title } = idea;
+
+  const usersVote = idea.votes.find(vote => vote.voterId === account);
+  const ideaScore = idea.votes.reduce((sum, vote) => {
+    return sum + vote.direction;
+  }, 0);
+
+  const vote = async dir => {
+    const v = await voteOnIdea({
+      direction: dir,
+      ideaId: id,
+      voterAddress: account,
+    });
+    mutate('http://localhost:5001/ideas');
+  };
 
   return (
     <div
@@ -21,25 +41,29 @@ const IdeaCard = ({ idea }) => {
         {title}
       </span>
       <div className="flex flex-row justify-end">
-        <span className="text-2xl font-bold lodrina self-center justify-end">{0}</span>
+        <span className="text-2xl font-bold lodrina self-center justify-end">{ideaScore}</span>
         <div className="flex flex-col ml-4">
           <FontAwesomeIcon
             icon={faCaretUp}
             onClick={e => {
               // this prevents the click from bubbling up and opening / closing the hidden section
               e.stopPropagation();
-              alert('upvoting');
+              vote(1);
             }}
-            className="text-[#8c8d92] text-2xl"
+            className={` text-2xl ${
+              usersVote && usersVote.direction === 1 ? 'text-blue-500' : 'text-[#8c8d92]'
+            }`}
           />
 
           <FontAwesomeIcon
             icon={faCaretDown}
             onClick={e => {
               e.stopPropagation();
-              alert('downvoting');
+              vote(-1);
             }}
-            className="text-[#8c8d92] text-2xl"
+            className={` text-2xl ${
+              usersVote && usersVote.direction === -1 ? 'text-red-500' : 'text-[#8c8d92]'
+            }`}
           />
         </div>
       </div>

@@ -43,6 +43,8 @@ model Vote {
   ideaId    Int
   voter     User   @relation(fields: [voterId], references: [wallet])
   voterId   String
+
+  @@unique([ideaId, voterId])
 }
 
 model Comment {

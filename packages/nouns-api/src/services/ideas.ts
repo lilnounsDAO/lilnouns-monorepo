@@ -1,14 +1,20 @@
 import { prisma } from '../api';
+import { User } from '@prisma/client';
 
 class IdeasService {
   static async all() {
-    const allIdeas = await prisma.idea.findMany();
+    const allIdeas = await prisma.idea.findMany({
+      include: {
+        votes: true,
+      },
+    });
     return allIdeas;
   }
 
   static async get(id: number) {
     const idea = await prisma.idea.findUnique({
       where: { id: id },
+      include: { votes: true },
     });
 
     return idea;
@@ -26,6 +32,32 @@ class IdeasService {
       });
 
       return idea;
+    } catch (e) {
+      console.log(e);
+      return e;
+    }
+  }
+
+  static async voteOnIdea(data: any) {
+    try {
+      const vote = prisma.vote.upsert({
+        where: {
+          ideaId_voterId: {
+            voterId: data.voterAddress,
+            ideaId: data.ideaId,
+          },
+        },
+        update: {
+          direction: data.direction,
+        },
+        create: {
+          direction: data.direction,
+          voterId: data.voterAddress,
+          ideaId: data.ideaId,
+        },
+      });
+
+      return vote;
     } catch (e) {
       console.log(e);
       return e;
