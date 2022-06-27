@@ -1,51 +1,25 @@
-import { useState } from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import Section from '../../../layout/Section';
 import Modal from '../../../components/Modal';
+import { useIdeas } from '../../../hooks/useIdeas';
 import classes from '../Ideas.module.css';
-import Cookies from 'js-cookie';
 
 const HOST = 'http://localhost:5001';
 
 const CreateIdeaPage = () => {
   const history = useHistory();
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const token = Cookies.get('lil-noun-token');
-
-  const submitIdea = async () => {
-    const form = document.getElementById('submit-form') as HTMLFormElement;
-    const formData = new FormData(form);
-    const params = {};
-    formData.forEach((value, key) => (params[key] = value));
-
-    const res = await fetch(`${HOST}/ideas`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(params),
-    });
-
-    if (res.status === 200) {
-      // const { data } = await res.json();
-      setModalOpen(true);
-    } else {
-      // error
-    }
-  };
+  const { submitIdea, error, dismissError } = useIdeas();
 
   return (
     <Section fullWidth={false} className={classes.section}>
-      {modalOpen && (
+      {error && (
+        // Repurposing this modal as a error modal as we can redirect to the idea page on success?
         <Modal
-          title="Success"
-          content="Idea submitted!"
+          title="Something went wrong!"
+          content={error.message}
           onDismiss={() => {
-            setModalOpen(false);
-            const form = document.getElementById('submit-form') as HTMLFormElement;
-            form.reset();
+            dismissError();
           }}
         />
       )}
@@ -62,7 +36,7 @@ const CreateIdeaPage = () => {
           You must hold at least one lil noun in order to submit an idea and vote on others. There
           is no limit to the number of ideas you can submit and vote on.
         </p>
-        <form className="space-y-8" id="submit-form">
+        <form className="space-y-8" id="submit-form" onSubmit={data => submitIdea(data)}>
           <div className="flex flex-col">
             <label className="lodrina font-bold text-2xl mb-2">Title</label>
             <input
@@ -89,13 +63,7 @@ const CreateIdeaPage = () => {
             />
           </div>
           <div className="flex justify-end">
-            <Button
-              onClick={() => {
-                submitIdea();
-              }}
-            >
-              Submit
-            </Button>
+            <Button type="submit">Submit</Button>
           </div>
         </form>
       </Col>
