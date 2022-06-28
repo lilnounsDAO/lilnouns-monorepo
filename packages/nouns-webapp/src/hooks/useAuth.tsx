@@ -1,10 +1,9 @@
 import { useContext, useState, createContext, ReactNode } from 'react';
+import config from '../config';
 import { useEthers } from '@usedapp/core';
 import Cookies from 'js-cookie';
 import { SiweMessage } from 'siwe';
 import { useApiError } from './useApiError';
-
-const HOST = 'http://localhost:5001';
 
 interface AuthCtx {
   isLoggedIn: boolean;
@@ -23,6 +22,8 @@ const AuthContext = createContext<AuthCtx>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const HOST = config.app.nounsApiUri;
+
   const getAuthToken = () => Cookies.get('lil-noun-token');
   const getAuthHeader = () => ({ Authorization: `Bearer ${getAuthToken()}` });
 
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         chainId,
         nonce: data.nonce,
       });
-      return message.prepareMessage();
+      return { message: message.prepareMessage(), nonce: data.nonce };
     } catch (e: any) {
       setError({ message: e.message || 'Failed to generate message', status: e.status });
     }
@@ -63,27 +64,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       const signer = library?.getSigner();
 
-      const message = await createSiweMessage(
+      const siweMessage = await createSiweMessage(
         await signer?.getAddress(),
         'Sign in with Ethereum to the app.',
         chainId,
       );
 
-      if (!message) {
+      if (!siweMessage?.message) {
         throw new Error('Failed to generate message');
       }
 
-      const signature = await signer?.signMessage(message);
+      const signature = await signer?.signMessage(siweMessage?.message);
 
       const res = await fetch(`${HOST}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message, signature }),
+        body: JSON.stringify({
+          message: siweMessage?.message,
+          signature,
+          nonce: siweMessage?.nonce,
+        }),
       });
 
       const data = await res.json();
+
+      if (res.status !== 200) {
+        throw new Error('Unauthorized');
+      }
 
       const one_hour = new Date(new Date().getTime() + 3600 * 1000);
       Cookies.set('lil-noun-token', data.data.accessToken, { expires: one_hour });
