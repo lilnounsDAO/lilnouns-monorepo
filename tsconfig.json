@@ -1,13 +1,4 @@
 {
-  "compilerOptions": {
-    "jsx": "react"
-  },
-  "compilerOptions": {
-    "jsx": "react"
-  },
-  "compilerOptions": {
-    "jsx": "react"
-  },
   "references": [
     { "path": "packages/nouns-api" },
     { "path": "packages/nouns-assets" },
