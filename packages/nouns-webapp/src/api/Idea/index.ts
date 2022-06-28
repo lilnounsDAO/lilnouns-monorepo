@@ -3,33 +3,55 @@ import { useAuth } from '../../hooks/useAuth';
 
 const HOST = 'http://localhost:5001';
 
+export interface Idea {
+  id: number;
+  title: string;
+  tldr: string;
+  description: string;
+  votes: Vote[];
+  comments: Comment[];
+}
+
+export interface Comment {
+  authorId: string;
+  body: string;
+}
+
+export interface Vote {
+  direction: number;
+  voterId: string;
+}
+
 export const useIdeaAPI = () => {
   const { getAuthHeader } = useAuth();
   const { mutate } = useSWRConfig();
-  const fetcher: Fetcher = (...args) => fetch(...args).then(res => res.json());
+
+  const fetcher: Fetcher = async (input: RequestInfo, init?: RequestInit, ...args: any[]) => {
+    const res = await fetch(input, init);
+    return res.json();
+  };
 
   return {
     getIdeas: () => {
-      const { data, error } = useSWR(`${HOST}/ideas`, fetcher);
-      return data?.data;
+      const { data, error }: any = useSWR(`${HOST}/ideas`, fetcher);
+      return data?.data as Idea[];
     },
 
     getIdea: (id: string) => {
-      const { data, error } = useSWR(`${HOST}/idea/${id}`, fetcher);
-      return data?.data;
+      const { data, error }: any = useSWR(`${HOST}/idea/${id}`, fetcher);
+      return data?.data as Idea;
     },
 
     getVotes: (id: string) => {
-      const { data, error } = useSWR(`${HOST}/idea/${id}/votes`, fetcher);
-      console.log(data);
-      return data?.data;
+      const { data, error }: any = useSWR(`${HOST}/idea/${id}/votes`, fetcher);
+      return data?.data as Vote[];
     },
 
     revalidateVotes: (id: string) => {
       mutate(`${HOST}/idea/${id}/votes`);
     },
 
-    commentOnIdea: async formData => {
+    commentOnIdea: async (formData: any) => {
       try {
         const res = await fetch(`${HOST}/idea/comment`, {
           method: 'POST',

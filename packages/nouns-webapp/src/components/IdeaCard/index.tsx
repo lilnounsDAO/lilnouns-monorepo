@@ -6,7 +6,19 @@ import { useIdeas } from '../../hooks/useIdeas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
-const IdeaCard = ({ idea }) => {
+interface Idea {
+  id: number;
+  title: string;
+  tldr: string;
+  description: string;
+  votes: {
+    voterId: string;
+    direction: number;
+  }[];
+}
+
+// TODO fix types + cleanup file
+const IdeaCard = ({ idea }: { idea: Idea }) => {
   const { mutate } = useSWRConfig();
   const { voteOnIdea } = useIdeas();
   const history = useHistory();
@@ -19,7 +31,7 @@ const IdeaCard = ({ idea }) => {
     return sum + vote.direction;
   }, 0);
 
-  const vote = async dir => {
+  const vote = async (dir: number) => {
     const v = await voteOnIdea({
       direction: dir,
       ideaId: id,

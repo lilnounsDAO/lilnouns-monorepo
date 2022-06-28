@@ -7,12 +7,7 @@ import { useIdeas } from '../../../hooks/useIdeas';
 import classes from '../Ideas.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleLeft, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { useIdeaAPI } from '../../../api/Idea';
-
-interface Vote {
-  direction: number;
-  voterId: string;
-}
+import { useIdeaAPI, Vote } from '../../../api/Idea';
 
 const IdeaPage = () => {
   const IdeaAPI = useIdeaAPI();
@@ -40,7 +35,7 @@ const IdeaPage = () => {
     }
   }, [votes, account]);
 
-  const castVote = async dir => {
+  const castVote = async (dir: number) => {
     const v = await voteOnIdea({
       direction: dir,
       ideaId: parseInt(id),
