@@ -29,31 +29,32 @@ const InfoModalOverlay: React.FC<{
                 <h1>Bidding and Settling</h1>
               </div>
             </div>
-              <div className={classes.headers}>Bids</div>
-              Once an auction starts, everyone has 15 minutes to bid. Anyone can bid an amount
-              at/above 0.01 eth. The Amount bid is returned to bidder if they lose the auction
-              (minus gas spent on bid transaction).
-              <br />
-              <br />
-              Bids at the very last minute increase the auction time by 1 and a half minutes.
-              Sometimes, multiple bids are sent at the same time. This may result in bids coming in
-              and winning an auction at the very last minute/seconds (irrespective of time
-              increase).
-              <br />
-              <div className={classes.headerText}>Bid Refunds</div>
-              Unsuccessful bids are refunded in full. The timing of refunds may be offset by 1
-              bidder. This means that a refund is processed for an unsuccessful bid, when a higher
-              bid is submitted.
-              <div className={classes.headerText}>Settlement</div>
-              When an auction ends, a gas-only transaction is required to mint the current Lil Noun
-              to the winners wallet and start the next auction. Anyone can settle an auction. As gas
-              price fluctuates, the cost of settlement also fluctuates.
-              <br />
-              <br />
-              Settlement gas price of every 9th Lil Noun is higher. This is due to the transaction
-              also triggering 2 free Lil Noun mints: The Lil Nounders mint and The Nouns DAO mint.
-            </div>
+            <div className={classes.headerText}>Settlement</div>
+            Anyone can settle an auction. When an auction ends, a gas-only transaction is required
+            to start the next auction and mint the current Lil Noun to the winners wallet. As gas
+            price fluctuates, the cost of settlement also fluctuates.
+            <br />
+            <br />
+            Settlement gas price of every 9th Lil Noun is higher. This is due to the transaction
+            also triggering 2 free Lil Noun mints: The Lil Nounders mint and The Nouns DAO mint.
+            <br />
+            <br />
+            <div className={classes.headers}>Bids</div>
+            Once an auction starts, everyone has 15 minutes to bid. Anyone can bid an amount
+            at/above 0.01 eth. The Amount bid is returned to bidder if they lose the auction (minus
+            gas spent on bid transaction).
+            <br />
+            <br />
+            Bids at the very last minute increase the auction time by 1 and a half minutes.
+            Sometimes, multiple bids are sent at the same time. This may result in bids coming in
+            and winning an auction at the very last minute/seconds (irrespective of time increase).
+            <br />
+            <div className={classes.headerText}>Bid Refunds</div>
+            Unsuccessful bids are refunded in full. The timing of refunds may be offset by 1 bidder.
+            This means that a refund is processed for an unsuccessful bid, when a higher bid is
+            submitted.
           </div>
+        </div>
       </div>
     </>
   );
