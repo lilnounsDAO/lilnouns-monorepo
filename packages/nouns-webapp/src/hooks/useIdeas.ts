@@ -1,24 +1,56 @@
-import { useAuth } from './useAuth';
-import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from './useAuth';
+import { useApiError } from './useApiError';
+import { useHistory } from 'react-router-dom';
 
 const HOST = 'http://localhost:5001';
 
-interface VoteFormData {
+export interface VoteFormData {
   direction: number;
   ideaId: number;
 }
 
-type SubmitError =
-  | {
-      message: string;
-    }
-  | undefined;
+export interface Vote {
+  id: number;
+  voterId: string;
+  ideaId: number;
+  direction: number;
+}
+
+export interface Idea {
+  id: number;
+  title: string;
+  tldr: string;
+  description: string;
+  votes: Vote[];
+  creatorId: string;
+}
 
 export const useIdeas = () => {
-  const { getAuthHeader } = useAuth();
+  const { getAuthHeader, isLoggedIn, triggerSignIn } = useAuth();
+  const { setError } = useApiError();
   const history = useHistory();
-  const [error, setError] = useState(undefined as SubmitError);
+
+  const [ideas, setIdeas] = useState([] as Idea[]);
+
+  // Update the vote count for an idea after a new vote is recorded.
+  const updateVotesState = ({ id, ideaId, direction }: Vote) => {
+    const updatedIdeas = ideas.map(idea => {
+      if (idea.id === ideaId) {
+        const newIdeaVotes = idea.votes.map(vote => {
+          if (id === vote.id) {
+            return { ...vote, direction };
+          }
+        });
+
+        return { ...idea, votes: newIdeaVotes };
+      }
+
+      return idea;
+    }) as Idea[];
+
+    return setIdeas(updatedIdeas);
+  };
 
   const voteOnIdea = async (formData: VoteFormData) => {
     try {
@@ -32,12 +64,33 @@ export const useIdeas = () => {
       });
       const { data } = await res.json();
 
-      if (res.status === 200) {
-        return data;
-      }
+      return updateVotesState(data as Vote);
     } catch (e: any) {
       const error = {
         message: e.message || 'Failed to submit your vote!',
+        status: e.status || 500,
+      };
+      setError(error);
+    }
+  };
+
+  const getIdeas = async () => {
+    try {
+      const res = await fetch(`${HOST}/ideas`, {
+        method: 'GET',
+        headers: {
+          ...getAuthHeader(),
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const { data } = await res.json();
+
+      setIdeas(data);
+    } catch (e: any) {
+      const error = {
+        message: e.message || 'Failed to fetch ideas!',
+        status: e.status || 500,
       };
       setError(error);
     }
@@ -75,17 +128,34 @@ export const useIdeas = () => {
     } catch (e: any) {
       const error = {
         message: e.message || 'Failed to submit your idea!',
+        status: e.status || 500,
       };
       setError(error);
     }
   };
 
-  const dismissError = () => setError(undefined);
-
   return {
-    voteOnIdea,
-    submitIdea,
-    error,
-    dismissError,
+    voteOnIdea: async (formData: VoteFormData) => {
+      if (!isLoggedIn) {
+        try {
+          await triggerSignIn();
+          voteOnIdea(formData);
+        } catch (e) {}
+      } else {
+        voteOnIdea(formData);
+      }
+    },
+    submitIdea: async (event: React.FormEvent<HTMLFormElement>) => {
+      if (!isLoggedIn) {
+        try {
+          await triggerSignIn();
+          submitIdea(event);
+        } catch (e) {}
+      } else {
+        submitIdea(event);
+      }
+    },
+    getIdeas,
+    ideas,
   };
 };
