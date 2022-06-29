@@ -46,6 +46,7 @@ import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
 import { createClient, WagmiConfig } from 'wagmi';
 import { AuthProvider } from './hooks/useAuth';
+import { ErrorModalProvider } from './hooks/useApiError';
 
 dotenv.config();
 
@@ -152,10 +153,9 @@ const ChainSubscriber: React.FC = () => {
       dispatch(push(nounPath(nounIdNumber)));
       dispatch(setOnDisplayAuctionNounId(nounIdNumber));
       dispatch(setOnDisplayAuctionStartTime(startTimeNumber));
-      
+
       dispatch(setLastAuctionNounId(nounIdNumber));
       dispatch(setLastAuctionStartTime(startTimeNumber));
-      
     };
     const processAuctionExtended = (nounId: BigNumberish, endTime: BigNumberish) => {
       dispatch(setAuctionExtended({ nounId, endTime }));
@@ -196,20 +196,31 @@ const ChainSubscriber: React.FC = () => {
   return <></>;
 };
 
-//UPDATE: Using Auction start timestmap to fetch backwards beyond last 1000 aucitons 
+//UPDATE: Using Auction start timestmap to fetch backwards beyond last 1000 aucitons
 const PastAuctions: React.FC = () => {
   const latestAuctionId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
-  const latestAuctionStartTime = useAppSelector(state => state.onDisplayAuction.lastAuctionStartTime);
-  const onDisplayAuctionNounId = useAppSelector(state => state.onDisplayAuction.onDisplayAuctionNounId);
-  const onDisplayAuctionStartTime = useAppSelector(state => state.onDisplayAuction.onDisplayAuctionStartTime);
+  const latestAuctionStartTime = useAppSelector(
+    state => state.onDisplayAuction.lastAuctionStartTime,
+  );
+  const onDisplayAuctionNounId = useAppSelector(
+    state => state.onDisplayAuction.onDisplayAuctionNounId,
+  );
+  const onDisplayAuctionStartTime = useAppSelector(
+    state => state.onDisplayAuction.onDisplayAuctionStartTime,
+  );
 
   const { data } = useQuery(latestAuctionsQuery(onDisplayAuctionStartTime || 0));
-  const { data: auctionData } = useQuery(singularAuctionQuery(onDisplayAuctionNounId?.toString() || "0"));
-  
+  const { data: auctionData } = useQuery(
+    singularAuctionQuery(onDisplayAuctionNounId?.toString() || '0'),
+  );
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    data && auctionData && dispatch(setOnDisplayAuctionStartTime(auctionData?.auctions?.[0]?.startTime)) && dispatch(addPastAuctions({ data }));
+    data &&
+      auctionData &&
+      dispatch(setOnDisplayAuctionStartTime(auctionData?.auctions?.[0]?.startTime)) &&
+      dispatch(addPastAuctions({ data }));
   }, [data, auctionData, latestAuctionId, latestAuctionStartTime, dispatch]);
 
   return <></>;
@@ -227,13 +238,15 @@ ReactDOM.render(
             }
           >
             <ApolloProvider client={client}>
-                <PastAuctions />
-                <DAppProvider config={useDappConfig}>
+              <PastAuctions />
+              <DAppProvider config={useDappConfig}>
+                <ErrorModalProvider>
                   <AuthProvider>
                     <App />
                     <Updaters />
                   </AuthProvider>
-                </DAppProvider>
+                </ErrorModalProvider>
+              </DAppProvider>
             </ApolloProvider>
           </Web3ReactProvider>
         </React.StrictMode>

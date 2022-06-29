@@ -1,28 +1,15 @@
 import { Col, Row, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import Section from '../../../layout/Section';
-import Modal from '../../../components/Modal';
 import { useIdeas } from '../../../hooks/useIdeas';
 import classes from '../Ideas.module.css';
 
-const HOST = 'http://localhost:5001';
-
 const CreateIdeaPage = () => {
   const history = useHistory();
-  const { submitIdea, error, dismissError } = useIdeas();
+  const { submitIdea } = useIdeas();
 
   return (
     <Section fullWidth={false} className={classes.section}>
-      {error && (
-        // Repurposing this modal as a error modal as we can redirect to the idea page on success?
-        <Modal
-          title="Something went wrong!"
-          content={error.message}
-          onDismiss={() => {
-            dismissError();
-          }}
-        />
-      )}
       <Col lg={10} className={classes.wrapper}>
         <Row className={classes.headerRow}>
           <div>
