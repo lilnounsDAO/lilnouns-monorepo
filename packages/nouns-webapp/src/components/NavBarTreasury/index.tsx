@@ -5,10 +5,11 @@ import clsx from 'clsx';
 interface NavBarTreasuryProps {
   treasuryBalance: string;
   treasuryStyle: NavBarButtonStyle;
+  treasuryBigNounBalance: string;
 }
 
 const NavBarTreasury: React.FC<NavBarTreasuryProps> = props => {
-  const { treasuryBalance, treasuryStyle } = props;
+  const { treasuryBalance, treasuryStyle, treasuryBigNounBalance } = props;
 
   let treasuryStyleClass;
   switch (treasuryStyle) {
@@ -23,6 +24,7 @@ const NavBarTreasury: React.FC<NavBarTreasuryProps> = props => {
       treasuryStyleClass = classes.whiteInfo;
       break;
   }
+
 
   return (
     <div className={`${classes.wrapper} ${treasuryStyleClass}`}>
@@ -43,6 +45,9 @@ const NavBarTreasury: React.FC<NavBarTreasuryProps> = props => {
           </div>
           <div className={classes.treasuryBalance}>
             Ξ {Number(treasuryBalance).toLocaleString('en-US')}
+          </div>
+          <div className={classes.treasuryBigNounBalance}>
+            + {`${treasuryBigNounBalance} Nouns`}
           </div>
         </div>
       </div>
