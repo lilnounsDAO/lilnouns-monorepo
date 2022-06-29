@@ -3,26 +3,22 @@ import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { useUserVotes } from '../../wrappers/nounToken';
-import { useAuth } from '../../hooks/useAuth';
 import classes from './Ideas.module.css';
 import { isMobileScreen } from '../../utils/isMobile';
 import IdeaCard from '../IdeaCard';
-import { useIdeaAPI } from '../../api/Idea';
+import { useIdeas } from '../../hooks/useIdeas';
+import { useEffect } from 'react';
 
 const Ideas = () => {
-  const IdeaAPI = useIdeaAPI();
-  const history = useHistory();
   const { account } = useEthers();
-  const { isLoggedIn, triggerSignIn } = useAuth();
-  const ideas = IdeaAPI.getIdeas();
+  const history = useHistory();
+  const { getIdeas, ideas, voteOnIdea } = useIdeas();
 
-  const handleLogin = async () => {
-    await triggerSignIn(() => alert('Logged in, move to submit page'));
-  };
+  useEffect(() => {
+    getIdeas();
+  }, []);
 
-  // doesn't seem to be working, but makes sense, since I don't have any ln on rinkeby
   const connectedAccountNounVotes = useUserVotes() || 0;
-  console.log(connectedAccountNounVotes);
 
   const isMobile = isMobileScreen();
 
@@ -42,10 +38,7 @@ const Ideas = () => {
         <h3 className={classes.heading}>Ideas</h3>
         {account !== undefined && hasNouns ? (
           <div className={classes.submitIdeaButtonWrapper}>
-            <Button
-              className={classes.generateBtn}
-              onClick={() => (!isLoggedIn ? handleLogin() : history.push('/ideas/create'))}
-            >
+            <Button className={classes.generateBtn} onClick={() => history.push('/ideas/create')}>
               Submit Idea
             </Button>
           </div>
@@ -61,8 +54,15 @@ const Ideas = () => {
       {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
       {ideas?.length ? (
         <span className="space-y-4">
-          {ideas.map((idea: any, i) => {
-            return <IdeaCard idea={idea} key={`idea-${i}`} />;
+          {ideas.map((idea, i) => {
+            return (
+              <IdeaCard
+                idea={idea}
+                key={`idea-${idea.id}`}
+                voteOnIdea={voteOnIdea}
+                connectedAccountNounVotes={connectedAccountNounVotes}
+              />
+            );
           })}
         </span>
       ) : (
