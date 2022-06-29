@@ -1,9 +1,8 @@
 import { useState } from 'react';
+import config from '../config';
 import { useAuth } from './useAuth';
 import { useApiError } from './useApiError';
 import { useHistory } from 'react-router-dom';
-
-const HOST = 'http://localhost:5001';
 
 export interface VoteFormData {
   direction: number;
@@ -27,6 +26,7 @@ export interface Idea {
 }
 
 export const useIdeas = () => {
+  const HOST = config.app.nounsApiUri;
   const { getAuthHeader, isLoggedIn, triggerSignIn } = useAuth();
   const { setError } = useApiError();
   const history = useHistory();
