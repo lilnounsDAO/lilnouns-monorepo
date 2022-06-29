@@ -1,43 +1,78 @@
-import { useSWRConfig } from 'swr';
 import { useState } from 'react';
-import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
-import { useIdeas } from '../../hooks/useIdeas';
+import { useEthers } from '@usedapp/core';
+import { Vote, Idea, VoteFormData } from '../../hooks/useIdeas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
-interface Idea {
+const VoteControls = ({
+  id,
+  votes,
+  voteOnIdea,
+  hasVotes,
+}: {
   id: number;
-  title: string;
-  tldr: string;
-  description: string;
-  votes: {
-    voterId: string;
-    direction: number;
-  }[];
-}
-
-// TODO fix types + cleanup file
-const IdeaCard = ({ idea }: { idea: Idea }) => {
-  const { mutate } = useSWRConfig();
-  const { voteOnIdea } = useIdeas();
-  const history = useHistory();
+  votes: Vote[];
+  voteOnIdea: (args: any) => void;
+  hasVotes: boolean;
+}) => {
   const { account } = useEthers();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { id, description, title } = idea;
-
-  const usersVote = idea.votes.find(vote => vote.voterId === account);
-  const ideaScore = idea.votes.reduce((sum, vote) => {
-    return sum + vote.direction;
-  }, 0);
-
-  const vote = async (dir: number) => {
-    const v = await voteOnIdea({
+  const vote = (dir: number) =>
+    voteOnIdea({
       direction: dir,
       ideaId: id,
     });
-    mutate('http://localhost:5001/ideas');
-  };
+
+  const usersVote = votes.find(vote => vote.voterId === account);
+  const userHasUpVote = usersVote && usersVote.direction === 1;
+  const userHasDownVote = usersVote && usersVote.direction === -1;
+  const ideaScore = votes.reduce((sum, vote) => {
+    return sum + vote.direction;
+  }, 0);
+
+  return (
+    <>
+      <span className="text-2xl font-bold lodrina self-center justify-end">{ideaScore}</span>
+      <div className="flex flex-col ml-4">
+        <FontAwesomeIcon
+          icon={faCaretUp}
+          onClick={e => {
+            // this prevents the click from bubbling up and opening / closing the hidden section
+            e.stopPropagation();
+            if (hasVotes && !userHasUpVote) {
+              vote(1);
+            }
+          }}
+          className={` text-2xl ${hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'}`}
+        />
+
+        <FontAwesomeIcon
+          icon={faCaretDown}
+          onClick={e => {
+            e.stopPropagation();
+            if (hasVotes && !userHasDownVote) {
+              vote(-1);
+            }
+          }}
+          className={` text-2xl ${hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'}`}
+        />
+      </div>
+    </>
+  );
+};
+
+const IdeaCard = ({
+  idea,
+  voteOnIdea,
+  connectedAccountNounVotes,
+}: {
+  idea: Idea;
+  voteOnIdea: (formData: VoteFormData) => void;
+  connectedAccountNounVotes: number;
+}) => {
+  const history = useHistory();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { id, description, title, votes, creatorId } = idea;
 
   return (
     <div
@@ -46,37 +81,18 @@ const IdeaCard = ({ idea }: { idea: Idea }) => {
     >
       <span className="lodrina self-center justify-self-center text-2xl text-[#8C8D92]">
         <span className="mr-4">{id}</span>
-        <span>Creator.eth </span>
+        <span>{creatorId}</span>
       </span>
       <span className="text-[#212529] col-span-4 font-bold text-2xl place-self-center lodrina">
         {title}
       </span>
       <div className="flex flex-row justify-end">
-        <span className="text-2xl font-bold lodrina self-center justify-end">{ideaScore}</span>
-        <div className="flex flex-col ml-4">
-          <FontAwesomeIcon
-            icon={faCaretUp}
-            onClick={e => {
-              // this prevents the click from bubbling up and opening / closing the hidden section
-              e.stopPropagation();
-              vote(1);
-            }}
-            className={` text-2xl ${
-              usersVote && usersVote.direction === 1 ? 'text-blue-500' : 'text-[#8c8d92]'
-            }`}
-          />
-
-          <FontAwesomeIcon
-            icon={faCaretDown}
-            onClick={e => {
-              e.stopPropagation();
-              vote(-1);
-            }}
-            className={` text-2xl ${
-              usersVote && usersVote.direction === -1 ? 'text-red-500' : 'text-[#8c8d92]'
-            }`}
-          />
-        </div>
+        <VoteControls
+          id={id}
+          votes={votes}
+          voteOnIdea={voteOnIdea}
+          hasVotes={connectedAccountNounVotes > 0}
+        />
       </div>
       {isOpen && (
         <>
@@ -85,7 +101,7 @@ const IdeaCard = ({ idea }: { idea: Idea }) => {
             dangerouslySetInnerHTML={{ __html: description }}
           />
           <span className="col-span-3 font-bold text-sm text-[#8c8d92]">
-            creator.eth | 12 lil nouns | 134 votes
+            {creatorId} | {connectedAccountNounVotes} lil nouns
           </span>
           <span className="col-span-3 text-[#2b83f6] text-sm font-bold flex justify-end">
             <span
