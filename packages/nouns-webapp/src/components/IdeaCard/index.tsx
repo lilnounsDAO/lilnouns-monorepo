@@ -4,6 +4,8 @@ import { useEthers } from '@usedapp/core';
 import { Vote, Idea, VoteFormData } from '../../hooks/useIdeas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { useReverseENSLookUp } from '../../utils/ensLookup';
+import { useShortAddress } from '../ShortAddress';
 
 const VoteControls = ({
   id,
@@ -74,6 +76,9 @@ const IdeaCard = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { id, description, title, votes, creatorId } = idea;
 
+  const ens = useReverseENSLookUp(creatorId);
+  const shortAddress = useShortAddress(creatorId);
+
   return (
     <div
       className="grid grid-cols-6 gap-y-4 border border-[#e2e3e8] rounded-lg cursor-pointer pt-2 px-3 pb-3"
@@ -81,9 +86,9 @@ const IdeaCard = ({
     >
       <span className="lodrina self-center justify-self-center text-2xl text-[#8C8D92]">
         <span className="mr-4">{id}</span>
-        <span>{creatorId}</span>
+        <span>{ens || shortAddress}</span>
       </span>
-      <span className="text-[#212529] col-span-4 font-bold text-2xl place-self-center lodrina">
+      <span className="text-[#212529] col-span-4 font-bold text-2xl flex items-center lodrina ml-6">
         {title}
       </span>
       <div className="flex flex-row justify-end">
@@ -101,7 +106,7 @@ const IdeaCard = ({
             dangerouslySetInnerHTML={{ __html: description }}
           />
           <span className="col-span-3 font-bold text-sm text-[#8c8d92]">
-            {creatorId} | {connectedAccountNounVotes} lil nouns
+            {ens || shortAddress} | {connectedAccountNounVotes} lil nouns
           </span>
           <span className="col-span-3 text-[#2b83f6] text-sm font-bold flex justify-end">
             <span
