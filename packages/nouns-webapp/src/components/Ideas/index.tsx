@@ -1,24 +1,22 @@
 import { Alert, Button } from 'react-bootstrap';
-import classes from './Ideas.module.css';
 import { useEthers } from '@usedapp/core';
-import { isMobileScreen } from '../../utils/isMobile';
+import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { useUserVotes } from '../../wrappers/nounToken';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
-import { useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import classes from './Ideas.module.css';
+import { isMobileScreen } from '../../utils/isMobile';
+import IdeaCard from '../IdeaCard';
 import { useIdeas } from '../../hooks/useIdeas';
+import { useEffect } from 'react';
 
-// Lots going on in here for now
 const Ideas = () => {
   const { account } = useEthers();
-  const { isLoggedIn, triggerSignIn } = useAuth();
-  const { ideas, getIdeas } = useIdeas();
+  const history = useHistory();
+  const { getIdeas, ideas, voteOnIdea } = useIdeas();
 
-  const handleLogin = async () => {
-    await triggerSignIn(() => alert('Logged in, move to submit page'));
-  };
+  useEffect(() => {
+    getIdeas();
+  }, []);
 
   const connectedAccountNounVotes = useUserVotes() || 0;
 
@@ -31,10 +29,6 @@ const Ideas = () => {
     return 'Connect wallet to submit an idea.';
   };
 
-  useEffect(() => {
-    getIdeas();
-  }, []);
-
   // set to true for testing
   const hasNouns = connectedAccountNounVotes > 0;
 
@@ -44,10 +38,7 @@ const Ideas = () => {
         <h3 className={classes.heading}>Ideas</h3>
         {account !== undefined && hasNouns ? (
           <div className={classes.submitIdeaButtonWrapper}>
-            <Button
-              className={classes.generateBtn}
-              onClick={() => (!isLoggedIn ? handleLogin() : alert('Create Idea Form'))}
-            >
+            <Button className={classes.generateBtn} onClick={() => history.push('/ideas/create')}>
               Submit Idea
             </Button>
           </div>
@@ -62,32 +53,18 @@ const Ideas = () => {
       </div>
       {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
       {ideas?.length ? (
-        ideas.map((idea: any, i) => {
-          const { id, creatorId, title, tldr, upvotes = [] } = idea;
-          return (
-            <div
-              className={classes.ideaLink}
-              onClick={() => console.log(`Open new page for ${id}`)}
-              key={id}
-            >
-              <span className={classes.ideaTitle}>
-                <span className={classes.titleSpan}>{title}</span>{' '}
-                <span className={classes.likeSpan}>Upvotes: {upvotes.length}</span>
-              </span>
-              {Boolean(tldr) && (
-                <span className={classes.tldr}>
-                  <span dangerouslySetInnerHTML={{ __html: tldr }} />
-                </span>
-              )}
-              <span className={classes.metaData}>
-                <span className={classes.userDetails}>{creatorId}</span>
-                <span className={classes.linkDiscourse}>
-                  See Full Details <FontAwesomeIcon icon={faArrowAltCircleRight} />
-                </span>
-              </span>
-            </div>
-          );
-        })
+        <span className="space-y-4">
+          {ideas.map((idea, i) => {
+            return (
+              <IdeaCard
+                idea={idea}
+                key={`idea-${idea.id}`}
+                voteOnIdea={voteOnIdea}
+                connectedAccountNounVotes={connectedAccountNounVotes}
+              />
+            );
+          })}
+        </span>
       ) : (
         <Alert variant="secondary">
           <Alert.Heading>No ideas found.</Alert.Heading>
