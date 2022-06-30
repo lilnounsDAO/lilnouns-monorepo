@@ -18,7 +18,8 @@ const Ideas = () => {
     getIdeas();
   }, []);
 
-  const connectedAccountNounVotes = useUserVotes() || 0;
+  // const connectedAccountNounVotes = useUserVotes() || 0;
+  const connectedAccountNounVotes = useUserVotes() || 5;
 
   const isMobile = isMobileScreen();
 
@@ -29,7 +30,7 @@ const Ideas = () => {
     return 'Connect wallet to submit an idea.';
   };
 
-  // set to true for testing
+  // // set to true for testing
   const hasNouns = connectedAccountNounVotes > 0;
 
   return (

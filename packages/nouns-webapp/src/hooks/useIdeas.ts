@@ -40,6 +40,8 @@ export const useIdeas = () => {
         const newIdeaVotes = idea.votes.map(vote => {
           if (id === vote.id) {
             return { ...vote, direction };
+          } else {
+            return vote;
           }
         });
 
@@ -88,6 +90,7 @@ export const useIdeas = () => {
 
       setIdeas(data);
     } catch (e: any) {
+      console.log(e);
       const error = {
         message: e.message || 'Failed to fetch ideas!',
         status: e.status || 500,
