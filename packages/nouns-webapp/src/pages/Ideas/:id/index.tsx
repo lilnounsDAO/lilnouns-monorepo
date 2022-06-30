@@ -36,7 +36,7 @@ const IdeaPage = () => {
       direction: dir,
       ideaId: parseInt(id),
     });
-    IdeaAPI.revalidateIdea(id);
+    IdeaAPI.revalidateVotes(id);
   };
 
   if (!idea) {
