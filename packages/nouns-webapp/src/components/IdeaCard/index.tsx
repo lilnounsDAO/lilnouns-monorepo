@@ -81,42 +81,46 @@ const IdeaCard = ({
 
   return (
     <div
-      className="grid grid-cols-6 gap-y-4 border border-[#e2e3e8] rounded-lg cursor-pointer pt-2 px-3 pb-3"
+      className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-2 px-3 pb-3"
       onClick={() => setIsOpen(!isOpen)}
     >
-      <span className="lodrina self-center justify-self-center text-2xl text-[#8C8D92]">
-        <span className="mr-4">{id}</span>
-        <span>{ens || shortAddress}</span>
-      </span>
-      <span className="text-[#212529] col-span-4 font-bold text-2xl flex items-center lodrina ml-6">
-        {title}
-      </span>
-      <div className="flex flex-row justify-end">
-        <VoteControls
-          id={id}
-          votes={votes}
-          voteOnIdea={voteOnIdea}
-          hasVotes={connectedAccountNounVotes > 0}
-        />
+      <div className="flex flex-row flex-1 justify-content-start align-items-center">
+        <span className="lodrina flex text-2xl text-[#8C8D92]">
+          <span className="mr-4">{id}</span>
+          <span>{ens || shortAddress}</span>
+        </span>
+        <span className="text-[#212529] font-bold text-2xl flex flex-1 lodrina ml-6">{title}</span>
+        <div className="flex justify-self-end">
+          <VoteControls
+            id={id}
+            votes={votes}
+            voteOnIdea={voteOnIdea}
+            hasVotes={connectedAccountNounVotes > 0}
+          />
+        </div>
       </div>
       {isOpen && (
         <>
-          <span
-            className="border border-[#e2e3e8] bg-[#f4f4f8] p-4 rounded-lg col-span-6"
-            dangerouslySetInnerHTML={{ __html: description }}
-          />
-          <span className="col-span-3 font-bold text-sm text-[#8c8d92]">
-            {ens || shortAddress} | {connectedAccountNounVotes} lil nouns
-          </span>
-          <span className="col-span-3 text-[#2b83f6] text-sm font-bold flex justify-end">
+          <div className="flex flex-row flex-1 justify-content-start align-items-center pt-2 pb-2">
             <span
-              onClick={() => {
-                history.push(`/ideas/${id}`);
-              }}
-            >
-              See Full Details <FontAwesomeIcon icon={faArrowAltCircleRight} />
+              className="border border-[#e2e3e8] bg-[#f4f4f8] p-4 rounded-lg flex-1"
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
+          </div>
+          <div className="flex flex-row flex-1 justify-content-start align-items-center pt-2 pb-2">
+            <span className="flex flex-1 font-bold text-sm text-[#8c8d92]">
+              {ens || shortAddress} | {connectedAccountNounVotes} lil nouns
             </span>
-          </span>
+            <span className="flex justify-self-end text-[#2b83f6] text-sm font-bold flex justify-end">
+              <span
+                onClick={() => {
+                  history.push(`/ideas/${id}`);
+                }}
+              >
+                See Full Details <FontAwesomeIcon icon={faArrowAltCircleRight} />
+              </span>
+            </span>
+          </div>
         </>
       )}
     </div>
