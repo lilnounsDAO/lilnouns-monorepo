@@ -58,8 +58,6 @@ export const useIdeas = () => {
       return idea;
     }) as Idea[];
 
-    console.log(ideas);
-    console.log(updatedIdeas);
     return setIdeas(updatedIdeas);
   };
 

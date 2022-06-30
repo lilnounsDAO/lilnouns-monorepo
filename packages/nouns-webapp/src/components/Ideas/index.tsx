@@ -30,7 +30,7 @@ const Ideas = () => {
     return 'Connect wallet to submit an idea.';
   };
 
-  // // set to true for testing
+  // set to true for testing
   const hasNouns = connectedAccountNounVotes > 0;
 
   return (

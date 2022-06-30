@@ -47,10 +47,37 @@ export const useIdeaAPI = () => {
       return data?.data as Vote[];
     },
 
+    revalidateIdea: (id: string) => {
+      mutate(`${HOST}/idea/${id}`);
+    },
+
     revalidateVotes: (id: string) => {
       mutate(`${HOST}/idea/${id}/votes`);
     },
 
+    // need sign in options for these
+    voteOnIdea: async (formData: any) => {
+      try {
+        const res = await fetch(`${HOST}/idea/vote`, {
+          method: 'POST',
+          headers: {
+            ...getAuthHeader(),
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+        const { data } = await res.json();
+
+        if (res.status === 200) {
+          console.log(data);
+          return data;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    // sign in options
     commentOnIdea: async (formData: any) => {
       try {
         const res = await fetch(`${HOST}/idea/comment`, {

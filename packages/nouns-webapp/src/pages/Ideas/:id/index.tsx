@@ -3,7 +3,6 @@ import { Col, Row, Button } from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import { useEthers } from '@usedapp/core';
 import Section from '../../../layout/Section';
-import { useIdeas } from '../../../hooks/useIdeas';
 import classes from '../Ideas.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleLeft, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
@@ -11,7 +10,6 @@ import { useIdeaAPI, Vote } from '../../../api/Idea';
 
 const IdeaPage = () => {
   const IdeaAPI = useIdeaAPI();
-  const { voteOnIdea } = useIdeas();
   const { id } = useParams() as { id: string };
   const history = useHistory();
   const { account } = useEthers();
@@ -21,8 +19,6 @@ const IdeaPage = () => {
 
   const idea = IdeaAPI.getIdea(id);
   const votes = IdeaAPI.getVotes(id);
-
-  console.log(idea);
 
   useEffect(() => {
     if (votes) {
@@ -36,11 +32,11 @@ const IdeaPage = () => {
   }, [votes, account]);
 
   const castVote = async (dir: number) => {
-    const v = await voteOnIdea({
+    const v = await IdeaAPI.voteOnIdea({
       direction: dir,
       ideaId: parseInt(id),
     });
-    IdeaAPI.revalidateVotes(id);
+    IdeaAPI.revalidateIdea(id);
   };
 
   if (!idea) {
@@ -53,6 +49,7 @@ const IdeaPage = () => {
       ideaId: parseInt(id),
     });
     setComment('');
+    IdeaAPI.revalidateIdea(id);
   };
 
   return (
@@ -77,9 +74,7 @@ const IdeaPage = () => {
               <div className="flex flex-col ml-4">
                 <FontAwesomeIcon
                   icon={faCaretUp}
-                  onClick={e => {
-                    // this prevents the click from bubbling up and opening / closing the hidden section
-                    e.stopPropagation();
+                  onClick={() => {
                     castVote(1);
                   }}
                   className={` text-4xl cursor-pointer ${
@@ -89,8 +84,7 @@ const IdeaPage = () => {
 
                 <FontAwesomeIcon
                   icon={faCaretDown}
-                  onClick={e => {
-                    e.stopPropagation();
+                  onClick={() => {
                     castVote(-1);
                   }}
                   className={` text-4xl cursor-pointer ${
