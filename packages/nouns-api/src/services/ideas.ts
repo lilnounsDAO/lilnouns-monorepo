@@ -2,21 +2,43 @@ import { prisma } from '../api';
 
 class IdeasService {
   static async all() {
-    const allIdeas = await prisma.idea.findMany({
-      include: {
-        votes: true,
-      },
-    });
-    return allIdeas;
+    try {
+      const allIdeas = await prisma.idea.findMany({
+        include: {
+          votes: true,
+        },
+      });
+      return allIdeas;
+    } catch (e: any) {
+      throw e;
+    }
   }
 
   static async get(id: number) {
-    const idea = await prisma.idea.findUnique({
-      where: { id: id },
-      include: { votes: true, comments: true },
-    });
+    try {
+      const idea = await prisma.idea.findUnique({
+        where: { id: id },
+        include: {
+          votes: true,
+          comments: {
+            where: {
+              parentId: null,
+            },
+            include: {
+              replies: {
+                include: {
+                  replies: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
-    return idea;
+      return idea;
+    } catch (e: any) {
+      throw e;
+    }
   }
 
   static async createIdea(data: any, user?: { wallet: string }) {
@@ -35,8 +57,7 @@ class IdeasService {
 
       return idea;
     } catch (e) {
-      console.log(e);
-      return e;
+      throw e;
     }
   }
 
@@ -64,8 +85,7 @@ class IdeasService {
 
       return vote;
     } catch (e) {
-      console.log(e);
-      return e;
+      throw e;
     }
   }
 
@@ -79,8 +99,7 @@ class IdeasService {
 
       return votes;
     } catch (e) {
-      console.log(e);
-      return e;
+      throw e;
     }
   }
 
@@ -95,13 +114,13 @@ class IdeasService {
           body: data.body,
           authorId: user.wallet,
           ideaId: data.ideaId,
+          parentId: data.parentId,
         },
       });
 
       return comment;
     } catch (e) {
-      console.log(e);
-      return e;
+      throw e;
     }
   }
 }

@@ -12,9 +12,12 @@ class IdeasController {
         data: ideas,
       });
     } catch (e: any) {
-      res.status(e.statusCode).json({
-        message: e.message,
-      });
+      res
+        .status(e.statusCode || 500)
+        .json({
+          message: e.message,
+        })
+        .end();
     }
   };
 
@@ -27,24 +30,31 @@ class IdeasController {
         data: idea,
       });
     } catch (e: any) {
-      res.status(e.statusCode).json({
-        message: e.message,
-      });
+      res
+        .status(e.statusCode || 500)
+        .json({
+          message: e.message,
+        })
+        .end();
     }
   };
 
   static createIdea = async (req: Request, res: Response, next: any) => {
     try {
       const idea = await IdeasService.createIdea(req.body, req.user);
+
       res.status(200).json({
         status: true,
         message: 'Idea created',
         data: idea,
       });
     } catch (e: any) {
-      res.status(e.statusCode).json({
-        message: e.message,
-      });
+      res
+        .status(e.statusCode || 500)
+        .json({
+          message: e.message,
+        })
+        .end();
     }
   };
 
@@ -57,9 +67,12 @@ class IdeasController {
         data: vote,
       });
     } catch (e: any) {
-      res.status(e.statusCode).json({
-        message: e.message,
-      });
+      res
+        .status(e.statusCode || 500)
+        .json({
+          message: e.message,
+        })
+        .end();
     }
   };
 
@@ -72,10 +85,12 @@ class IdeasController {
         data: idea,
       });
     } catch (e: any) {
-      console.log(e);
-      res.status(e.statusCode).json({
-        message: e.message,
-      });
+      res
+        .status(e.statusCode || 500)
+        .json({
+          message: e.message,
+        })
+        .end();
     }
   };
 
@@ -88,9 +103,12 @@ class IdeasController {
         data: votes,
       });
     } catch (e: any) {
-      res.status(e.statusCode).json({
-        message: e.message,
-      });
+      res
+        .status(e.statusCode || 500)
+        .json({
+          message: e.message,
+        })
+        .end();
     }
   };
 }

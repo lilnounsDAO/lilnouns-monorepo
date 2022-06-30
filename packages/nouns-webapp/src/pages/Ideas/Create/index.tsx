@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import Section from '../../../layout/Section';
@@ -7,6 +8,10 @@ import classes from '../Ideas.module.css';
 const CreateIdeaPage = () => {
   const history = useHistory();
   const { submitIdea } = useIdeas();
+
+  const [title, setTitle] = useState<string>('');
+  const [tldr, setTldr] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -25,8 +30,18 @@ const CreateIdeaPage = () => {
         </p>
         <form className="space-y-8" id="submit-form" onSubmit={data => submitIdea(data)}>
           <div className="flex flex-col">
-            <label className="lodrina font-bold text-2xl mb-2">Title</label>
+            <div className="flex justify-between w-full items-center">
+              <label className="lodrina font-bold text-2xl mb-2">Title</label>
+              <span
+                className={`${title.length === 50 ? 'text-red-500 font-bold' : 'text-gray-500'}`}
+              >
+                {title.length}/50
+              </span>
+            </div>
             <input
+              maxLength={50}
+              value={title}
+              onChange={e => setTitle(e.target.value)}
               type="text"
               name="title"
               className="border rounded-lg p-2"
@@ -34,18 +49,40 @@ const CreateIdeaPage = () => {
             />
           </div>
           <div className="flex flex-col">
-            <label className="lodrina font-bold text-2xl mb-2">tr;dr</label>
+            <div className="flex justify-between w-full items-center">
+              <label className="lodrina font-bold text-2xl mb-2">tl;dr</label>
+              <span
+                className={`${tldr.length === 240 ? 'text-red-500 font-bold' : 'text-gray-500'}`}
+              >
+                {tldr.length}/240
+              </span>
+            </div>
             <textarea
+              maxLength={240}
+              value={tldr}
+              onChange={e => setTldr(e.target.value)}
               name="tldr"
-              className="border rounded-lg p-2"
+              className="border rounded-lg p-2 min-h-[120px]"
               placeholder="In the simplest language possible, describe your idea in a few sentances..."
             />
           </div>
           <div className="flex flex-col">
-            <label className="lodrina font-bold text-2xl mb-2">Description</label>
+            <div className="flex justify-between w-full items-center">
+              <label className="lodrina font-bold text-2xl mb-2">Description</label>
+              <span
+                className={`${
+                  description.length === 1080 ? 'text-red-500 font-bold' : 'text-gray-500'
+                }`}
+              >
+                {description.length}/1080
+              </span>
+            </div>
             <textarea
+              maxLength={1080}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
               name="description"
-              className="border rounded-lg p-2"
+              className="border rounded-lg p-2 min-h-[240px]"
               placeholder="Describe your idea in full..."
             />
           </div>
