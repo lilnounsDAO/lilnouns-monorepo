@@ -34,16 +34,23 @@ export const useIdeas = () => {
   const [ideas, setIdeas] = useState([] as Idea[]);
 
   // Update the vote count for an idea after a new vote is recorded.
-  const updateVotesState = ({ id, ideaId, direction }: Vote) => {
+  const updateVotesState = (vote: Vote) => {
+    const { id, ideaId, direction } = vote;
     const updatedIdeas = ideas.map(idea => {
       if (idea.id === ideaId) {
+        let seenVote = false;
         const newIdeaVotes = idea.votes.map(vote => {
           if (id === vote.id) {
+            seenVote = true;
             return { ...vote, direction };
           } else {
             return vote;
           }
         });
+
+        if (!seenVote) {
+          newIdeaVotes.push(vote);
+        }
 
         return { ...idea, votes: newIdeaVotes };
       }
@@ -51,6 +58,8 @@ export const useIdeas = () => {
       return idea;
     }) as Idea[];
 
+    console.log(ideas);
+    console.log(updatedIdeas);
     return setIdeas(updatedIdeas);
   };
 
