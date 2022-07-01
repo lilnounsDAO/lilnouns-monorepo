@@ -17,8 +17,8 @@ async function seed() {
     await prisma.idea.create({
       data: {
         title: chance.word({ length: 5 }),
-        tldr: chance.sentence(),
-        description: chance.sentence(),
+        tldr: chance.sentence({ words: 5 }),
+        description: chance.sentence({ words: 10 }),
         creatorId: user.wallet,
       },
     });
