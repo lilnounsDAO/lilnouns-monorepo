@@ -1,35 +1,44 @@
-import { useState, useEffect } from 'react';
-import { Col, Row, Button } from 'react-bootstrap';
+import { useState } from 'react';
+import { Col, Row } from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import { useEthers } from '@usedapp/core';
 import Section from '../../../layout/Section';
 import classes from '../Ideas.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowAltCircleLeft, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { useIdeaAPI, Vote } from '../../../api/Idea';
+import { faArrowAltCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { useReverseENSLookUp } from '../../../utils/ensLookup';
 import { useShortAddress } from '../../../components/ShortAddress';
+import {
+  useIdeas,
+  CommentFormData,
+  Comment as CommentType,
+  VoteFormData,
+} from '../../../hooks/useIdeas';
+import { useUserVotes } from '../../../wrappers/nounToken';
+import IdeaVoteControls from '../../../components/IdeaVoteControls';
 
-const Comment = ({ comment }) => {
-  const IdeaAPI = useIdeaAPI();
+const Comment = ({ comment, hasNouns }: { comment: CommentType; hasNouns: boolean }) => {
   const { id } = useParams() as { id: string };
   const [isReply, setIsReply] = useState<boolean>(false);
   const [reply, setReply] = useState<string>('');
+  const { account } = useEthers();
   const ens = useReverseENSLookUp(comment.authorId);
   const shortAddress = useShortAddress(comment.authorId);
+  const { commentOnIdea } = useIdeas();
 
   const submitReply = async () => {
-    const response = await IdeaAPI.commentOnIdea({
+    await commentOnIdea({
       body: reply,
       ideaId: parseInt(id),
       parentId: comment.id,
-    });
+      authorId: account,
+    } as CommentFormData);
     setReply('');
-    IdeaAPI.revalidateIdea(id);
+    setIsReply(false);
   };
 
   return (
-    <div>
+    <div key={comment.id}>
       <div className="flex flex-row items-center space-x-4">
         <span className="text-xl lodrina text-gray-400">{ens || shortAddress}</span>
         <span className="text-blue-500 cursor-pointer" onClick={() => setIsReply(true)}>
@@ -42,8 +51,8 @@ const Comment = ({ comment }) => {
         {comment.replies &&
           comment.replies.map(reply => {
             return (
-              <div className="ml-8">
-                <Comment comment={reply} />
+              <div className="ml-8" key={`replies-${reply.id}`}>
+                <Comment comment={reply} hasNouns={hasNouns} />
               </div>
             );
           })}
@@ -62,9 +71,15 @@ const Comment = ({ comment }) => {
               Cancel
             </span>
             <button
-              className="p-2 border-blue-500 bg-blue-500 text-white rounded"
+              className={`${
+                hasNouns
+                  ? 'border-blue-500 bg-blue-500 text-white'
+                  : 'text-[#8C8D92] bg-[#F4F4F8] border-[#E2E3E8]-1'
+              } p-2 rounded`}
               onClick={() => {
-                submitReply();
+                if (hasNouns) {
+                  submitReply();
+                }
               }}
             >
               Comment
@@ -77,34 +92,18 @@ const Comment = ({ comment }) => {
 };
 
 const IdeaPage = () => {
-  const IdeaAPI = useIdeaAPI();
   const { id } = useParams() as { id: string };
   const history = useHistory();
   const { account } = useEthers();
-  const [userVote, setUserVote] = useState<Vote>();
-  const [ideaScore, setIdeaScore] = useState<number>(0);
   const [comment, setComment] = useState<string>();
+  const connectedAccountNounVotes = useUserVotes() || 0;
 
-  const idea = IdeaAPI.getIdea(id);
-  const votes = IdeaAPI.getVotes(id);
+  const { getIdea, commentOnIdea, voteOnIdea } = useIdeas();
 
-  useEffect(() => {
-    if (votes) {
-      setUserVote(votes.find(vote => vote.voterId === account));
-      setIdeaScore(
-        votes.reduce((sum, vote) => {
-          return sum + vote.direction;
-        }, 0),
-      );
-    }
-  }, [votes, account]);
+  const idea = getIdea(id);
 
-  const castVote = async (dir: number) => {
-    const v = await IdeaAPI.voteOnIdea({
-      direction: dir,
-      ideaId: parseInt(id),
-    });
-    IdeaAPI.revalidateVotes(id);
+  const castVote = async (formData: VoteFormData) => {
+    await voteOnIdea(formData);
   };
 
   if (!idea) {
@@ -112,15 +111,15 @@ const IdeaPage = () => {
   }
 
   const submitComment = async () => {
-    const response = await IdeaAPI.commentOnIdea({
+    await commentOnIdea({
       body: comment,
       ideaId: parseInt(id),
-    });
+      authorId: account,
+    } as CommentFormData);
     setComment('');
-    IdeaAPI.revalidateIdea(id);
   };
 
-  console.log(idea.comments);
+  const hasNouns = connectedAccountNounVotes > 0;
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -138,30 +137,12 @@ const IdeaPage = () => {
           <div className="flex flex-row justify-between items-center mb-12">
             <h1 className="mb-0">{idea.title}</h1>
             <div className="flex flex-row justify-end">
-              <h5 className="text-4xl font-bold lodrina self-center justify-end mb-0">
-                {ideaScore}
-              </h5>
-              <div className="flex flex-col ml-4">
-                <FontAwesomeIcon
-                  icon={faCaretUp}
-                  onClick={() => {
-                    castVote(1);
-                  }}
-                  className={` text-4xl cursor-pointer ${
-                    userVote && userVote.direction === 1 ? 'text-blue-500' : 'text-[#8c8d92]'
-                  }`}
-                />
-
-                <FontAwesomeIcon
-                  icon={faCaretDown}
-                  onClick={() => {
-                    castVote(-1);
-                  }}
-                  className={` text-4xl cursor-pointer ${
-                    userVote && userVote.direction === -1 ? 'text-red-500' : 'text-[#8c8d92]'
-                  }`}
-                />
-              </div>
+              <IdeaVoteControls
+                id={idea.id}
+                votes={idea.votes}
+                voteOnIdea={castVote}
+                hasVotes={connectedAccountNounVotes > 0}
+              />
             </div>
           </div>
         </Row>
@@ -192,9 +173,15 @@ const IdeaPage = () => {
           />
           <div className="absolute right-2 top-2">
             <button
-              className="p-2 border-blue-500 bg-blue-500 text-white rounded"
+              className={`${
+                hasNouns
+                  ? 'border-blue-500 bg-blue-500 text-white'
+                  : 'text-[#8C8D92] bg-[#F4F4F8] border-[#E2E3E8]-1'
+              } p-2 rounded`}
               onClick={() => {
-                submitComment();
+                if (hasNouns) {
+                  submitComment();
+                }
               }}
             >
               Comment
@@ -202,8 +189,8 @@ const IdeaPage = () => {
           </div>
         </div>
         <div className="mt-12 space-y-8">
-          {idea.comments.map((comment, idx) => {
-            return <Comment comment={comment} key={`comment-${idx}`} />;
+          {idea.comments.map(comment => {
+            return <Comment comment={comment} key={`comment-${comment.id}`} hasNouns={hasNouns} />;
           })}
         </div>
       </Col>
