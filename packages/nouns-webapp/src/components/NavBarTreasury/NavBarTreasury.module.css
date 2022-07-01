@@ -44,7 +44,7 @@
   margin-right: 0.25rem;
 }
 
-@media (max-width: 370px) {
+@media (max-width: 425px) {
   .wrapper {
     margin-left: -0.5rem;
     padding: 0px 7px 0px 6px;
@@ -60,6 +60,14 @@
 }
 
 .coolInfo .treasuryBalance {
+  color: var(--brand-cool-dark-text);
+}
+
+.warmInfo .treasuryBigNounBalance {
+  color: var(--brand-warm-dark-text);
+}
+
+.coolInfo .treasuryBigNounBalance {
   color: var(--brand-cool-dark-text);
 }
 
