@@ -26,15 +26,17 @@ const IdeaCard = ({
 
   return (
     <div
-      className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-2 px-3 pb-3"
+      className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-2 px-3 pb-2"
       onClick={() => setIsOpen(!isOpen)}
     >
       <div className="flex flex-row flex-1 justify-content-start align-items-center">
-        <span className="lodrina flex text-2xl text-[#8C8D92]">
+        <span className="font-normal lodrina flex text-2xl text-[#8C8D92]">
           <span className="mr-4">{id}</span>
           <span>{ens || shortAddress}</span>
         </span>
-        <span className="text-[#212529] font-bold text-2xl flex flex-1 lodrina ml-6">{title}</span>
+        <span className="text-[#212529] font-normal text-2xl flex flex-1 lodrina ml-6">
+          {title}
+        </span>
         <div className="flex justify-self-end">
           <IdeaVoteControls
             id={id}

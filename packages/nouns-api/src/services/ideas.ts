@@ -27,7 +27,11 @@ class IdeasService {
             include: {
               replies: {
                 include: {
-                  replies: true,
+                  replies: {
+                    include: {
+                      replies: true,
+                    },
+                  },
                 },
               },
             },
