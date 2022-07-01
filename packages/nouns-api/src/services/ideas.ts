@@ -2,12 +2,18 @@ import { prisma } from '../api';
 
 class IdeasService {
   static async all() {
-    const allIdeas = await prisma.idea.findMany({
-      include: {
-        votes: true,
-      },
-    });
-    return allIdeas;
+    try {
+      const allIdeas = await prisma.idea.findMany({
+        include: {
+          votes: true,
+        },
+      });
+
+      return allIdeas;
+    } catch (e: any) {
+      console.log(e);
+      return e;
+    }
   }
 
   static async get(id: number) {
