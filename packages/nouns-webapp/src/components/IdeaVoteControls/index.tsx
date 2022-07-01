@@ -31,7 +31,9 @@ const IdeaVoteControls = ({
 
   return (
     <>
-      <span className="text-2xl font-bold lodrina self-center justify-end">{ideaScore}</span>
+      <span className="text-3xl text-black font-bold lodrina self-center justify-end">
+        {ideaScore}
+      </span>
       <div className="flex flex-col ml-4">
         <FontAwesomeIcon
           icon={faCaretUp}
@@ -42,7 +44,7 @@ const IdeaVoteControls = ({
               vote(1);
             }
           }}
-          className={` text-2xl ${hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'}`}
+          className={`text-3xl ${hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'}`}
         />
 
         <FontAwesomeIcon
@@ -53,7 +55,7 @@ const IdeaVoteControls = ({
               vote(-1);
             }
           }}
-          className={` text-2xl ${hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'}`}
+          className={`text-3xl ${hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'}`}
         />
       </div>
     </>

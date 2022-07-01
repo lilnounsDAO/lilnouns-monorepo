@@ -16,8 +16,17 @@ import {
 } from '../../../hooks/useIdeas';
 import { useUserVotes } from '../../../wrappers/nounToken';
 import IdeaVoteControls from '../../../components/IdeaVoteControls';
+import moment from 'moment';
 
-const Comment = ({ comment, hasNouns }: { comment: CommentType; hasNouns: boolean }) => {
+const Comment = ({
+  comment,
+  hasNouns,
+  level,
+}: {
+  comment: CommentType;
+  hasNouns: boolean;
+  level: number;
+}) => {
   const { id } = useParams() as { id: string };
   const [isReply, setIsReply] = useState<boolean>(false);
   const [reply, setReply] = useState<string>('');
@@ -40,10 +49,18 @@ const Comment = ({ comment, hasNouns }: { comment: CommentType; hasNouns: boolea
   return (
     <div key={comment.id}>
       <div className="flex flex-row items-center space-x-4">
-        <span className="text-xl lodrina text-gray-400">{ens || shortAddress}</span>
-        <span className="text-blue-500 cursor-pointer" onClick={() => setIsReply(true)}>
-          Reply
+        <span className="text-2xl text-[#8C8D92] flex align-items-center">
+          <span className="lodrina">{ens || shortAddress}</span>
+          <span className="text-[#8C8D92] text-base pl-2">
+            {moment(comment.createdAt).fromNow()}
+          </span>
         </span>
+        {level < 4 && (
+          <span className="text-[#2B83F6] cursor-pointer" onClick={() => setIsReply(true)}>
+            Reply
+          </span>
+        )}
+        {/* Future addition: Add view more button to move deeper into the thread? */}
       </div>
 
       <p>{comment.body}</p>
@@ -52,7 +69,7 @@ const Comment = ({ comment, hasNouns }: { comment: CommentType; hasNouns: boolea
           comment.replies.map(reply => {
             return (
               <div className="ml-8" key={`replies-${reply.id}`}>
-                <Comment comment={reply} hasNouns={hasNouns} />
+                <Comment comment={reply} hasNouns={hasNouns} level={level + 1} />
               </div>
             );
           })}
@@ -67,14 +84,17 @@ const Comment = ({ comment, hasNouns }: { comment: CommentType; hasNouns: boolea
             placeholder="Type your commment..."
           />
           <div className="absolute right-2 top-2">
-            <span className="mr-4 font-bold text-gray-400" onClick={() => setIsReply(false)}>
+            <span
+              className="mr-4 font-bold text-[#8C8D92] cursor-pointer"
+              onClick={() => setIsReply(false)}
+            >
               Cancel
             </span>
             <button
               className={`${
                 hasNouns
-                  ? 'border-blue-500 bg-blue-500 text-white'
-                  : 'text-[#8C8D92] bg-[#F4F4F8] border-[#E2E3E8]-1'
+                  ? 'rounded-lg bg-[#2B83F6] text-white font-bold'
+                  : 'text-[#8C8D92] bg-[#F4F4F8] border-[#E2E3E8]-1 font-bold'
               } p-2 rounded`}
               onClick={() => {
                 if (hasNouns) {
@@ -175,8 +195,8 @@ const IdeaPage = () => {
             <button
               className={`${
                 hasNouns
-                  ? 'border-blue-500 bg-blue-500 text-white'
-                  : 'text-[#8C8D92] bg-[#F4F4F8] border-[#E2E3E8]-1'
+                  ? 'rounded-lg bg-[#2B83F6] text-white font-bold'
+                  : 'text-[#8C8D92] bg-[#F4F4F8] border-[#E2E3E8]-1 font-bold'
               } p-2 rounded`}
               onClick={() => {
                 if (hasNouns) {
@@ -190,7 +210,14 @@ const IdeaPage = () => {
         </div>
         <div className="mt-12 space-y-8">
           {idea.comments.map(comment => {
-            return <Comment comment={comment} key={`comment-${comment.id}`} hasNouns={hasNouns} />;
+            return (
+              <Comment
+                comment={comment}
+                key={`comment-${comment.id}`}
+                hasNouns={hasNouns}
+                level={1}
+              />
+            );
           })}
         </div>
       </Col>

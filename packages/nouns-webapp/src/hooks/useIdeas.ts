@@ -41,6 +41,7 @@ export interface Comment {
   parentId: number | null;
   authorId: string;
   replies: Reply[];
+  createdAt: string;
 }
 
 type Reply = Comment;
