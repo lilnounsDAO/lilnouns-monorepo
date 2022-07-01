@@ -7,6 +7,72 @@ import classes from '../Ideas.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleLeft, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { useIdeaAPI, Vote } from '../../../api/Idea';
+import { useReverseENSLookUp } from '../../../utils/ensLookup';
+import { useShortAddress } from '../../../components/ShortAddress';
+
+const Comment = ({ comment }) => {
+  const IdeaAPI = useIdeaAPI();
+  const { id } = useParams() as { id: string };
+  const [isReply, setIsReply] = useState<boolean>(false);
+  const [reply, setReply] = useState<string>('');
+  const ens = useReverseENSLookUp(comment.authorId);
+  const shortAddress = useShortAddress(comment.authorId);
+
+  const submitReply = async () => {
+    const response = await IdeaAPI.commentOnIdea({
+      body: reply,
+      ideaId: parseInt(id),
+      parentId: comment.id,
+    });
+    setReply('');
+    IdeaAPI.revalidateIdea(id);
+  };
+
+  return (
+    <div>
+      <div className="flex flex-row items-center space-x-4">
+        <span className="text-xl lodrina text-gray-400">{ens || shortAddress}</span>
+        <span className="text-blue-500 cursor-pointer" onClick={() => setIsReply(true)}>
+          Reply
+        </span>
+      </div>
+
+      <p>{comment.body}</p>
+      {comment.replies &&
+        comment.replies.map(reply => {
+          return (
+            <div className="ml-8">
+              <Comment comment={reply} />
+            </div>
+          );
+        })}
+      {isReply && (
+        <div className="relative my-4">
+          <input
+            value={reply}
+            onChange={e => setReply(e.target.value)}
+            type="text"
+            className="border rounded-lg w-full p-3 relative"
+            placeholder="Type your commment..."
+          />
+          <div className="absolute right-2 top-2">
+            <span className="mr-4 font-bold text-gray-400" onClick={() => setIsReply(false)}>
+              Cancel
+            </span>
+            <button
+              className="p-2 border-blue-500 bg-blue-500 text-white rounded"
+              onClick={() => {
+                submitReply();
+              }}
+            >
+              Comment
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const IdeaPage = () => {
   const IdeaAPI = useIdeaAPI();
@@ -51,6 +117,8 @@ const IdeaPage = () => {
     setComment('');
     IdeaAPI.revalidateIdea(id);
   };
+
+  console.log(idea.comments);
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -112,30 +180,28 @@ const IdeaPage = () => {
           </h3>
         </div>
 
-        <input
-          value={comment}
-          onChange={e => setComment(e.target.value)}
-          type="text"
-          className="border rounded-lg w-full p-2 mt-4"
-          placeholder="Type your commment..."
-        />
-        <div className="flex justify-end mt-4">
-          <Button
-            onClick={() => {
-              submitComment();
-            }}
-          >
-            Submit
-          </Button>
+        <div className="relative mt-4">
+          <input
+            value={comment}
+            onChange={e => setComment(e.target.value)}
+            type="text"
+            className="border rounded-lg w-full p-3 relative"
+            placeholder="Type your commment..."
+          />
+          <div className="absolute right-2 top-2">
+            <button
+              className="p-2 border-blue-500 bg-blue-500 text-white rounded"
+              onClick={() => {
+                submitComment();
+              }}
+            >
+              Comment
+            </button>
+          </div>
         </div>
         <div className="mt-12 space-y-8">
-          {idea.comments.map(comment => {
-            return (
-              <div>
-                <span className="text-xl lodrina text-gray-400">{comment.authorId}</span>
-                <p>{comment.body}</p>
-              </div>
-            );
+          {idea.comments.map((comment, idx) => {
+            return <Comment comment={comment} key={`comment-${idx}`} />;
           })}
         </div>
       </Col>

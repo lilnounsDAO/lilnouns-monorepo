@@ -48,12 +48,15 @@ model Vote {
 }
 
 model Comment {
-  id       Int    @id @default(autoincrement())
-  body     String
-  idea     Idea   @relation(fields: [ideaId], references: [id])
-  ideaId   Int
-  author   User   @relation(fields: [authorId], references: [wallet])
-  authorId String
+  id          Int    @id @default(autoincrement())
+  body        String
+  idea        Idea   @relation(fields: [ideaId], references: [id])
+  ideaId      Int
+  author      User   @relation(fields: [authorId], references: [wallet])
+  authorId    String
+  replies    Comment[] @relation("Comment_Children")
+  parent      Comment?  @relation("Comment_Children", fields: [parentId], references: [id])
+  parentId    Int?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

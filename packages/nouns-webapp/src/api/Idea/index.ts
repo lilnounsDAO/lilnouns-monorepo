@@ -23,7 +23,7 @@ export interface Vote {
 }
 
 export const useIdeaAPI = () => {
-  const { getAuthHeader } = useAuth();
+  const { getAuthHeader, isLoggedIn, triggerSignIn } = useAuth();
   const { mutate } = useSWRConfig();
 
   const fetcher: Fetcher = async (input: RequestInfo, init?: RequestInit, ...args: any[]) => {
@@ -55,7 +55,6 @@ export const useIdeaAPI = () => {
       mutate(`${HOST}/idea/${id}/votes`);
     },
 
-    // need sign in options for these
     voteOnIdea: async (formData: any) => {
       try {
         const res = await fetch(`${HOST}/idea/vote`, {
@@ -77,8 +76,10 @@ export const useIdeaAPI = () => {
       }
     },
 
-    // sign in options
     commentOnIdea: async (formData: any) => {
+      if (!isLoggedIn) {
+        await triggerSignIn();
+      }
       try {
         const res = await fetch(`${HOST}/idea/comment`, {
           method: 'POST',
