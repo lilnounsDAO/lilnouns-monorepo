@@ -18,8 +18,7 @@ const Ideas = () => {
     getIdeas();
   }, []);
 
-  // const connectedAccountNounVotes = useUserVotes() || 0;
-  const connectedAccountNounVotes = useUserVotes() || 5;
+  const connectedAccountNounVotes = useUserVotes() || 0;
 
   const isMobile = isMobileScreen();
 
