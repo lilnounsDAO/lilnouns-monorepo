@@ -38,14 +38,16 @@ const Comment = ({ comment }) => {
       </div>
 
       <p>{comment.body}</p>
-      {comment.replies &&
-        comment.replies.map(reply => {
-          return (
-            <div className="ml-8">
-              <Comment comment={reply} />
-            </div>
-          );
-        })}
+      <div className="border-l border-gray-200">
+        {comment.replies &&
+          comment.replies.map(reply => {
+            return (
+              <div className="ml-8">
+                <Comment comment={reply} />
+              </div>
+            );
+          })}
+      </div>
       {isReply && (
         <div className="relative my-4">
           <input

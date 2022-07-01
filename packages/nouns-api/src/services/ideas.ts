@@ -19,7 +19,13 @@ class IdeasService {
           where: {
             parentId: null,
           },
-          include: { replies: true },
+          include: {
+            replies: {
+              include: {
+                replies: true,
+              },
+            },
+          },
         },
       },
     });
