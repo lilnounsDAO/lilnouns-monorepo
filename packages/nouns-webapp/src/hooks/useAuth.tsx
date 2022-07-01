@@ -6,7 +6,7 @@ import { SiweMessage } from 'siwe';
 import { useApiError } from './useApiError';
 
 interface AuthCtx {
-  isLoggedIn: boolean;
+  isLoggedIn: () => boolean;
   triggerSignIn: () => Promise<void>;
   logout: () => void;
   getAuthHeader: () => { ['Authorization']: string } | undefined;
@@ -14,7 +14,7 @@ interface AuthCtx {
 }
 
 const AuthContext = createContext<AuthCtx>({
-  isLoggedIn: false,
+  isLoggedIn: () => false,
   triggerSignIn: async () => undefined,
   logout: () => undefined,
   getAuthHeader: () => undefined,
@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const { library, account, chainId } = useEthers();
   const { setError } = useApiError();
-  const [isLoggedIn, setIsLoggedIn] = useState(Boolean(getAuthToken()));
 
   // Create message for user to sign to authenticate.
   const createSiweMessage = async (
@@ -96,7 +95,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const one_hour = new Date(new Date().getTime() + 3600 * 1000);
       Cookies.set('lil-noun-token', data.data.accessToken, { expires: one_hour });
-      setIsLoggedIn(true);
     } catch (e: any) {
       setError({ message: e.message || 'Login Failed', status: e.status });
       throw e;
@@ -104,16 +102,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    if (isLoggedIn) {
+    if (!!getAuthToken()) {
       Cookies.remove('lil-noun-token');
-      setIsLoggedIn(false);
     }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        isLoggedIn,
+        isLoggedIn: () => !!getAuthToken(),
         triggerSignIn: signInWithEthereum,
         logout,
         getAuthToken,

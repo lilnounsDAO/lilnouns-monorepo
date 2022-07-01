@@ -14,9 +14,9 @@ model Idea {
   id          Int       @id @default(autoincrement())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  title       String    @db.VarChar(130)
-  tldr        String    @db.VarChar(255)
-  description String    @db.VarChar(500)
+  title       String    @db.VarChar(50)
+  tldr        String    @db.VarChar(240)
+  description String    @db.VarChar(1080)
   createdBy   User      @relation(fields: [creatorId], references: [wallet])
   creatorId   String
   comments    Comment[]
@@ -48,12 +48,15 @@ model Vote {
 }
 
 model Comment {
-  id       Int    @id @default(autoincrement())
-  body     String
-  idea     Idea   @relation(fields: [ideaId], references: [id])
-  ideaId   Int
-  author   User   @relation(fields: [authorId], references: [wallet])
-  authorId String
+  id          Int    @id @default(autoincrement())
+  body        String
+  idea        Idea   @relation(fields: [ideaId], references: [id])
+  ideaId      Int
+  author      User   @relation(fields: [authorId], references: [wallet])
+  authorId    String
+  replies    Comment[] @relation("Comment_Children")
+  parent      Comment?  @relation("Comment_Children", fields: [parentId], references: [id])
+  parentId    Int?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
