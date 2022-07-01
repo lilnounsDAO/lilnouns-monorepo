@@ -7,19 +7,15 @@ import classes from './Ideas.module.css';
 import { isMobileScreen } from '../../utils/isMobile';
 import IdeaCard from '../IdeaCard';
 import { useIdeas } from '../../hooks/useIdeas';
-import { useEffect } from 'react';
 
 const Ideas = () => {
   const { account } = useEthers();
   const history = useHistory();
-  const { getIdeas, ideas, voteOnIdea } = useIdeas();
+  const { getIdeas, voteOnIdeaList } = useIdeas();
 
-  useEffect(() => {
-    getIdeas();
-  }, []);
+  const ideas = getIdeas();
 
-  // const connectedAccountNounVotes = useUserVotes() || 0;
-  const connectedAccountNounVotes = 5;
+  const connectedAccountNounVotes = useUserVotes() || 0;
 
   const isMobile = isMobileScreen();
 
@@ -30,7 +26,6 @@ const Ideas = () => {
     return 'Connect wallet to submit an idea.';
   };
 
-  // set to true for testing
   const hasNouns = connectedAccountNounVotes > 0;
 
   return (
@@ -60,7 +55,7 @@ const Ideas = () => {
               <IdeaCard
                 idea={idea}
                 key={`idea-${idea.id}`}
-                voteOnIdea={voteOnIdea}
+                voteOnIdea={voteOnIdeaList}
                 connectedAccountNounVotes={connectedAccountNounVotes}
               />
             );
