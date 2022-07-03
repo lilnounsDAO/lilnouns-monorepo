@@ -134,7 +134,7 @@ const NavBar = () => {
                   rel="noreferrer"
                 >
                   <NavBarButton
-                    buttonText={'About Lil Nouns'}
+                    buttonText={'Docs'}
                     buttonIcon={<FontAwesomeIcon icon={faBookOpen} />}
                     buttonStyle={nonWalletButtonStyle}
                   />
@@ -175,7 +175,7 @@ const NavBar = () => {
                   rel="noreferrer"
                 >
                   <NavBarButton
-                    buttonText={'About Lil Nouns'}
+                    buttonText={'Docs'}
                     buttonIcon={<FontAwesomeIcon icon={faBookOpen} />}
                     buttonStyle={nonWalletButtonStyle}
                   />
