@@ -30,6 +30,7 @@ model User {
   ideas    Idea[]
   votes    Vote[]
   comments Comment[]
+  lilnounCount Int
 }
 
 // direction
