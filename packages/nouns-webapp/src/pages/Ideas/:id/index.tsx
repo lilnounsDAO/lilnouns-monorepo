@@ -161,7 +161,8 @@ const IdeaPage = () => {
                 id={idea.id}
                 votes={idea.votes}
                 voteOnIdea={castVote}
-                hasVotes={connectedAccountNounVotes > 0}
+                connectedAccountNounVotes={connectedAccountNounVotes}
+                voteCount={idea.voteCount}
               />
             </div>
           </div>

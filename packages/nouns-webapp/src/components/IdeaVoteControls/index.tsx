@@ -7,32 +7,36 @@ const IdeaVoteControls = ({
   id,
   votes,
   voteOnIdea,
-  hasVotes,
+  connectedAccountNounVotes,
+  voteCount,
 }: {
   id: number;
   votes: Vote[];
   voteOnIdea: (args: any) => void;
-  hasVotes: boolean;
+  connectedAccountNounVotes: number;
+  voteCount: number;
 }) => {
   const { account } = useEthers();
+  const hasVotes = connectedAccountNounVotes > 0;
+
+  const usersVote = votes.find(vote => vote.voterId === account);
+  const userHasUpVote = usersVote && usersVote.direction === 1;
+  const userHasDownVote = usersVote && usersVote.direction === -1;
+
   const vote = (dir: number) =>
     voteOnIdea({
       direction: dir,
       ideaId: id,
       voterId: account,
+      voter: {
+        lilnounCount: connectedAccountNounVotes,
+      },
     });
-
-  const usersVote = votes.find(vote => vote.voterId === account);
-  const userHasUpVote = usersVote && usersVote.direction === 1;
-  const userHasDownVote = usersVote && usersVote.direction === -1;
-  const ideaScore = votes.reduce((sum, vote) => {
-    return sum + vote.direction;
-  }, 0);
 
   return (
     <>
       <span className="text-3xl text-black font-bold lodrina self-center justify-end">
-        {ideaScore}
+        {voteCount}
       </span>
       <div className="flex flex-col ml-4">
         <FontAwesomeIcon
