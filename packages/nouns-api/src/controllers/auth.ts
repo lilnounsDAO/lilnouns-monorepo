@@ -60,6 +60,7 @@ class AuthController {
         });
       }
 
+      // FIX BEFORE LAUNCH
       const lilnounCount = 2 || nounTokenCount(fields.address);
 
       // This isn't working but we want to run it to ensure the user has nouns before we auth them.
