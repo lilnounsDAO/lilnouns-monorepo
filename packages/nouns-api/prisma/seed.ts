@@ -9,6 +9,7 @@ async function seed() {
     id: 1,
     wallet: '0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9',
     ens: 'test.eth',
+    lilnounCount: 3,
   };
 
   await prisma.user.create({ data: user });
@@ -20,6 +21,7 @@ async function seed() {
         tldr: chance.sentence({ words: 5 }),
         description: chance.sentence({ words: 10 }),
         creatorId: user.wallet,
+        voteCount: 0,
       },
     });
   }

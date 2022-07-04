@@ -42,7 +42,8 @@ const IdeaCard = ({
             id={id}
             votes={votes}
             voteOnIdea={voteOnIdea}
-            hasVotes={connectedAccountNounVotes > 0}
+            connectedAccountNounVotes={connectedAccountNounVotes}
+            voteCount={idea.voteCount}
           />
         </div>
       </div>

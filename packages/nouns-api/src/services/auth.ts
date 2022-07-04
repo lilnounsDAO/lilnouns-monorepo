@@ -8,9 +8,25 @@ class AuthService {
       const user = await prisma.user.create({
         data,
       });
-      data.accessToken = await signAccessToken(user);
+      const accessToken = await signAccessToken(user);
 
-      return data;
+      return { ...user, accessToken };
+    } catch (e: any) {
+      throw e;
+    }
+  }
+
+  static async update(data: { wallet: string; lilnounCount: number }) {
+    const { wallet } = data;
+    try {
+      const user = await prisma.user.update({
+        where: {
+          wallet,
+        },
+        data,
+      });
+
+      return user;
     } catch (e: any) {
       throw e;
     }
@@ -24,10 +40,10 @@ class AuthService {
     }
   }
 
-  static async login(data: { wallet: string }) {
+  static async login(data: { wallet: string; lilnounCount: number }) {
     const { wallet } = data;
     try {
-      const user = await prisma.user.findUnique({
+      let user = await prisma.user.findUnique({
         where: {
           wallet,
         },
@@ -35,6 +51,8 @@ class AuthService {
 
       if (!user) {
         return this.register(data);
+      } else {
+        user = await this.update(data); // Could do this update async
       }
 
       const accessToken = await signAccessToken(user);
