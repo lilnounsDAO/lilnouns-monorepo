@@ -21,6 +21,7 @@ async function seed() {
         tldr: chance.sentence({ words: 5 }),
         description: chance.sentence({ words: 10 }),
         creatorId: user.wallet,
+        voteCount: 0,
       },
     });
   }

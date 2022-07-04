@@ -21,6 +21,7 @@ model Idea {
   creatorId   String
   comments    Comment[]
   votes       Vote[]
+  voteCount   Int
 }
 
 model User {
