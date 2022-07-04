@@ -44,11 +44,11 @@ export const getTokenMetadata = async (tokenId: string): Promise<undefined | Tok
   return metadata;
 };
 
-export const hasNounToken = async (account: string) => {
+export const nounTokenCount = async (account: string) => {
   const data = await tryF(() => nounsTokenContract.getCurrentVotes(account));
   if (isError(data)) {
     console.error(`Error fetching votes for account ${account}: ${data.message}`);
     return;
   }
   return data.votes?.toNumber();
-}
+};

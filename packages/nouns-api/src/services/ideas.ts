@@ -1,14 +1,28 @@
 import { prisma } from '../api';
 
+const countVotes = (idea: any) => {
+  return idea.votes.reduce((sum: number, vote: any) => {
+    return (sum + vote.direction) * vote.voter.lilnounCount;
+  }, 0);
+};
+
 class IdeasService {
   static async all() {
     try {
       const allIdeas = await prisma.idea.findMany({
         include: {
-          votes: true,
+          votes: {
+            include: {
+              voter: true,
+            },
+          },
         },
       });
-      return allIdeas;
+      const ideas = allIdeas.map((idea: any) => {
+        const voteCount = countVotes(idea);
+        return { ...idea, voteCount };
+      });
+      return ideas;
     } catch (e: any) {
       throw e;
     }
@@ -19,7 +33,11 @@ class IdeasService {
       const idea = await prisma.idea.findUnique({
         where: { id: id },
         include: {
-          votes: true,
+          votes: {
+            include: {
+              voter: true,
+            },
+          },
           comments: {
             where: {
               parentId: null,
@@ -39,7 +57,13 @@ class IdeasService {
         },
       });
 
-      return idea;
+      if (!idea) {
+        throw new Error('Idea not found');
+      }
+
+      const voteCount = countVotes(idea);
+
+      return { ...idea, voteCount };
     } catch (e: any) {
       throw e;
     }
@@ -84,6 +108,9 @@ class IdeasService {
           direction: data.direction,
           voterId: user.wallet,
           ideaId: data.ideaId,
+        },
+        include: {
+          voter: true,
         },
       });
 
