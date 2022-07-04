@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import config from '../config';
 import { useAuth } from './useAuth';
 import { useApiError } from './useApiError';
@@ -9,6 +8,9 @@ export interface VoteFormData {
   id: number;
   direction: number;
   ideaId: number;
+  voter: {
+    lilnounCount: number;
+  };
 }
 
 export interface CommentFormData {
@@ -22,6 +24,10 @@ export interface Vote {
   voterId: string;
   ideaId: number;
   direction: number;
+  voter: {
+    wallet: string;
+    lilnounCount: number;
+  };
 }
 
 export interface Idea {
@@ -32,6 +38,7 @@ export interface Idea {
   votes: Vote[];
   creatorId: string;
   comments: Comment[];
+  voteCount: number;
 }
 
 export interface Comment {
@@ -46,15 +53,23 @@ export interface Comment {
 
 type Reply = Comment;
 
-// Update the vote count for an idea after a new vote is recorded.
+// Update the vote count in the cache for an idea after a new vote is recorded.
 const updateVotesState = (ideas: Idea[], vote: Vote) => {
-  const { ideaId, direction, voterId } = vote;
+  const {
+    ideaId,
+    direction,
+    voterId,
+    voter: { lilnounCount },
+  } = vote;
   const updatedIdeas = ideas.map(idea => {
     if (idea.id === ideaId) {
       let seenVote = false;
+      let voteCount = idea.voteCount + direction * lilnounCount;
+
       const newIdeaVotes = idea.votes.map(v => {
         if (v.voterId === voterId) {
           seenVote = true;
+          voteCount = idea.voteCount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
           return { ...vote, direction };
         } else {
           return vote;
@@ -65,7 +80,7 @@ const updateVotesState = (ideas: Idea[], vote: Vote) => {
         newIdeaVotes.push(vote);
       }
 
-      return { ...idea, votes: newIdeaVotes };
+      return { ...idea, voteCount, votes: newIdeaVotes };
     }
 
     return idea;

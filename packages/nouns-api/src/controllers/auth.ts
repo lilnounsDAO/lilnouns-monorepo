@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 
 import AuthService from '../services/auth';
 import { SiweMessage } from 'siwe';
+import { nounTokenCount } from '../utils/utils';
 
 class AuthController {
   static register = async (req: Request, res: Response, next: any) => {
@@ -59,14 +60,17 @@ class AuthController {
         });
       }
 
+      // FIX BEFORE LAUNCH
+      const lilnounCount = 2 || nounTokenCount(fields.address);
+
       // This isn't working but we want to run it to ensure the user has nouns before we auth them.
 
-      // if (!hasNounToken(fields.address)) {
+      // if (!lilNounsCount) {
       // console.log('Failed to fetch votes')
       // return next(new createError.Unauthorized(`User does not have a lil noun`))
       // }
 
-      const data = await AuthService.login({ wallet: fields.address });
+      const data = await AuthService.login({ wallet: fields.address, lilnounCount });
       res.status(200).json({
         status: true,
         message: 'Account login successful',

@@ -21,6 +21,7 @@ model Idea {
   creatorId   String
   comments    Comment[]
   votes       Vote[]
+  voteCount   Int
 }
 
 model User {
@@ -30,6 +31,7 @@ model User {
   ideas    Idea[]
   votes    Vote[]
   comments Comment[]
+  lilnounCount Int
 }
 
 // direction
