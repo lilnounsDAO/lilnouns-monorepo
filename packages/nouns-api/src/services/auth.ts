@@ -8,9 +8,8 @@ class AuthService {
       const user = await prisma.user.create({
         data,
       });
-      const accessToken = await signAccessToken(user);
-
-      return { ...user, accessToken };
+      console.log(user);
+      return user;
     } catch (e: any) {
       throw e;
     }
@@ -50,7 +49,7 @@ class AuthService {
       });
 
       if (!user) {
-        return this.register(data);
+        user = await this.register(data);
       } else {
         user = await this.update(data); // Could do this update async
       }

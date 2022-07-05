@@ -1,5 +1,17 @@
 import { prisma } from '../api';
 
+/*
+  Calculate votes on the fly based on the voters lilnounCount. This value 
+  is updated everytime a user logs in so the count of votes will be dynamic.
+  We can also create a cron job that regularly updates each users lilnounCount
+  so that this value isn't reliant on users logging in regularly.
+*/
+const countVotes = (idea: any) => {
+  return idea.votes.reduce((sum: number, vote: any) => {
+    return (sum + vote.direction) * vote.voter.lilnounCount;
+  }, 0);
+};
+
 class IdeasService {
   static async all() {
     try {
@@ -11,16 +23,12 @@ class IdeasService {
             },
           },
         },
-        orderBy: [
-          {
-            voteCount: 'desc',
-          },
-          {
-            createdAt: 'asc',
-          },
-        ],
       });
-      return allIdeas;
+      const ideas = allIdeas.map((idea: any) => {
+        const voteCount = countVotes(idea);
+        return { ...idea, voteCount };
+      });
+      return ideas;
     } catch (e: any) {
       throw e;
     }
@@ -59,13 +67,15 @@ class IdeasService {
         throw new Error('Idea not found');
       }
 
-      return idea;
+      const voteCount = countVotes(idea);
+
+      return { ...idea, voteCount };
     } catch (e: any) {
       throw e;
     }
   }
 
-  static async createIdea(data: any, user?: { wallet: string; lilnounCount: number }) {
+  static async createIdea(data: any, user?: { wallet: string }) {
     try {
       if (!user) {
         throw new Error('Failed to save idea: missing user details');
@@ -76,16 +86,6 @@ class IdeasService {
           tldr: data.tldr,
           description: data.description,
           creatorId: user.wallet,
-          voteCount: user.lilnounCount,
-          votes: {
-            create: {
-              direction: 1,
-              voterId: user.wallet,
-            },
-          },
-        },
-        include: {
-          votes: true,
         },
       });
 
@@ -95,73 +95,30 @@ class IdeasService {
     }
   }
 
-  static async voteOnIdea(data: any, user?: { wallet: string; lilnounCount: number }) {
+  static async voteOnIdea(data: any, user?: { wallet: string }) {
     try {
       if (!user) {
         throw new Error('Failed to save vote: missing user details');
       }
-
-      // Find if the user has placed a vote on this idea already.
-      let vote = await prisma.vote.findUnique({
+      const vote = prisma.vote.upsert({
         where: {
           ideaId_voterId: {
             voterId: user.wallet,
             ideaId: data.ideaId,
           },
         },
+        update: {
+          direction: data.direction,
+        },
+        create: {
+          direction: data.direction,
+          voterId: user.wallet,
+          ideaId: data.ideaId,
+        },
+        include: {
+          voter: true,
+        },
       });
-
-      if (!vote) {
-        const [newVote, idea] = await prisma.$transaction([
-          prisma.vote.create({
-            data: {
-              direction: data.direction,
-              voterId: user.wallet,
-              ideaId: data.ideaId,
-            },
-            include: {
-              voter: true,
-              idea: true,
-            },
-          }),
-          prisma.idea.update({
-            where: {
-              id: data.ideaId,
-            },
-            data: {
-              voteCount: {
-                increment: data.direction * user.lilnounCount,
-              },
-            },
-          }),
-        ]);
-
-        vote = { ...newVote, idea } as any;
-      } else {
-        vote = await prisma.vote.update({
-          where: {
-            ideaId_voterId: {
-              voterId: user.wallet,
-              ideaId: data.ideaId,
-            },
-          },
-          data: {
-            direction: data.direction,
-            idea: {
-              update: {
-                voteCount: {
-                  // If the user has placed a vote before we want to double the weight of their new vote to override their existing vote.
-                  increment: data.direction * 2 * user.lilnounCount,
-                },
-              },
-            },
-          },
-          include: {
-            voter: true,
-            idea: true,
-          },
-        });
-      }
 
       return vote;
     } catch (e) {
