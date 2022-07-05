@@ -30,6 +30,12 @@ export interface Vote {
   };
 }
 
+export interface Voter {
+  wallet: string;
+  lilnounCount: number;
+  direction: number;
+}
+
 export interface Idea {
   id: number;
   title: string;
@@ -38,7 +44,8 @@ export interface Idea {
   votes: Vote[];
   creatorId: string;
   comments: Comment[];
-  voteCount: number;
+  votecount: number;
+  voters: Voter[];
 }
 
 export interface Comment {
@@ -64,23 +71,23 @@ const updateVotesState = (ideas: Idea[], vote: Vote) => {
   const updatedIdeas = ideas.map(idea => {
     if (idea.id === ideaId) {
       let seenVote = false;
-      let voteCount = idea.voteCount + direction * lilnounCount;
+      let votecount = idea.votecount + direction * lilnounCount;
 
-      const newIdeaVotes = idea.votes.map(v => {
-        if (v.voterId === voterId) {
+      const newIdeaVoters = idea.voters.map((v: any) => {
+        if (v.wallet === voterId) {
           seenVote = true;
-          voteCount = idea.voteCount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
-          return { ...vote, direction };
+          votecount = idea.votecount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
+          return { ...v, direction };
         } else {
-          return vote;
+          return v;
         }
       });
 
       if (!seenVote) {
-        newIdeaVotes.push(vote);
+        newIdeaVoters.push({ wallet: voterId, direction, lilnounCount });
       }
 
-      return { ...idea, voteCount, votes: newIdeaVotes };
+      return { ...idea, votecount, voters: newIdeaVoters };
     }
 
     return idea;
@@ -88,10 +95,10 @@ const updateVotesState = (ideas: Idea[], vote: Vote) => {
   return updatedIdeas;
 };
 
-const buildCommentState = (idea: Idea, newComment: Comment, parentId: number) => {
-  let comments = [];
+const buildCommentState = (comments: Comment[], newComment: Comment, parentId: number) => {
+  let newComments = [];
   if (parentId) {
-    comments = idea.comments.map((comment: Comment) => {
+    newComments = comments.map((comment: Comment) => {
       if (comment.id === parentId) {
         comment.replies = [...comment.replies, newComment];
       }
@@ -99,10 +106,10 @@ const buildCommentState = (idea: Idea, newComment: Comment, parentId: number) =>
       return comment;
     });
   } else {
-    comments = [...idea.comments, newComment];
+    newComments = [...comments, newComment];
   }
 
-  return comments;
+  return newComments;
 };
 
 export const useIdeas = () => {
@@ -135,6 +142,12 @@ export const useIdeas = () => {
     }
 
     return data?.data as Idea;
+  };
+
+  const getComments = (id: string) => {
+    const { data, error }: any = useSWR(`${HOST}/idea/${id}/comments`, fetcher);
+
+    return { comments: data?.data as Comment[], error };
   };
 
   const castVote = async (formData: VoteFormData) => {
@@ -178,9 +191,9 @@ export const useIdeas = () => {
   const commentOnIdea = (formData: any) => {
     try {
       mutate(
-        `${HOST}/idea/${formData.ideaId}`,
+        `${HOST}/idea/${formData.ideaId}/comments`,
         async () => {
-          const response = await fetch(`${HOST}/idea/comment`, {
+          const response = await fetch(`${HOST}/idea/${formData.ideaId}/comments`, {
             method: 'POST',
             headers: {
               ...getAuthHeader(),
@@ -192,25 +205,19 @@ export const useIdeas = () => {
           return response.json();
         },
         {
-          optimisticData: ({ data }: { data: Idea }) => {
+          optimisticData: ({ data }: { data: Comment[] }) => {
             const comments = buildCommentState(
               data,
               { ...formData, replies: [], createdAt: 'Now', id: 0, timestamp: new Date() },
               formData.parentId,
             );
 
-            const idea = { ...data, comments, timestamp: new Date() };
-
-            return { data: idea };
+            return { data: comments };
           },
           rollbackOnError: true,
-          populateCache: ({ data }: { data: Comment }, currentData: { data: Idea }) => {
+          populateCache: ({ data }: { data: Comment }, currentData: { data: Comment[] }) => {
             const comments = buildCommentState(currentData.data, data, formData.parentId);
-            const idea = {
-              ...currentData.data,
-              comments: comments.filter(comment => comment.id !== 0),
-            };
-            return { data: idea };
+            return { data: comments.filter(comment => comment.id !== 0) };
           },
           revalidate: true,
         },
@@ -332,5 +339,6 @@ export const useIdeas = () => {
     },
     getIdeas,
     getIdea,
+    getComments,
   };
 };

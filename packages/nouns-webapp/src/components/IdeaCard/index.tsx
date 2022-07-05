@@ -19,7 +19,7 @@ const IdeaCard = ({
 }) => {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { id, description, title, votes, creatorId } = idea;
+  const { id, description, title, votes, voters, creatorId, votecount: voteCount } = idea;
 
   const ens = useReverseENSLookUp(creatorId);
   const shortAddress = useShortAddress(creatorId);
@@ -40,10 +40,10 @@ const IdeaCard = ({
         <div className="flex justify-self-end">
           <IdeaVoteControls
             id={id}
-            votes={votes}
             voteOnIdea={voteOnIdea}
             connectedAccountNounVotes={connectedAccountNounVotes}
-            voteCount={idea.voteCount}
+            voteCount={voteCount}
+            voters={voters}
           />
         </div>
       </div>
