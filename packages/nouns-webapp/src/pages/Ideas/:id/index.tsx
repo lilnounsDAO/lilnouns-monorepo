@@ -30,6 +30,7 @@ const Comment = ({
   const { id } = useParams() as { id: string };
   const [isReply, setIsReply] = useState<boolean>(false);
   const [reply, setReply] = useState<string>('');
+  const [showReplies, setShowReplies] = useState<boolean>(level > 1);
   const { account } = useEthers();
   const ens = useReverseENSLookUp(comment.authorId);
   const shortAddress = useShortAddress(comment.authorId);
@@ -56,24 +57,39 @@ const Comment = ({
           </span>
         </span>
         {level < 4 && (
-          <span className="text-[#2B83F6] cursor-pointer" onClick={() => setIsReply(true)}>
+          <span
+            className="text-[#2B83F6] text-base cursor-pointer"
+            onClick={() => setIsReply(true)}
+          >
             Reply
           </span>
         )}
         {/* Future addition: Add view more button to move deeper into the thread? */}
       </div>
 
-      <p>{comment.body}</p>
-      <div className="border-l border-gray-200">
-        {comment.replies &&
-          comment.replies.map(reply => {
+      <p className="text-[#212529] text-lg">{comment.body}</p>
+
+      {!!comment.replies?.length && level === 1 && (
+        <span
+          className="text-[#212529] text-base cursor-pointer font-bold"
+          onClick={() => setShowReplies(!showReplies)}
+        >
+          {`${showReplies ? 'Hide' : 'Show'} replies`}
+        </span>
+      )}
+
+      {showReplies && (
+        <div className={`border-l border-gray-200 ${level === 1 ? 'pt-8' : ''}`}>
+          {comment.replies?.map(reply => {
             return (
               <div className="ml-8" key={`replies-${reply.id}`}>
                 <Comment comment={reply} hasNouns={hasNouns} level={level + 1} />
               </div>
             );
           })}
-      </div>
+        </div>
+      )}
+
       {isReply && (
         <div className="relative my-4">
           <input
