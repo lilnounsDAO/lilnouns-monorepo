@@ -76,6 +76,24 @@ class IdeasController {
     }
   };
 
+  static getCommentsByIdea = async (req: Request, res: Response, next: any) => {
+    try {
+      const comments = await IdeasService.getIdeaComments(parseInt(req.params.id));
+      res.status(200).json({
+        status: true,
+        message: 'Fetched comments',
+        data: comments,
+      });
+    } catch (e: any) {
+      res
+        .status(e.statusCode || 500)
+        .json({
+          message: e.message,
+        })
+        .end();
+    }
+  };
+
   static commentOnIdea = async (req: Request, res: Response, next: any) => {
     try {
       const idea = await IdeasService.commentOnIdea(req.body, req.user);
