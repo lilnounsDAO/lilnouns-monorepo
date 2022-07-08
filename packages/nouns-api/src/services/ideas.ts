@@ -1,34 +1,30 @@
 import { prisma } from '../api';
 
-/*
-  Calculate votes on the fly based on the voters lilnounCount. This value 
-  is updated everytime a user logs in so the count of votes will be dynamic.
-  We can also create a cron job that regularly updates each users lilnounCount
-  so that this value isn't reliant on users logging in regularly.
-*/
-const countVotes = (idea: any) => {
-  return idea.votes.reduce((sum: number, vote: any) => {
-    return (sum + vote.direction) * vote.voter.lilnounCount;
-  }, 0);
-};
-
 class IdeasService {
   static async all() {
     try {
-      const allIdeas = await prisma.idea.findMany({
-        include: {
-          votes: {
-            include: {
-              voter: true,
-            },
-          },
-        },
-      });
-      const ideas = allIdeas.map((idea: any) => {
-        const voteCount = countVotes(idea);
-        return { ...idea, voteCount };
-      });
-      return ideas;
+      /* SQL to:
+        - fetch idea data,
+        - calculate the votecount for each idea using the users lil noun count and their vote direction
+        - aggregate voter details
+        - Sort by new votecount property
+
+        This custom SQL allows us to calculate votes on the fly meaning we always have up to date votes with the users lilnouns. It also keeps
+        sorting/filtering server side which will allow us to introduce pagination and other sorting mechanics.
+      */
+
+      const ideaData: any = await prisma.$queryRaw`
+      SELECT * FROM
+        (SELECT v."ideaId",
+        json_agg(json_build_object('wallet', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS voters,
+        sum(v."direction"*u."lilnounCount") AS voteCount
+        FROM "lil-nouns-ideas"."Vote" v INNER JOIN "lil-nouns-ideas"."User" u
+        ON v."voterId" = u."wallet"
+        GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "lil-nouns-ideas"."Idea" idea ON counted_votes."ideaId" = idea.id
+      ORDER BY voteCount DESC
+      `;
+
+      return ideaData;
     } catch (e: any) {
       throw e;
     }
@@ -36,46 +32,28 @@ class IdeasService {
 
   static async get(id: number) {
     try {
-      const idea = await prisma.idea.findUnique({
-        where: { id: id },
-        include: {
-          votes: {
-            include: {
-              voter: true,
-            },
-          },
-          comments: {
-            where: {
-              parentId: null,
-            },
-            include: {
-              replies: {
-                include: {
-                  replies: {
-                    include: {
-                      replies: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
+      const ideaData: any = await prisma.$queryRaw`
+        SELECT * FROM
+          (SELECT v."ideaId",
+          json_agg(json_build_object('wallet', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS voters,
+          sum(v."direction"*u."lilnounCount") AS voteCount
+          FROM "lil-nouns-ideas"."Vote" v INNER JOIN "lil-nouns-ideas"."User" u
+          ON v."voterId" = u."wallet"
+          GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "lil-nouns-ideas"."Idea" idea ON counted_votes."ideaId" = idea.id
+        WHERE idea."id" = ${id}
+      `;
 
-      if (!idea) {
+      if (!ideaData?.[0]) {
         throw new Error('Idea not found');
       }
 
-      const voteCount = countVotes(idea);
-
-      return { ...idea, voteCount };
+      return ideaData[0];
     } catch (e: any) {
       throw e;
     }
   }
 
-  static async createIdea(data: any, user?: { wallet: string }) {
+  static async createIdea(data: { title: string, tldr: string, description: string }, user?: { wallet: string }) {
     try {
       if (!user) {
         throw new Error('Failed to save idea: missing user details');
@@ -86,6 +64,12 @@ class IdeasService {
           tldr: data.tldr,
           description: data.description,
           creatorId: user.wallet,
+          votes: {
+            create: {
+              direction: 1,
+              voterId: user.wallet,
+            },
+          },
         },
       });
 
@@ -135,6 +119,32 @@ class IdeasService {
       });
 
       return votes;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static async getIdeaComments(id: number) {
+    try {
+      const comment = prisma.comment.findMany({
+        where: {
+          ideaId: id,
+          parentId: null,
+        },
+        include: {
+          replies: {
+            include: {
+              replies: {
+                include: {
+                  replies: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return comment;
     } catch (e) {
       throw e;
     }
