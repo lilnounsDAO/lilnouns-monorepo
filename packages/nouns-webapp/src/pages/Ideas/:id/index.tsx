@@ -118,9 +118,10 @@ const IdeaPage = () => {
   const [comment, setComment] = useState<string>();
   const connectedAccountNounVotes = useUserVotes() || 0;
 
-  const { getIdea, commentOnIdea, voteOnIdea } = useIdeas();
+  const { getIdea, getComments, commentOnIdea, voteOnIdea } = useIdeas();
 
   const idea = getIdea(id);
+  const { comments, error } = getComments(id);
 
   const castVote = async (formData: VoteFormData) => {
     await voteOnIdea(formData);
@@ -159,10 +160,10 @@ const IdeaPage = () => {
             <div className="flex flex-row justify-end">
               <IdeaVoteControls
                 id={idea.id}
-                votes={idea.votes}
                 voteOnIdea={castVote}
                 connectedAccountNounVotes={connectedAccountNounVotes}
-                voteCount={idea.voteCount}
+                voteCount={idea.votecount}
+                voters={idea.voters}
               />
             </div>
           </div>
@@ -180,47 +181,55 @@ const IdeaPage = () => {
 
         <div className="mt-12 mb-2">
           <h3 className="text-2xl lodrina font-bold">
-            {idea.comments.length} {idea.comments.length === 1 ? 'comment' : 'comments'}
+            {comments?.length} {comments?.length === 1 ? 'comment' : 'comments'}
           </h3>
         </div>
 
-        <div className="relative mt-4">
-          <input
-            value={comment}
-            onChange={e => setComment(e.target.value)}
-            type="text"
-            className="border rounded-lg w-full p-3 relative"
-            placeholder="Type your commment..."
-          />
-          <div className="absolute right-2 top-2">
-            <button
-              className={`${
-                hasNouns
-                  ? 'rounded-lg bg-[#2B83F6] text-white font-bold'
-                  : 'text-[#8C8D92] bg-[#F4F4F8] border-[#E2E3E8]-1 font-bold'
-              } p-2 rounded`}
-              onClick={() => {
-                if (hasNouns) {
-                  submitComment();
-                }
-              }}
-            >
-              Comment
-            </button>
+        {error ? (
+          <div className="mt-12 mb-2">
+            <h3 className="text-2xl lodrina font-bold">Failed to load commments</h3>
           </div>
-        </div>
-        <div className="mt-12 space-y-8">
-          {idea.comments.map(comment => {
-            return (
-              <Comment
-                comment={comment}
-                key={`comment-${comment.id}`}
-                hasNouns={hasNouns}
-                level={1}
+        ) : (
+          <>
+            <div className="relative mt-4">
+              <input
+                value={comment}
+                onChange={e => setComment(e.target.value)}
+                type="text"
+                className="border rounded-lg w-full p-3 relative"
+                placeholder="Type your commment..."
               />
-            );
-          })}
-        </div>
+              <div className="absolute right-2 top-2">
+                <button
+                  className={`${
+                    hasNouns
+                      ? 'rounded-lg bg-[#2B83F6] text-white font-bold'
+                      : 'text-[#8C8D92] bg-[#F4F4F8] border-[#E2E3E8]-1 font-bold'
+                  } p-2 rounded`}
+                  onClick={() => {
+                    if (hasNouns) {
+                      submitComment();
+                    }
+                  }}
+                >
+                  Comment
+                </button>
+              </div>
+            </div>
+            <div className="mt-12 space-y-8">
+              {comments?.map(comment => {
+                return (
+                  <Comment
+                    comment={comment}
+                    key={`comment-${comment.id}`}
+                    hasNouns={hasNouns}
+                    level={1}
+                  />
+                );
+              })}
+            </div>
+          </>
+        )}
       </Col>
     </Section>
   );
