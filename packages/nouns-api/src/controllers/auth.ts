@@ -100,6 +100,14 @@ class AuthController {
         .end();
     }
   };
+
+  static syncUserTokenCounts = async (to: string, from: string) => {
+    try {
+      await AuthService.syncUserTokenCounts(to, from);
+    } catch (e: any) {
+      console.log(e);
+    }
+  };
 }
 
 export default AuthController;
