@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Col, Row, Button } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import Section from '../../../layout/Section';
 import { useIdeas } from '../../../hooks/useIdeas';
@@ -87,7 +87,12 @@ const CreateIdeaPage = () => {
             />
           </div>
           <div className="flex justify-end">
-            <Button type="submit">Submit</Button>
+            <button
+              type="submit"
+              className="rounded-lg bg-[#2B83F6] text-white font-bold p-2 rounded"
+            >
+              Submit
+            </button>
           </div>
         </form>
       </Col>
