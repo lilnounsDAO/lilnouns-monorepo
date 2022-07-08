@@ -11,15 +11,22 @@ async function seed() {
     lilnounCount: 3,
   };
 
-  await prisma.user.create({ data: user });
+  const prismaUser = await prisma.user.create({ data: user });
 
-  for (let i = 0; i < 5; i++) {
-    await prisma.idea.create({
+  for (let i = 0; i < 10; i++) {
+    const idea = await prisma.idea.create({
       data: {
         title: chance.word({ length: 5 }),
         tldr: chance.sentence({ words: 5 }),
         description: chance.sentence({ words: 10 }),
         creatorId: user.wallet,
+      },
+    });
+    await prisma.vote.create({
+      data: {
+        ideaId: idea.id,
+        voterId: prismaUser.wallet,
+        direction: 1,
       },
     });
   }
