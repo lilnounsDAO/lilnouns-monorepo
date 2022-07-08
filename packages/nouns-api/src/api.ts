@@ -2,6 +2,8 @@ import express, { Express, Request, Response } from 'express';
 import { param, validationResult } from 'express-validator';
 import { getTokenMetadata } from './utils/utils';
 
+import { nounsTokenContract } from './clients';
+
 import AuthController from './controllers/auth';
 import bodyParser from 'body-parser';
 import IdeasController from './controllers/ideas';
@@ -51,23 +53,10 @@ export const createAPI = (): Express => {
   app.get('/ideas', IdeasController.getAllIdeas);
   app.post('/ideas', authMiddleware, IdeasController.createIdea);
 
-  app.get(
-    '/metadata/:tokenId',
-    param('tokenId').isInt({ min: 0, max: 1000 }),
-    async (req: Request, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).send({ errors: errors.array() });
-      }
-
-      const metadata = await getTokenMetadata(req.params.tokenId);
-      if (!metadata) {
-        return res.status(500).send({ error: 'Failed to fetch token metadata' });
-      }
-
-      res.send(metadata);
-    },
-  );
+  // Listen to token transfers and update the user lilnoun count in the user model. This will keep vote counts up to date.
+  nounsTokenContract.on('Transfer', async (from, to) => {
+    await AuthController.syncUserTokenCounts(to, from);
+  });
 
   return app;
 };

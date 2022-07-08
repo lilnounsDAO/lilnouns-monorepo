@@ -94,7 +94,10 @@ class IdeasService {
     }
   }
 
-  static async createIdea(data: { title: string, tldr: string, description: string }, user?: { wallet: string }) {
+  static async createIdea(
+    data: { title: string; tldr: string; description: string },
+    user?: { wallet: string },
+  ) {
     try {
       if (!user) {
         throw new Error('Failed to save idea: missing user details');
