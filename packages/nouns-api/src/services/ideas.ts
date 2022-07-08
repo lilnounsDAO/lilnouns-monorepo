@@ -3,24 +3,28 @@ import { prisma } from '../api';
 class IdeasService {
   static async all() {
     try {
-      const allIdeas = await prisma.idea.findMany({
-        include: {
-          votes: {
-            include: {
-              voter: true,
-            },
-          },
-        },
-        orderBy: [
-          {
-            voteCount: 'desc',
-          },
-          {
-            createdAt: 'asc',
-          },
-        ],
-      });
-      return allIdeas;
+      /* SQL to:
+        - fetch idea data,
+        - calculate the votecount for each idea using the users lil noun count and their vote direction
+        - aggregate voter details
+        - Sort by new votecount property
+
+        This custom SQL allows us to calculate votes on the fly meaning we always have up to date votes with the users lilnouns. It also keeps
+        sorting/filtering server side which will allow us to introduce pagination and other sorting mechanics.
+      */
+
+      const ideaData: any = await prisma.$queryRaw`
+      SELECT * FROM
+        (SELECT v."ideaId",
+        json_agg(json_build_object('wallet', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS voters,
+        sum(v."direction"*u."lilnounCount") AS voteCount
+        FROM "lil-nouns-ideas"."Vote" v INNER JOIN "lil-nouns-ideas"."User" u
+        ON v."voterId" = u."wallet"
+        GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "lil-nouns-ideas"."Idea" idea ON counted_votes."ideaId" = idea.id
+      ORDER BY voteCount DESC
+      `;
+
+      return ideaData;
     } catch (e: any) {
       throw e;
     }
@@ -28,44 +32,28 @@ class IdeasService {
 
   static async get(id: number) {
     try {
-      const idea = await prisma.idea.findUnique({
-        where: { id: id },
-        include: {
-          votes: {
-            include: {
-              voter: true,
-            },
-          },
-          comments: {
-            where: {
-              parentId: null,
-            },
-            include: {
-              replies: {
-                include: {
-                  replies: {
-                    include: {
-                      replies: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
+      const ideaData: any = await prisma.$queryRaw`
+        SELECT * FROM
+          (SELECT v."ideaId",
+          json_agg(json_build_object('wallet', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS voters,
+          sum(v."direction"*u."lilnounCount") AS voteCount
+          FROM "lil-nouns-ideas"."Vote" v INNER JOIN "lil-nouns-ideas"."User" u
+          ON v."voterId" = u."wallet"
+          GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "lil-nouns-ideas"."Idea" idea ON counted_votes."ideaId" = idea.id
+        WHERE idea."id" = ${id}
+      `;
 
-      if (!idea) {
+      if (!ideaData?.[0]) {
         throw new Error('Idea not found');
       }
 
-      return idea;
+      return ideaData[0];
     } catch (e: any) {
       throw e;
     }
   }
 
-  static async createIdea(data: any, user?: { wallet: string; lilnounCount: number }) {
+  static async createIdea(data: { title: string, tldr: string, description: string }, user?: { wallet: string }) {
     try {
       if (!user) {
         throw new Error('Failed to save idea: missing user details');
@@ -76,16 +64,12 @@ class IdeasService {
           tldr: data.tldr,
           description: data.description,
           creatorId: user.wallet,
-          voteCount: user.lilnounCount,
           votes: {
             create: {
               direction: 1,
               voterId: user.wallet,
             },
           },
-        },
-        include: {
-          votes: true,
         },
       });
 
@@ -95,73 +79,30 @@ class IdeasService {
     }
   }
 
-  static async voteOnIdea(data: any, user?: { wallet: string; lilnounCount: number }) {
+  static async voteOnIdea(data: any, user?: { wallet: string }) {
     try {
       if (!user) {
         throw new Error('Failed to save vote: missing user details');
       }
-
-      // Find if the user has placed a vote on this idea already.
-      let vote = await prisma.vote.findUnique({
+      const vote = prisma.vote.upsert({
         where: {
           ideaId_voterId: {
             voterId: user.wallet,
             ideaId: data.ideaId,
           },
         },
+        update: {
+          direction: data.direction,
+        },
+        create: {
+          direction: data.direction,
+          voterId: user.wallet,
+          ideaId: data.ideaId,
+        },
+        include: {
+          voter: true,
+        },
       });
-
-      if (!vote) {
-        const [newVote, idea] = await prisma.$transaction([
-          prisma.vote.create({
-            data: {
-              direction: data.direction,
-              voterId: user.wallet,
-              ideaId: data.ideaId,
-            },
-            include: {
-              voter: true,
-              idea: true,
-            },
-          }),
-          prisma.idea.update({
-            where: {
-              id: data.ideaId,
-            },
-            data: {
-              voteCount: {
-                increment: data.direction * user.lilnounCount,
-              },
-            },
-          }),
-        ]);
-
-        vote = { ...newVote, idea } as any;
-      } else {
-        vote = await prisma.vote.update({
-          where: {
-            ideaId_voterId: {
-              voterId: user.wallet,
-              ideaId: data.ideaId,
-            },
-          },
-          data: {
-            direction: data.direction,
-            idea: {
-              update: {
-                voteCount: {
-                  // If the user has placed a vote before we want to double the weight of their new vote to override their existing vote.
-                  increment: data.direction * 2 * user.lilnounCount,
-                },
-              },
-            },
-          },
-          include: {
-            voter: true,
-            idea: true,
-          },
-        });
-      }
 
       return vote;
     } catch (e) {
@@ -178,6 +119,32 @@ class IdeasService {
       });
 
       return votes;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static async getIdeaComments(id: number) {
+    try {
+      const comment = prisma.comment.findMany({
+        where: {
+          ideaId: id,
+          parentId: null,
+        },
+        include: {
+          replies: {
+            include: {
+              replies: {
+                include: {
+                  replies: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return comment;
     } catch (e) {
       throw e;
     }
