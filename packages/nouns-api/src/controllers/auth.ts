@@ -60,17 +60,15 @@ class AuthController {
         });
       }
 
-      // FIX BEFORE LAUNCH
-      const lilnounCount = 2 || nounTokenCount(fields.address);
+      // For local dev set NOUNS_TOKEN_ADDRESS to `0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
+      const lilnounCount = await nounTokenCount(fields.address);
 
-      // This isn't working but we want to run it to ensure the user has nouns before we auth them.
-
-      // if (!lilNounsCount) {
-      // console.log('Failed to fetch votes')
-      // return next(new createError.Unauthorized(`User does not have a lil noun`))
-      // }
+      if (!(lilnounCount > 0)) {
+        throw new Error(`User does not have a lil noun`);
+      }
 
       const data = await AuthService.login({ wallet: fields.address, lilnounCount });
+
       res.status(200).json({
         status: true,
         message: 'Account login successful',

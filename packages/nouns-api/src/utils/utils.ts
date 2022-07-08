@@ -50,5 +50,5 @@ export const nounTokenCount = async (account: string) => {
     console.error(`Error fetching votes for account ${account}: ${data.message}`);
     return;
   }
-  return data.votes?.toNumber();
+  return data?.toNumber();
 };
