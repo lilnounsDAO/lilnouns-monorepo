@@ -51,7 +51,7 @@ class AuthService {
       if (!user) {
         user = await this.register(data);
       } else {
-        user = await this.update(data); // Could do this update async
+        user = await this.update(data);
       }
 
       const accessToken = await signAccessToken(user);
@@ -63,6 +63,37 @@ class AuthService {
   static async all() {
     const allUsers = await prisma.user.findMany();
     return allUsers;
+  }
+
+  static async syncUserTokenCounts(to: string, from: string) {
+    try {
+      const toUser = await prisma.user.findUnique({
+        where: {
+          wallet: to,
+        },
+      });
+
+      const fromUser = await prisma.user.findUnique({
+        where: {
+          wallet: from,
+        },
+      });
+
+      if (!fromUser && !toUser) {
+        console.log('No Users To Update');
+        return;
+      }
+
+      if (toUser) {
+        await this.update({ wallet: to, lilnounCount: toUser.lilnounCount + 1 });
+      }
+
+      if (fromUser) {
+        await this.update({ wallet: to, lilnounCount: fromUser.lilnounCount - 1 });
+      }
+    } catch (e: any) {
+      console.log(e);
+    }
   }
 }
 
