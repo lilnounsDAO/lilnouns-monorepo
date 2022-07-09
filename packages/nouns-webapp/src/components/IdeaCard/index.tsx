@@ -46,6 +46,7 @@ const IdeaCard = ({
             connectedAccountNounVotes={connectedAccountNounVotes}
             voteCount={voteCount}
             votes={votes}
+            withAvatars
           />
         </div>
       </div>

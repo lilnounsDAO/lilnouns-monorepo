@@ -2,6 +2,7 @@ import { useEthers } from '@usedapp/core';
 import { Vote } from '../../hooks/useIdeas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import Davatar from '@davatar/react';
 
 const IdeaVoteControls = ({
   id,
@@ -9,14 +10,16 @@ const IdeaVoteControls = ({
   voteOnIdea,
   connectedAccountNounVotes,
   voteCount,
+  withAvatars = false,
 }: {
   id: number;
   votes: Vote[];
   voteOnIdea: (args: any) => void;
   connectedAccountNounVotes: number;
   voteCount: number;
+  withAvatars?: boolean;
 }) => {
-  const { account } = useEthers();
+  const { account, library: provider } = useEthers();
   const hasVotes = connectedAccountNounVotes > 0;
 
   const usersVote = votes.find(vote => vote.voterId === account);
@@ -33,8 +36,18 @@ const IdeaVoteControls = ({
       },
     });
 
+  const avatarVotes = withAvatars ? votes.slice(0, 3) : [];
   return (
     <>
+      {withAvatars && (
+        <span className="flex self-center justify-end pl-2">
+          {avatarVotes.map((vote, i) => (
+            <span className={i < avatarVotes.length - 1 ? '-mr-2' : ''}>
+              <Davatar size={32} address={vote.voterId} provider={provider} />
+            </span>
+          ))}
+        </span>
+      )}
       <span className="text-3xl text-black font-bold lodrina self-center justify-end pl-2">
         {voteCount}
       </span>
