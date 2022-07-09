@@ -35,7 +35,7 @@ const IdeaVoteControls = ({
 
   return (
     <>
-      <span className="text-3xl text-black font-bold lodrina self-center justify-end">
+      <span className="text-3xl text-black font-bold lodrina self-center justify-end pl-2">
         {voteCount}
       </span>
       <div className="flex flex-col ml-4">
