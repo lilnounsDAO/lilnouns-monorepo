@@ -7,7 +7,6 @@ import { useReverseENSLookUp } from '../../utils/ensLookup';
 import { useShortAddress } from '../ShortAddress';
 
 import IdeaVoteControls from '../IdeaVoteControls';
-import { useUserVotes } from '../../wrappers/nounToken';
 
 const IdeaCard = ({
   idea,
@@ -24,7 +23,7 @@ const IdeaCard = ({
 
   const ens = useReverseENSLookUp(creatorId);
   const shortAddress = useShortAddress(creatorId);
-  const creatorLilNoun = useUserVotes(creatorId);
+  const creatorLilNoun = votes.find(vote => vote.voterId === creatorId)?.voter?.lilnounCount;
 
   return (
     <div
