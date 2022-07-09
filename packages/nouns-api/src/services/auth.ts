@@ -8,7 +8,7 @@ class AuthService {
       const user = await prisma.user.create({
         data,
       });
-      console.log(user);
+
       return user;
     } catch (e: any) {
       throw e;
