@@ -30,12 +30,6 @@ export interface Vote {
   };
 }
 
-export interface Voter {
-  wallet: string;
-  lilnounCount: number;
-  direction: number;
-}
-
 export interface Idea {
   id: number;
   title: string;
@@ -45,7 +39,6 @@ export interface Idea {
   creatorId: string;
   comments: Comment[];
   votecount: number;
-  voters: Voter[];
 }
 
 export interface Comment {
@@ -71,23 +64,23 @@ const updateVotesState = (ideas: Idea[], vote: Vote) => {
   const updatedIdeas = ideas.map(idea => {
     if (idea.id === ideaId) {
       let seenVote = false;
-      let votecount = idea.votecount + direction * lilnounCount;
+      let voteCount = idea.votecount + direction * lilnounCount;
 
-      const newIdeaVoters = idea.voters.map((v: any) => {
-        if (v.wallet === voterId) {
+      const newIdeaVotes = idea.votes.map(v => {
+        if (v.voterId === voterId) {
           seenVote = true;
-          votecount = idea.votecount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
-          return { ...v, direction };
+          voteCount = idea.votecount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
+          return { ...vote, direction };
         } else {
-          return v;
+          return vote;
         }
       });
 
       if (!seenVote) {
-        newIdeaVoters.push({ wallet: voterId, direction, lilnounCount });
+        newIdeaVotes.push(vote);
       }
 
-      return { ...idea, votecount, voters: newIdeaVoters };
+      return { ...idea, voteCount, votes: newIdeaVotes };
     }
 
     return idea;

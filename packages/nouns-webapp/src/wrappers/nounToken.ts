@@ -48,14 +48,15 @@ export const useNounSeed = (nounId: EthersBN) => {
   return seed;
 };
 
-export const useUserVotes = (): number | undefined => {
+export const useUserVotes = (accountOverride?: string): number | undefined => {
   const { account } = useEthers();
+  const args = accountOverride ? [accountOverride] : [account];
   const [votes] =
     useContractCall<[EthersBN]>({
       abi,
       address: config.addresses.nounsToken,
       method: 'getCurrentVotes',
-      args: [account],
+      args,
     }) || [];
   return votes?.toNumber();
 };

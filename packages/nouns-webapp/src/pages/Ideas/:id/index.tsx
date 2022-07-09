@@ -179,7 +179,7 @@ const IdeaPage = () => {
                 voteOnIdea={castVote}
                 connectedAccountNounVotes={connectedAccountNounVotes}
                 voteCount={idea.votecount}
-                voters={idea.voters}
+                votes={idea.votes}
               />
             </div>
           </div>

@@ -3,28 +3,48 @@ import { prisma } from '../api';
 class IdeasService {
   static async all() {
     try {
-      /* SQL to:
-        - fetch idea data,
-        - calculate the votecount for each idea using the users lil noun count and their vote direction
-        - aggregate voter details
-        - Sort by new votecount property
+      /* Custom SQL to calculate votecounts on the fly if we need this in the future
+         the SQL below or using a database trigger that runs the calculation on vote inserts/updates.
+          SQL to:
+            - fetch idea data,
+            - calculate the votecount for each idea using the users lil noun count and their vote direction
+            - aggregate voter details
+            - Sort by new votecount property
 
-        This custom SQL allows us to calculate votes on the fly meaning we always have up to date votes with the users lilnouns. It also keeps
-        sorting/filtering server side which will allow us to introduce pagination and other sorting mechanics.
+            This custom SQL allows us to calculate votes on the fly meaning we always have up to date votes with the users lilnouns. It also keeps
+            sorting/filtering server side which will allow us to introduce pagination and other sorting mechanics.
+
+          const ideaData: any = await prisma.$queryRaw`
+          SELECT * FROM
+            (SELECT v."ideaId",
+            json_agg(json_build_object('voterId', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS votes,
+            sum(v."direction"*u."lilnounCount") AS voteCount
+            FROM "Vote" v INNER JOIN "User" u
+            ON v."voterId" = u."wallet"
+            GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "Idea" idea ON counted_votes."ideaId" = idea.id
+          ORDER BY voteCount DESC
+          `;
       */
 
-      const ideaData: any = await prisma.$queryRaw`
-      SELECT * FROM
-        (SELECT v."ideaId",
-        json_agg(json_build_object('wallet', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS voters,
-        sum(v."direction"*u."lilnounCount") AS voteCount
-        FROM "lil-nouns-ideas"."Vote" v INNER JOIN "lil-nouns-ideas"."User" u
-        ON v."voterId" = u."wallet"
-        GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "lil-nouns-ideas"."Idea" idea ON counted_votes."ideaId" = idea.id
-      ORDER BY voteCount DESC
-      `;
+      const ideas = await prisma.idea.findMany({
+        include: {
+          votes: {
+            include: {
+              voter: true,
+            },
+          },
+        },
+        orderBy: [
+          {
+            votecount: 'desc',
+          },
+          {
+            id: 'asc',
+          },
+        ],
+      });
 
-      return ideaData;
+      return ideas;
     } catch (e: any) {
       throw e;
     }
@@ -32,22 +52,43 @@ class IdeasService {
 
   static async get(id: number) {
     try {
-      const ideaData: any = await prisma.$queryRaw`
-        SELECT * FROM
-          (SELECT v."ideaId",
-          json_agg(json_build_object('wallet', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS voters,
-          sum(v."direction"*u."lilnounCount") AS voteCount
-          FROM "lil-nouns-ideas"."Vote" v INNER JOIN "lil-nouns-ideas"."User" u
-          ON v."voterId" = u."wallet"
-          GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "lil-nouns-ideas"."Idea" idea ON counted_votes."ideaId" = idea.id
-        WHERE idea."id" = ${id}
-      `;
+      /* Custom SQL to calculate votecounts on the fly if we need this in the future
+        const ideaData: any = await prisma.$queryRaw`
+          SELECT * FROM
+            (SELECT v."ideaId",
+            json_agg(json_build_object('voterId', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS votes,
+            sum(v."direction"*u."lilnounCount") AS voteCount
+            FROM "Vote" v INNER JOIN "User" u
+            ON v."voterId" = u."wallet"
+            GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "Idea" idea ON counted_votes."ideaId" = idea.id
+          WHERE idea."id" = ${id}
+        `;
 
-      if (!ideaData?.[0]) {
+        if (!ideaData?.[0]) {
+          throw new Error('Idea not found');
+        }
+
+        return ideaData[0];
+      */
+
+      const idea = await prisma.idea.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          votes: {
+            include: {
+              voter: true,
+            },
+          },
+        },
+      });
+
+      if (!idea) {
         throw new Error('Idea not found');
       }
 
-      return ideaData[0];
+      return idea;
     } catch (e: any) {
       throw e;
     }
