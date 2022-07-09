@@ -17,6 +17,7 @@ import {
 import { useUserVotes } from '../../../wrappers/nounToken';
 import IdeaVoteControls from '../../../components/IdeaVoteControls';
 import moment from 'moment';
+import Davatar from '@davatar/react';
 
 const Comment = ({
   comment,
@@ -31,7 +32,7 @@ const Comment = ({
   const [isReply, setIsReply] = useState<boolean>(false);
   const [reply, setReply] = useState<string>('');
   const [showReplies, setShowReplies] = useState<boolean>(level > 1);
-  const { account } = useEthers();
+  const { account, library: provider } = useEthers();
   const ens = useReverseENSLookUp(comment.authorId);
   const shortAddress = useShortAddress(comment.authorId);
   const { commentOnIdea } = useIdeas();
@@ -51,7 +52,8 @@ const Comment = ({
     <div key={comment.id}>
       <div className="flex flex-row items-center space-x-4">
         <span className="text-2xl text-[#8C8D92] flex align-items-center">
-          <span className="lodrina">{ens || shortAddress}</span>
+          <Davatar size={28} address={comment.authorId} provider={provider} />
+          <span className="lodrina pl-2">{ens || shortAddress}</span>
           <span className="text-[#8C8D92] text-base pl-2">
             {moment(comment.createdAt).fromNow()}
           </span>
