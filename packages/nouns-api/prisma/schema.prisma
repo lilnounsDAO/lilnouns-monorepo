@@ -21,7 +21,7 @@ model Idea {
   creatorId   String
   comments    Comment[]
   votes       Vote[]
-  votecount   Int?      // Vote.direction * Vote.voter.lilnounCount
+  votecount   Int       @default(value: 0) // Vote.direction * Vote.voter.lilnounCount
 }
 
 model User {
