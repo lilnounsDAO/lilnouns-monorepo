@@ -5,21 +5,21 @@ import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 const IdeaVoteControls = ({
   id,
+  votes,
   voteOnIdea,
   connectedAccountNounVotes,
   voteCount,
-  voters,
 }: {
   id: number;
+  votes: Vote[];
   voteOnIdea: (args: any) => void;
   connectedAccountNounVotes: number;
   voteCount: number;
-  voters: any;
 }) => {
   const { account } = useEthers();
   const hasVotes = connectedAccountNounVotes > 0;
 
-  const usersVote = voters?.find((voter: any) => voter.wallet === account);
+  const usersVote = votes.find(vote => vote.voterId === account);
   const userHasUpVote = usersVote?.direction === 1;
   const userHasDownVote = usersVote?.direction === -1;
 
