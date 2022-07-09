@@ -5,6 +5,15 @@ import Section from '../../../layout/Section';
 import { useIdeas } from '../../../hooks/useIdeas';
 import classes from '../Ideas.module.css';
 
+enum FORM_VALIDATION {
+  TITLE_MAX = 50,
+  TITLE_MIN = 5,
+  TLDR_MAX = 240,
+  TLDR_MIN = 5,
+  DESCRIPTION_MAX = 1080,
+  DESCRIPTION_MIN = 5,
+}
+
 const CreateIdeaPage = () => {
   const history = useHistory();
   const { submitIdea } = useIdeas();
@@ -12,6 +21,15 @@ const CreateIdeaPage = () => {
   const [title, setTitle] = useState<string>('');
   const [tldr, setTldr] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+
+  const titleValid =
+    title.length <= FORM_VALIDATION.TITLE_MAX && title.length >= FORM_VALIDATION.TITLE_MIN;
+  const tldrValid =
+    tldr.length <= FORM_VALIDATION.TITLE_MAX && tldr.length >= FORM_VALIDATION.TITLE_MIN;
+  const descriptionValid =
+    description.length <= FORM_VALIDATION.TITLE_MAX &&
+    description.length >= FORM_VALIDATION.TITLE_MIN;
+  const formValid = titleValid && tldrValid && descriptionValid;
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -28,18 +46,33 @@ const CreateIdeaPage = () => {
           You must hold at least one lil noun in order to submit an idea and vote on others. There
           is no limit to the number of ideas you can submit and vote on.
         </p>
-        <form className="space-y-8" id="submit-form" onSubmit={data => submitIdea(data)}>
+        <form
+          className="space-y-8"
+          id="submit-form"
+          onSubmit={event => {
+            event.preventDefault();
+
+            if (!formValid) {
+              return;
+            }
+
+            submitIdea({
+              title,
+              tldr,
+              description,
+            });
+          }}
+        >
           <div className="flex flex-col">
             <div className="flex justify-between w-full items-center">
               <label className="lodrina font-bold text-2xl mb-2">Title</label>
-              <span
-                className={`${title.length === 50 ? 'text-red-500 font-bold' : 'text-gray-500'}`}
-              >
-                {title.length}/50
+              <span className={`${!titleValid ? 'text-[#E40535]' : 'text-[#8C8D92]'}`}>
+                {title.length}/{FORM_VALIDATION.TITLE_MAX}
               </span>
             </div>
             <input
-              maxLength={50}
+              maxLength={FORM_VALIDATION.TITLE_MAX}
+              minLength={FORM_VALIDATION.TITLE_MIN}
               value={title}
               onChange={e => setTitle(e.target.value)}
               type="text"
@@ -51,14 +84,13 @@ const CreateIdeaPage = () => {
           <div className="flex flex-col">
             <div className="flex justify-between w-full items-center">
               <label className="lodrina font-bold text-2xl mb-2">tl;dr</label>
-              <span
-                className={`${tldr.length === 240 ? 'text-red-500 font-bold' : 'text-gray-500'}`}
-              >
-                {tldr.length}/240
+              <span className={`${!tldrValid ? 'text-[#E40535]' : 'text-[#8C8D92]'}`}>
+                {tldr.length}/{FORM_VALIDATION.TLDR_MAX}
               </span>
             </div>
             <textarea
-              maxLength={240}
+              maxLength={FORM_VALIDATION.TLDR_MAX}
+              minLength={FORM_VALIDATION.TLDR_MIN}
               value={tldr}
               onChange={e => setTldr(e.target.value)}
               name="tldr"
@@ -69,16 +101,13 @@ const CreateIdeaPage = () => {
           <div className="flex flex-col">
             <div className="flex justify-between w-full items-center">
               <label className="lodrina font-bold text-2xl mb-2">Description</label>
-              <span
-                className={`${
-                  description.length === 1080 ? 'text-red-500 font-bold' : 'text-gray-500'
-                }`}
-              >
-                {description.length}/1080
+              <span className={`${!descriptionValid ? 'text-[#E40535]' : 'text-[#8C8D92]'}`}>
+                {description.length}/{FORM_VALIDATION.DESCRIPTION_MAX}
               </span>
             </div>
             <textarea
-              maxLength={1080}
+              maxLength={FORM_VALIDATION.DESCRIPTION_MAX}
+              minLength={FORM_VALIDATION.DESCRIPTION_MIN}
               value={description}
               onChange={e => setDescription(e.target.value)}
               name="description"
@@ -89,7 +118,9 @@ const CreateIdeaPage = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="rounded-lg bg-[#2B83F6] text-white font-bold p-2 rounded"
+              className={`rounded-lg ${
+                formValid ? 'bg-[#2B83F6] text-white' : 'bg-[#F4F4F8] text-[#E2E3E8]'
+              } font-bold p-2 rounded`}
             >
               Submit
             </button>

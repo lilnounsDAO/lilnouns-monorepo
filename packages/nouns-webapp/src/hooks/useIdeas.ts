@@ -249,16 +249,15 @@ export const useIdeas = () => {
   };
 
   // Use to submit an idea
-  const submitIdea = async (event: React.FormEvent<HTMLFormElement>) => {
-    interface FormDataElements extends HTMLFormControlsCollection {
-      title: HTMLInputElement;
-      tldr: HTMLTextAreaElement;
-      description: HTMLTextAreaElement;
-    }
-    event.preventDefault();
-
-    const { title, tldr, description } = event.currentTarget.elements as FormDataElements;
-
+  const submitIdea = async ({
+    title,
+    tldr,
+    description,
+  }: {
+    title: string;
+    tldr: string;
+    description: string;
+  }) => {
     try {
       const res = await fetch(`${HOST}/ideas`, {
         method: 'POST',
@@ -267,9 +266,9 @@ export const useIdeas = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: title.value,
-          tldr: tldr.value,
-          description: description.value,
+          title,
+          tldr,
+          description,
         }),
       });
 
@@ -310,14 +309,14 @@ export const useIdeas = () => {
         voteOnIdea(formData);
       }
     },
-    submitIdea: async (event: React.FormEvent<HTMLFormElement>) => {
+    submitIdea: async (data: { title: string; tldr: string; description: string }) => {
       if (!isLoggedIn()) {
         try {
           await triggerSignIn();
-          submitIdea(event);
+          submitIdea(data);
         } catch (e) {}
       } else {
-        submitIdea(event);
+        submitIdea(data);
       }
     },
     commentOnIdea: async (formData: CommentFormData) => {
