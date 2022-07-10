@@ -22,7 +22,7 @@ const IdeaVoteControls = ({
   const { account, library: provider } = useEthers();
   const hasVotes = connectedAccountNounVotes > 0;
 
-  const usersVote = votes.find(vote => vote.voterId === account);
+  const usersVote = votes?.find(vote => vote.voterId === account);
   const userHasUpVote = usersVote?.direction === 1;
   const userHasDownVote = usersVote?.direction === -1;
 
@@ -36,7 +36,7 @@ const IdeaVoteControls = ({
       },
     });
 
-  const avatarVotes = withAvatars ? votes.slice(0, 3) : [];
+  const avatarVotes = withAvatars ? votes?.slice(0, 3) || [] : [];
   return (
     <>
       {withAvatars && (

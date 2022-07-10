@@ -52,11 +52,7 @@ export const createAPI = (): Express => {
   app.post('/idea/vote', authMiddleware, IdeasController.voteOnIdea);
   app.get('/ideas', IdeasController.getAllIdeas);
   app.post('/ideas', authMiddleware, IdeasController.createIdea);
-
-  // Listen to token transfers and update the user lilnoun count in the user model. This will keep vote counts up to date.
-  nounsTokenContract.on('Transfer', async (from, to) => {
-    await AuthController.syncUserTokenCounts(to, from);
-  });
+  app.post('/token-transfer', authMiddleware, AuthController.syncUserTokenCounts);
 
   return app;
 };
