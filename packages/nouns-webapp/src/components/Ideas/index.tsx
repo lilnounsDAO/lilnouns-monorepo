@@ -7,7 +7,6 @@ import classes from './Ideas.module.css';
 import { isMobileScreen } from '../../utils/isMobile';
 import IdeaCard from '../IdeaCard';
 import { Idea, useIdeas } from '../../hooks/useIdeas';
-import orderBy from 'lodash/orderBy';
 
 const Ideas = () => {
   const { account } = useEthers();
@@ -51,7 +50,7 @@ const Ideas = () => {
       {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
       {ideas?.length ? (
         <span className="space-y-4">
-          {orderBy(ideas, 'voteCount', 'desc').map((idea: Idea, i) => {
+          {ideas.map((idea: Idea, i) => {
             return (
               <IdeaCard
                 idea={idea}

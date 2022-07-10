@@ -108,6 +108,7 @@ class IdeasService {
           tldr: data.tldr,
           description: data.description,
           creatorId: user.wallet,
+          votecount: 0,
           votes: {
             create: {
               direction: 1,

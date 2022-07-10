@@ -101,11 +101,24 @@ class AuthController {
     }
   };
 
-  static syncUserTokenCounts = async (to: string, from: string) => {
+  static syncUserTokenCounts = async (req: Request, res: Response, next: any) => {
     try {
-      await AuthService.syncUserTokenCounts(to, from);
+      if (!req.body?.to || !req.body?.from) {
+        throw new Error(`No user data`);
+      }
+      await AuthService.syncUserTokenCounts(req.body);
+
+      res.status(200).json({
+        status: true,
+        message: 'Update user token counts',
+      });
     } catch (e: any) {
-      console.log(e);
+      return res
+        .status(e.statusCode || 500)
+        .json({
+          message: e.message || 'Failed to update user token counts',
+        })
+        .end();
     }
   };
 }

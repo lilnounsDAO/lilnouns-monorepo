@@ -23,7 +23,7 @@ const IdeaCard = ({
 
   const ens = useReverseENSLookUp(creatorId);
   const shortAddress = useShortAddress(creatorId);
-  const creatorLilNoun = votes.find(vote => vote.voterId === creatorId)?.voter?.lilnounCount;
+  const creatorLilNoun = votes?.find(vote => vote.voterId === creatorId)?.voter?.lilnounCount;
 
   return (
     <div

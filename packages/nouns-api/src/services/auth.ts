@@ -65,34 +65,33 @@ class AuthService {
     return allUsers;
   }
 
-  static async syncUserTokenCounts(to: string, from: string) {
+  static async syncUserTokenCounts(data: { to: string; from: string }) {
     try {
       const toUser = await prisma.user.findUnique({
         where: {
-          wallet: to,
+          wallet: data.to,
         },
       });
 
       const fromUser = await prisma.user.findUnique({
         where: {
-          wallet: from,
+          wallet: data.from,
         },
       });
 
       if (!fromUser && !toUser) {
-        console.log('No Users To Update');
-        return;
+        throw new Error('No users to update');
       }
 
       if (toUser) {
-        await this.update({ wallet: to, lilnounCount: toUser.lilnounCount + 1 });
+        await this.update({ wallet: data.to, lilnounCount: toUser.lilnounCount + 1 });
       }
 
       if (fromUser) {
-        await this.update({ wallet: to, lilnounCount: fromUser.lilnounCount - 1 });
+        await this.update({ wallet: data.from, lilnounCount: fromUser.lilnounCount - 1 });
       }
     } catch (e: any) {
-      console.log(e);
+      throw e;
     }
   }
 }
