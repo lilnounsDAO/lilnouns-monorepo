@@ -19,7 +19,7 @@
   },
   "scripts": {
     "dev": "yarn run generate:prisma && nodemon src/index.ts",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "prestart": "npm run build",
     "generate:prisma": "prisma generate",
     "build": "tsc -p ."
