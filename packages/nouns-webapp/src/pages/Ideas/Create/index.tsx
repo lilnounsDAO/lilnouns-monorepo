@@ -25,10 +25,10 @@ const CreateIdeaPage = () => {
   const titleValid =
     title.length <= FORM_VALIDATION.TITLE_MAX && title.length >= FORM_VALIDATION.TITLE_MIN;
   const tldrValid =
-    tldr.length <= FORM_VALIDATION.TITLE_MAX && tldr.length >= FORM_VALIDATION.TITLE_MIN;
+    tldr.length <= FORM_VALIDATION.TLDR_MAX && tldr.length >= FORM_VALIDATION.TLDR_MIN;
   const descriptionValid =
-    description.length <= FORM_VALIDATION.TITLE_MAX &&
-    description.length >= FORM_VALIDATION.TITLE_MIN;
+    description.length <= FORM_VALIDATION.DESCRIPTION_MAX &&
+    description.length >= FORM_VALIDATION.DESCRIPTION_MIN;
   const formValid = titleValid && tldrValid && descriptionValid;
 
   return (
