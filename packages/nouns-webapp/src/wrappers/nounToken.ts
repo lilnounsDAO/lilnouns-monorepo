@@ -1,6 +1,6 @@
-import { useContractCall, useEthers } from '@usedapp/core';
-import { BigNumber as EthersBN, utils } from 'ethers';
-import { NounsTokenABI } from '@nouns/contracts';
+import { useContractCall, useContractFunction, useEthers } from '@usedapp/core';
+import { BigNumber as EthersBN, ethers, utils } from 'ethers';
+import { NounsTokenABI, NounsTokenFactory } from '@nouns/contracts';
 import config from '../config';
 
 interface NounToken {
@@ -15,6 +15,10 @@ export interface INounSeed {
   body: number;
   glasses: number;
   head: number;
+}
+
+export enum NounsTokenContractFunction {
+  delegateVotes = 'votesToDelegate',
 }
 
 const abi = new utils.Interface(NounsTokenABI);
@@ -60,6 +64,10 @@ export const useBigNounSeed = (nounId: EthersBN) => {
 
 export const useUserVotes = (): number | undefined => {
   const { account } = useEthers();
+  return useAccountVotes(account ?? ethers.constants.AddressZero);
+};
+
+export const useAccountVotes = (account?: string): number | undefined => {
   const [votes] =
     useContractCall<[EthersBN]>({
       abi,
@@ -94,4 +102,23 @@ export const useUserVotesAsOfBlock = (block: number | undefined): number | undef
       args: [account, block],
     }) || [];
   return votes?.toNumber();
+};
+
+export const useDelegateVotes = () => {
+  const nounsToken = new NounsTokenFactory().attach(config.addresses.nounsToken);
+
+  const { send, state } = useContractFunction(nounsToken, 'delegate');
+
+  return { send, state };
+};
+
+export const useNounTokenBalance = (address: string): number | undefined => {
+  const [tokenBalance] =
+    useContractCall<[EthersBN]>({
+      abi,
+      address: config.addresses.nounsToken,
+      method: 'balanceOf',
+      args: [address],
+    }) || [];
+  return tokenBalance?.toNumber();
 };

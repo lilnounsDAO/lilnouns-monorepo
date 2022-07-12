@@ -117,9 +117,17 @@ const VotePage = ({
   const moveStateButtonAction = hasSucceeded ? 'Queue' : 'Execute';
   const moveStateAction = (() => {
     if (hasSucceeded) {
-      return () => queueProposal(proposal?.id);
+      return () => {
+        if (proposal?.id) {
+          return queueProposal(proposal.id);
+        }
+      };
     }
-    return () => executeProposal(proposal?.id);
+    return () => {
+      if (proposal?.id) {
+        return executeProposal(proposal.id);
+      }
+    };
   })();
 
   const onTransactionStateChange = useCallback(
