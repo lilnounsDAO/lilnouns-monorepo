@@ -66,10 +66,9 @@ const Proposals = ({ proposals }: { proposals: Proposal[] }) => {
   };
 
   const hasNounVotes = account !== undefined && connectedAccountNounVotes > 0;
-  const hasNounBalance = true
-    // (useNounTokenBalance(
-    //   account !== null && account !== undefined ? account : ethers.constants.AddressZero,
-    // ) ?? 0) > 0;
+  const hasNounBalance = (useNounTokenBalance(
+      account !== null && account !== undefined ? account : ethers.constants.AddressZero,
+    ) ?? 0) > 0;
   return (
     <div className={classes.proposals}>
       {showDelegateModal && <DelegationModal onDismiss={() => setShowDelegateModal(false)} />}
