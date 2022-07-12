@@ -15,7 +15,7 @@ const Ideas = () => {
 
   const ideas = getIdeas();
 
-  const connectedAccountNounVotes = useUserVotes() || 1;
+  const connectedAccountNounVotes = useUserVotes() || 0;
 
   const isMobile = isMobileScreen();
 
