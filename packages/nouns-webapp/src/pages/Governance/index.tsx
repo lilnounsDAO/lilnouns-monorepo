@@ -73,7 +73,7 @@ const GovernancePage = () => {
           Lil Nouns govern <span className={classes.boldText}>Lil Nouns DAO</span>. Lil Nouns can
           vote on proposals or delegate their vote to a third party. A minimum of{' '}
           <span className={classes.boldText}>{nounThresholdCopy}</span> is required to submit
-          proposals.
+          proposals.{' '} A minimum of <span className={classes.boldText}>{"1 Lil Noun"}</span> is required to vote.
         </p>
 
         <Row className={classes.treasuryInfoCard}>

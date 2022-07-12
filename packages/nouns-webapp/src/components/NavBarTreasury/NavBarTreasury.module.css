@@ -44,7 +44,7 @@
   margin-right: 0.25rem;
 }
 
-@media (max-width: 425px) {
+@media (max-width: 430px) {
   .wrapper {
     margin-left: -0.5rem;
     padding: 0px 7px 0px 6px;
