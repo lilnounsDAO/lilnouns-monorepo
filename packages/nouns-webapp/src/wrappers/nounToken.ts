@@ -112,13 +112,19 @@ export const useDelegateVotes = () => {
   return { send, state };
 };
 
-export const useNounTokenBalance = (address: string): number | undefined => {
-  const [tokenBalance] =
+export const useNounTokenBalance = (address: string | undefined): number | undefined => {
+
+
+  //  const { account } = useEthers();
+
+    const [tokenBalance] =
     useContractCall<[EthersBN]>({
       abi,
       address: config.addresses.nounsToken,
       method: 'balanceOf',
       args: [address],
     }) || [];
-  return tokenBalance?.toNumber();
+
+    return tokenBalance?.toNumber();
+
 };
