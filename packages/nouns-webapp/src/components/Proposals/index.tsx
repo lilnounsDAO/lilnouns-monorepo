@@ -49,7 +49,7 @@ const getCountdownCopy = (proposal: Proposal, currentBlock: number) => {
   return `Starts ${dayjs(startDate).fromNow()}`;
 };
 
-const Proposals = ({ proposals }: { proposals: Proposal[] }) => {
+const Proposals = ({ proposals }: { proposals: Proposal[]}) => {
   const history = useHistory();
 
   const { account } = useEthers();
@@ -66,9 +66,8 @@ const Proposals = ({ proposals }: { proposals: Proposal[] }) => {
   };
 
   const hasNounVotes = account !== undefined && connectedAccountNounVotes > 0;
-  const hasNounBalance = (useNounTokenBalance(
-      account !== null && account !== undefined ? account : ethers.constants.AddressZero,
-    ) ?? 0) > 0;
+  const hasNounBalance = (useNounTokenBalance(account || undefined) ?? 0) > 0;
+ 
   return (
     <div className={classes.proposals}>
       {showDelegateModal && <DelegationModal onDismiss={() => setShowDelegateModal(false)} />}
@@ -85,7 +84,7 @@ const Proposals = ({ proposals }: { proposals: Proposal[] }) => {
               </Button>
             </div>
 
-            {hasNounBalance && (
+            {account !== null && account !== undefined && hasNounBalance && (
               <div className={classes.delegateBtnWrapper}>
                 <Button
                   className={classes.changeDelegateBtn}
@@ -102,7 +101,7 @@ const Proposals = ({ proposals }: { proposals: Proposal[] }) => {
             <div className={classes.nullBtnWrapper}>
               <Button className={classes.generateBtnDisabled}>Submit Proposal</Button>
             </div>
-            {!isMobile && hasNounBalance && (
+            {!isMobile && account !== null && account !== undefined && hasNounBalance && (
               <div className={classes.delegateBtnWrapper}>
                 <Button
                   className={classes.changeDelegateBtn}
@@ -116,7 +115,7 @@ const Proposals = ({ proposals }: { proposals: Proposal[] }) => {
         )}
       </div>
       {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
-      {isMobile && hasNounBalance && (
+      {isMobile && account !== null && account !== undefined && hasNounBalance && (
         <div>
           <Button className={classes.changeDelegateBtn} onClick={() => setShowDelegateModal(true)}>
             Delegate
