@@ -12,12 +12,7 @@ class IdeasController {
         data: ideas,
       });
     } catch (e: any) {
-      res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
 
@@ -30,12 +25,7 @@ class IdeasController {
         data: idea,
       });
     } catch (e: any) {
-      res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
 
@@ -49,12 +39,7 @@ class IdeasController {
         data: idea,
       });
     } catch (e: any) {
-      res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
 
@@ -67,12 +52,7 @@ class IdeasController {
         data: vote,
       });
     } catch (e: any) {
-      res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
 
@@ -85,12 +65,7 @@ class IdeasController {
         data: comments,
       });
     } catch (e: any) {
-      res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
 
@@ -103,12 +78,7 @@ class IdeasController {
         data: idea,
       });
     } catch (e: any) {
-      res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
 
@@ -121,12 +91,7 @@ class IdeasController {
         data: votes,
       });
     } catch (e: any) {
-      res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
 }

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-
+import { rollbar } from '../api';
 import AuthService from '../services/auth';
 import { SiweMessage } from 'siwe';
 import { nounTokenCount } from '../utils/utils';
@@ -14,12 +14,7 @@ class AuthController {
         data: user,
       });
     } catch (e: any) {
-      return res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
   static nonce = async (req: Request, res: Response, next: any) => {
@@ -31,12 +26,7 @@ class AuthController {
         data: { nonce: requestedNonce },
       });
     } catch (e: any) {
-      return res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
 
@@ -75,12 +65,7 @@ class AuthController {
         data,
       });
     } catch (e: any) {
-      return res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
   static all = async (req: Request, res: Response, next: any) => {
@@ -92,12 +77,7 @@ class AuthController {
         data: users,
       });
     } catch (e: any) {
-      return res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message,
-        })
-        .end();
+      next(e);
     }
   };
 
@@ -113,12 +93,7 @@ class AuthController {
         message: 'Update user token counts',
       });
     } catch (e: any) {
-      return res
-        .status(e.statusCode || 500)
-        .json({
-          message: e.message || 'Failed to update user token counts',
-        })
-        .end();
+      next(e);
     }
   };
 }
