@@ -19,7 +19,7 @@ const IdeaCard = ({
 }) => {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { id, description, title, creatorId, votecount: voteCount, votes } = idea;
+  const { id, tldr, title, creatorId, votecount: voteCount, votes } = idea;
 
   const ens = useReverseENSLookUp(creatorId);
   const shortAddress = useShortAddress(creatorId);
@@ -54,7 +54,7 @@ const IdeaCard = ({
           <div className="flex flex-row flex-1 justify-content-start align-items-center pt-2 pb-2">
             <span
               className="border border-[#e2e3e8] bg-[#f4f4f8] p-4 rounded-lg flex-1"
-              dangerouslySetInnerHTML={{ __html: description }}
+              dangerouslySetInnerHTML={{ __html: tldr }}
             />
           </div>
           <div className="flex flex-row flex-1 justify-content-start align-items-center pt-2 pb-2">

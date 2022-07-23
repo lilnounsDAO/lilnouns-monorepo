@@ -3,6 +3,7 @@ import { useAuth } from './useAuth';
 import { useApiError } from './useApiError';
 import { useHistory } from 'react-router-dom';
 import useSWR, { useSWRConfig, Fetcher } from 'swr';
+import { useEffect, useState } from 'react';
 
 export interface VoteFormData {
   id: number;
@@ -52,6 +53,13 @@ export interface Comment {
 }
 
 type Reply = Comment;
+
+export const SORT_BY: { [key: string]: string } = {
+  VOTES_DESC: 'Votes Desc',
+  LATEST: 'Latest',
+  VOTES_ASC: 'Votes Asc',
+  OLDEST: 'Oldest',
+};
 
 // Update the vote count in the cache for an idea after a new vote is recorded.
 const updateVotesState = (ideas: Idea[], vote: Vote) => {
@@ -111,6 +119,13 @@ export const useIdeas = () => {
   const { setError, error: errorModalVisible } = useApiError();
   const history = useHistory();
   const { mutate } = useSWRConfig();
+  const [sortBy, setSortBy] = useState(undefined);
+
+  useEffect(() => {
+    if (sortBy !== undefined) {
+      mutate(`${HOST}/ideas`);
+    }
+  }, [sortBy]);
 
   const fetcher: Fetcher = async (input: RequestInfo, init?: RequestInit, ...args: any[]) => {
     const res = await fetch(input, init);
@@ -119,7 +134,9 @@ export const useIdeas = () => {
   };
 
   const getIdeas = () => {
-    const { data, error }: any = useSWR(`${HOST}/ideas`, fetcher);
+    const { data, error }: any = useSWR(`${HOST}/ideas`, url =>
+      fetcher(`${url}?sort=${sortBy || 'VOTES_DESC'}`),
+    );
     if (error && !errorModalVisible) {
       setError(error);
     }
@@ -332,5 +349,6 @@ export const useIdeas = () => {
     getIdeas,
     getIdea,
     getComments,
+    setSortBy,
   };
 };

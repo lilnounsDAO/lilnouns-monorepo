@@ -1,7 +1,42 @@
 import { prisma } from '../api';
 
+const SORT_BY: { [key: string]: any } = {
+  LATEST: [
+    {
+      createdAt: 'desc',
+    },
+    {
+      id: 'asc',
+    },
+  ],
+  VOTES_DESC: [
+    {
+      votecount: 'desc',
+    },
+    {
+      id: 'asc',
+    },
+  ],
+  VOTES_ASC: [
+    {
+      votecount: 'asc',
+    },
+    {
+      id: 'asc',
+    },
+  ],
+  OLDEST: [
+    {
+      createdAt: 'asc',
+    },
+    {
+      id: 'asc',
+    },
+  ],
+};
+
 class IdeasService {
-  static async all() {
+  static async all(sortBy?: string) {
     try {
       /* Custom SQL to calculate votecounts on the fly if we need this in the future
          the SQL below or using a database trigger that runs the calculation on vote inserts/updates.
@@ -34,14 +69,7 @@ class IdeasService {
             },
           },
         },
-        orderBy: [
-          {
-            votecount: 'desc',
-          },
-          {
-            id: 'asc',
-          },
-        ],
+        orderBy: SORT_BY[sortBy || 'VOTES_DESC'],
       });
 
       return ideas;

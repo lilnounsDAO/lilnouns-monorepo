@@ -89,6 +89,7 @@
 
 .nullStateCopy {
   margin-top: 0.9rem;
+  margin-bottom: 0.9rem;
   margin-right: 1rem;
   font-family: 'PT Root UI';
   font-weight: 500;
@@ -132,6 +133,22 @@
 .submitIdeaButtonWrapper {
   text-align: right;
   padding-top: 0.8rem;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.sortFilter {
+  display: flex;
+  width: fit-content;
+}
+
+.sortLabel {
+  white-space: nowrap;
+  align-self: center;
+  padding-right: 8px;
+  color: #8c8d92;
+  font-weight: bold;
 }
 
 .titleSpan {

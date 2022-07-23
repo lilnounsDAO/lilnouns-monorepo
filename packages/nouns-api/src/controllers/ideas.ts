@@ -5,7 +5,7 @@ import IdeasService from '../services/ideas';
 class IdeasController {
   static getAllIdeas = async (req: Request, res: Response, next: any) => {
     try {
-      const ideas = await IdeasService.all();
+      const ideas = await IdeasService.all(req.query.sort as string);
       res.status(200).json({
         status: true,
         message: 'All ideas',

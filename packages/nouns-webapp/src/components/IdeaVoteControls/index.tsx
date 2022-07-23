@@ -61,7 +61,9 @@ const IdeaVoteControls = ({
               vote(1);
             }
           }}
-          className={`text-3xl ${hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'}`}
+          className={`text-3xl cursor-pointer ${
+            hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'
+          }`}
         />
 
         <FontAwesomeIcon
@@ -72,7 +74,9 @@ const IdeaVoteControls = ({
               vote(-1);
             }
           }}
-          className={`text-3xl ${hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'}`}
+          className={`text-3xl cursor-pointer ${
+            hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'
+          }`}
         />
       </div>
     </>
