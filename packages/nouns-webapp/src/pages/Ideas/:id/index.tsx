@@ -18,6 +18,20 @@ import { useUserVotes } from '../../../wrappers/nounToken';
 import IdeaVoteControls from '../../../components/IdeaVoteControls';
 import moment from 'moment';
 import Davatar from '@davatar/react';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
+const renderer = new marked.Renderer();
+const linkRenderer = renderer.link;
+renderer.link = (href, title, text) => {
+  const localLink = href?.startsWith(`${location.protocol}//${location.hostname}`);
+  const html = linkRenderer.call(renderer, href, title, text);
+  return localLink ? html : html.replace(/^<a /, `<a target="_blank" rel="noreferrer noopener nofollow" `);
+};
+
+marked.setOptions({
+  renderer: renderer
+});
 
 const Comment = ({
   comment,
@@ -193,7 +207,7 @@ const IdeaPage = () => {
           </div>
           <div className="flex flex-col">
             <h3 className="lodrina font-bold text-2xl mb-2">Description</h3>
-            <p>{idea.description}</p>
+            <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(marked.parse(idea.description), { ADD_ATTR: ['target'] })}} />
           </div>
         </div>
 
