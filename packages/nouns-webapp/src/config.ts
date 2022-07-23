@@ -14,6 +14,7 @@ interface AppConfig {
   jsonRpcUri: string;
   wsRpcUri: string;
   subgraphApiUri: string;
+  nounsDAOSubgraphApiUri: string;
   enableHistory: boolean;
   nounsApiUri: string;
 }
@@ -53,6 +54,8 @@ const app: Record<SupportedChains, AppConfig> = {
     wsRpcUri: createNetworkWsUrl('rinkeby'),
     subgraphApiUri:
       'https://api.thegraph.com/subgraphs/name/lilnounsdao/lil-nouns-subgraph-rinkeby',
+    nounsDAOSubgraphApiUri:
+      'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph-rinkeby',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_RINKEBY_NOUNSAPI`] || '',
   },
@@ -60,6 +63,7 @@ const app: Record<SupportedChains, AppConfig> = {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
     wsRpcUri: createNetworkWsUrl('mainnet'),
     subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/lilnounsdao/lil-nouns-subgraph',
+    nounsDAOSubgraphApiUri: 'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_MAINNET_NOUNSAPI`] || '',
   },
@@ -67,6 +71,7 @@ const app: Record<SupportedChains, AppConfig> = {
     jsonRpcUri: 'http://localhost:8545',
     wsRpcUri: 'ws://localhost:8545',
     subgraphApiUri: '',
+    nounsDAOSubgraphApiUri: '',
     enableHistory: false,
     nounsApiUri: 'http://localhost:5001',
   },

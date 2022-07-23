@@ -83,6 +83,10 @@ p {
   margin-right: 0.5rem;
 }
 
+.BigNounBalance {
+  margin-right: 0.5rem;
+}
+
 .usdBalance {
   color: var(--brand-gray-light-text);
   font-family: 'Londrina Solid';

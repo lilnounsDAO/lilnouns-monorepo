@@ -17,6 +17,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookOpen, faUsers, faPlay, faComments, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import NavBarTreasury from '../NavBarTreasury';
 import NavWallet from '../NavWallet';
+import { useEffect, useState } from 'react';
+import { createClient } from 'urql';
 
 const NavBar = () => {
   const activeAccount = useAppSelector(state => state.account.activeAccount);
@@ -44,6 +46,42 @@ const NavBar = () => {
     : isCool
     ? NavBarButtonStyle.COOL_INFO
     : NavBarButtonStyle.WARM_INFO;
+
+    const [bigNounBalance, setBigNounBalance] = useState('...');
+  
+    const fetchNounsQuery = `
+    query {
+        accounts(where: {id: "0xd5f279ff9eb21c6d40c8f345a66f2751c4eea1fb" }) {
+        id
+        tokenBalance
+        nouns {
+          id
+        }
+      }
+    }
+      `;
+  
+    async function fetchData() {
+      const repsonse = await createClient({ url: config.app.nounsDAOSubgraphApiUri })
+        .query(fetchNounsQuery)
+        .toPromise();
+      return repsonse.data.accounts[0];
+    }
+  
+    useEffect(() => {
+      fetchData()
+        .then(async repsonse => {
+          const tokenBalance = repsonse.tokenBalance;
+          const nounIds = repsonse.nouns.flatMap((obj: { id: any }) => obj.id);
+  
+          setBigNounBalance(tokenBalance);
+          return;
+        })
+        .catch(error => {
+          console.log(`Nouns Owned Error ${error}`);
+          return;
+        });
+    }, []);
 
   return (
     <>
@@ -78,6 +116,7 @@ const NavBar = () => {
                     <NavBarTreasury
                       treasuryBalance={Number(utils.formatEther(treasuryBalance)).toFixed(0)}
                       treasuryStyle={nonWalletButtonStyle}
+                      treasuryBigNounBalance={bigNounBalance}
                     />
                   </Nav.Link>
                 )}
@@ -95,7 +134,7 @@ const NavBar = () => {
                   rel="noreferrer"
                 >
                   <NavBarButton
-                    buttonText={'About Lil Nouns'}
+                    buttonText={'Docs'}
                     buttonIcon={<FontAwesomeIcon icon={faBookOpen} />}
                     buttonStyle={nonWalletButtonStyle}
                   />
@@ -143,7 +182,7 @@ const NavBar = () => {
                   rel="noreferrer"
                 >
                   <NavBarButton
-                    buttonText={'About Lil Nouns'}
+                    buttonText={'Docs'}
                     buttonIcon={<FontAwesomeIcon icon={faBookOpen} />}
                     buttonStyle={nonWalletButtonStyle}
                   />

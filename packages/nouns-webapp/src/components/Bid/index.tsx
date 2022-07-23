@@ -341,7 +341,14 @@ const Bid: React.FC<{
                 </button>
               </Col>
             ) : (
-              <></>
+              <>
+                <Col lg={12}>
+                <button onClick={showBidModalHandler} className={classes.infoButton}>
+                  <FontAwesomeIcon icon={faInfoCircle} />
+                  {` bidding and settling`}
+                </button>
+              </Col>
+              </>
             )}
           </>
         )}

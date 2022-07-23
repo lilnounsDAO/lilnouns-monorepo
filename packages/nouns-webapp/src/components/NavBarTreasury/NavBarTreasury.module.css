@@ -35,10 +35,16 @@
   font-size: 16.5px;
   letter-spacing: 0.3px;
   margin-left: 0.4rem;
+}
+
+.treasuryBigNounBalance {
+  font-size: 16.5px;
+  letter-spacing: 0.3px;
+  margin-left: 0.25rem;
   margin-right: 0.25rem;
 }
 
-@media (max-width: 370px) {
+@media (max-width: 430px) {
   .wrapper {
     margin-left: -0.5rem;
     padding: 0px 7px 0px 6px;
@@ -54,6 +60,14 @@
 }
 
 .coolInfo .treasuryBalance {
+  color: var(--brand-cool-dark-text);
+}
+
+.warmInfo .treasuryBigNounBalance {
+  color: var(--brand-warm-dark-text);
+}
+
+.coolInfo .treasuryBigNounBalance {
   color: var(--brand-cool-dark-text);
 }
 
