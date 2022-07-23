@@ -48,6 +48,8 @@ import { createClient, WagmiConfig } from 'wagmi';
 import { AuthProvider } from './hooks/useAuth';
 import { ErrorModalProvider } from './hooks/useApiError';
 
+import { Provider as RollbarProvider } from '@rollbar/react';
+
 dotenv.config();
 
 export const history = createBrowserHistory();
@@ -226,33 +228,52 @@ const PastAuctions: React.FC = () => {
   return <></>;
 };
 
+const rollbarConfig = {
+  accessToken: 'a5a33e0a7d9a4c33a4ac4fd8ee4e85a1',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+  environment: 'production',
+  enabled: config.app.enableRollbar,
+  payload: {
+    client: {
+      javascript: {
+        code_version: '1.0.0',
+        source_map_enabled: true,
+      },
+    },
+  },
+};
+
 ReactDOM.render(
-  <WagmiConfig client={wagmiClient}>
-    <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <ChainSubscriber />
-        <React.StrictMode>
-          <Web3ReactProvider
-            getLibrary={
-              provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
-            }
-          >
-            <ApolloProvider client={client}>
-              <PastAuctions />
-              <DAppProvider config={useDappConfig}>
-                <ErrorModalProvider>
-                  <AuthProvider>
-                    <App />
-                    <Updaters />
-                  </AuthProvider>
-                </ErrorModalProvider>
-              </DAppProvider>
-            </ApolloProvider>
-          </Web3ReactProvider>
-        </React.StrictMode>
-      </ConnectedRouter>
-    </Provider>
-  </WagmiConfig>,
+  <RollbarProvider config={rollbarConfig}>
+    <WagmiConfig client={wagmiClient}>
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <ChainSubscriber />
+          <React.StrictMode>
+            <Web3ReactProvider
+              getLibrary={
+                provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
+              }
+            >
+              <ApolloProvider client={client}>
+                <PastAuctions />
+                <DAppProvider config={useDappConfig}>
+                  <ErrorModalProvider>
+                    <AuthProvider>
+                      <App />
+                      <Updaters />
+                    </AuthProvider>
+                  </ErrorModalProvider>
+                </DAppProvider>
+              </ApolloProvider>
+            </Web3ReactProvider>
+          </React.StrictMode>
+        </ConnectedRouter>
+      </Provider>
+    </WagmiConfig>
+    ,
+  </RollbarProvider>,
   document.getElementById('root'),
 );
 

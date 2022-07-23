@@ -17,6 +17,7 @@ interface AppConfig {
   nounsDAOSubgraphApiUri: string;
   enableHistory: boolean;
   nounsApiUri: string;
+  enableRollbar: boolean;
 }
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat;
@@ -58,6 +59,7 @@ const app: Record<SupportedChains, AppConfig> = {
       'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph-rinkeby',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_RINKEBY_NOUNSAPI`] || '',
+    enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
   },
   [ChainId.Mainnet]: {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
@@ -66,6 +68,7 @@ const app: Record<SupportedChains, AppConfig> = {
     nounsDAOSubgraphApiUri: 'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_MAINNET_NOUNSAPI`] || '',
+    enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
   },
   [ChainId.Hardhat]: {
     jsonRpcUri: 'http://localhost:8545',
@@ -74,6 +77,7 @@ const app: Record<SupportedChains, AppConfig> = {
     nounsDAOSubgraphApiUri: '',
     enableHistory: false,
     nounsApiUri: 'http://localhost:5001',
+    enableRollbar: false,
   },
 };
 
