@@ -45,7 +45,7 @@ export const getTokenMetadata = async (tokenId: string): Promise<undefined | Tok
 };
 
 export const nounTokenCount = async (account: string) => {
-  const data = await tryF(() => nounsTokenContract.getCurrentVotes(account));
+  const data = await tryF(() => nounsTokenContract.balanceOf(account));
   if (isError(data)) {
     console.error(`Error fetching votes for account ${account}: ${data.message}`);
     return;

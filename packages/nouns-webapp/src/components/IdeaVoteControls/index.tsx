@@ -8,19 +8,19 @@ const IdeaVoteControls = ({
   id,
   votes,
   voteOnIdea,
-  connectedAccountNounVotes,
+  nounBalance,
   voteCount,
   withAvatars = false,
 }: {
   id: number;
   votes: Vote[];
   voteOnIdea: (args: any) => void;
-  connectedAccountNounVotes: number;
+  nounBalance: number;
   voteCount: number;
   withAvatars?: boolean;
 }) => {
   const { account, library: provider } = useEthers();
-  const hasVotes = connectedAccountNounVotes > 0;
+  const hasVotes = nounBalance > 0;
 
   const usersVote = votes?.find(vote => vote.voterId === account);
   const userHasUpVote = usersVote?.direction === 1;
@@ -32,7 +32,7 @@ const IdeaVoteControls = ({
       ideaId: id,
       voterId: account,
       voter: {
-        lilnounCount: connectedAccountNounVotes,
+        lilnounCount: nounBalance,
       },
     });
 

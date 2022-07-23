@@ -14,7 +14,7 @@ import {
   Comment as CommentType,
   VoteFormData,
 } from '../../../hooks/useIdeas';
-import { useUserVotes } from '../../../wrappers/nounToken';
+import { useNounTokenBalance } from '../../../wrappers/nounToken';
 import IdeaVoteControls from '../../../components/IdeaVoteControls';
 import moment from 'moment';
 import Davatar from '@davatar/react';
@@ -26,11 +26,13 @@ const linkRenderer = renderer.link;
 renderer.link = (href, title, text) => {
   const localLink = href?.startsWith(`${location.protocol}//${location.hostname}`);
   const html = linkRenderer.call(renderer, href, title, text);
-  return localLink ? html : html.replace(/^<a /, `<a target="_blank" rel="noreferrer noopener nofollow" `);
+  return localLink
+    ? html
+    : html.replace(/^<a /, `<a target="_blank" rel="noreferrer noopener nofollow" `);
 };
 
 marked.setOptions({
-  renderer: renderer
+  renderer: renderer,
 });
 
 const Comment = ({
@@ -148,7 +150,7 @@ const IdeaPage = () => {
   const history = useHistory();
   const { account } = useEthers();
   const [comment, setComment] = useState<string>();
-  const connectedAccountNounVotes = useUserVotes() || 0;
+  const nounBalance = useNounTokenBalance(account || undefined) ?? 0;
 
   const { getIdea, getComments, commentOnIdea, voteOnIdea } = useIdeas();
 
@@ -172,7 +174,7 @@ const IdeaPage = () => {
     setComment('');
   };
 
-  const hasNouns = connectedAccountNounVotes > 0;
+  const hasNouns = nounBalance > 0;
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -193,7 +195,7 @@ const IdeaPage = () => {
               <IdeaVoteControls
                 id={idea.id}
                 voteOnIdea={castVote}
-                connectedAccountNounVotes={connectedAccountNounVotes}
+                nounBalance={nounBalance}
                 voteCount={idea.votecount}
                 votes={idea.votes}
               />
@@ -207,7 +209,13 @@ const IdeaPage = () => {
           </div>
           <div className="flex flex-col">
             <h3 className="lodrina font-bold text-2xl mb-2">Description</h3>
-            <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(marked.parse(idea.description), { ADD_ATTR: ['target'] })}} />
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(marked.parse(idea.description), {
+                  ADD_ATTR: ['target'],
+                }),
+              }}
+            />
           </div>
         </div>
 

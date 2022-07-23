@@ -11,11 +11,11 @@ import IdeaVoteControls from '../IdeaVoteControls';
 const IdeaCard = ({
   idea,
   voteOnIdea,
-  connectedAccountNounVotes,
+  nounBalance,
 }: {
   idea: Idea;
   voteOnIdea: (formData: VoteFormData) => void;
-  connectedAccountNounVotes: number;
+  nounBalance: number;
 }) => {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -42,7 +42,7 @@ const IdeaCard = ({
           <IdeaVoteControls
             id={id}
             voteOnIdea={voteOnIdea}
-            connectedAccountNounVotes={connectedAccountNounVotes}
+            nounBalance={nounBalance}
             voteCount={voteCount}
             votes={votes}
             withAvatars

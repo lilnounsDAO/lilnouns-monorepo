@@ -2,9 +2,8 @@ import { Alert, Button, Form } from 'react-bootstrap';
 import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
-import { useUserVotes } from '../../wrappers/nounToken';
+import { useNounTokenBalance } from '../../wrappers/nounToken';
 import classes from './Ideas.module.css';
-import { isMobileScreen } from '../../utils/isMobile';
 import IdeaCard from '../IdeaCard';
 import { Idea, useIdeas, SORT_BY } from '../../hooks/useIdeas';
 
@@ -19,18 +18,16 @@ const Ideas = () => {
     setSortBy(e.target.value);
   };
 
-  const connectedAccountNounVotes = useUserVotes() || 0;
-
-  const isMobile = isMobileScreen();
+  const nounBalance = useNounTokenBalance(account || undefined) ?? 0;
 
   const nullStateCopy = () => {
-    if (account !== null) {
+    if (Boolean(account)) {
       return 'You have no Lil Nouns.';
     }
     return 'Connect wallet to submit an idea.';
   };
 
-  const hasNouns = connectedAccountNounVotes > 0;
+  const hasNouns = nounBalance > 0;
 
   return (
     <div>
@@ -62,7 +59,9 @@ const Ideas = () => {
           )}
         </div>
       </div>
-      <div className={classes.nullStateCopy}>{nullStateCopy()}</div>
+      {(!Boolean(account) || !hasNouns) && (
+        <div className={classes.nullStateCopy}>{nullStateCopy()}</div>
+      )}
       {ideas?.length ? (
         <span className="space-y-4">
           {ideas.map((idea: Idea, i) => {
@@ -71,7 +70,7 @@ const Ideas = () => {
                 idea={idea}
                 key={`idea-${idea.id}`}
                 voteOnIdea={voteOnIdeaList}
-                connectedAccountNounVotes={connectedAccountNounVotes}
+                nounBalance={nounBalance}
               />
             );
           })}
