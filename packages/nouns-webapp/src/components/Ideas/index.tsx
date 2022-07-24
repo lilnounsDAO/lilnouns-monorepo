@@ -37,7 +37,11 @@ const Ideas = () => {
           {ideas?.length > 0 && (
             <div className={classes.sortFilter}>
               <span className={classes.sortLabel}>Sort By:</span>
-              <Form.Select aria-label="Order by" onChange={handleSortChange}>
+              <Form.Select
+                aria-label="Order by"
+                onChange={handleSortChange}
+                className={classes.sortSelect}
+              >
                 {Object.keys(SORT_BY).map(k => (
                   <option value={k} key={k}>
                     {SORT_BY[k]}

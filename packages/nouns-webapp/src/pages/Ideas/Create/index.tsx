@@ -95,7 +95,7 @@ const CreateIdeaPage = () => {
               onChange={e => setTldr(e.target.value)}
               name="tldr"
               className="border rounded-lg p-2 min-h-[120px]"
-              placeholder="In the simplest language possible, describe your idea in a few sentances..."
+              placeholder="In the simplest language possible, describe your idea in a few sentences..."
             />
           </div>
           <div className="flex flex-col">
