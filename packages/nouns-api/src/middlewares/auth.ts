@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/node';
+
 import { verifyAccessToken } from '../utils/jwt';
 import { Request, Response } from 'express';
 
@@ -24,6 +26,7 @@ const authMiddleware = async (req: Request, res: Response, next: any) => {
   try {
     const user: any = await verifyAccessToken(token);
     req.user = user.payload;
+    Sentry.setUser({ username: user.payload.wallet, ip_address: '{{auto}}' });
     next();
   } catch (e) {
     res
