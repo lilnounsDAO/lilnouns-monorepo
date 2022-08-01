@@ -18,15 +18,16 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
-    "dev": "yarn run generate:prisma && nodemon src/index.ts",
-    "start": "node dist/src/index.js",
+    "dev": "npm run generate:prisma && nodemon src/index.ts",
+    "start": "npm run migrate:prisma && node dist/src/index.js",
     "prestart": "npm run build",
+    "migrate:prisma": "prisma migrate dev",
     "generate:prisma": "prisma generate",
     "build": "tsc -p ."
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@types/express": "^4.17.11",
-    "@types/ioredis": "^4.26.4",
     "@types/sharp": "^0.28.3",
     "nodemon": "^2.0.7"
   },
@@ -36,6 +37,7 @@
     "@sentry/node": "^7.7.0",
     "@sentry/tracing": "^7.7.0",
     "@types/chance": "^1.1.3",
+    "@types/cors": "^2.8.12",
     "@types/jsonwebtoken": "^8.5.8",
     "chance": "^1.1.8",
     "cors": "^2.8.5",
@@ -43,13 +45,13 @@
     "ethers": "^5.4.0",
     "express": "^4.17.1",
     "express-validator": "^6.12.0",
-    "ioredis": "^4.27.6",
     "jsonwebtoken": "^8.5.1",
     "nft.storage": "^2.1.1",
     "prisma": "^3.15.2",
     "rollbar": "^2.25.0",
     "sharp": "^0.28.3",
     "siwe": "^1.1.6",
-    "ts-try": "^0.2.0"
+    "ts-try": "^0.2.0",
+    "typescript": "~4.6.4"
   }
 }

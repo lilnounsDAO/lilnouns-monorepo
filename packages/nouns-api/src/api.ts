@@ -8,11 +8,11 @@ import IdeasController from './controllers/ideas';
 import { PrismaClient } from '@prisma/client';
 import authMiddleware from './middlewares/auth';
 
+import cors from 'cors';
+
 import Rollbar from 'rollbar';
 
 export const prisma = new PrismaClient();
-
-const cors = require('cors');
 
 import { config } from './config';
 
@@ -51,7 +51,28 @@ export const createAPI = (): Express => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: [
+        'https://lambent-melba-6dd07a.netlify.app',
+        'https://eloquent-sunshine-5116fa.netlify.app',
+        'https://lilnouns.wtf',
+        ...(config.environment === 'development' ? ['http://localhost:3000'] : []),
+      ],
+      methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+      optionsSuccessStatus: 200,
+      credentials: true,
+      allowedHeaders: [
+        '*',
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'Access-Control-Allow-Origin',
+        'Origin',
+        'Accept',
+      ],
+    }),
+  );
 
   app.use((req, res, next) => {
     Sentry.setUser({ ip_address: '{{auto}}' });
