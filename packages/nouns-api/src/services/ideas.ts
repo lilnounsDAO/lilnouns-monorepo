@@ -1,65 +1,79 @@
 import { prisma } from '../api';
 
-const SORT_BY: { [key: string]: any } = {
-  LATEST: [
-    {
-      createdAt: 'desc',
-    },
-    {
-      id: 'asc',
-    },
-  ],
-  VOTES_DESC: [
-    {
-      votecount: 'desc',
-    },
-    {
-      id: 'asc',
-    },
-  ],
-  VOTES_ASC: [
-    {
-      votecount: 'asc',
-    },
-    {
-      id: 'asc',
-    },
-  ],
-  OLDEST: [
-    {
-      createdAt: 'asc',
-    },
-    {
-      id: 'asc',
-    },
-  ],
+// const SORT_BY: { [key: string]: any } = {
+//   LATEST: [
+//     {
+//       createdAt: 'desc',
+//     },
+//     {
+//       id: 'asc',
+//     },
+//   ],
+//   VOTES_DESC: [
+//     {
+//       votecount: 'desc',
+//     },
+//     {
+//       id: 'asc',
+//     },
+//   ],
+//   VOTES_ASC: [
+//     {
+//       votecount: 'asc',
+//     },
+//     {
+//       id: 'asc',
+//     },
+//   ],
+//   OLDEST: [
+//     {
+//       createdAt: 'asc',
+//     },
+//     {
+//       id: 'asc',
+//     },
+//   ],
+// };
+
+const sortFn: { [key: string]: any } = {
+  LATEST: (a: any, b: any) => {
+    const dateA: any = new Date(a.createdAt);
+    const dateB: any = new Date(b.createdAt);
+    return dateB - dateA;
+  },
+  VOTES_DESC: (a: any, b: any) => b.votecount - a.votecount,
+  VOTES_ASC: (a: any, b: any) => a.votecount - b.votecount,
+  OLDEST: (a: any, b: any) => {
+    const dateA: any = new Date(a.createdAt);
+    const dateB: any = new Date(b.createdAt);
+    return dateA - dateB;
+  },
+};
+
+const calculateVotes = (votes: any) => {
+  let count = 0;
+  votes.forEach((vote: any) => {
+    count = count + vote.direction * vote.voter.lilnounCount;
+  });
+
+  return count;
 };
 
 class IdeasService {
   static async all(sortBy?: string) {
     try {
-      /* Custom SQL to calculate votecounts on the fly if we need this in the future
-         the SQL below or using a database trigger that runs the calculation on vote inserts/updates.
-          SQL to:
-            - fetch idea data,
-            - calculate the votecount for each idea using the users lil noun count and their vote direction
-            - aggregate voter details
-            - Sort by new votecount property
+      // Investigate issue with votecount db triggers
 
-            This custom SQL allows us to calculate votes on the fly meaning we always have up to date votes with the users lilnouns. It also keeps
-            sorting/filtering server side which will allow us to introduce pagination and other sorting mechanics.
-
-          const ideaData: any = await prisma.$queryRaw`
-          SELECT * FROM
-            (SELECT v."ideaId",
-            json_agg(json_build_object('voterId', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS votes,
-            sum(v."direction"*u."lilnounCount") AS voteCount
-            FROM "Vote" v INNER JOIN "User" u
-            ON v."voterId" = u."wallet"
-            GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "Idea" idea ON counted_votes."ideaId" = idea.id
-          ORDER BY voteCount DESC
-          `;
-      */
+      // const ideas = await prisma.idea.findMany({
+      //   include: {
+      //     votes: {
+      //       include: {
+      //         voter: true,
+      //       },
+      //     },
+      //   },
+      //   orderBy: SORT_BY[sortBy || 'VOTES_DESC'],
+      // });
 
       const ideas = await prisma.idea.findMany({
         include: {
@@ -69,10 +83,16 @@ class IdeasService {
             },
           },
         },
-        orderBy: SORT_BY[sortBy || 'VOTES_DESC'],
       });
 
-      return ideas;
+      const ideaData = ideas
+        .map((idea: any) => {
+          const votecount = calculateVotes(idea.votes);
+          return { ...idea, votecount };
+        })
+        .sort(sortFn[sortBy || 'LATEST']);
+
+      return ideaData;
     } catch (e: any) {
       throw e;
     }
@@ -80,25 +100,6 @@ class IdeasService {
 
   static async get(id: number) {
     try {
-      /* Custom SQL to calculate votecounts on the fly if we need this in the future
-        const ideaData: any = await prisma.$queryRaw`
-          SELECT * FROM
-            (SELECT v."ideaId",
-            json_agg(json_build_object('voterId', v."voterId"::character varying, 'direction', v."direction", 'lilnounCount', u."lilnounCount")) AS votes,
-            sum(v."direction"*u."lilnounCount") AS voteCount
-            FROM "Vote" v INNER JOIN "User" u
-            ON v."voterId" = u."wallet"
-            GROUP BY v."ideaId", v."ideaId") counted_votes JOIN "Idea" idea ON counted_votes."ideaId" = idea.id
-          WHERE idea."id" = ${id}
-        `;
-
-        if (!ideaData?.[0]) {
-          throw new Error('Idea not found');
-        }
-
-        return ideaData[0];
-      */
-
       const idea = await prisma.idea.findUnique({
         where: {
           id,
@@ -116,7 +117,9 @@ class IdeasService {
         throw new Error('Idea not found');
       }
 
-      return idea;
+      const ideaData = { ...idea, votecount: calculateVotes(idea.votes) };
+
+      return ideaData;
     } catch (e: any) {
       throw e;
     }
