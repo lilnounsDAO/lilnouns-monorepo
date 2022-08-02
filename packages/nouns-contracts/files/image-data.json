@@ -1,5 +1,5 @@
 {
-  "artstyles": ["solar", "lunar"],
+  "artstyles": ["solar"],
   "palette": [
     "",
     "fa7f71",
@@ -9,6 +9,7 @@
     "fa8272",
     "f88272",
     "f98171",
+    "f3b57a",
     "2ebcd1",
     "2fc0d4",
     "41c3d6",
@@ -1299,7 +1300,10 @@
     "5f7642",
     "596f35",
     "566b32",
-    "435820",lunar
+    "435820",
+    "32430f",
+    "2c3f0d",
+    "040303",
     "0d0d0d",
     "0a0a0a",
     "060606",
@@ -10954,6 +10958,10 @@
     "Backgrounds": [
       {
         "filename": "Coral bg",
+        "data": "0x0001000000"
+      },
+      {
+        "filename": "Orange_bg2",
         "data": "0x0001000000"
       },
       {

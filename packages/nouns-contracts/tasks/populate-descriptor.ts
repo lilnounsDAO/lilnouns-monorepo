@@ -23,24 +23,42 @@ task('populate-descriptor', 'Populates the descriptor with color palettes and No
     });
     const descriptorContract = descriptorFactory.attach(nounsDescriptor);
 
-    const { artstyle, palette, images } = ImageData;
+    const { artstyles, palette, images } = ImageData;
     const { Backgrounds, BaseColors, VisorColors, Letters, Accessories, Flair } = images;
 
     // Chunk head and accessory population due to high gas usage
-    await descriptorContract.addArtstyle(artstyle);
+    await descriptorContract.addArtstyle(artstyles[0]);
     await descriptorContract.addManyColorsToPalette(0, palette);
-    await descriptorContract.addManyBackgrounds(Backgrounds.map(({ data }) => data));
 
-    const accessoryChunk = chunkArray(BaseColors, 10);
-    for (const chunk of accessoryChunk) {
+
+    const backgroundChunk = chunkArray(Backgrounds, 10);
+    for (const chunk of backgroundChunk) {
+      await descriptorContract.addManyBackgrounds(chunk.map(({ data }) => data));
+    }
+    const baseColorChunk = chunkArray(BaseColors, 10);
+    for (const chunk of baseColorChunk) {
       await descriptorContract.addManyBaseColors(chunk.map(({ data }) => data));
     }
 
-    const headChunk = chunkArray(VisorColors, 10);
-    for (const chunk of headChunk) {
+    const visorChunk = chunkArray(VisorColors, 10);
+    for (const chunk of visorChunk) {
       await descriptorContract.addManyVisorColors(chunk.map(({ data }) => data));
     }
 
+    const lettersChunk = chunkArray(Letters, 10);
+    for (const chunk of lettersChunk) {
+      await descriptorContract.addManyMATHletters(chunk.map(({ data }) => data));
+    }
+
+    const accessoryChunk = chunkArray(Accessories, 10);
+    for (const chunk of accessoryChunk) {
+      await descriptorContract.addManyAccessories(chunk.map(({ data }) => data));
+    }
+
+    const flairChunk = chunkArray(Flair, 10);
+    for (const chunk of flairChunk) {
+      await descriptorContract.addManyFlair(chunk.map(({ data }) => data));
+    }
     await descriptorContract.addManyLetters(Letters.map(({ data }) => data));
 
     console.log('Descriptor populated with palettes and parts');

@@ -79,7 +79,7 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
      * @notice Get the number of available MATH Hat Art Styles
      */
 
-     function artStyleCount() external view returns (uint256) {
+     function artStyleCount() external view override returns (uint256) {
         return artstyles.length;
      }
     /**
@@ -321,7 +321,7 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
             name: name,
             description: description,
             parts: _getPartsForSeed(seed),
-            artstyle: backgrounds[seed.artstyle]
+            artstyle: artstyles[seed.artstyle]
         });
         return NFTDescriptor.constructTokenURI(params, palettes);
     }
@@ -332,7 +332,7 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     function generateSVGImage(INounsSeeder.Seed memory seed) external view override returns (string memory) {
         MultiPartRLEToSVG.SVGParams memory params = MultiPartRLEToSVG.SVGParams({
             parts: _getPartsForSeed(seed),
-            background: backgrounds[seed.background]
+            artstyle: artstyles[seed.background]
         });
         return NFTDescriptor.generateSVGImage(params, palettes);
     }

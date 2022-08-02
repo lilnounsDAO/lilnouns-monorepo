@@ -78,13 +78,13 @@ interface INounsDescriptor {
 
     function addColorToPalette(uint8 paletteIndex, string calldata color) external;
 
-    function addBackground(string calldata background) external;
+    function addBackground(bytes calldata background) external;
 
     function addBaseColor(bytes calldata basecolor) external;
 
     function addVisor(bytes calldata visor) external;
 
-    function addMATHLetters(bytes calldata mathletters) external;
+    function addMATHletters(bytes calldata mathletters) external;
 
     function addAccessory(bytes calldata accessory) external;
 
