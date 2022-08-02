@@ -30,27 +30,35 @@ contract NounsSeeder is INounsSeeder {
             keccak256(abi.encodePacked(blockhash(block.number - 1), nounId))
         );
 
+        uint256 artStyleCount = descriptor.artStyleCount();
         uint256 backgroundCount = descriptor.backgroundCount();
-        uint256 bodyCount = descriptor.bodyCount();
-        uint256 accessoryCount = descriptor.accessoryCount();
-        uint256 headCount = descriptor.headCount();
-        uint256 glassesCount = descriptor.glassesCount();
+        uint256 baseColorCount = descriptor.baseColorCount();
+        uint256 visorCount = descriptor.visorCount();
+        uint256 mathLettersCount = descriptor.mathlettersCount();
+        uint256 accessoriesCount = descriptor.accessoriesCount();
+        uint256 flairCount = descriptor.flairCount();
 
         return Seed({
+            artstyle: uint48(
+                uint48(pseudorandomness) % artStyleCount
+            ),
             background: uint48(
                 uint48(pseudorandomness) % backgroundCount
             ),
-            body: uint48(
-                uint48(pseudorandomness >> 48) % bodyCount
+            basecolor: uint48(
+                uint48(pseudorandomness >> 48) % baseColorCount
+            ),
+            visor: uint48(
+                uint48(pseudorandomness >> 96) % visorCount
+            ),
+            mathletters: uint48(
+                uint48(pseudorandomness >> 144) % mathLettersCount
             ),
             accessory: uint48(
-                uint48(pseudorandomness >> 96) % accessoryCount
+                uint48(pseudorandomness >> 192) % accessoriesCount
             ),
-            head: uint48(
-                uint48(pseudorandomness >> 144) % headCount
-            ),
-            glasses: uint48(
-                uint48(pseudorandomness >> 192) % glassesCount
+            flair: uint48(
+                uint48(pseudorandomness >> 240) % flairCount
             )
         });
     }

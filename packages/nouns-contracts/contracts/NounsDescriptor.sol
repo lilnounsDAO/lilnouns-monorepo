@@ -43,6 +43,9 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     // Noun Color Palettes (Index => Hex Colors)
     mapping(uint8 => string[]) public override palettes;
 
+    // MATH Hat Art Styles
+    string[] public override artstyles;
+
     // MATH Hat Backgrounds
     bytes[] public override backgrounds;
 
@@ -73,6 +76,13 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
+     * @notice Get the number of available MATH Hat Art Styles
+     */
+
+     function artStyleCount() external view returns (uint256) {
+        return artstyles.length;
+     }
+    /**
      * @notice Get the number of available MATH Hat `backgrounds`.
      */
     function backgroundCount() external view override returns (uint256) {
@@ -87,19 +97,11 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Get the number of available MATH Hat `accessories`.
-     */
-    function accessoriesCount() external view override returns (uint256) {
-        return accessories.length;
-    }
-
-    /**
      * @notice Get the number of available MATH Hat `visors`.
      */
     function visorCount() external view override returns (uint256) {
         return visors.length;
     }
-
 
     /**
      * @notice Get the number of available MATH Hat `mathletters`.
@@ -107,6 +109,21 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     function mathlettersCount() external view override returns (uint256) {
         return mathletters.length;
     }
+
+    /**
+     * @notice Get the number of available MATH Hat `accessories`.
+     */
+    function accessoriesCount() external view override returns (uint256) {
+        return accessories.length;
+    }
+
+    /**
+     * @notice Get the number of available MATH Hat `flair`.
+     */
+    function flairCount() external view override returns (uint256) {
+        return flair.length;
+    }
+
 
     /**
      * @notice Add colors to a color palette.
@@ -120,27 +137,47 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Batch add Noun backgrounds.
+     * @notice Batch add MATH Hat backgrounds.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addManyBackgrounds(string[] calldata _backgrounds) external override onlyOwner whenPartsNotLocked {
+    function addManyBackgrounds(bytes[] calldata _backgrounds) external override onlyOwner whenPartsNotLocked {
         for (uint256 i = 0; i < _backgrounds.length; i++) {
             _addBackground(_backgrounds[i]);
         }
     }
 
     /**
-     * @notice Batch add Noun basecolors.
+     * @notice Batch add MATH Hat basecolors.
      * @dev This function can only be called by the owner when not locked.
      */
     function addManybasecolors(bytes[] calldata _basecolors) external override onlyOwner whenPartsNotLocked {
         for (uint256 i = 0; i < _basecolors.length; i++) {
-            _addBody(_basecolors[i]);
+            _addBaseColor(_basecolors[i]);
         }
     }
 
     /**
-     * @notice Batch add Noun accessories.
+     * @notice Batch add MATH Hat visors.
+     * @dev This function can only be called by the owner when not locked.
+     */
+    function addManyvisors(bytes[] calldata _visors) external override onlyOwner whenPartsNotLocked {
+        for (uint256 i = 0; i < _visors.length; i++) {
+            _addVisor(_visors[i]);
+        }
+    }
+
+    /**
+     * @notice Batch add MATH Hat mathletters.
+     * @dev This function can only be called by the owner when not locked.
+     */
+    function addManyMATHletters(bytes[] calldata _mathletters) external override onlyOwner whenPartsNotLocked {
+        for (uint256 i = 0; i < _mathletters.length; i++) {
+            _addmathletters(_mathletters[i]);
+        }
+    }
+
+    /**
+     * @notice Batch add MATH Hat accessories.
      * @dev This function can only be called by the owner when not locked.
      */
     function addManyAccessories(bytes[] calldata _accessories) external override onlyOwner whenPartsNotLocked {
@@ -150,24 +187,14 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Batch add Noun visors.
+     * @notice Batch add MATH Hat flair.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addManyvisors(bytes[] calldata _visors) external override onlyOwner whenPartsNotLocked {
-        for (uint256 i = 0; i < _visors.length; i++) {
-            _addHead(_visors[i]);
+    function addManyFlair(bytes[] calldata _flair) external override onlyOwner whenPartsNotLocked {
+        for (uint256 i = 0; i < _flair.length; i++) {
+            _addFlair(_flair[i]);
         }
-    }
-
-    /**
-     * @notice Batch add Noun mathletters.
-     * @dev This function can only be called by the owner when not locked.
-     */
-    function addManymathletters(bytes[] calldata _mathletters) external override onlyOwner whenPartsNotLocked {
-        for (uint256 i = 0; i < _mathletters.length; i++) {
-            _addmathletters(_mathletters[i]);
-        }
-    }
+    }    
 
     /**
      * @notice Add a single color to a color palette.
@@ -182,16 +209,24 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
      * @notice Add a Noun background.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addBackground(string calldata _background) external override onlyOwner whenPartsNotLocked {
+    function addBackground(bytes calldata _background) external override onlyOwner whenPartsNotLocked {
         _addBackground(_background);
     }
 
     /**
-     * @notice Add a Noun body.
+     * @notice Add a MATH Hat Base Color
      * @dev This function can only be called by the owner when not locked.
      */
-    function addBody(bytes calldata _body) external override onlyOwner whenPartsNotLocked {
-        _addBody(_body);
+    function addBaseColor(bytes calldata _basecolor) external override onlyOwner whenPartsNotLocked {
+        _addBaseColor(_basecolor);
+    }
+
+    /**
+     * @notice Add a MATH Hat Visor.
+     * @dev This function can only be called by the owner when not locked.
+     */
+    function addVisor(bytes calldata _visor) external override onlyOwner whenPartsNotLocked {
+        _addVisor(_visor);
     }
 
     /**
@@ -203,19 +238,19 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Add a Noun head.
-     * @dev This function can only be called by the owner when not locked.
-     */
-    function addHead(bytes calldata _head) external override onlyOwner whenPartsNotLocked {
-        _addHead(_head);
-    }
-
-    /**
      * @notice Add Noun mathletters.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addmathletters(bytes calldata _mathletters) external override onlyOwner whenPartsNotLocked {
+    function addMATHletters(bytes calldata _mathletters) external override onlyOwner whenPartsNotLocked {
         _addmathletters(_mathletters);
+    }
+
+    /**
+     * @notice Add a MATH Hat Flair
+     * @dev This function can only be called by the owner when not locked.
+     */
+    function addFlair(bytes calldata _flair) external override onlyOwner whenPartsNotLocked {
+        _addFlair(_flair);
     }
 
     /**
@@ -268,8 +303,8 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
      */
     function dataURI(uint256 tokenId, INounsSeeder.Seed memory seed) public view override returns (string memory) {
         string memory nounId = tokenId.toString();
-        string memory name = string(abi.encodePacked('Lil Noun ', nounId));
-        string memory description = string(abi.encodePacked('Lil Noun ', nounId, ' is a member of the Lil Nouns DAO'));
+        string memory name = string(abi.encodePacked('MATH Hat ', nounId));
+        string memory description = string(abi.encodePacked('MATH Hat ', nounId, ' is a member of the FWD_DAO'));
 
         return genericDataURI(name, description, seed);
     }
@@ -286,7 +321,7 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
             name: name,
             description: description,
             parts: _getPartsForSeed(seed),
-            background: backgrounds[seed.background]
+            artstyle: backgrounds[seed.artstyle]
         });
         return NFTDescriptor.constructTokenURI(params, palettes);
     }
@@ -312,29 +347,22 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     /**
      * @notice Add a Noun background.
      */
-    function _addBackground(string calldata _background) internal {
+    function _addBackground(bytes calldata _background) internal {
         backgrounds.push(_background);
     }
 
     /**
      * @notice Add a Noun body.
      */
-    function _addBody(bytes calldata _body) internal {
-        basecolors.push(_body);
-    }
-
-    /**
-     * @notice Add a Noun accessory.
-     */
-    function _addAccessory(bytes calldata _accessory) internal {
-        accessories.push(_accessory);
+    function _addBaseColor(bytes calldata _basecolor) internal {
+        basecolors.push(_basecolor);
     }
 
     /**
      * @notice Add a Noun head.
      */
-    function _addHead(bytes calldata _head) internal {
-        visors.push(_head);
+    function _addVisor(bytes calldata _visor) internal {
+        visors.push(_visor);
     }
 
     /**
@@ -345,14 +373,30 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
+     * @notice Add a Noun accessory.
+     */
+    function _addAccessory(bytes calldata _accessory) internal {
+        accessories.push(_accessory);
+    }
+
+    /**
+     * @notice Add MATH Hat Flair
+     */
+     function _addFlair(bytes calldata _flair) internal {
+        flair.push(_flair);
+     }
+
+    /**
      * @notice Get all Noun parts for the passed `seed`.
      */
     function _getPartsForSeed(INounsSeeder.Seed memory seed) internal view returns (bytes[] memory) {
-        bytes[] memory _parts = new bytes[](4);
-        _parts[0] = basecolors[seed.body];
-        _parts[1] = accessories[seed.accessory];
-        _parts[2] = visors[seed.head];
+        bytes[] memory _parts = new bytes[](5);
+        _parts[0] = backgrounds[seed.background];
+        _parts[1] = basecolors[seed.basecolor];
+        _parts[2] = visors[seed.visor];
         _parts[3] = mathletters[seed.mathletters];
+        _parts[4] = accessories[seed.accessory];
+        _parts[5] = flair[seed.flair];
         return _parts;
     }
 }

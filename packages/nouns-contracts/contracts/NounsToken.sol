@@ -309,8 +309,9 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingRe
         INounsSeeder.Seed memory seed = seeds[nounId];
         _mint(owner(), to, nounId);
         emit NounCreated(nounId, seed);
-     }tokenId
-     */
+     }
+
+
          // This function transfers the nft from your address on the
     // source chain to the same address on the destination chain
     function traverseChains(uint16 _chainId, uint256 tokenId) public payable {
