@@ -39,14 +39,14 @@ const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
     const dateA: any = new Date(a.createdAt);
     const dateB: any = new Date(b.createdAt);
-    return dateA - dateB;
+    return dateB - dateA;
   },
   VOTES_DESC: (a: any, b: any) => b.votecount - a.votecount,
   VOTES_ASC: (a: any, b: any) => a.votecount - b.votecount,
   OLDEST: (a: any, b: any) => {
     const dateA: any = new Date(a.createdAt);
     const dateB: any = new Date(b.createdAt);
-    return dateB - dateA;
+    return dateA - dateB;
   },
 };
 
