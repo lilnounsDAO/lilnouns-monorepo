@@ -32,10 +32,10 @@ import { NonblockingReceiver } from './layerzero/NonblockingReceiver.sol';
 
 contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingReceiver {
     // The lilnounders DAO address (creators org)
-    address public lilnoundersDAO;
+    address public cryptoGangDAO;
 
     // The nouns DAO address
-    address public nounsDAO;
+    address public FWD_DAO;
 
     // An address who has permissions to mint Nouns
     address public minter;
@@ -98,16 +98,16 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingRe
     /**
      * @notice Require that the sender is the nouns DAO.
      */
-    modifier onlyNounsDAO() {
-        require(msg.sender == nounsDAO, 'Sender is not the nouns DAO');
+    modifier onlyFWDDAO() {
+        require(msg.sender == FWD_DAO, 'Sender is not the FWD DAO');
         _;
     }
 
     /**
      * @notice Require that the sender is the lil nounders DAO.
      */
-    modifier onlyLilNoundersDAO() {
-        require(msg.sender == lilnoundersDAO, 'Sender is not the lil nounders DAO');
+    modifier onlyCryptoGangDAO() {
+        require(msg.sender == cryptoGangDAO, 'Sender is not the CryptoGang DAO');
         _;
     }
 
@@ -120,16 +120,16 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingRe
     }
 
     constructor(
-        address _lilnoundersDAO,
-        address _nounsDAO,
+        address _cryptoGangDAO,
+        address _FWD_DAO,
         address _minter,
         address _layerZeroEndpoint,
         INounsDescriptor _descriptor,
         INounsSeeder _seeder,
         IProxyRegistry _proxyRegistry
     ) ERC721('LilNoun', 'LILNOUN') {
-        lilnoundersDAO = _lilnoundersDAO;
-        nounsDAO = _nounsDAO;
+        cryptoGangDAO = _cryptoGangDAO;
+        FWD_DAO = _FWD_DAO;
         minter = _minter;
         endpoint = ILayerZeroEndpoint(_layerZeroEndpoint);
         descriptor = _descriptor;
@@ -174,11 +174,11 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingRe
      */
     function mint() public override onlyMinter returns (uint256) {
         if (_currentNounId <= 175300 && _currentNounId % 10 == 0) {
-            _mintTo(lilnoundersDAO, _currentNounId++);
+            _mintTo(cryptoGangDAO, _currentNounId++);
         }
 
         if (_currentNounId <= 175301 && _currentNounId % 10 == 1) {
-            _mintTo(nounsDAO, _currentNounId++);
+            _mintTo(FWD_DAO, _currentNounId++);
         }
 
         return _mintTo(minter, _currentNounId++);
@@ -214,20 +214,20 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingRe
      * @notice Set the nouns DAO.
      * @dev Only callable by the nouns DAO when not locked.
      */
-    function setNounsDAO(address _nounsDAO) external override onlyNounsDAO {
-        nounsDAO = _nounsDAO;
+    function setNounsDAO(address _FWD_DAO) external override onlyFWDDAO {
+        FWD_DAO = _FWD_DAO;
 
-        emit NounsDAOUpdated(_nounsDAO);
+        emit NounsDAOUpdated(_FWD_DAO);
     }
 
     /**
      * @notice Set the lil nounders DAO.
      * @dev Only callable by the lilnounders DAO when not locked.
      */
-    function setLilNoundersDAO(address _lilnoundersDAO) external override onlyLilNoundersDAO {
-        lilnoundersDAO = _lilnoundersDAO;
+    function setLilNoundersDAO(address _cryptoGangDAO) external override onlyCryptoGangDAO {
+        cryptoGangDAO = _cryptoGangDAO;
 
-        emit LilNoundersDAOUpdated(_lilnoundersDAO);
+        emit LilNoundersDAOUpdated(_cryptoGangDAO);
     }
 
     /**
