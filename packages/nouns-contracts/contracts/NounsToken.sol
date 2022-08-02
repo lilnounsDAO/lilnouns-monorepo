@@ -64,6 +64,10 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingRe
     // IPFS content hash of contract-level metadata
     string private _contractURIHash = 'QmNPz2kfXLJwYo1AFQnmu6EjeXraz2iExvCSbENqwr5aFy';
 
+    // Layer Zero Receiver Gas
+    uint256 gasForDestinationLzReceive = 350000;
+
+
     // OpenSea's Proxy Registry
     IProxyRegistry public immutable proxyRegistry;
 
@@ -297,4 +301,91 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingRe
 
         return nounId;
     }
+
+    /**
+     * @notice LayerZero mint
+     */
+     function _lzMint(address to, uint256 nounId) internal {
+        INounsSeeder.Seed memory seed = seeds[nounId];
+        _mint(owner(), to, nounId);
+        emit NounCreated(nounId, seed);
+     }tokenId
+     */
+         // This function transfers the nft from your address on the
+    // source chain to the same address on the destination chain
+    function traverseChains(uint16 _chainId, uint256 tokenId) public payable {
+        require(
+            msg.sender == ownerOf(tokenId),
+            "You must own the token to traverse"
+        );
+        require(
+            trustedRemoteLookup[_chainId].length > 0,
+            "This chain is currently unavailable for travel"
+        );
+
+        // burn NFT, eliminating it from circulation on src chain
+        _burn(tokenId);
+
+        // abi.encode() the payload with the values to send
+        bytes memory payload = abi.encode(msg.sender, tokenId, seeds[tokenId]);
+
+        // encode adapterParams to specify more gas for the destination
+        uint16 version = 1;
+        bytes memory adapterParams = abi.encodePacked(
+            version,
+            gasForDestinationLzReceive
+        );
+
+        // get the fees we need to pay to LayerZero + Relayer to cover message delivery
+        // you will be refunded for extra gas paid
+        (uint256 messageFee, ) = endpoint.estimateFees(
+            _chainId,
+            address(this),
+            payload,
+            false,
+            adapterParams
+        );
+
+        require(
+            msg.value >= messageFee,
+            "GG: msg.value not enough to cover messageFee. Send gas for message fees"
+        );
+
+        endpoint.send{value: msg.value}(
+            _chainId, // destination chainId
+            trustedRemoteLookup[_chainId], // destination address of nft contract
+            payload, // abi.encoded()'ed bytes
+            payable(msg.sender), // refund address
+            address(0x0), // 'zroPaymentAddress' unused for this
+            adapterParams // txParameters
+        );
+    }
+
+    /**
+     * @notice Just in case this fixed variable limits us from future integrations 
+     */
+    // just in case this fixed variable limits us from future integrations
+    function setGasForDestinationLzReceive(uint256 newVal) external onlyOwner {
+        gasForDestinationLzReceive = newVal;
+    }   
+
+    /**
+     * @notice Internal function to receive via LayerZero
+     */  
+    function _LzReceive(
+        uint16 _srcChainId,
+        bytes memory _srcAddress,
+        uint64 _nonce,
+        bytes memory _payload
+    ) internal override {
+        // decode
+        (address toAddr, uint256 tokenId, INounsSeeder.Seed memory seed) = abi.decode(
+            _payload,
+            (address, uint256, INounsSeeder.Seed)
+        );
+
+        // mint the tokens back into existence on destination chain
+        _lzMint(toAddr, tokenId);
+        emit NounCreated(tokenId, seed);
+    }     
 }

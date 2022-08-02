@@ -77,6 +77,7 @@ task('deploy-local', 'Deploy contracts to hardhat')
           args.lilnoundersDAO || deployer.address,
           args.nounsDAO || deployer.address,
           expectedAuctionHouseProxyAddress,
+          "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
           () => contracts['NounsDescriptor'].instance?.address,
           () => contracts['NounsSeeder'].instance?.address,
           proxyRegistryAddress,

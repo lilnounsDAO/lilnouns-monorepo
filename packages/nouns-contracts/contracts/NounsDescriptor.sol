@@ -43,20 +43,26 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     // Noun Color Palettes (Index => Hex Colors)
     mapping(uint8 => string[]) public override palettes;
 
-    // Noun Backgrounds (Hex Colors)
-    string[] public override backgrounds;
+    // MATH Hat Backgrounds
+    bytes[] public override backgrounds;
 
-    // Noun Bodies (Custom RLE)
-    bytes[] public override bodies;
+    // MATH Hat Base Colors
+    bytes[] public override basecolors;
+    
+    // MATH Hat Visors (Custom RLE)
+    bytes[] public override visors;
 
-    // Noun Accessories (Custom RLE)
+    // MATH Hat Letters (Custom RLE)
+    bytes[] public override mathletters;
+
+    // MATH Hat Accessories (Custom RLE)
     bytes[] public override accessories;
 
-    // Noun Heads (Custom RLE)
-    bytes[] public override heads;
+    // MATH Hat Flair (Custom RLE)
+    bytes[] public override flair;
 
-    // Noun Glasses (Custom RLE)
-    bytes[] public override glasses;
+
+    // 
 
     /**
      * @notice Require that the parts have not been locked.
@@ -67,38 +73,39 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Get the number of available Noun `backgrounds`.
+     * @notice Get the number of available MATH Hat `backgrounds`.
      */
     function backgroundCount() external view override returns (uint256) {
         return backgrounds.length;
     }
 
     /**
-     * @notice Get the number of available Noun `bodies`.
+     * @notice Get the number of available MATH Hat `basecolors`.
      */
-    function bodyCount() external view override returns (uint256) {
-        return bodies.length;
+    function baseColorCount() external view override returns (uint256) {
+        return basecolors.length;
     }
 
     /**
-     * @notice Get the number of available Noun `accessories`.
+     * @notice Get the number of available MATH Hat `accessories`.
      */
-    function accessoryCount() external view override returns (uint256) {
+    function accessoriesCount() external view override returns (uint256) {
         return accessories.length;
     }
 
     /**
-     * @notice Get the number of available Noun `heads`.
+     * @notice Get the number of available MATH Hat `visors`.
      */
-    function headCount() external view override returns (uint256) {
-        return heads.length;
+    function visorCount() external view override returns (uint256) {
+        return visors.length;
     }
 
+
     /**
-     * @notice Get the number of available Noun `glasses`.
+     * @notice Get the number of available MATH Hat `mathletters`.
      */
-    function glassesCount() external view override returns (uint256) {
-        return glasses.length;
+    function mathlettersCount() external view override returns (uint256) {
+        return mathletters.length;
     }
 
     /**
@@ -123,12 +130,12 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Batch add Noun bodies.
+     * @notice Batch add Noun basecolors.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addManyBodies(bytes[] calldata _bodies) external override onlyOwner whenPartsNotLocked {
-        for (uint256 i = 0; i < _bodies.length; i++) {
-            _addBody(_bodies[i]);
+    function addManybasecolors(bytes[] calldata _basecolors) external override onlyOwner whenPartsNotLocked {
+        for (uint256 i = 0; i < _basecolors.length; i++) {
+            _addBody(_basecolors[i]);
         }
     }
 
@@ -143,22 +150,22 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Batch add Noun heads.
+     * @notice Batch add Noun visors.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addManyHeads(bytes[] calldata _heads) external override onlyOwner whenPartsNotLocked {
-        for (uint256 i = 0; i < _heads.length; i++) {
-            _addHead(_heads[i]);
+    function addManyvisors(bytes[] calldata _visors) external override onlyOwner whenPartsNotLocked {
+        for (uint256 i = 0; i < _visors.length; i++) {
+            _addHead(_visors[i]);
         }
     }
 
     /**
-     * @notice Batch add Noun glasses.
+     * @notice Batch add Noun mathletters.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addManyGlasses(bytes[] calldata _glasses) external override onlyOwner whenPartsNotLocked {
-        for (uint256 i = 0; i < _glasses.length; i++) {
-            _addGlasses(_glasses[i]);
+    function addManymathletters(bytes[] calldata _mathletters) external override onlyOwner whenPartsNotLocked {
+        for (uint256 i = 0; i < _mathletters.length; i++) {
+            _addmathletters(_mathletters[i]);
         }
     }
 
@@ -204,11 +211,11 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Add Noun glasses.
+     * @notice Add Noun mathletters.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addGlasses(bytes calldata _glasses) external override onlyOwner whenPartsNotLocked {
-        _addGlasses(_glasses);
+    function addmathletters(bytes calldata _mathletters) external override onlyOwner whenPartsNotLocked {
+        _addmathletters(_mathletters);
     }
 
     /**
@@ -313,7 +320,7 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
      * @notice Add a Noun body.
      */
     function _addBody(bytes calldata _body) internal {
-        bodies.push(_body);
+        basecolors.push(_body);
     }
 
     /**
@@ -327,14 +334,14 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
      * @notice Add a Noun head.
      */
     function _addHead(bytes calldata _head) internal {
-        heads.push(_head);
+        visors.push(_head);
     }
 
     /**
-     * @notice Add Noun glasses.
+     * @notice Add Noun mathletters.
      */
-    function _addGlasses(bytes calldata _glasses) internal {
-        glasses.push(_glasses);
+    function _addmathletters(bytes calldata _mathletters) internal {
+        mathletters.push(_mathletters);
     }
 
     /**
@@ -342,10 +349,10 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
      */
     function _getPartsForSeed(INounsSeeder.Seed memory seed) internal view returns (bytes[] memory) {
         bytes[] memory _parts = new bytes[](4);
-        _parts[0] = bodies[seed.body];
+        _parts[0] = basecolors[seed.body];
         _parts[1] = accessories[seed.accessory];
-        _parts[2] = heads[seed.head];
-        _parts[3] = glasses[seed.glasses];
+        _parts[2] = visors[seed.head];
+        _parts[3] = mathletters[seed.mathletters];
         return _parts;
     }
 }
