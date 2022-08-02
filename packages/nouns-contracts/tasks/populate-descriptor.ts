@@ -1,6 +1,7 @@
 import { task, types } from 'hardhat/config';
 import ImageData from '../files/image-data.json';
 import { chunkArray } from '../utils';
+import { NounsDescriptor } from "../typechain/"
 
 task('populate-descriptor', 'Populates the descriptor with color palettes and Noun parts')
   .addOptionalParam(
@@ -21,13 +22,18 @@ task('populate-descriptor', 'Populates the descriptor with color palettes and No
         NFTDescriptor: nftDescriptor,
       },
     });
-    const descriptorContract = descriptorFactory.attach(nounsDescriptor);
+    const descriptorContract = descriptorFactory.attach(nounsDescriptor) as NounsDescriptor;
 
     const { artstyles, palette, images } = ImageData;
     const { Backgrounds, BaseColors, VisorColors, Letters, Accessories, Flair } = images;
 
     // Chunk head and accessory population due to high gas usage
-    await descriptorContract.addArtstyle(artstyles[0]);
+    await descriptorContract.addArtStyle(artstyles[0]);
+
+    const palletChunk = chunkArray(palette, 10);
+    for (const chunk of palletChunk) {
+      await descriptorContract.addManyColorsToPalette(0, palette)
+    }
     await descriptorContract.addManyColorsToPalette(0, palette);
 
 

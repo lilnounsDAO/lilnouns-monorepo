@@ -150,7 +150,7 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
      * @notice Batch add MATH Hat basecolors.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addManybasecolors(bytes[] calldata _basecolors) external override onlyOwner whenPartsNotLocked {
+    function addManyBaseColors(bytes[] calldata _basecolors) external override onlyOwner whenPartsNotLocked {
         for (uint256 i = 0; i < _basecolors.length; i++) {
             _addBaseColor(_basecolors[i]);
         }
@@ -160,7 +160,7 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
      * @notice Batch add MATH Hat visors.
      * @dev This function can only be called by the owner when not locked.
      */
-    function addManyvisors(bytes[] calldata _visors) external override onlyOwner whenPartsNotLocked {
+    function addManyVisors(bytes[] calldata _visors) external override onlyOwner whenPartsNotLocked {
         for (uint256 i = 0; i < _visors.length; i++) {
             _addVisor(_visors[i]);
         }
@@ -203,6 +203,13 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     function addColorToPalette(uint8 _paletteIndex, string calldata _color) external override onlyOwner {
         require(palettes[_paletteIndex].length <= 255, 'Palettes can only hold 256 colors');
         _addColorToPalette(_paletteIndex, _color);
+    }
+
+    /**
+     * @notice Add an art style
+     */
+    function addArtStyle(string calldata _artstyle) external override onlyOwner {
+        _addArtStyle(_artstyle);
     }
 
     /**
@@ -345,35 +352,42 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Add a Noun background.
+     * @notice Add a MATH Hat art style
+     */
+    function _addArtStyle(string calldata _artstyle) internal {
+        artstyles.push(_artstyle);
+    }
+    
+    /**
+     * @notice Add a MATH Hat background.
      */
     function _addBackground(bytes calldata _background) internal {
         backgrounds.push(_background);
     }
 
     /**
-     * @notice Add a Noun body.
+     * @notice Add a MATH Hat body.
      */
     function _addBaseColor(bytes calldata _basecolor) internal {
         basecolors.push(_basecolor);
     }
 
     /**
-     * @notice Add a Noun head.
+     * @notice Add a MATH Hat head.
      */
     function _addVisor(bytes calldata _visor) internal {
         visors.push(_visor);
     }
 
     /**
-     * @notice Add Noun mathletters.
+     * @notice Add MATH Hat mathletters.
      */
     function _addmathletters(bytes calldata _mathletters) internal {
         mathletters.push(_mathletters);
     }
 
     /**
-     * @notice Add a Noun accessory.
+     * @notice Add a MATH Hat accessory.
      */
     function _addAccessory(bytes calldata _accessory) internal {
         accessories.push(_accessory);

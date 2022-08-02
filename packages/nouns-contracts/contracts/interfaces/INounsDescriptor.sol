@@ -66,9 +66,9 @@ interface INounsDescriptor {
 
     function addManyBackgrounds(bytes[] calldata backgrounds) external;
 
-    function addManybasecolors(bytes[] calldata bodies) external;
+    function addManyBaseColors(bytes[] calldata bodies) external;
 
-    function addManyvisors(bytes[] calldata heads) external;
+    function addManyVisors(bytes[] calldata heads) external;
 
     function addManyMATHletters(bytes[] calldata glasses) external;
 
@@ -77,6 +77,8 @@ interface INounsDescriptor {
     function addManyFlair(bytes[] calldata flair) external;
 
     function addColorToPalette(uint8 paletteIndex, string calldata color) external;
+
+    function addArtStyle(string calldata artstyle) external;
 
     function addBackground(bytes calldata background) external;
 
