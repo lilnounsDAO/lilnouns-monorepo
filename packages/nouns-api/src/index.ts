@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
+dotenv.config();
+
 import { createServer } from './server';
 import { createAPI } from './api';
-
-dotenv.config();
 
 const app = createAPI();
 

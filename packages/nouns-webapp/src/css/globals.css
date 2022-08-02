@@ -1,3 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.lodrina {
+  font-family: 'Londrina Solid';
+}
+
 @media (min-width: 1400px) {
   .container,
   .container-lg,
