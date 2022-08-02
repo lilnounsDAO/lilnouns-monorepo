@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Idea {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  title       String    @db.VarChar(50)
+  tldr        String    @db.VarChar(240)
+  description String    @db.VarChar(1080)
+  createdBy   User      @relation(fields: [creatorId], references: [wallet])
+  creatorId   String
+  comments    Comment[]
+  votes       Vote[]
+  votecount   Int       @default(value: 0) // Vote.direction * Vote.voter.lilnounCount
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  wallet   String    @unique
+  ens      String?
+  ideas    Idea[]
+  votes    Vote[]
+  comments Comment[]
+  lilnounCount Int
+}
+
+// direction
+// +1 for up
+// -1 for down
+// sum of direction = total score
+model Vote {
+  id        Int    @id @default(autoincrement())
+  direction Int
+  idea      Idea   @relation(fields: [ideaId], references: [id])
+  ideaId    Int
+  voter     User   @relation(fields: [voterId], references: [wallet])
+  voterId   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([ideaId, voterId])
+}
+
+model Comment {
+  id          Int    @id @default(autoincrement())
+  body        String
+  idea        Idea   @relation(fields: [ideaId], references: [id])
+  ideaId      Int
+  author      User   @relation(fields: [authorId], references: [wallet])
+  authorId    String
+  replies    Comment[] @relation("Comment_Children")
+  parent      Comment?  @relation("Comment_Children", fields: [parentId], references: [id])
+  parentId    Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

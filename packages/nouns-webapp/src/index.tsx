@@ -45,6 +45,10 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
 import { createClient, WagmiConfig } from 'wagmi';
+import { AuthProvider } from './hooks/useAuth';
+import { ErrorModalProvider } from './hooks/useApiError';
+
+import { Provider as RollbarProvider } from '@rollbar/react';
 
 dotenv.config();
 
@@ -151,10 +155,9 @@ const ChainSubscriber: React.FC = () => {
       dispatch(push(nounPath(nounIdNumber)));
       dispatch(setOnDisplayAuctionNounId(nounIdNumber));
       dispatch(setOnDisplayAuctionStartTime(startTimeNumber));
-      
+
       dispatch(setLastAuctionNounId(nounIdNumber));
       dispatch(setLastAuctionStartTime(startTimeNumber));
-      
     };
     const processAuctionExtended = (nounId: BigNumberish, endTime: BigNumberish) => {
       dispatch(setAuctionExtended({ nounId, endTime }));
@@ -195,48 +198,82 @@ const ChainSubscriber: React.FC = () => {
   return <></>;
 };
 
-//UPDATE: Using Auction start timestmap to fetch backwards beyond last 1000 aucitons 
+//UPDATE: Using Auction start timestmap to fetch backwards beyond last 1000 aucitons
 const PastAuctions: React.FC = () => {
   const latestAuctionId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
-  const latestAuctionStartTime = useAppSelector(state => state.onDisplayAuction.lastAuctionStartTime);
-  const onDisplayAuctionNounId = useAppSelector(state => state.onDisplayAuction.onDisplayAuctionNounId);
-  const onDisplayAuctionStartTime = useAppSelector(state => state.onDisplayAuction.onDisplayAuctionStartTime);
+  const latestAuctionStartTime = useAppSelector(
+    state => state.onDisplayAuction.lastAuctionStartTime,
+  );
+  const onDisplayAuctionNounId = useAppSelector(
+    state => state.onDisplayAuction.onDisplayAuctionNounId,
+  );
+  const onDisplayAuctionStartTime = useAppSelector(
+    state => state.onDisplayAuction.onDisplayAuctionStartTime,
+  );
 
   const { data } = useQuery(latestAuctionsQuery(onDisplayAuctionStartTime || 0));
-  const { data: auctionData } = useQuery(singularAuctionQuery(onDisplayAuctionNounId?.toString() || "0"));
-  
+  const { data: auctionData } = useQuery(
+    singularAuctionQuery(onDisplayAuctionNounId?.toString() || '0'),
+  );
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    data && auctionData && dispatch(setOnDisplayAuctionStartTime(auctionData?.auctions?.[0]?.startTime)) && dispatch(addPastAuctions({ data }));
+    data &&
+      auctionData &&
+      dispatch(setOnDisplayAuctionStartTime(auctionData?.auctions?.[0]?.startTime)) &&
+      dispatch(addPastAuctions({ data }));
   }, [data, auctionData, latestAuctionId, latestAuctionStartTime, dispatch]);
 
   return <></>;
 };
 
+const rollbarConfig = {
+  accessToken: 'a5a33e0a7d9a4c33a4ac4fd8ee4e85a1',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+  environment: 'production',
+  enabled: config.app.enableRollbar,
+  payload: {
+    client: {
+      javascript: {
+        code_version: '1.0.0',
+        source_map_enabled: true,
+      },
+    },
+  },
+};
+
 ReactDOM.render(
-  <WagmiConfig client={wagmiClient}>
-    <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <ChainSubscriber />
-        <React.StrictMode>
-          <Web3ReactProvider
-            getLibrary={
-              provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
-            }
-          >
-            <ApolloProvider client={client}>
-              <PastAuctions />
-              <DAppProvider config={useDappConfig}>
-                <App />
-                <Updaters />
-              </DAppProvider>
-            </ApolloProvider>
-          </Web3ReactProvider>
-        </React.StrictMode>
-      </ConnectedRouter>
-    </Provider>
-  </WagmiConfig>,
+  <RollbarProvider config={rollbarConfig}>
+    <WagmiConfig client={wagmiClient}>
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <ChainSubscriber />
+          <React.StrictMode>
+            <Web3ReactProvider
+              getLibrary={
+                provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
+              }
+            >
+              <ApolloProvider client={client}>
+                <PastAuctions />
+                <DAppProvider config={useDappConfig}>
+                  <ErrorModalProvider>
+                    <AuthProvider>
+                      <App />
+                      <Updaters />
+                    </AuthProvider>
+                  </ErrorModalProvider>
+                </DAppProvider>
+              </ApolloProvider>
+            </Web3ReactProvider>
+          </React.StrictMode>
+        </ConnectedRouter>
+      </Provider>
+    </WagmiConfig>
+    ,
+  </RollbarProvider>,
   document.getElementById('root'),
 );
 
