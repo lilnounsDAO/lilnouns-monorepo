@@ -56,6 +56,9 @@ export const createAPI = (): Express => {
       origin: [
         'https://lambent-melba-6dd07a.netlify.app',
         'https://eloquent-sunshine-5116fa.netlify.app',
+        'https://master--frosty-hugle-07297b.netlify.app',
+        'https://staging--frosty-hugle-07297b.netlify.app',
+        'https://production--frosty-hugle-07297b.netlify.app',
         'https://lilnouns.wtf',
         ...(config.environment === 'development' ? ['http://localhost:3000'] : []),
       ],
