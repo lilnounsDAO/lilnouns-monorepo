@@ -25,8 +25,12 @@ import { INounsToken } from './interfaces/INounsToken.sol';
 import { ERC721 } from './base/ERC721.sol';
 import { IERC721 } from '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import { IProxyRegistry } from './external/opensea/IProxyRegistry.sol';
+import { ILayerZeroEndpoint } from './layerzero/ILayerZeroEndpoint.sol';
+import { ILayerZeroReceiver } from './layerzero/ILayerZeroReceiver.sol';
+import { ILayerZeroUserApplicationConfig } from './layerzero/ILayerZeroUserApplicationConfig.sol';
+import { NonblockingReceiver } from './layerzero/NonblockingReceiver.sol';
 
-contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
+contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingReceiver {
     // The lilnounders DAO address (creators org)
     address public lilnoundersDAO;
 
@@ -115,13 +119,15 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
         address _lilnoundersDAO,
         address _nounsDAO,
         address _minter,
+        address _layerZeroEndpoint,
         INounsDescriptor _descriptor,
         INounsSeeder _seeder,
         IProxyRegistry _proxyRegistry
-    ) ERC721("LilNoun", "LILNOUN") {
+    ) ERC721('LilNoun', 'LILNOUN') {
         lilnoundersDAO = _lilnoundersDAO;
         nounsDAO = _nounsDAO;
         minter = _minter;
+        endpoint = ILayerZeroEndpoint(_layerZeroEndpoint);
         descriptor = _descriptor;
         seeder = _seeder;
         proxyRegistry = _proxyRegistry;
@@ -163,8 +169,7 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
      * @dev Call _mintTo with the to address(es).
      */
     function mint() public override onlyMinter returns (uint256) {
-
-        if (_currentNounId <= 175300  && _currentNounId % 10 == 0) {
+        if (_currentNounId <= 175300 && _currentNounId % 10 == 0) {
             _mintTo(lilnoundersDAO, _currentNounId++);
         }
 

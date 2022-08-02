@@ -8,22 +8,20 @@ type ContractName =
   // | 'NounsSeeder'
   // | 'NounsToken';
   // | 'NounsAuctionHouse'
-  | 'NounsAuctionHouseProxyAdmin'
-  // | 'NounsAuctionHouseProxy'
-  // | 'NounsDAOExecutor'
-  // | 'NounsDAOLogicV1'
-  // | 'NounsDAOProxy';
+  'NounsAuctionHouseProxyAdmin';
+// | 'NounsAuctionHouseProxy'
+// | 'NounsDAOExecutor'
+// | 'NounsDAOLogicV1'
+// | 'NounsDAOProxy';
 
-
-  const bytes = new Interface(NounsAuctionHouseABI).encodeFunctionData('initialize', [
-    "0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B", // nouns token
-    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // weth (mainnet)
-    "90", // auctionTimeBuffer,
-    "1", // auctionReservePrice,
-    "5", // auctionMinIncrementBidPercentage,
-    "900", // auctionDuration,
-   ])
-  
+const bytes = new Interface(NounsAuctionHouseABI).encodeFunctionData('initialize', [
+  '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B', // nouns token
+  '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // weth (mainnet)
+  '90', // auctionTimeBuffer,
+  '1', // auctionReservePrice,
+  '5', // auctionMinIncrementBidPercentage,
+  '900', // auctionDuration,
+]);
 
 interface VerifyArgs {
   address: string;
@@ -31,9 +29,8 @@ interface VerifyArgs {
   libraries?: Record<string, string>;
 }
 
-
-const expectedAuctionHouseProxyAddress = '0x55790b9183638981cEfbD5627C5C47C1f0f2Af29'
-const expectedNounsDAOProxyAddress = '0x2c61E1eED8a2da827899341cc2ffEBFf556f17c3'
+const expectedAuctionHouseProxyAddress = '0x55790b9183638981cEfbD5627C5C47C1f0f2Af29';
+const expectedNounsDAOProxyAddress = '0x2c61E1eED8a2da827899341cc2ffEBFf556f17c3';
 
 const contracts: Record<ContractName, VerifyArgs> = {
   // NFTDescriptor: {
@@ -78,7 +75,6 @@ const contracts: Record<ContractName, VerifyArgs> = {
   //   ],
   // },
 
-
   // NounsDAOExecutor: {
   //   address: '0xd5f279ff9EB21c6D40C8f345a66f2751C4eeA1fB',
   //   constructorArguments: ['0x5d2C31ce16924C2a71D317e5BbFd5ce387854039', 172800], // nounsDAOProxy, timelock-delay
@@ -94,7 +90,7 @@ const contracts: Record<ContractName, VerifyArgs> = {
   //     '0x3cf6a7f06015aCad49F76044d3c63D7fE477D945', // lilnounders dao multisig
   //     '0xd5f279ff9EB21c6D40C8f345a66f2751C4eeA1fB', // nounsDaoExecutor
   //     '0x8b20b261BDF0f97cfc6D3bD4903beb9D17794Ed8', // nounsDAOLogicV1
-  //     33230, // voting-period 
+  //     33230, // voting-period
   //     26585, // voting-delay
   //     100, // proposal-threshold-bps
   //     1_000, // quorum-votes-bps

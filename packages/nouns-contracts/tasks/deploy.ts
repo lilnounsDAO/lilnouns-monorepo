@@ -27,13 +27,33 @@ interface Contract {
 }
 
 task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsToken')
-  .addOptionalParam('lilnoundersDAO', 'The lilnounders DAO contract address', "0x3cf6a7f06015aCad49F76044d3c63D7fE477D945", types.string)
-  .addOptionalParam('nounsDAO', 'The nounsDAO contract address', "0x0BC3807Ec262cB779b38D65b38158acC3bfedE10", types.string)
-  .addOptionalParam('weth', 'The WETH contract address', "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", types.string)
+  .addOptionalParam(
+    'lilnoundersDAO',
+    'The lilnounders DAO contract address',
+    '0x3cf6a7f06015aCad49F76044d3c63D7fE477D945',
+    types.string,
+  )
+  .addOptionalParam(
+    'nounsDAO',
+    'The nounsDAO contract address',
+    '0x0BC3807Ec262cB779b38D65b38158acC3bfedE10',
+    types.string,
+  )
+  .addOptionalParam(
+    'weth',
+    'The WETH contract address',
+    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    types.string,
+  )
 
   .addOptionalParam('auctionTimeBuffer', 'The auction time buffer (seconds)', 1.5 * 60, types.int) //Default ever 24 hrs Revised: every 15 minutes
   .addOptionalParam('auctionReservePrice', 'The auction reserve price (wei)', 1, types.int)
-  .addOptionalParam('auctionMinIncrementBidPercentage', 'The auction min increment bid percentage (out of 100)', 5, types.int,)
+  .addOptionalParam(
+    'auctionMinIncrementBidPercentage',
+    'The auction min increment bid percentage (out of 100)',
+    5,
+    types.int,
+  )
   .addOptionalParam('auctionDuration', 'The auction duration (seconds)', 60 * 60 * 0.25, types.int) // Default: 1 day Revised: 15 minutes
 
   .addOptionalParam('timelockDelay', 'The timelock delay (seconds)', 60 * 60 * 24 * 2, types.int) // Default: 2 days
@@ -50,8 +70,8 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
         ? '0xa5409ec958c83c3f309868babaca7c86dcb077c1'
         : '0xf57b2c51ded3a29e6891aba85459d600256cf317';
 
-    const AUCTION_HOUSE_PROXY_NONCE_OFFSET = 3  //6 - 3;
-    const GOVERNOR_N_DELEGATOR_NONCE_OFFSET = 6 //9 - 3;
+    const AUCTION_HOUSE_PROXY_NONCE_OFFSET = 3; //6 - 3;
+    const GOVERNOR_N_DELEGATOR_NONCE_OFFSET = 6; //9 - 3;
 
     const [deployer] = await ethers.getSigners();
     const nonce = await deployer.getTransactionCount();
@@ -66,12 +86,11 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
       nonce: nonce + GOVERNOR_N_DELEGATOR_NONCE_OFFSET,
     });
 
-    console.log(`expectedAuctionHouseProxyAddress = ${expectedAuctionHouseProxyAddress}`)
-    console.log(`expectedNounsDAOProxyAddress = ${expectedNounsDAOProxyAddress}`)
+    console.log(`expectedAuctionHouseProxyAddress = ${expectedAuctionHouseProxyAddress}`);
+    console.log(`expectedNounsDAOProxyAddress = ${expectedNounsDAOProxyAddress}`);
 
-    
-    const NounsDescriptorAddress = '0x11fb55d9580CdBfB83DE3510fF5Ba74309800Ad1'
-    const NounsSeederAddress = '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515'
+    const NounsDescriptorAddress = '0x11fb55d9580CdBfB83DE3510fF5Ba74309800Ad1';
+    const NounsSeederAddress = '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515';
 
     const contracts: Record<ContractName, Contract> = {
       // NFTDescriptor: {},
