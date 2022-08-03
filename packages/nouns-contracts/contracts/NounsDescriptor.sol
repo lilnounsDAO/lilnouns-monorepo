@@ -22,8 +22,10 @@ import { Strings } from '@openzeppelin/contracts/utils/Strings.sol';
 import { INounsDescriptor } from './interfaces/INounsDescriptor.sol';
 import { INounsSeeder } from './interfaces/INounsSeeder.sol';
 import { NFTDescriptor } from './libs/NFTDescriptor.sol';
+import { Base64 } from 'base64-sol/base64.sol';
 
-contract NounsDescriptor is INounsDescriptor, Ownable {
+
+abstract contract NounsDescriptor is INounsDescriptor, Ownable {
     using Strings for uint256;
 
     // prettier-ignore
@@ -63,7 +65,6 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     // MATH Hat Flair (Custom RLE)
     bytes[] public override flair;
 
-    // 
 
     /**
      * @notice Require that the parts have not been locked.
@@ -231,34 +232,6 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Add a MATH Hat Flair
-     * @dev This function can only be called by the owner when not locked.
-     */    /**
-     * @notice Get all Noun parts for the passed `seed`.
-     */
-    function _getPartsForSeed(INounsSeeder.Seed memory seed) internal view returns (bytes[] memory) {
-        bytes[] memory _parts = new bytes[](5);
-        _parts[0] = backgrounds[seed.background];
-        _parts[1] = basecolors[seed.basecolor];
-        _parts[2] = visors[seed.visor];
-        _parts[3] = mathletters[seed.mathletters];
-        _parts[4] = accessories[seed.accessory];
-        _parts[5] = flair[seed.flair];
-        return _parts;
-    }
-
-    function wrapTag(string memory uri) internal pure returns (string memory) {
-    return
-        string(
-            abi.encodePacked(
-                '<image x="1" y="1" width="500" height="500" image-rendering="pixelated" preserveAspectRatio="xMidYMid" xlink:href="data:image/png;base64,',
-                uri,
-                '"/>'
-            )
-        );
-    }
-
-    /**
      * @notice Lock all Noun parts.
      * @dev This cannot be reversed and can only be called by the owner when not locked.
      */
@@ -328,7 +301,7 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
             parts: _getPartsForSeed(seed),
             artstyle: artstyles[seed.artstyle]
         });
-        return NFTDescriptor.constructTokenURI(params, palettes);
+        return constructTokenURI(params, seed);
     }
 
     /**
@@ -401,14 +374,61 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
         return _parts;
     }
 
-        function wrapTag(string memory uri) internal pure returns (string memory) {
-        return
-            string(
-                abi.encodePacked(
-                    '<image x="1" y="1" width="500" height="500" image-rendering="pixelated" preserveAspectRatio="xMidYMid" xlink:href="data:image/png;base64,',
-                    uri,
-                    '"/>'
-                )
-            );
+    function wrapTag(string memory uri) internal pure returns (string memory) {
+    return
+        string(
+            abi.encodePacked(
+                '<image x="1" y="1" width="500" height="500" image-rendering="pixelated" preserveAspectRatio="xMidYMid" xlink:href="data:image/png;base64,',
+                uri,
+                '"/>'
+            )
+        );
     }
+
+   /**
+     * @notice Given a seed, construct a base64 encoded SVG image.
+     */
+    function generateSVGImage(INounsSeeder.Seed memory seed) public view override returns (string memory) {
+
+        bytes[] memory parts = _getPartsForSeed(seed);
+
+
+        string memory svg = Base64.encode(
+            bytes(
+                abi.encodePacked(
+                    NFTDescriptor.HEADER,
+                    wrapTag(Base64.encode(parts[0])),
+                    wrapTag(Base64.encode(parts[1])),
+                    wrapTag(Base64.encode(parts[2])),
+                    wrapTag(Base64.encode(parts[3])),
+                    wrapTag(Base64.encode(parts[4])),
+                    wrapTag(Base64.encode(parts[5]))
+                )
+            )
+        );
+        return svg;
+    }
+
+    /**
+     * @notice Construct an ERC721 token URI.
+     */
+    function constructTokenURI(NFTDescriptor.TokenURIParams memory params, INounsSeeder.Seed memory seed)
+        public
+        view
+        returns (string memory)
+    {
+        string memory image = generateSVGImage(seed);
+
+        // prettier-ignore
+        return string(
+            abi.encodePacked(
+                'data:application/json;base64,',
+                Base64.encode(
+                    bytes(
+                        abi.encodePacked('{"name":"', params.name, '", "description":"', params.description, '", "image": "', 'data:image/svg+xml;base64,', image, '"}')
+                    )
+                )
+            )
+        );
+    } 
 }
