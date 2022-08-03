@@ -16,5 +16,5 @@ export const defaultProvider = getDefaultProvider(1, {
 export const nounsTokenContract = new Contract(
   config.nounsTokenAddress,
   NounsTokenABI,
-  defaultProvider,
+  Boolean(config.jsonRpcUrl) ? jsonRpcProvider : defaultProvider,
 );

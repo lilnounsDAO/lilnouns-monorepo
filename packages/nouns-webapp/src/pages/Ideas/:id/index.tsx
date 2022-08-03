@@ -14,7 +14,7 @@ import {
   Comment as CommentType,
   VoteFormData,
 } from '../../../hooks/useIdeas';
-import { useNounTokenBalance } from '../../../wrappers/nounToken';
+import { useAccountVotes } from '../../../wrappers/nounToken';
 import IdeaVoteControls from '../../../components/IdeaVoteControls';
 import moment from 'moment';
 import Davatar from '@davatar/react';
@@ -194,7 +194,7 @@ const IdeaPage = () => {
   const idea = getIdea(id);
 
   const [comment, setComment] = useState<string>('');
-  const nounBalance = useNounTokenBalance(account || undefined) ?? 0;
+  const nounBalance = useAccountVotes(account || undefined) ?? 0;
   const ens = useReverseENSLookUp(idea?.creatorId);
   const shortAddress = useShortAddress(idea?.creatorId);
 
