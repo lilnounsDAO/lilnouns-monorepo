@@ -22,7 +22,6 @@ import { Strings } from '@openzeppelin/contracts/utils/Strings.sol';
 import { INounsDescriptor } from './interfaces/INounsDescriptor.sol';
 import { INounsSeeder } from './interfaces/INounsSeeder.sol';
 import { NFTDescriptor } from './libs/NFTDescriptor.sol';
-import { MultiPartRLEToSVG } from './libs/MultiPartRLEToSVG.sol';
 
 contract NounsDescriptor is INounsDescriptor, Ownable {
     using Strings for uint256;
@@ -63,7 +62,6 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
 
     // MATH Hat Flair (Custom RLE)
     bytes[] public override flair;
-
 
     // 
 
@@ -126,17 +124,6 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
 
 
     /**
-     * @notice Add colors to a color palette.
-     * @dev This function can only be called by the owner.
-     */
-    function addManyColorsToPalette(uint8 paletteIndex, string[] calldata newColors) external override onlyOwner {
-        require(palettes[paletteIndex].length + newColors.length <= 256, 'Palettes can only hold 256 colors');
-        for (uint256 i = 0; i < newColors.length; i++) {
-            _addColorToPalette(paletteIndex, newColors[i]);
-        }
-    }
-
-    /**
      * @notice Batch add MATH Hat backgrounds.
      * @dev This function can only be called by the owner when not locked.
      */
@@ -197,15 +184,6 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }    
 
     /**
-     * @notice Add a single color to a color palette.
-     * @dev This function can only be called by the owner.
-     */
-    function addColorToPalette(uint8 _paletteIndex, string calldata _color) external override onlyOwner {
-        require(palettes[_paletteIndex].length <= 255, 'Palettes can only hold 256 colors');
-        _addColorToPalette(_paletteIndex, _color);
-    }
-
-    /**
      * @notice Add an art style
      */
     function addArtStyle(string calldata _artstyle) external override onlyOwner {
@@ -255,9 +233,29 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     /**
      * @notice Add a MATH Hat Flair
      * @dev This function can only be called by the owner when not locked.
+     */    /**
+     * @notice Get all Noun parts for the passed `seed`.
      */
-    function addFlair(bytes calldata _flair) external override onlyOwner whenPartsNotLocked {
-        _addFlair(_flair);
+    function _getPartsForSeed(INounsSeeder.Seed memory seed) internal view returns (bytes[] memory) {
+        bytes[] memory _parts = new bytes[](5);
+        _parts[0] = backgrounds[seed.background];
+        _parts[1] = basecolors[seed.basecolor];
+        _parts[2] = visors[seed.visor];
+        _parts[3] = mathletters[seed.mathletters];
+        _parts[4] = accessories[seed.accessory];
+        _parts[5] = flair[seed.flair];
+        return _parts;
+    }
+
+    function wrapTag(string memory uri) internal pure returns (string memory) {
+    return
+        string(
+            abi.encodePacked(
+                '<image x="1" y="1" width="500" height="500" image-rendering="pixelated" preserveAspectRatio="xMidYMid" xlink:href="data:image/png;base64,',
+                uri,
+                '"/>'
+            )
+        );
     }
 
     /**
@@ -334,17 +332,6 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Given a seed, construct a base64 encoded SVG image.
-     */
-    function generateSVGImage(INounsSeeder.Seed memory seed) external view override returns (string memory) {
-        MultiPartRLEToSVG.SVGParams memory params = MultiPartRLEToSVG.SVGParams({
-            parts: _getPartsForSeed(seed),
-            artstyle: artstyles[seed.background]
-        });
-        return NFTDescriptor.generateSVGImage(params, palettes);
-    }
-
-    /**
      * @notice Add a single color to a color palette.
      */
     function _addColorToPalette(uint8 _paletteIndex, string calldata _color) internal {
@@ -412,5 +399,16 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
         _parts[4] = accessories[seed.accessory];
         _parts[5] = flair[seed.flair];
         return _parts;
+    }
+
+        function wrapTag(string memory uri) internal pure returns (string memory) {
+        return
+            string(
+                abi.encodePacked(
+                    '<image x="1" y="1" width="500" height="500" image-rendering="pixelated" preserveAspectRatio="xMidYMid" xlink:href="data:image/png;base64,',
+                    uri,
+                    '"/>'
+                )
+            );
     }
 }
