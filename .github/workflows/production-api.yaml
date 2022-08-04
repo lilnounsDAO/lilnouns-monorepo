@@ -17,4 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --config ./fly.toml
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            api:
+              - 'packages/nouns-api/**'
+      # run only if 'api' files were changed
+      - name: api deploy
+        if: steps.filter.outputs.api == 'true'
+        run: flyctl deploy --remote-only --config ./fly.toml
