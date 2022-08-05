@@ -25,7 +25,7 @@ import { NFTDescriptor } from './libs/NFTDescriptor.sol';
 import { Base64 } from 'base64-sol/base64.sol';
 
 
-abstract contract NounsDescriptor is INounsDescriptor, Ownable {
+contract NounsDescriptor is INounsDescriptor, Ownable {
     using Strings for uint256;
 
     // prettier-ignore
@@ -215,16 +215,9 @@ abstract contract NounsDescriptor is INounsDescriptor, Ownable {
         _addVisor(_visor);
     }
 
-    /**
-     * @notice Add a Noun accessory.
-     * @dev This function can only be called by the owner when not locked.
-     */
-    function addAccessory(bytes calldata _accessory) external override onlyOwner whenPartsNotLocked {
-        _addAccessory(_accessory);
-    }
 
     /**
-     * @notice Add Noun mathletters.
+     * @notice Add MATH Hat mathletters.
      * @dev This function can only be called by the owner when not locked.
      */
     function addMATHletters(bytes calldata _mathletters) external override onlyOwner whenPartsNotLocked {
@@ -232,7 +225,24 @@ abstract contract NounsDescriptor is INounsDescriptor, Ownable {
     }
 
     /**
-     * @notice Lock all Noun parts.
+     * @notice Add a MATH Hat accessory.
+     * @dev This function can only be called by the owner when not locked.
+     */
+    function addAccessory(bytes calldata _accessory) external override onlyOwner whenPartsNotLocked {
+        _addAccessory(_accessory);
+    }
+
+
+    /**
+     * @notice Add MATH Hat mathletters.
+     * @dev This function can only be called by the owner when not locked.
+     */
+    function addFlair(bytes calldata _flair) external override onlyOwner whenPartsNotLocked {
+        _addFlair(_flair);
+    }
+
+    /**
+     * @notice Lock all MATH Hat parts.
      * @dev This cannot be reversed and can only be called by the owner when not locked.
      */
     function lockParts() external override onlyOwner whenPartsNotLocked {
@@ -302,13 +312,6 @@ abstract contract NounsDescriptor is INounsDescriptor, Ownable {
             artstyle: artstyles[seed.artstyle]
         });
         return constructTokenURI(params, seed);
-    }
-
-    /**
-     * @notice Add a single color to a color palette.
-     */
-    function _addColorToPalette(uint8 _paletteIndex, string calldata _color) internal {
-        palettes[_paletteIndex].push(_color);
     }
 
     /**
@@ -385,6 +388,29 @@ abstract contract NounsDescriptor is INounsDescriptor, Ownable {
         );
     }
 
+    /**
+     * @notice Construct an ERC721 token URI.
+     */
+    function constructTokenURI(NFTDescriptor.TokenURIParams memory params, INounsSeeder.Seed memory seed)
+        public
+        view
+        returns (string memory)
+    {
+        string memory image = generateSVGImage(seed);
+
+        // prettier-ignore
+        return string(
+            abi.encodePacked(
+                'data:application/json;base64,',
+                Base64.encode(
+                    bytes(
+                        abi.encodePacked('{"name":"', params.name, '", "description":"', params.description, '", "image": "', 'data:image/svg+xml;base64,', image, '"}')
+                    )
+                )
+            )
+        );
+    } 
+
    /**
      * @notice Given a seed, construct a base64 encoded SVG image.
      */
@@ -409,26 +435,4 @@ abstract contract NounsDescriptor is INounsDescriptor, Ownable {
         return svg;
     }
 
-    /**
-     * @notice Construct an ERC721 token URI.
-     */
-    function constructTokenURI(NFTDescriptor.TokenURIParams memory params, INounsSeeder.Seed memory seed)
-        public
-        view
-        returns (string memory)
-    {
-        string memory image = generateSVGImage(seed);
-
-        // prettier-ignore
-        return string(
-            abi.encodePacked(
-                'data:application/json;base64,',
-                Base64.encode(
-                    bytes(
-                        abi.encodePacked('{"name":"', params.name, '", "description":"', params.description, '", "image": "', 'data:image/svg+xml;base64,', image, '"}')
-                    )
-                )
-            )
-        );
-    } 
 }

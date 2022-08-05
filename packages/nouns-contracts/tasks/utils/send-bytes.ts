@@ -1,90 +1,70 @@
-import { base64_encode } from "../../services";
-import { FreeMagicalMathHats, FreeMagicalMathHats__factory } from "../../typechain-types";
+import { NounsDescriptor } from "../../typechain";
 import { ethers } from "hardhat";
 import { BigNumber, ContractTransaction, Signer } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { promises as fs } from "fs";
 
+export async function base64_encode(file: string) {
 
-async function init() {
-  let signers: SignerWithAddress[];
-  let deployer: Signer;
-  let freehatscontract: FreeMagicalMathHats;
-  
-  const mumbaiProvider = new ethers.providers.AlchemyProvider(80001, `${process.env.MUMBAI_ALCHEMY_KEY}`);
-  const mumbaiWallet = new ethers.Wallet(`${process.env.MUMBAI_PRIVKEY}`, mumbaiProvider);
-
-  signers = await ethers.getSigners();
-  deployer = signers[0];
-
-  freehatscontract = (await ethers.getContractAt(
-    FreeMagicalMathHats__factory.abi,
-    `${process.env.FREEHATS_ADDR}`,
-    deployer
-  )) as FreeMagicalMathHats;
-  return freehatscontract;
+  // read binary data
+  let bitmap: string;
+  bitmap = await fs.readFile(file, 'base64');
+  return bitmap;
 }
 
-
-export async function sendBaseColorBytes(file: string) {
+export async function sendBaseColorBytes(file: string, contract: NounsDescriptor) {
   let string: string;
-  let freehatscontract: FreeMagicalMathHats;
   let stringBuffer: Buffer;
   let gasEstimate: BigNumber;
   let tx: ContractTransaction;
 
-  freehatscontract = await init();
   string = await base64_encode(file);
   stringBuffer = Buffer.from(string, "base64");
-  gasEstimate = await freehatscontract.estimateGas.addBaseColor(stringBuffer);
+  gasEstimate = await contract.estimateGas.addBaseColor(stringBuffer);
   console.log(`Estimated gas to send ${file}: `, gasEstimate);
-  tx = await freehatscontract.addBaseColor(stringBuffer);
+  tx = await contract.addBaseColor(stringBuffer);
   return tx;
 }
 
-export async function sendFlairBytes(file: string) {
+export async function sendFlairBytes(file: string, contract: NounsDescriptor) {
   let string: string;
-  let freehatscontract: FreeMagicalMathHats;
   let stringBuffer: Buffer;
   let gasEstimate: BigNumber;
   let tx: ContractTransaction;
 
-  freehatscontract = await init();
   string = await base64_encode(file);
   stringBuffer = Buffer.from(string, "base64");
-  gasEstimate = await freehatscontract.estimateGas.addFlair(stringBuffer);
+  gasEstimate = await contract.estimateGas.addFlair(stringBuffer);
   console.log(`Estimated gas to send ${file}: `, gasEstimate);
-  tx = await freehatscontract.addFlair(stringBuffer);
+  tx = await contract.addFlair(stringBuffer);
   return tx;
 }
 
-export async function sendBytes(directory: string) {
-  let freehatscontract: FreeMagicalMathHats;
+export async function sendBytes(directory: string, contract: NounsDescriptor) {
   let files: string[];
   let baseColors: ContractTransaction;
   let flair: ContractTransaction;
 
-  freehatscontract = await init();
   try {
     let byteCount: number;
     byteCount = 0;
 
     const sendAllBytes = async () => {
-      if (directory == "./local-storage/free-hats/hats/") {
+      if (directory == "../files/Test/backgrounds") {
         files = await fs.readdir(directory);
         for (let i = 0; i < files.length; i++) {
           let file = files[i];
-          baseColors = await sendBaseColorBytes(`${directory}${file}`);
+          baseColors = await sendBaseColorBytes(`${directory}${file}`, contract);
           await baseColors.wait();
           console.log("TX HASH:", baseColors.hash);
           byteCount = files.length;
         }
-      } else if (directory == "./local-storage/free-hats/flair/") {
+      } else if (directory == "../files/Test/pfps") {
         files = await fs.readdir(directory);
         console.log(directory)
         for (let i = 0; i < files.length; i++) {
           let file = files[i];
-          flair = await sendFlairBytes(`${directory}${file}`);
+          flair = await sendFlairBytes(`${directory}${file}`, contract);
           await flair.wait();
           console.log("TX HASH:", flair.hash);
 
@@ -95,7 +75,7 @@ export async function sendBytes(directory: string) {
         console.log(directory)
         for (let i = 0; i < files.length; i++) {
           let file = files[i];
-          baseColors = await sendBaseColorBytes(`${directory}${file}`);
+          baseColors = await sendBaseColorBytes(`${directory}${file}`, contract);
           await baseColors.wait();
           console.log("TX HASH:", baseColors.hash);
           byteCount += files.length;
@@ -105,7 +85,7 @@ export async function sendBytes(directory: string) {
         console.log(directory)
         for (let i = 0; i < files.length; i++) {
           let file = files[i];
-          flair = await sendFlairBytes(`${directory}${file}`);
+          flair = await sendFlairBytes(`${directory}${file}`, contract);
           await flair.wait();
           console.log("TX HASH:", flair.hash);
           byteCount += files.length;
@@ -120,11 +100,11 @@ export async function sendBytes(directory: string) {
   }
 }
 
-async function fullSend() {
-await sendBytes("./local-storage/free-hats/hats/");
-await sendBytes("./local-storage/free-hats/flair/");
-}
+// async function fullSend() {
+// await sendBytes("../files/Test/backgrounds");
+// await sendBytes("../files/Test/pfps");
+// }
 
-fullSend();
+// fullSend();
 // sendBytes("./local-storage/Test/backgrounds/");
 // sendBytes("./local-storage/Test/pfps/");

@@ -62,8 +62,6 @@ interface INounsDescriptor {
 
     function flairCount() external view returns (uint256);
 
-    function addManyColorsToPalette(uint8 paletteIndex, string[] calldata newColors) external;
-
     function addManyBackgrounds(bytes[] calldata backgrounds) external;
 
     function addManyBaseColors(bytes[] calldata bodies) external;
@@ -75,8 +73,6 @@ interface INounsDescriptor {
     function addManyAccessories(bytes[] calldata accessories) external;
 
     function addManyFlair(bytes[] calldata flair) external;
-
-    function addColorToPalette(uint8 paletteIndex, string calldata color) external;
 
     function addArtStyle(string calldata artstyle) external;
 

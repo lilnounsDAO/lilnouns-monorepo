@@ -12,9 +12,9 @@ type ContractName =
   | 'NounsAuctionHouse'
   | 'NounsAuctionHouseProxyAdmin'
   | 'NounsAuctionHouseProxy'
-  | 'FWDDAOExecutor'
-  | 'FWDDAOLogicV1'
-  | 'FWDDAOProxy';
+  | 'fwdDAOExecutor'
+  | 'fwdDAOLogicV1'
+  | 'fwdDAOProxy';
 
 interface Contract {
   args?: (string | number | (() => string | undefined))[];
@@ -24,8 +24,8 @@ interface Contract {
 }
 
 task('deploy-local', 'Deploy contracts to hardhat')
-  .addOptionalParam('CryptoGangDAO', 'The lilnounders DAO contract address')
-  .addOptionalParam('FWDDAO', 'The FWDDAO contract address')
+  .addOptionalParam('cryptoGangDAO', 'The lilnounders DAO contract address')
+  .addOptionalParam('fwdDAO', 'The fwdDAO contract address')
 
   .addOptionalParam('auctionTimeBuffer', 'The auction time buffer (seconds)', 30, types.int) // Default: 30 seconds
   .addOptionalParam('auctionReservePrice', 'The auction reserve price (wei)', 1, types.int) // Default: 1 wei
@@ -55,7 +55,7 @@ task('deploy-local', 'Deploy contracts to hardhat')
 
     const [deployer] = await ethers.getSigners();
     const nonce = await deployer.getTransactionCount();
-    const expectedFWDDAOProxyAddress = ethers.utils.getContractAddress({
+    const expectedfwdDAOProxyAddress = ethers.utils.getContractAddress({
       from: deployer.address,
       nonce: nonce + GOVERNOR_N_DELEGATOR_NONCE_OFFSET,
     });
@@ -74,8 +74,8 @@ task('deploy-local', 'Deploy contracts to hardhat')
       NounsSeeder: {},
       NounsToken: {
         args: [
-          args.CryptoGangDAO || deployer.address,
-          args.FWDDAO || deployer.address,
+          args.cryptoGangDAO || deployer.address,
+          args.fwdDAO || deployer.address,
           expectedAuctionHouseProxyAddress,
           "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
           () => contracts['NounsDescriptor'].instance?.address,
@@ -102,19 +102,19 @@ task('deploy-local', 'Deploy contracts to hardhat')
             ]),
         ],
       },
-      FWDDAOExecutor: {
-        args: [expectedFWDDAOProxyAddress, args.timelockDelay],
+      fwdDAOExecutor: {
+        args: [expectedfwdDAOProxyAddress, args.timelockDelay],
       },
-      FWDDAOLogicV1: {
+      fwdDAOLogicV1: {
         waitForConfirmation: true,
       },
-      FWDDAOProxy: {
+      fwdDAOProxy: {
         args: [
-          () => contracts['FWDDAOExecutor'].instance?.address,
+          () => contracts['fwdDAOExecutor'].instance?.address,
           () => contracts['NounsToken'].instance?.address,
-          args.CryptoGangDAO || deployer.address,
-          () => contracts['FWDDAOExecutor'].instance?.address,
-          () => contracts['FWDDAOLogicV1'].instance?.address,
+          args.cryptoGangDAO || deployer.address,
+          () => contracts['fwdDAOExecutor'].instance?.address,
+          () => contracts['fwdDAOLogicV1'].instance?.address,
           args.votingPeriod,
           args.votingDelay,
           args.proposalThresholdBps,
