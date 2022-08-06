@@ -5,7 +5,6 @@ import { Contract as EthersContract } from 'ethers';
 
 type ContractName =
   | 'WETH'
-  | 'NFTDescriptor'
   | 'NounsDescriptor'
   | 'NounsSeeder'
   | 'NounsToken'
@@ -24,8 +23,8 @@ interface Contract {
 }
 
 task('deploy-local', 'Deploy contracts to hardhat')
-  .addOptionalParam('cryptoGangDAO', 'The lilnounders DAO contract address')
-  .addOptionalParam('fwdDAO', 'The fwdDAO contract address')
+  .addOptionalParam('lilnoundersDAO', 'The lilnounders DAO contract address')
+  .addOptionalParam('nounsDao', 'The nounsDao contract address')
 
   .addOptionalParam('auctionTimeBuffer', 'The auction time buffer (seconds)', 30, types.int) // Default: 30 seconds
   .addOptionalParam('auctionReservePrice', 'The auction reserve price (wei)', 1, types.int) // Default: 1 wei
@@ -55,7 +54,7 @@ task('deploy-local', 'Deploy contracts to hardhat')
 
     const [deployer] = await ethers.getSigners();
     const nonce = await deployer.getTransactionCount();
-    const expectedfwdDAOProxyAddress = ethers.utils.getContractAddress({
+    const expectedNounsDAOProxyAddress = ethers.utils.getContractAddress({
       from: deployer.address,
       nonce: nonce + GOVERNOR_N_DELEGATOR_NONCE_OFFSET,
     });
@@ -65,17 +64,12 @@ task('deploy-local', 'Deploy contracts to hardhat')
     });
     const contracts: Record<ContractName, Contract> = {
       WETH: {},
-      NFTDescriptor: {},
-      NounsDescriptor: {
-        libraries: () => ({
-          NFTDescriptor: contracts['NFTDescriptor'].instance?.address as string,
-        }),
-      },
+      NounsDescriptor: {},
       NounsSeeder: {},
       NounsToken: {
         args: [
-          args.cryptoGangDAO || deployer.address,
-          args.fwdDAO || deployer.address,
+          args.lilnoundersDAO || deployer.address,
+          args.nounsDao || deployer.address,
           expectedAuctionHouseProxyAddress,
           "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
           () => contracts['NounsDescriptor'].instance?.address,
@@ -103,7 +97,7 @@ task('deploy-local', 'Deploy contracts to hardhat')
         ],
       },
       NounsDAOExecutor: {
-        args: [expectedfwdDAOProxyAddress, args.timelockDelay],
+        args: [expectedNounsDAOProxyAddress, args.timelockDelay],
       },
       NounsDAOLogicV1: {
         waitForConfirmation: true,
@@ -112,7 +106,7 @@ task('deploy-local', 'Deploy contracts to hardhat')
         args: [
           () => contracts['NounsDAOExecutor'].instance?.address,
           () => contracts['NounsToken'].instance?.address,
-          args.cryptoGangDAO || deployer.address,
+          args.lilnoundersDAO || deployer.address,
           () => contracts['NounsDAOExecutor'].instance?.address,
           () => contracts['NounsDAOLogicV1'].instance?.address,
           args.votingPeriod,

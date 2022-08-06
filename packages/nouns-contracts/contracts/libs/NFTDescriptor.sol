@@ -37,4 +37,14 @@ library NFTDescriptor {
     string internal constant FOOTER =
         "<style>#hat{shape-rendering: crispedges; image-rendering: -webkit-crisp-edges; image-rendering: -moz-crisp-edges; image-rendering: crisp-edges; -ms-interpolation-mode: nearest-neighbor;}</style></svg>";
    
+    function wrapTag(string memory uri) internal pure returns (string memory) {
+    return
+        string(
+            abi.encodePacked(
+                '<image x="1" y="1" width="500" height="500" image-rendering="crisp-edges" preserveAspectRatio="xMidYMid" xlink:href="data:image/png;base64,',
+                uri,
+                '"/>'
+            )
+        );
+    }   
 }

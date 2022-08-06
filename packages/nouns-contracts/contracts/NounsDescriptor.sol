@@ -377,17 +377,6 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
         return _parts;
     }
 
-    function wrapTag(string memory uri) internal pure returns (string memory) {
-    return
-        string(
-            abi.encodePacked(
-                '<image x="1" y="1" width="500" height="500" image-rendering="pixelated" preserveAspectRatio="xMidYMid" xlink:href="data:image/png;base64,',
-                uri,
-                '"/>'
-            )
-        );
-    }
-
     /**
      * @notice Construct an ERC721 token URI.
      */
@@ -414,21 +403,22 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
    /**
      * @notice Given a seed, construct a base64 encoded SVG image.
      */
-    function generateSVGImage(INounsSeeder.Seed memory seed) public view override returns (string memory) {
+    function generateSVGImage(INounsSeeder.Seed memory seed) public view override returns (string memory svg) {
 
         bytes[] memory parts = _getPartsForSeed(seed);
 
 
-        string memory svg = Base64.encode(
+        svg = Base64.encode(
             bytes(
                 abi.encodePacked(
                     NFTDescriptor.HEADER,
-                    wrapTag(Base64.encode(parts[0])),
-                    wrapTag(Base64.encode(parts[1])),
-                    wrapTag(Base64.encode(parts[2])),
-                    wrapTag(Base64.encode(parts[3])),
-                    wrapTag(Base64.encode(parts[4])),
-                    wrapTag(Base64.encode(parts[5]))
+                    NFTDescriptor.wrapTag(Base64.encode(parts[0])),
+                    NFTDescriptor.wrapTag(Base64.encode(parts[1])),
+                    NFTDescriptor.wrapTag(Base64.encode(parts[2])),
+                    NFTDescriptor.wrapTag(Base64.encode(parts[3])),
+                    NFTDescriptor.wrapTag(Base64.encode(parts[4])),
+                    NFTDescriptor.wrapTag(Base64.encode(parts[5])),
+                    NFTDescriptor.FOOTER
                 )
             )
         );

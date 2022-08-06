@@ -15,16 +15,11 @@ task('populate-descriptor', 'Populates the descriptor with MATH Hat parts')
     '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
     types.string,
   )
-  .setAction(async ({ nftDescriptor, nounsDescriptor }, { ethers }) => {
-    const descriptorFactory = await ethers.getContractFactory('NounsDescriptor', {
-      libraries: {
-        NFTDescriptor: nftDescriptor,
-      },
-    });
+  .setAction(async ({ nounsDescriptor }, { ethers }) => {
+    const descriptorFactory = await ethers.getContractFactory('NounsDescriptor');
     const descriptorContract = descriptorFactory.attach(nounsDescriptor) as NounsDescriptor;
-
-    await sendBytes("../files/Test/backgrounds", descriptorContract);
-    await sendBytes("../files/Test/pfps", descriptorContract);
+    await sendBytes("../files/Test/backgrounds/", descriptorContract);
+    await sendBytes("../files/Test/pfps/", descriptorContract);
 
 
 
