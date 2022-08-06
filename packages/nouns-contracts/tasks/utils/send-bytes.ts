@@ -1,7 +1,5 @@
 import { NounsDescriptor } from "../../typechain";
-import { ethers } from "hardhat";
-import { BigNumber, ContractTransaction, Signer } from "ethers";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { BigNumber, ContractTransaction } from "ethers";
 import { promises as fs } from "fs";
 
 export async function base64_encode(file: string) {
@@ -20,8 +18,6 @@ export async function sendBaseColorBytes(file: string, contract: NounsDescriptor
 
   string = await base64_encode(file);
   stringBuffer = Buffer.from(string, "base64");
-  gasEstimate = await contract.estimateGas.addBaseColor(stringBuffer);
-  console.log(`Estimated gas to send ${file}: `, gasEstimate);
   tx = await contract.addBaseColor(stringBuffer);
   return tx;
 }
@@ -34,8 +30,6 @@ export async function sendFlairBytes(file: string, contract: NounsDescriptor) {
 
   string = await base64_encode(file);
   stringBuffer = Buffer.from(string, "base64");
-  gasEstimate = await contract.estimateGas.addFlair(stringBuffer);
-  console.log(`Estimated gas to send ${file}: `, gasEstimate);
   tx = await contract.addFlair(stringBuffer);
   return tx;
 }

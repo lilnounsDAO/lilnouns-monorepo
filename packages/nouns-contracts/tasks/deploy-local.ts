@@ -12,9 +12,9 @@ type ContractName =
   | 'NounsAuctionHouse'
   | 'NounsAuctionHouseProxyAdmin'
   | 'NounsAuctionHouseProxy'
-  | 'fwdDAOExecutor'
-  | 'fwdDAOLogicV1'
-  | 'fwdDAOProxy';
+  | 'NounsDAOExecutor'
+  | 'NounsDAOLogicV1'
+  | 'NounsDAOProxy';
 
 interface Contract {
   args?: (string | number | (() => string | undefined))[];
@@ -102,19 +102,19 @@ task('deploy-local', 'Deploy contracts to hardhat')
             ]),
         ],
       },
-      fwdDAOExecutor: {
+      NounsDAOExecutor: {
         args: [expectedfwdDAOProxyAddress, args.timelockDelay],
       },
-      fwdDAOLogicV1: {
+      NounsDAOLogicV1: {
         waitForConfirmation: true,
       },
-      fwdDAOProxy: {
+      NounsDAOProxy: {
         args: [
-          () => contracts['fwdDAOExecutor'].instance?.address,
+          () => contracts['NounsDAOExecutor'].instance?.address,
           () => contracts['NounsToken'].instance?.address,
           args.cryptoGangDAO || deployer.address,
-          () => contracts['fwdDAOExecutor'].instance?.address,
-          () => contracts['fwdDAOLogicV1'].instance?.address,
+          () => contracts['NounsDAOExecutor'].instance?.address,
+          () => contracts['NounsDAOLogicV1'].instance?.address,
           args.votingPeriod,
           args.votingDelay,
           args.proposalThresholdBps,

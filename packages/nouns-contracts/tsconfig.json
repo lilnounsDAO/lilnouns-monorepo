@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "include": [
+    "tasks/utils/send-bytes.ts",
     "utils.ts",
     "./tasks",
     "./src",
@@ -8,7 +9,7 @@
     "./typechain",
     "./abi/**/*.json",
     "./files/*.json"
-  ],
+, "tasks/utils/send-bytes.ts"  ],
   "files": ["./hardhat.config.ts"],
   "references": [
     {
