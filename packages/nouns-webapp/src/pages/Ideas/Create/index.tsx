@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
+import Nav from 'react-bootstrap/Nav';
 import { useHistory } from 'react-router-dom';
 import Section from '../../../layout/Section';
 import { useIdeas } from '../../../hooks/useIdeas';
 import classes from '../Ideas.module.css';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 enum FORM_VALIDATION {
   TITLE_MAX = 50,
@@ -27,6 +30,8 @@ const CreateIdeaPage = () => {
   const handleCloseMarkdownModal = () => setShowMarkdownModal(false);
   const handleShowMarkdownModal = () => setShowMarkdownModal(true);
 
+  const [descriptionTab, setDescriptionTab] = useState<'WRITE' | 'PREVIEW'>('WRITE');
+
   const titleValid =
     title.length <= FORM_VALIDATION.TITLE_MAX && title.length >= FORM_VALIDATION.TITLE_MIN;
   const tldrValid =
@@ -35,6 +40,10 @@ const CreateIdeaPage = () => {
     description.length <= FORM_VALIDATION.DESCRIPTION_MAX &&
     description.length >= FORM_VALIDATION.DESCRIPTION_MIN;
   const formValid = titleValid && tldrValid && descriptionValid;
+
+  const handleSelect = (e: any) => {
+    setDescriptionTab(e);
+  };
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -173,15 +182,34 @@ const CreateIdeaPage = () => {
                 {description.length}/{FORM_VALIDATION.DESCRIPTION_MAX}
               </span>
             </div>
-            <textarea
-              maxLength={FORM_VALIDATION.DESCRIPTION_MAX}
-              minLength={FORM_VALIDATION.DESCRIPTION_MIN}
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              name="description"
-              className="border rounded-lg p-2 min-h-[240px]"
-              placeholder="Describe your idea in full..."
-            />
+            <Nav variant="tabs" defaultActiveKey="WRITE" className="mb-2" onSelect={handleSelect}>
+              <Nav.Item>
+                <Nav.Link eventKey="WRITE">Write</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="PREVIEW">Preview</Nav.Link>
+              </Nav.Item>
+            </Nav>
+            {descriptionTab === 'WRITE' ? (
+              <textarea
+                maxLength={FORM_VALIDATION.DESCRIPTION_MAX}
+                minLength={FORM_VALIDATION.DESCRIPTION_MIN}
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                name="description"
+                className="border rounded-lg p-2 min-h-[240px]"
+                placeholder="Describe your idea in full..."
+              />
+            ) : (
+              <div
+                className="border rounded-lg p-2 min-h-[240px]"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(marked.parse(description), {
+                    ADD_ATTR: ['target'],
+                  }),
+                }}
+              />
+            )}
           </div>
           <div className="flex justify-end">
             <button
