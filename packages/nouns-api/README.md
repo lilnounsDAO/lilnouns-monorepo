@@ -1,6 +1,6 @@
 # @nouns/api
 
-A HTTP webserver that hosts token metadata. This is currently unused because on-chain, data URIs are enabled.
+A express webserver that supports the Prop Lot feature. This app uses Prisma to manage a postgres DB. In local development you will want to copy the values in `.env.example.local` to your `.env` file and update the `DATABASE_URL` to point to your local postgres instance.
 
 ## Install dependencies
 
