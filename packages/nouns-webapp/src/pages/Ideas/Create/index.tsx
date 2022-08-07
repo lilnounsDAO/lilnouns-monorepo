@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 import { useHistory } from 'react-router-dom';
 import Section from '../../../layout/Section';
 import { useIdeas } from '../../../hooks/useIdeas';
@@ -22,6 +23,10 @@ const CreateIdeaPage = () => {
   const [tldr, setTldr] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
+  const [showMarkdownModal, setShowMarkdownModal] = useState<boolean>(false);
+  const handleCloseMarkdownModal = () => setShowMarkdownModal(false);
+  const handleShowMarkdownModal = () => setShowMarkdownModal(true);
+
   const titleValid =
     title.length <= FORM_VALIDATION.TITLE_MAX && title.length >= FORM_VALIDATION.TITLE_MIN;
   const tldrValid =
@@ -33,6 +38,61 @@ const CreateIdeaPage = () => {
 
   return (
     <Section fullWidth={false} className={classes.section}>
+      <Modal show={showMarkdownModal} onHide={handleCloseMarkdownModal} size="xl">
+        <Modal.Header closeButton>
+          <Modal.Title>Markdown Syntax</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="grid grid-cols-3 gap-8">
+            <div className="flex flex-col col-span-1">
+              <div className="flex flex-row justify-between">
+                <span># Header</span>
+                <span>heading 1</span>
+              </div>
+              <div className="flex flex-row justify-between">
+                <span>## Header</span>
+                <span>heading 2</span>
+              </div>
+              <div className="flex flex-row justify-between">
+                <span>### Header</span>
+                <span>heading 3</span>
+              </div>
+            </div>
+            <div className="flex flex-col col-span-1">
+              <div className="flex flex-row justify-between">
+                <span className="font-bold">*</span>
+                <span>bullet point</span>
+              </div>
+              <div className="flex flex-row justify-between">
+                <span>-</span>
+                <span>bullet point</span>
+              </div>
+              <div className="flex flex-row justify-between">
+                <span>1.</span>
+                <span>list items</span>
+              </div>
+              <div className="flex flex-row justify-between">
+                <span>Image</span>
+                <span>![alt-text](image.jpg)</span>
+              </div>
+              <div className="flex flex-row justify-between">
+                <span>Link</span>
+                <span>[title](https://www.example.com)</span>
+              </div>
+            </div>
+            <div className="flex flex-col col-span-1">
+              <div className="flex flex-row justify-between">
+                <span className="font-bold">**bold**</span>
+                <span>bold text</span>
+              </div>
+              <div className="flex flex-row justify-between">
+                <span className="italic">_italic_</span>
+                <span>italic text</span>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
       <Col lg={10} className={classes.wrapper}>
         <Row className={classes.headerRow}>
           <div>
@@ -100,7 +160,15 @@ const CreateIdeaPage = () => {
           </div>
           <div className="flex flex-col">
             <div className="flex justify-between w-full items-center">
-              <label className="lodrina font-bold text-2xl mb-2">Description</label>
+              <div className="space-x-2">
+                <label className="lodrina font-bold text-2xl mb-2">Description</label>
+                <span
+                  className="text-sm text-gray-500 cursor-pointer"
+                  onClick={handleShowMarkdownModal}
+                >
+                  Markdown supported
+                </span>
+              </div>
               <span className={`${!descriptionValid ? 'text-[#E40535]' : 'text-[#8C8D92]'}`}>
                 {description.length}/{FORM_VALIDATION.DESCRIPTION_MAX}
               </span>
