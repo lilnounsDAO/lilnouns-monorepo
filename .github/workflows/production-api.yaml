@@ -23,6 +23,7 @@ jobs:
           filters: |
             api:
               - 'packages/nouns-api/**'
+          base: 'production'
       # run only if 'api' files were changed
       - name: api deploy
         if: steps.filter.outputs.api == 'true'
