@@ -28,7 +28,7 @@ const config: HardhatUserConfig = {
       accounts: [process.env.WALLET_PRIVATE_KEY!].filter(Boolean),
     },
     goerli: {
-      url: `https://rinkeby.infura.io/v3/${process.env.POKT_GOERLI_PORTAL_ID}`,
+      url: `${process.env.POKT_GOERLI_PORTAL_ID}`,
       accounts: process.env.MNEMONIC
         ? { mnemonic: process.env.MNEMONIC }
         : [process.env.WALLET_PRIVATE_KEY!].filter(Boolean),
@@ -40,6 +40,9 @@ const config: HardhatUserConfig = {
       //   url: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
       // },
     },
+    local: {
+      url: "http://127.0.0.1:8545"
+    }
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

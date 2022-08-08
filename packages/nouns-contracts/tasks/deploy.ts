@@ -9,15 +9,15 @@ promptjs.delimiter = '';
 
 type ContractName =
   // | 'NFTDescriptor'
-  // | 'NounsDescriptor'
-  // | 'NounsSeeder'
+  | 'NounsDescriptor'
+  | 'NounsSeeder'
   | 'NounsToken'
   | 'NounsAuctionHouse'
   | 'NounsAuctionHouseProxyAdmin'
   | 'NounsAuctionHouseProxy'
-  | 'NounsDAOExecutor'
-  | 'NounsDAOLogicV1'
-  | 'NounsDAOProxy';
+  // | 'NounsDAOExecutor'
+  // | 'NounsDAOLogicV1'
+  // | 'NounsDAOProxy';
 
 interface Contract {
   args?: (string | number | (() => string | undefined))[];
@@ -94,12 +94,8 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
 
     const contracts: Record<ContractName, Contract> = {
       // NFTDescriptor: {},
-      // NounsDescriptor: {
-      //   libraries: () => ({
-      //     NFTDescriptor: contracts['NFTDescriptor'].address as string,
-      //   }),
-      // },
-      // NounsSeeder: {},
+      NounsDescriptor: {},
+      NounsSeeder: {},
       NounsToken: {
         args: [
           args.lilnoundersDAO,
@@ -128,26 +124,26 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
               args.auctionDuration,
             ]),
         ],
-      },
-      NounsDAOExecutor: {
-        args: [expectedNounsDAOProxyAddress, args.timelockDelay],
-      },
-      NounsDAOLogicV1: {
-        waitForConfirmation: true,
-      },
-      NounsDAOProxy: {
-        args: [
-          () => contracts['NounsDAOExecutor'].address,
-          () => contracts['NounsToken'].address,
-          args.lilnoundersDAO,
-          () => contracts['NounsDAOExecutor'].address,
-          () => contracts['NounsDAOLogicV1'].address,
-          args.votingPeriod,
-          args.votingDelay,
-          args.proposalThresholdBps,
-          args.quorumVotesBps,
-        ],
-      },
+      }
+      // NounsDAOExecutor: {
+      //   args: [expectedNounsDAOProxyAddress, args.timelockDelay],
+      // },
+      // NounsDAOLogicV1: {
+      //   waitForConfirmation: true,
+      // },
+      // NounsDAOProxy: {
+      //   args: [
+      //     () => contracts['NounsDAOExecutor'].address,
+      //     () => contracts['NounsToken'].address,
+      //     args.lilnoundersDAO,
+      //     () => contracts['NounsDAOExecutor'].address,
+      //     () => contracts['NounsDAOLogicV1'].address,
+      //     args.votingPeriod,
+      //     args.votingDelay,
+      //     args.proposalThresholdBps,
+      //     args.quorumVotesBps,
+      //   ],
+      // },
     };
 
     let gasPrice = await ethers.provider.getGasPrice();
