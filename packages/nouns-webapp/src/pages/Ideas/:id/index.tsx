@@ -84,7 +84,7 @@ const CommentInput = ({
           className={`${
             hasNouns
               ? 'rounded-lg !bg-[#2B83F6] !text-white !font-bold'
-              : '!text-[#8C8D92] !bg-[#F4F4F8] !border-[#E2E3E8]-1 !font-bold'
+              : '!text-[#8C8D92] !bg-[#F4F4F8] !border-[#E2E3E8] !font-bold'
           } p-1 rounded`}
           onClick={() => {
             if (hasNouns && value.length > 0) {
@@ -241,6 +241,7 @@ const IdeaPage = () => {
                 nounBalance={nounBalance}
                 voteCount={idea.votecount}
                 votes={idea.votes}
+                withAvatars
               />
             </div>
           </div>
