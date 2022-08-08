@@ -264,9 +264,9 @@ const IdeaPage = () => {
         </div>
 
         <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-12">
-          {`${ens || shortAddress} | ${creatorLilNoun} lil nouns | ${moment(idea.createdAt).format(
-            'MMM Do YYYY',
-          )}`}
+          {`${ens || shortAddress} | ${
+            creatorLilNoun === 1 ? `${creatorLilNoun} lil noun` : `${creatorLilNoun} lil nouns`
+          } | ${moment(idea.createdAt).format('MMM Do YYYY')}`}
         </div>
 
         <div className="mt-2 mb-2">
