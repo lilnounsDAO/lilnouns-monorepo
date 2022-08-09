@@ -91,9 +91,13 @@ const IdeaCard = ({
           </div>
           <div className="flex flex-row flex-1 justify-content-start align-items-center pt-2 pb-2">
             <span className="flex flex-1 font-bold text-sm text-[#8c8d92]">
-              {`${ens || shortAddress} | ${creatorLilNoun} lil nouns | ${moment(createdAt).format(
-                'MMM Do YYYY',
-              )} | ${_count?.comments || 0} comments`}
+              {`${ens || shortAddress} | ${
+                creatorLilNoun === 1 ? `${creatorLilNoun} lil noun` : `${creatorLilNoun} lil nouns`
+              } | ${moment(createdAt).format('MMM Do YYYY')} | ${
+                _count?.comments === 1
+                  ? `${_count?.comments} comment`
+                  : `${_count?.comments || 0} comments`
+              }`}
             </span>
             <span className="flex justify-self-end text-[#2b83f6] text-sm font-bold flex justify-end">
               <span
