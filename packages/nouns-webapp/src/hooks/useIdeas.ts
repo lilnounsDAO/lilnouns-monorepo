@@ -40,6 +40,10 @@ export interface Idea {
   creatorId: string;
   comments: Comment[];
   votecount: number;
+  createdAt: string;
+  _count?: {
+    comments: number;
+  };
 }
 
 export interface Comment {

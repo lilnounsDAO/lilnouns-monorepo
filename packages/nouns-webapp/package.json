@@ -66,6 +66,7 @@
     "react-scripts": "^5.0.1",
     "react-stepz": "^1.0.2",
     "react-tooltip": "^4.2.21",
+    "react-use": "^17.4.0",
     "redux": "^4.1.0",
     "redux-devtools-extension": "^2.13.9",
     "remark-breaks": "^3.0.1",
