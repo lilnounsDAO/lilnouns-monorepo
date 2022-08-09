@@ -37,6 +37,10 @@ p {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
   }
+
+  .headerRow h1 {
+    font-size: 46px;
+  }
 }
 
 .wrapper {
