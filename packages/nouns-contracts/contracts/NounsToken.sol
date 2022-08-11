@@ -151,7 +151,7 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable, NonblockingRe
     function setContractURIHash(string memory newContractURIHash) external onlyOwner {
         _contractURIHash = newContractURIHash;
     }
-
+    
     /**
      * @notice Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
      */

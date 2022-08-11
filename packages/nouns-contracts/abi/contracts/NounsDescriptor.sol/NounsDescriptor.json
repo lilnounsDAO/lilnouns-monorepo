@@ -71,7 +71,7 @@
   },
   {
     "inputs": [],
-    "name": "accessoryCount",
+    "name": "accessoriesCount",
     "outputs": [
       {
         "internalType": "uint256",
@@ -99,8 +99,21 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_background",
+        "name": "_artstyle",
         "type": "string"
+      }
+    ],
+    "name": "addArtStyle",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_background",
+        "type": "bytes"
       }
     ],
     "name": "addBackground",
@@ -112,29 +125,11 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "_body",
+        "name": "_basecolor",
         "type": "bytes"
       }
     ],
-    "name": "addBody",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "_paletteIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "string",
-        "name": "_color",
-        "type": "string"
-      }
-    ],
-    "name": "addColorToPalette",
+    "name": "addBaseColor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -143,11 +138,11 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "_glasses",
+        "name": "_flair",
         "type": "bytes"
       }
     ],
-    "name": "addGlasses",
+    "name": "addFlair",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -156,11 +151,11 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "_head",
+        "name": "_mathletters",
         "type": "bytes"
       }
     ],
-    "name": "addHead",
+    "name": "addMATHletters",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -181,9 +176,9 @@
   {
     "inputs": [
       {
-        "internalType": "string[]",
+        "internalType": "bytes[]",
         "name": "_backgrounds",
-        "type": "string[]"
+        "type": "bytes[]"
       }
     ],
     "name": "addManyBackgrounds",
@@ -195,29 +190,11 @@
     "inputs": [
       {
         "internalType": "bytes[]",
-        "name": "_bodies",
+        "name": "_basecolors",
         "type": "bytes[]"
       }
     ],
-    "name": "addManyBodies",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "paletteIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "string[]",
-        "name": "newColors",
-        "type": "string[]"
-      }
-    ],
-    "name": "addManyColorsToPalette",
+    "name": "addManyBaseColors",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -226,11 +203,11 @@
     "inputs": [
       {
         "internalType": "bytes[]",
-        "name": "_glasses",
+        "name": "_flair",
         "type": "bytes[]"
       }
     ],
-    "name": "addManyGlasses",
+    "name": "addManyFlair",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -239,11 +216,37 @@
     "inputs": [
       {
         "internalType": "bytes[]",
-        "name": "_heads",
+        "name": "_mathletters",
         "type": "bytes[]"
       }
     ],
-    "name": "addManyHeads",
+    "name": "addManyMATHletters",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes[]",
+        "name": "_visors",
+        "type": "bytes[]"
+      }
+    ],
+    "name": "addManyVisors",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_visor",
+        "type": "bytes"
+      }
+    ],
+    "name": "addVisor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -256,6 +259,38 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "artStyleCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "artstyles",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -285,9 +320,22 @@
     "name": "backgrounds",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes",
         "name": "",
-        "type": "string"
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "baseColorCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -314,7 +362,7 @@
         "type": "uint256"
       }
     ],
-    "name": "bodies",
+    "name": "basecolors",
     "outputs": [
       {
         "internalType": "bytes",
@@ -326,13 +374,83 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "bodyCount",
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes[]",
+            "name": "parts",
+            "type": "bytes[]"
+          },
+          {
+            "internalType": "string",
+            "name": "artstyle",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct NFTDescriptor.TokenURIParams",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint48",
+            "name": "artstyle",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "background",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "basecolor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "visor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "mathletters",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "accessory",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "flair",
+            "type": "uint48"
+          }
+        ],
+        "internalType": "struct INounsSeeder.Seed",
+        "name": "seed",
+        "type": "tuple"
+      }
+    ],
+    "name": "constructTokenURI",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "string",
         "name": "",
-        "type": "uint256"
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -349,12 +467,27 @@
         "components": [
           {
             "internalType": "uint48",
+            "name": "artstyle",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
             "name": "background",
             "type": "uint48"
           },
           {
             "internalType": "uint48",
-            "name": "body",
+            "name": "basecolor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "visor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "mathletters",
             "type": "uint48"
           },
           {
@@ -364,12 +497,7 @@
           },
           {
             "internalType": "uint48",
-            "name": "head",
-            "type": "uint48"
-          },
-          {
-            "internalType": "uint48",
-            "name": "glasses",
+            "name": "flair",
             "type": "uint48"
           }
         ],
@@ -392,7 +520,44 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "flair",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "flairCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "components": [
+          {
+            "internalType": "uint48",
+            "name": "artstyle",
+            "type": "uint48"
+          },
           {
             "internalType": "uint48",
             "name": "background",
@@ -400,7 +565,17 @@
           },
           {
             "internalType": "uint48",
-            "name": "body",
+            "name": "basecolor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "visor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "mathletters",
             "type": "uint48"
           },
           {
@@ -410,12 +585,7 @@
           },
           {
             "internalType": "uint48",
-            "name": "head",
-            "type": "uint48"
-          },
-          {
-            "internalType": "uint48",
-            "name": "glasses",
+            "name": "flair",
             "type": "uint48"
           }
         ],
@@ -428,7 +598,7 @@
     "outputs": [
       {
         "internalType": "string",
-        "name": "",
+        "name": "svg",
         "type": "string"
       }
     ],
@@ -451,12 +621,27 @@
         "components": [
           {
             "internalType": "uint48",
+            "name": "artstyle",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
             "name": "background",
             "type": "uint48"
           },
           {
             "internalType": "uint48",
-            "name": "body",
+            "name": "basecolor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "visor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "mathletters",
             "type": "uint48"
           },
           {
@@ -466,12 +651,7 @@
           },
           {
             "internalType": "uint48",
-            "name": "head",
-            "type": "uint48"
-          },
-          {
-            "internalType": "uint48",
-            "name": "glasses",
+            "name": "flair",
             "type": "uint48"
           }
         ],
@@ -486,70 +666,6 @@
         "internalType": "string",
         "name": "",
         "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "glasses",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "glassesCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "headCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "heads",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
       }
     ],
     "stateMutability": "view",
@@ -573,6 +689,38 @@
     "name": "lockParts",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "mathletters",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "mathlettersCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -650,12 +798,27 @@
         "components": [
           {
             "internalType": "uint48",
+            "name": "artstyle",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
             "name": "background",
             "type": "uint48"
           },
           {
             "internalType": "uint48",
-            "name": "body",
+            "name": "basecolor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "visor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "mathletters",
             "type": "uint48"
           },
           {
@@ -665,12 +828,7 @@
           },
           {
             "internalType": "uint48",
-            "name": "head",
-            "type": "uint48"
-          },
-          {
-            "internalType": "uint48",
-            "name": "glasses",
+            "name": "flair",
             "type": "uint48"
           }
         ],
@@ -701,6 +859,38 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "visorCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "visors",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

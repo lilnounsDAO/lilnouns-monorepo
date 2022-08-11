@@ -18,12 +18,27 @@
         "components": [
           {
             "internalType": "uint48",
+            "name": "artstyle",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
             "name": "background",
             "type": "uint48"
           },
           {
             "internalType": "uint48",
-            "name": "body",
+            "name": "basecolor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "visor",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "mathletters",
             "type": "uint48"
           },
           {
@@ -33,12 +48,7 @@
           },
           {
             "internalType": "uint48",
-            "name": "head",
-            "type": "uint48"
-          },
-          {
-            "internalType": "uint48",
-            "name": "glasses",
+            "name": "flair",
             "type": "uint48"
           }
         ],
