@@ -5,6 +5,7 @@ import { Contract as EthersContract } from 'ethers';
 
 type ContractName =
   | 'WETH'
+  | 'NFTDescriptor'
   | 'NounsDescriptor'
   | 'NounsSeeder'
   | 'NounsToken'
@@ -64,7 +65,12 @@ task('deploy-local', 'Deploy contracts to hardhat')
     });
     const contracts: Record<ContractName, Contract> = {
       WETH: {},
-      NounsDescriptor: {},
+      NFTDescriptor: {},
+      NounsDescriptor: {
+        libraries: () => ({
+          NFTDescriptor: contracts['NFTDescriptor'].instance?.address as string,
+        }),
+      },
       NounsSeeder: {},
       NounsToken: {
         args: [
