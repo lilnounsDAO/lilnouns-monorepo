@@ -41,9 +41,6 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     // Base URI
     string public override baseURI;
 
-    // Noun Color Palettes (Index => Hex Colors)
-    mapping(uint8 => string[]) public override palettes;
-
     // MATH Hat Art Styles
     string[] public override artstyles;
 
@@ -53,16 +50,16 @@ contract NounsDescriptor is INounsDescriptor, Ownable {
     // MATH Hat Base Colors
     bytes[] public override basecolors;
     
-    // MATH Hat Visors (Custom RLE)
+    // MATH Hat Visors (PNG Bytes)
     bytes[] public override visors;
 
-    // MATH Hat Letters (Custom RLE)
+    // MATH Hat Letters (PNG Bytes)
     bytes[] public override mathletters;
 
-    // MATH Hat Accessories (Custom RLE)
+    // MATH Hat Accessories (PNG Bytes)
     bytes[] public override accessories;
 
-    // MATH Hat Flair (Custom RLE)
+    // MATH Hat Flair (PNG Bytes)
     bytes[] public override flair;
 
 

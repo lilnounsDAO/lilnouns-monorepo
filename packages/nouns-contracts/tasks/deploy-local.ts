@@ -66,11 +66,7 @@ task('deploy-local', 'Deploy contracts to hardhat')
     const contracts: Record<ContractName, Contract> = {
       WETH: {},
       NFTDescriptor: {},
-      NounsDescriptor: {
-        libraries: () => ({
-          NFTDescriptor: contracts['NFTDescriptor'].instance?.address as string,
-        }),
-      },
+      NounsDescriptor: {},
       NounsSeeder: {},
       NounsToken: {
         args: [

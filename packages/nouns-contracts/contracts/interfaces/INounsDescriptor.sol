@@ -32,8 +32,6 @@ interface INounsDescriptor {
 
     function baseURI() external returns (string memory);
 
-    function palettes(uint8 paletteIndex, uint256 colorIndex) external view returns (string memory);
-
     function artstyles(uint256 index) external view returns (string memory);
 
     function backgrounds(uint256 index) external view returns (bytes memory);
