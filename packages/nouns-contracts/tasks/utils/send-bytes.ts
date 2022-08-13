@@ -22,7 +22,7 @@ export async function sendBaseColorBytes(file: string, contract: NounsDescriptor
   return tx;
 }
 
-export async function sendFlairBytes(file: string, contract: NounsDescriptor) {
+export async function sendComponentBytes(file: string, contract: NounsDescriptor, component: string) {
   let string: string;
   let stringBuffer: Buffer;
   let gasEstimate: BigNumber;
@@ -30,7 +30,7 @@ export async function sendFlairBytes(file: string, contract: NounsDescriptor) {
 
   string = await base64_encode(file);
   stringBuffer = Buffer.from(string, "base64");
-  tx = await contract.addFlair(stringBuffer);
+  tx = await contract.add${component}(stringBuffer);
   return tx;
 }
 
@@ -44,50 +44,71 @@ export async function sendBytes(directory: string, contract: NounsDescriptor) {
     byteCount = 0;
 
     const sendAllBytes = async () => {
-      if (directory == "../files/Test/backgrounds") {
+      if (directory.includes("backgrounds")) {
         files = await fs.readdir(directory);
         for (let i = 0; i < files.length; i++) {
           let file = files[i];
-          baseColors = await sendBaseColorBytes(`${directory}${file}`, contract);
-          await baseColors.wait();
-          console.log("TX HASH:", baseColors.hash);
+          const sendComponents = await sendComponentBytes(`${directory}${file}`, contract, "Background");
+          await sendComponents.wait();
+          console.log("TX HASH:", sendComponents.hash);
           byteCount = files.length;
         }
-      } else if (directory == "../files/Test/pfps") {
-        files = await fs.readdir(directory);
-        console.log(directory)
-        for (let i = 0; i < files.length; i++) {
-          let file = files[i];
-          flair = await sendFlairBytes(`${directory}${file}`, contract);
-          await flair.wait();
-          console.log("TX HASH:", flair.hash);
-
-          byteCount += files.length;
-        }
-      } else if (directory == "./local-storage/Test/backgrounds/") {
-        files = await fs.readdir(directory);
-        console.log(directory)
-        for (let i = 0; i < files.length; i++) {
-          let file = files[i];
-          baseColors = await sendBaseColorBytes(`${directory}${file}`, contract);
-          await baseColors.wait();
-          console.log("TX HASH:", baseColors.hash);
-          byteCount += files.length;
-        }        
-      } else if (directory == "./local-storage/Test/pfps/"){
-        files = await fs.readdir(directory);
-        console.log(directory)
-        for (let i = 0; i < files.length; i++) {
-          let file = files[i];
-          flair = await sendFlairBytes(`${directory}${file}`, contract);
-          await flair.wait();
-          console.log("TX HASH:", flair.hash);
-          byteCount += files.length;
-
-        }        
+      } else if (directory.includes("acc")) {
+          files = wait fs.readdir(directory);
+          console.log(directory)
+          for (let i = 0; i < files.length; i++) {
+              let file = files[i];
+              const sendComponents = await sendComponentBytes(`${directory}${file}`, contract, "BaseColor");
+              await basecolors.wait();
+              console.log("TX HASH:" sendComponents.hash);
+              byteCount = files.length;
+            }
+      } else if (directory.includes("base_skylines")) {
+            files = await fs.readdir(directory);
+            console.log(directory)
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+                const sendComponents = await sendComponentBytes(`${directory}${file}`, contract, "Visor");
+                await sendComponents.wait();
+                console.log("TX HASH:", sendComponents.hash);
+                byteCount += files.length;
+        	}
+        } else if (directory.includes("flair")) {
+                files = await fs.readdir(directory);
+                console.log(directory)
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
+                    const sendComponents = await sendComponentBytes(`${directory}${file}`, contract, "MATHletters");
+                    await sendComponents.wait();
+                    console.log("TX HASH:", sendComponents.hash);
+                    byteCount += files.length;
+        	}
       }
-    };
-    sendAllBytes();
+            else if (directory.includes("pfps")) {
+                files = await fs.readdir(directory);
+                console.log(directory)
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
+                    const sendComponents = await sendComponentBytes(`${directory}${file}`, contract, "Accessories");
+                    await sendComponents.wait();
+                    console.log("TX HASH:", sendComponents.hash);
+                    byteCount += files.length;
+        	}
+      }
+            else if (directory.includes("vis")) {
+                files = await fs.readdir(directory);
+                console.log(directory)
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
+                    const sendComponents = await sendComponentBytes(`${directory}${file}`, contract, "Flair");
+                    await sendComponents.wait();
+                    console.log("TX HASH:", sendComponents.hash);
+                    byteCount += files.length;
+        	}
+      }
+    }
+
+    sendAllBytes()  
     return byteCount;
   } catch (e) {
     console.error(e);

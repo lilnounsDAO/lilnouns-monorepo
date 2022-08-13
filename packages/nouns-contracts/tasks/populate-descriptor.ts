@@ -18,9 +18,13 @@ task('populate-descriptor', 'Populates the descriptor with MATH Hat parts')
   .setAction(async ({ nounsDescriptor }, { ethers }) => {
     const descriptorFactory = await ethers.getContractFactory('NounsDescriptor');
     const descriptorContract = descriptorFactory.attach(nounsDescriptor) as NounsDescriptor;
-    await sendBytes("../files/Test/backgrounds/", descriptorContract);
-    await sendBytes("../files/Test/pfps/", descriptorContract);
-
+    await sendBytes("./files/Test/acc/", descriptorContract);
+    await sendBytes("./files/Test/backgrounds/", descriptorContract);
+    await sendBytes("./files/Test/base_skylines/", descriptorContract);
+    await sendBytes("./files/Test/flair/", descriptorContract);
+    await sendBytes("./files/Test/pfps/", descriptorContract);
+    await sendBytes("./files/Test/vis/", descriptorContract);
+ 
 
 
 
