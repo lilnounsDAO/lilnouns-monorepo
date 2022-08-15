@@ -2,7 +2,7 @@ import { Alert, Button, Form } from 'react-bootstrap';
 import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
-import { useNounTokenBalance } from '../../wrappers/nounToken';
+import { useAccountVotes } from '../../wrappers/nounToken';
 import classes from './Ideas.module.css';
 import IdeaCard from '../IdeaCard';
 import { Idea, useIdeas, SORT_BY } from '../../hooks/useIdeas';
@@ -18,7 +18,7 @@ const Ideas = () => {
     setSortBy(e.target.value);
   };
 
-  const nounBalance = useNounTokenBalance(account || undefined) ?? 0;
+  const nounBalance = useAccountVotes(account || undefined) ?? 0;
 
   const nullStateCopy = () => {
     if (Boolean(account)) {
