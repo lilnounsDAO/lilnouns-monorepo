@@ -49,6 +49,7 @@ import { AuthProvider } from './hooks/useAuth';
 import { ErrorModalProvider } from './hooks/useApiError';
 
 import { Provider as RollbarProvider } from '@rollbar/react';
+import { isNounderNoun } from './utils/nounderNoun';
 
 dotenv.config();
 
@@ -211,7 +212,16 @@ const PastAuctions: React.FC = () => {
     state => state.onDisplayAuction.onDisplayAuctionStartTime,
   );
 
-  const { data } = useQuery(latestAuctionsQuery(onDisplayAuctionStartTime || 0));
+  const nounId = BigNumber.from(onDisplayAuctionNounId ?? 0);
+  const distanceToAuctionAbove = isNounderNoun(BigNumber.from(onDisplayAuctionNounId ?? 0)) ? 2 : 1;
+  const nextNounId = nounId.add(distanceToAuctionAbove)
+
+  const { data: postData } = useQuery(
+    singularAuctionQuery(nextNounId?.toString() || '0'),
+  );
+
+  const { data } = useQuery(latestAuctionsQuery(postData?.auctions?.[0]?.startTime || onDisplayAuctionStartTime || 0));
+
   const { data: auctionData } = useQuery(
     singularAuctionQuery(onDisplayAuctionNounId?.toString() || '0'),
   );

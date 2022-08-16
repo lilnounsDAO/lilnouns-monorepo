@@ -33,7 +33,7 @@ const deserializeBids = (reduxSafeBids: BidEvent[]): Bid[] => {
     });
 };
 
-const useOnDisplayAuction = (): Auction | undefined => {
+const useOnDisplayAuction = (initialAuctionId: number | undefined): Auction | undefined => {
   const lastAuctionNounId = useAppSelector(state => state.auction.activeAuction?.nounId);
   const onDisplayAuctionNounId = useAppSelector(
     state => state.onDisplayAuction.onDisplayAuctionNounId,

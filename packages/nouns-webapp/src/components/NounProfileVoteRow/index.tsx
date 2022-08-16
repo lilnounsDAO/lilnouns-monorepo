@@ -54,7 +54,7 @@ const selectVotingInfoText = (proposal: Proposal, vote?: NounVoteHistory) => {
         return 'Abstained on';
     }
   } else {
-    return 'Voted aginst';
+    return 'Voted against';
   }
 };
 
