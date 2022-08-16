@@ -4,11 +4,11 @@ import Section from '../../layout/Section';
 import classes from './ProfileActivityFeed.module.css';
 
 import { useQuery } from '@apollo/client';
-import { Proposal, useAllProposals } from '../../wrappers/nounsDao';
+import { Proposal, ProposalState, useAllProposals } from '../../wrappers/nounsDao';
 import { createTimestampAllProposals, nounVotingHistoryQuery } from '../../wrappers/subgraph';
 import NounProfileVoteRow from '../NounProfileVoteRow';
 import { LoadingNoun } from '../Noun';
-// import { useNounCanVoteTimestamp } from '../../wrappers/nounsAuction';
+import { useNounCanVoteTimestamp } from '../../wrappers/nounsAuction';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -39,17 +39,17 @@ const ProfileActivityFeed: React.FC<ProfileActivityFeedProps> = props => {
   const {
     loading: proposalTimestampLoading,
     error: proposalTimestampError,
-    // data: proposalCreatedTimestamps,
+    data: proposalCreatedTimestamps,
   } = useQuery(createTimestampAllProposals());
 
-  // const nounCanVoteTimestamp = useNounCanVoteTimestamp(nounId);
+  const nounCanVoteTimestamp = useNounCanVoteTimestamp(nounId);
 
   const { data: proposals } = useAllProposals();
 
   if (loading || !proposals || !proposals.length || proposalTimestampLoading) {
     return <></>;
   } else if (error || proposalTimestampError) {
-    return <div>Failed to fetch noun activity history</div>;
+    return <div>Failed to fetch lil noun activity history</div>;
   }
 
   const nounVotes: { [key: string]: NounVoteHistory } = data.noun.votes
@@ -59,14 +59,29 @@ const ProfileActivityFeed: React.FC<ProfileActivityFeedProps> = props => {
       return acc;
     }, {});
 
-  //TODO FIX: Error - TypeError: proposalCreatedTimestamps.proposals[id] is undefined
+
   const filteredProposals = proposals.filter((p: Proposal, id: number) => {
-    return (0
-    // parseInt(proposalCreatedTimestamps.proposals[id].createdTimestamp) >
-    //   nounCanVoteTimestamp.toNumber() ||
-    // (p.id && nounVotes[p.id])
-  );
+    const proposalCreationTimestamp = parseInt(
+      proposalCreatedTimestamps.proposals[id].createdTimestamp,
+    );
+
+    // console.log(`proposalCreationTimestamp == ${proposalCreationTimestamp}. nounId=${nounId}. nounCanVoteTimestamp==${nounCanVoteTimestamp}. id=${id} Proposal=${p.id}`)
+
+    // Filter props from before the Noun was born
+    if (nounCanVoteTimestamp.gt(proposalCreationTimestamp)) {
+      return false;
+    }
+    // Filter props which were cancelled and got 0 votes of any kind
+    if (
+      p.status === ProposalState.CANCELED &&
+      p.forCount + p.abstainCount + p.againstCount === 0
+    ) {
+      return false;
+    }
+    return true;
   });
+
+  // console.log(`filteredProposals==${filteredProposals.length} proposals==${proposals.length}`)
 
   return (
     <Section fullWidth={false}>

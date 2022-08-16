@@ -1,6 +1,7 @@
 import { useReverseENSLookUp } from '../../utils/ensLookup';
 import { useEthers } from '@usedapp/core';
-import Davatar from '@davatar/react';
+// import Davatar from '@davatar/react';
+import Identicon from '../Identicon';
 import classes from './ShortAddress.module.css';
 
 export const useShortAddress = (address: string): string => {
@@ -24,7 +25,7 @@ const ShortAddress: React.FC<{ address: string; avatar?: boolean; size?: number 
       <div className={classes.shortAddress}>
         {avatar && (
           <div key={address}>
-            <Davatar size={size} address={address} provider={provider} />
+            <Identicon size={size} address={address} provider={provider} />
           </div>
         )}
         <span>{ens ? ens : shortAddress}</span>

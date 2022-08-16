@@ -187,7 +187,7 @@ export const StandaloneBigNounCircular: React.FC<StandaloneCircularNounProps> = 
       <Noun
         isBigNoun={true}
         imgPath={noun ? noun.image : ''}
-        alt={noun ? noun.description : 'Lil Noun'}
+        alt={noun ? noun.description : 'Noun'}
         wrapperClassName={nounClasses.circularNounWrapper}
         className={nounClasses.circular}
       />
