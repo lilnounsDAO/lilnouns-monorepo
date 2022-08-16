@@ -22,7 +22,7 @@ const emptyNounderAuction = (onDisplayAuctionId: number): Auction => {
   };
 };
 
-const findAuction = (id: BigNumber, auctions: AuctionState[]): Auction | undefined => {
+export const findAuction = (id: BigNumber, auctions: AuctionState[]): Auction | undefined => {
   return auctions.find(auction => {
     return BigNumber.from(auction.activeAuction?.nounId).eq(id);
   })?.activeAuction;

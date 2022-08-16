@@ -3,7 +3,8 @@ import { BigNumber as EthersBN, utils } from 'ethers';
 import { NounsAuctionHouseABI } from '@nouns/sdk';
 import config from '../config';
 import BigNumber from 'bignumber.js';
-import { isNounderNoun, isNounsDAONoun } from '../utils/nounderNoun';
+import { BigNumber as bNum } from '@ethersproject/bignumber';
+import { findAuction, isNounderNoun, isNounsDAONoun } from '../utils/nounderNoun';
 import { useAppSelector } from '../hooks';
 import { AuctionState } from '../state/slices/auction';
 
@@ -54,26 +55,23 @@ export const useAuctionMinBidIncPercentage = () => {
 
 /**
  * Computes timestamp after which a Noun could vote
+ * Small Revision by lil nouns dao to account for lil nounder and nouns dao rewards
  * @param nounId TokenId of Noun
  * @returns Unix timestamp after which Noun could vote
  */
-//TODO: Check if + 2 on nextNounId works
-export const useNounCanVoteTimestamp = (nounId: number) => {
-  const nextNounId = nounId + 1;
 
-  const nextNounIdForQuery = isNounderNoun(EthersBN.from(nextNounId)) ? nextNounId + 1 : isNounsDAONoun(EthersBN.from(nextNounId)) ? nextNounId + 1 : nextNounId;
+export const useNounCanVoteTimestamp = (nounId: number) => {
 
   const pastAuctions = useAppSelector(state => state.pastAuctions.pastAuctions);
 
-  const maybeNounCanVoteTimestamp = pastAuctions.find((auction: AuctionState, i: number) => {
-    const maybeNounId = auction.activeAuction?.nounId;
-    return maybeNounId ? EthersBN.from(maybeNounId).eq(EthersBN.from(nextNounIdForQuery)) : false;
-  })?.activeAuction?.startTime;
+  if(isNounderNoun(EthersBN.from(nounId)) || isNounsDAONoun(EthersBN.from(nounId))) {
+    const distanceToAuctionAbove = isNounderNoun(EthersBN.from(nounId)) ? 2 : 1;
+    const auctionAbove = findAuction(EthersBN.from(nounId).add(distanceToAuctionAbove), pastAuctions);
 
-  if (!maybeNounCanVoteTimestamp) {
-    // This state only occurs during loading flashes
-    return EthersBN.from(0);
+   return EthersBN.from(auctionAbove?.startTime || 0);
   }
 
-  return EthersBN.from(maybeNounCanVoteTimestamp);
+  const auction = findAuction(EthersBN.from(nounId), pastAuctions);
+  return EthersBN.from(auction?.startTime);
+
 };

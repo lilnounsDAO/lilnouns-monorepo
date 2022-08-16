@@ -15,7 +15,7 @@ interface AuctionPageProps {
 
 const AuctionPage: React.FC<AuctionPageProps> = props => {
   const { initialAuctionId } = props;
-  const onDisplayAuction = useOnDisplayAuction();
+  const onDisplayAuction = useOnDisplayAuction(initialAuctionId);
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
   const lastAuctionStartTime = useAppSelector(state => state.onDisplayAuction.lastAuctionStartTime);
   const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
@@ -33,7 +33,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
         dispatch(setOnDisplayAuctionNounId(lastAuctionNounId));
         dispatch(setOnDisplayAuctionStartTime(lastAuctionStartTime!));
         dispatch(push(nounPath(lastAuctionNounId)));
-      } else {
+      } else {       
         if (onDisplayAuction === undefined) {
           // handle regular noun path ids on first load
           dispatch(setOnDisplayAuctionNounId(initialAuctionId));
