@@ -1,4 +1,4 @@
-import { StandaloneNounCircular } from '../../components/StandaloneNoun';
+import { StandaloneNounCircular, StandaloneBigNounCircular } from '../../components/StandaloneNoun';
 import { BigNumber as EthersBN } from 'ethers';
 import classes from './NounImageVoteTable.module.css';
 import { GrayCircle } from '../GrayCircle';
@@ -7,17 +7,21 @@ import { pseudoRandomPredictableShuffle } from '../../utils/pseudoRandomPredicta
 interface NounImageVoteTableProps {
   nounIds: string[];
   propId: number;
+  isNounsDAOProp?: boolean;
 }
 const NOUNS_PER_VOTE_CARD_DESKTOP = 15;
 
 const isXLScreen = window.innerWidth > 1200;
 
 const NounImageVoteTable: React.FC<NounImageVoteTableProps> = props => {
-  const { nounIds, propId } = props;
+  const { nounIds, propId, isNounsDAOProp } = props;
 
   const shuffledNounIds = pseudoRandomPredictableShuffle(nounIds, propId);
   const paddedNounIds = shuffledNounIds
     .map((nounId: string) => {
+      if(isNounsDAOProp){
+        return <StandaloneBigNounCircular nounId={EthersBN.from(nounId)} />;
+      }
       return <StandaloneNounCircular nounId={EthersBN.from(nounId)} />;
     })
     .concat(Array(NOUNS_PER_VOTE_CARD_DESKTOP).fill(<GrayCircle />))

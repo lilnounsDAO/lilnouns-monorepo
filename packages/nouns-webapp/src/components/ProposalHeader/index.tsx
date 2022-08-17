@@ -10,23 +10,26 @@ import { isMobileScreen } from '../../utils/isMobile';
 import { useUserVotesAsOfBlock } from '../../wrappers/nounToken';
 import { useBlockTimestamp } from '../../hooks/useBlockTimestamp';
 import dayjs from 'dayjs';
+import { SnapshotProposal } from '../Proposals';
 
 interface ProposalHeaderProps {
   proposal: Proposal;
+  snapshotProposal?: SnapshotProposal;
+  isNounsDAOProp?: boolean;
   isActiveForVoting?: boolean;
   isWalletConnected: boolean;
   submitButtonClickHandler: () => void;
 }
 
 const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
-  const { proposal, isActiveForVoting, isWalletConnected, submitButtonClickHandler } = props;
+  const { proposal, isActiveForVoting, isWalletConnected, submitButtonClickHandler , snapshotProposal, isNounsDAOProp} = props;
 
   const isMobile = isMobileScreen();
   const availableVotes = useUserVotesAsOfBlock(proposal?.createdBlock) ?? 0;
   const hasVoted = useHasVotedOnProposal(proposal?.id);
   const proposalVote = useProposalVote(proposal?.id);
   const proposalCreationTimestamp = useBlockTimestamp(proposal?.createdBlock);
-  const disableVoteButton = !isWalletConnected || !availableVotes || hasVoted;
+  const disableVoteButton = !isWalletConnected || !availableVotes;
 
   const voteButton = (
     <>
