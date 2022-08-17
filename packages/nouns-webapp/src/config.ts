@@ -18,6 +18,7 @@ interface AppConfig {
   enableHistory: boolean;
   nounsApiUri: string;
   enableRollbar: boolean;
+  zoraKey: string;
 }
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat;
@@ -60,6 +61,7 @@ const app: Record<SupportedChains, AppConfig> = {
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_RINKEBY_NOUNSAPI`] || '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
+    zoraKey: process.env.ZORA_API_KEY || '',
   },
   [ChainId.Mainnet]: {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
@@ -69,6 +71,7 @@ const app: Record<SupportedChains, AppConfig> = {
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_MAINNET_NOUNSAPI`] || '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
+    zoraKey: process.env.ZORA_API_KEY || '',
   },
   [ChainId.Hardhat]: {
     jsonRpcUri: 'http://localhost:8545',
@@ -78,6 +81,7 @@ const app: Record<SupportedChains, AppConfig> = {
     enableHistory: false,
     nounsApiUri: 'http://localhost:5001',
     enableRollbar: false,
+    zoraKey: '',
   },
 };
 

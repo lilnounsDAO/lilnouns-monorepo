@@ -1,3 +1,155 @@
+.governanceSwitchBtn {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  margin-bottom: 0.5rem;
+  margin-right: 8px;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E3E8;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+}
+
+.governanceSwitchBtnActive{
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  margin-bottom: 0.5rem;
+  margin-right: 8px;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+
+  color: #14161b;
+  border: 2px solid var(--brand-color-blue);
+}
+
+.governanceSwitchBtn2 {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  border: 2px solid var(--brand-color-blue);
+  margin-bottom: 0.5rem;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E3E8;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+}
+
+.governanceSwitchBtn2Active {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  border: 2px solid var(--brand-color-blue);
+  margin-bottom: 0.5rem;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E3E8;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+
+  color: #14161b;
+  border: 2px solid var(--brand-color-blue);
+}
+
+.spinner {
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--brand-gray-light-text);
+}
+
+.proposals {
+  display: flex;
+  flex-direction: column;
+}
+
+.proposals>div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.headerWrapper {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: space-between;
+  /* background: rgb(8, 246, 96); */
+}
+
+.headerWrapper span {
+  color: #8c8d92;
+  font-size: 24px;
+  font-family: 'Londrina Solid';
+}
+
+.headerWrapper h1 {
+  color: #14161b;
+  font-size: 56px;
+  font-family: 'Londrina Solid';
+}
+
+.forceFlexRow {
+  flex-direction: row;
+}
+
+.nounInWalletBtnWrapper {
+  display: flex;
+  padding-top: 0.8rem;
+}
+
+.heading {
+  width: 100%;
+}
+
+.nullStateSubmitProposalBtnWrapper {
+  text-align: right;
+}
+
+.nullBtnWrapper {
+  min-width: 10rem;
+}
+
 .heading {
   display: inline-block;
   font-weight: bold;
@@ -33,9 +185,21 @@ p {
 }
 
 @media (max-width: 992px) {
+  .nounInWalletBtnWrapper {
+    width: 100%;
+  }
+
   .section {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
+  }
+
+  .headerWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* justify-content: space-between; */
+    /* background: rgb(8, 246, 96); */
   }
 }
 

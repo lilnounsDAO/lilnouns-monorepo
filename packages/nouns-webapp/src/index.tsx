@@ -24,7 +24,7 @@ import onDisplayAuction, {
   setOnDisplayAuctionNounId,
   setOnDisplayAuctionStartTime,
 } from './state/slices/onDisplayAuction';
-import { ApolloProvider, useQuery } from '@apollo/client';
+import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, Operation, useQuery } from '@apollo/client';
 import { clientFactory, latestAuctionsQuery, singularAuctionQuery } from './wrappers/subgraph';
 import { useEffect } from 'react';
 import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
@@ -104,7 +104,40 @@ const wagmiClient = createClient({
   },
 });
 
-const client = clientFactory(config.app.subgraphApiUri);
+
+
+
+const defaultLink = new HttpLink({
+  uri: config.app.subgraphApiUri
+})
+
+const nounsDAOLink = new HttpLink({
+  uri: config.app.nounsDAOSubgraphApiUri
+})
+
+const nounsDAOVotingSnapshotLink = new HttpLink({
+  uri: 'https://hub.snapshot.org/graphql'
+})
+
+const zoraAPILink = new HttpLink({
+  uri: 'https://api.zora.co/graphql'
+})
+
+
+//pass them to apollo-client config
+const client = new ApolloClient({
+  link: ApolloLink.split(
+    operation => operation.getContext().clientName === 'NounsDAO',
+    nounsDAOLink, //if above 
+    ApolloLink.split(operation => operation.getContext().clientName === 'NounsDAOSnapshot',
+    nounsDAOVotingSnapshotLink,
+    ApolloLink.split(operation => operation.getContext().clientName === 'ZoraAPI',
+    zoraAPILink,
+    defaultLink))
+),
+  cache: new InMemoryCache(),
+})
+
 
 const Updaters = () => {
   return (

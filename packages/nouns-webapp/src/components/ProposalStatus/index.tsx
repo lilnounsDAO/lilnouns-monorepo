@@ -7,7 +7,11 @@ const statusVariant = (status: ProposalState | undefined) => {
   switch (status) {
     case ProposalState.PENDING:
     case ProposalState.ACTIVE:
+    case ProposalState.METAGOV_ACTIVE:
+    case ProposalState.METAGOV_PENDING:
       return classes.primary;
+    case ProposalState.METAGOV_CLOSED:
+    return classes.closedMetaGov;
     case ProposalState.SUCCEEDED:
     case ProposalState.EXECUTED:
       return classes.success;
@@ -42,6 +46,12 @@ const statusText = (status: ProposalState | undefined) => {
       return 'Vetoed';
     case ProposalState.EXPIRED:
       return 'Expired';
+    case ProposalState.METAGOV_ACTIVE:
+      return 'Active Snapshot Vote';
+    case ProposalState.METAGOV_CLOSED:
+      return 'Awaiting Nouns Vote'; //Pending Nouns Vote
+      case ProposalState.METAGOV_PENDING:
+        return 'Pending Snapshot Vote';
     default:
       return 'Undetermined';
   }
