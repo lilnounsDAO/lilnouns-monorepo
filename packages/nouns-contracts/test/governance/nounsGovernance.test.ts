@@ -121,6 +121,7 @@ describe('Nouns Governance', () => {
       const tx = await (await token.delegateBySig(delegatee, nonce, expiry, v, r, s)).wait();
 
       expect(tx.gasUsed.toNumber() < 80000);
+
       expect(await token.delegates(account0.address)).to.equal(account1.address);
     });
   });

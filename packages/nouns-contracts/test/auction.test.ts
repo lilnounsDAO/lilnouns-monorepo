@@ -45,7 +45,7 @@ describe('NounsAuctionHouse', () => {
   before(async () => {
     [deployer, noundersDAO, bidderA, bidderB] = await ethers.getSigners();
 
-    nounsToken = await deployNounsToken(deployer, noundersDAO.address, deployer.address);
+    nounsToken = await deployNounsToken(deployer, deployer.address, noundersDAO.address, deployer.address);
     weth = await deployWeth(deployer);
     nounsAuctionHouse = await deploy(deployer);
 
@@ -255,7 +255,8 @@ describe('NounsAuctionHouse', () => {
 
     const { nounId } = await nounsAuctionHouse.auction();
 
-    expect(nounId).to.equal(1);
+    // index is not 1 because first nft is minted to lilnounders and 2nd nounders
+    expect(nounId).to.equal(2);
   });
 
   it('should create a new auction if the auction house is paused and unpaused after an auction is settled', async () => {
@@ -317,12 +318,14 @@ describe('NounsAuctionHouse', () => {
 
     const { nounId } = await nounsAuctionHouse.auction();
 
+    const owner = await nounsAuctionHouse.owner()
+
     await ethers.provider.send('evm_increaseTime', [60 * 60 * 25]); // Add 25 hours
 
     const tx = nounsAuctionHouse.connect(bidderA).settleCurrentAndCreateNewAuction();
 
     await expect(tx)
       .to.emit(nounsAuctionHouse, 'AuctionSettled')
-      .withArgs(nounId, '0x0000000000000000000000000000000000000000', 0);
+      .withArgs(nounId, constants.AddressZero, 0);
   });
 });

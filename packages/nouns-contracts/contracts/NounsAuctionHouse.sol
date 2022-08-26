@@ -216,7 +216,7 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
 
     /**
      * @notice Settle an auction, finalizing the bid and paying out to the owner.
-     * @dev If there are no bids, the Noun is burned.
+     * @dev If there are no bids, the Noun is sent to the owner address.
      */
     function _settleAuction() internal {
         INounsAuctionHouse.Auction memory _auction = auction;
@@ -227,8 +227,9 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
 
         auction.settled = true;
 
+        // instead of burning when no bidders, nouns get sent to the owner (i.e. treasury)
         if (_auction.bidder == address(0)) {
-            nouns.burn(_auction.nounId);
+            nouns.transferFrom(address(this), owner(), _auction.nounId);
         } else {
             nouns.transferFrom(address(this), _auction.bidder, _auction.nounId);
         }
