@@ -52,6 +52,11 @@ export const internalDiscordWebhookForProposals = new Discord.WebhookClient(
   config.propDiscordWebhookToken,
 );
 
+export const internalDiscordWebhookForPropLot = new Discord.WebhookClient(
+  config.propLotDiscordWebhookId,
+  config.propLotDiscordWebhookToken,
+);
+
 /**
  * Discord webhook client for sending messages to the public
  * Discord channel
