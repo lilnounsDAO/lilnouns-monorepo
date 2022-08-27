@@ -7,7 +7,7 @@ import {
   formatUpdatedGovernanceProposalStatusText,
   getNounPngBuffer,
 } from '../utils';
-import { Bid, IAuctionLifecycleHandler, Proposal, Vote } from '../types';
+import {Bid, IAuctionLifecycleHandler, Idea, IIdeaLifecycleHandler, Proposal, Vote} from '../types';
 
 export class DiscordAuctionLifecycleHandler implements IAuctionLifecycleHandler {
   constructor(public readonly discordClients: Discord.WebhookClient[]) {}
@@ -87,5 +87,29 @@ export class DiscordAuctionLifecycleHandler implements IAuctionLifecycleHandler 
       .setTimestamp();
     await Promise.all(this.discordClients.map(c => c.send(message)));
     console.log(`processed discord new vote for proposal ${proposal.id};${vote.id}`);
+  }
+}
+
+export class DiscordIdeaLifecycleHandler implements IIdeaLifecycleHandler {
+  constructor(public readonly discordClients: Discord.WebhookClient[]) {}
+
+  async handleNewIdea(idea: Idea): Promise<void> {
+    const message = new Discord.MessageEmbed()
+        .setTitle(`New Prop Lot Idea`)
+        .setURL(`https://lilnouns.wtf/ideas/${idea.id}`)
+        .setDescription(`A new Prop Lot idea (#${idea.id}) has been created: ${idea.title}`)
+        .setTimestamp();
+    await Promise.all(this.discordClients.map(c => c.send(message)));
+    console.log(`processed discord new idea ${idea.id}`);
+  }
+
+  async handlePopularIdea(idea: Idea): Promise<void> {
+    const message = new Discord.MessageEmbed()
+        .setTitle(`New Popular Idea`)
+        .setURL(`https://lilnouns.wtf/ideas/${idea.id}`)
+        .setDescription(`It seems idea #${idea.id} (${idea.title}) got a lot of attention. Please take look!`)
+        .setTimestamp();
+    await Promise.all(this.discordClients.map(c => c.send(message)));
+    console.log(`processed discord idea popularity alert ${idea.id}`);
   }
 }

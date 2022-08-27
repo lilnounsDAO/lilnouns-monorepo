@@ -1,24 +1,30 @@
 import { buildCounterName } from './utils';
-import { internalDiscordWebhook, internalDiscordWebhookForProposals, incrementCounter } from './clients';
+import {
+  internalDiscordWebhook,
+  internalDiscordWebhookForProposals,
+  internalDiscordWebhookForPropLot,
+  incrementCounter
+} from './clients';
 import { getAllProposals, getLastAuctionBids } from './subgraph';
 import {
   getAuctionCache,
   getAuctionEndingSoonCache,
-  getBidCache,
-  getProposalCache,
-  hasWarnedOfExpiry,
+  getBidCache, getIdeaCache,
+  getProposalCache, hasAlertedOfPopularity,
+  hasWarnedOfExpiry, setIdeaPopularityAlerted,
   setProposalExpiryWarningSent,
   updateAuctionCache,
   updateAuctionEndingSoonCache,
-  updateBidCache,
+  updateBidCache, updateIdeaCache,
   updateProposalCache,
 } from './cache';
-import { IAuctionLifecycleHandler } from './types';
+import {IAuctionLifecycleHandler, Idea, IIdeaLifecycleHandler} from './types';
 import { config } from './config';
 import { TwitterAuctionLifecycleHandler } from './handlers/twitter';
-import { DiscordAuctionLifecycleHandler } from './handlers/discord';
+import {DiscordAuctionLifecycleHandler, DiscordIdeaLifecycleHandler} from './handlers/discord';
 import { extractNewVotes, isAtRiskOfExpiry } from './utils/proposals';
 import R from 'ramda';
+import {getAllIdeas} from './request';
 
 /**
  * Create configured `IAuctionLifecycleHandler`s
@@ -26,9 +32,15 @@ import R from 'ramda';
 const auctionLifecycleHandlers: IAuctionLifecycleHandler[] = [];
 const propLifecycleHandlers: IAuctionLifecycleHandler[] = [];
 
+/**
+ * Create configured `IIdeaLifecycleHandler`s
+ */
+const ideaLifecycleHandlers: IIdeaLifecycleHandler[] = [];
+
 if (config.twitterEnabled) {
   auctionLifecycleHandlers.push(new TwitterAuctionLifecycleHandler());
 }
+
 if (config.discordEnabled) {
   auctionLifecycleHandlers.push(
     new DiscordAuctionLifecycleHandler([internalDiscordWebhook]),
@@ -36,6 +48,10 @@ if (config.discordEnabled) {
 
   propLifecycleHandlers.push(
     new DiscordAuctionLifecycleHandler([internalDiscordWebhookForProposals]),
+  );
+
+  ideaLifecycleHandlers.push(
+    new DiscordIdeaLifecycleHandler([internalDiscordWebhookForPropLot]),
   );
 }
 
@@ -133,7 +149,42 @@ async function processGovernanceTick() {
   }, proposals);
 }
 
+/**
+ * Seed cache with current proposals
+ */
+async function setupPropLot() {
+  const ideas = await getAllIdeas();
+  await Promise.all(ideas.map((i: Idea) => updateIdeaCache(i)));
+}
+
+async function processPropLotTick() {
+  const ideas = await getAllIdeas();
+
+  console.log(`propLotHandler: all ideas ids(${ideas.map((i: Idea) => i.id).join(',')})`);
+
+  R.map(async (idea: Idea) => {
+    const cachedIdea = await getIdeaCache(idea.id);
+
+    if (cachedIdea === null) {
+      // New Idea
+      await Promise.all(ideaLifecycleHandlers.map(i => i.handleNewIdea?.(idea)));
+    } else {
+      // Idea is popular
+      if (idea.votecount >= 200 && !(await hasAlertedOfPopularity(idea.id))) {
+        await Promise.all(
+            ideaLifecycleHandlers.map(h => h.handlePopularIdea?.(idea)),
+        );
+        await setIdeaPopularityAlerted(idea.id);
+      }
+    }
+
+    await updateIdeaCache(idea);
+  }, ideas)
+}
+
 setInterval(async () => processAuctionTick(), 30000);
 setInterval(async () => processGovernanceTick(), 60000);
+setInterval(async () => processPropLotTick(), 60000);
 setupAuction().then(() => 'setupAuction');
 setupGovernance().then(() => 'setupGovernance');
+setupPropLot().then(() => 'setupPropLot');

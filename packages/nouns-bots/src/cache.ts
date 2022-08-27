@@ -1,5 +1,5 @@
 import { redis } from './clients';
-import { Proposal } from './types';
+import {Idea, Proposal} from './types';
 
 /**
  * Key mapped to the current auction
@@ -30,6 +30,16 @@ export const getProposalCacheKeyPrefix = 'NOUNS_PROPOSAL_';
  * Key prefix for caching proposal expiry warning sent records
  */
 export const getProposalExpiryWarningSentCacheKeyPrefix = 'NOUNS_PROPOSAL_EXPIRY_WARNING_SENT_';
+
+/**
+ * Key prefix for caching idea records
+ */
+export const getIdeaCacheKeyPrefix = 'NOUNS_IDEA_';
+
+/**
+ * Key prefix for caching idea popularity alert sent records
+ */
+export const getIdeaPopularityAlertSentCacheKeyPrefix = 'NOUNS_IDEA_POPULARITY_ALERT_SENT_';
 
 /**
  * Update the auction cache with `id`
@@ -122,6 +132,21 @@ const proposalCacheKey = (id: number) => `${getProposalCacheKeyPrefix}${id}`;
 // prettier-ignore
 const proposalExpiryWarningSentCacheKey = (id: number) => `${getProposalExpiryWarningSentCacheKeyPrefix}${id}`;
 
+
+/**
+ * Build the idea cache key
+ * @param id Idea ID
+ * @returns Idea cache key
+ */
+const ideaCacheKey = (id: number) => `${getIdeaCacheKeyPrefix}${id}`;
+
+/**
+ * Build the idea popularity alert sent cache key
+ * @param id Idea ID
+ * @returns Idea popularity alert sent cache key
+ */
+const ideaPopularityAlertSentCacheKey = (id: number) => `${getIdeaPopularityAlertSentCacheKeyPrefix}${id}`;
+
 /**
  * Store a proposal into the redis cache
  * @param proposal Proposal to store
@@ -163,5 +188,49 @@ export const setProposalExpiryWarningSent = async (id: number) => {
  */
 export const hasWarnedOfExpiry = async (id: number) => {
   const cacheKey = proposalExpiryWarningSentCacheKey(id);
+  return Boolean(await redis.exists(cacheKey));
+};
+
+/**
+ * Store a idea into the cache
+ * @param idea Idea to store
+ * @returns void
+ */
+export const updateIdeaCache = async (idea: Idea) => {
+  const cacheKey = ideaCacheKey(idea.id);
+  return await redis.set(cacheKey, JSON.stringify(idea));
+};
+
+/**
+ * Attempt to fetch a idea from the cache
+ * @param id ID of the idea to fetch
+ * @returns Idea | null
+ */
+export async function getIdeaCache(id: number) {
+  const cacheKey = ideaCacheKey(id);
+  const idea = await redis.get(cacheKey);
+  if (idea) {
+    return JSON.parse(idea) as Idea;
+  }
+  return null;
+}
+
+/**
+ * Store a idea popularity notification receipt in the cache
+ * @param id ID of the popular idea
+ * @returns void
+ */
+export const setIdeaPopularityAlerted = async (id: number) => {
+  const cacheKey = ideaPopularityAlertSentCacheKey(id);
+  return redis.set(cacheKey, 1);
+};
+
+/**
+ * Determine if a popularity alert has been sent for a specific idea id
+ * @param id ID of the popular idea
+ * @returns boolean
+ */
+export const hasAlertedOfPopularity = async (id: number) => {
+  const cacheKey = ideaPopularityAlertSentCacheKey(id);
   return Boolean(await redis.exists(cacheKey));
 };

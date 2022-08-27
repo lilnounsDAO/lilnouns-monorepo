@@ -81,3 +81,48 @@ export interface Vote {
   supportDetailed: VoteDirection;
   reason: string | null;
 }
+
+export interface IdeaResponse {
+  status:  boolean;
+  message: string;
+  data:    Idea[];
+}
+
+export interface Idea {
+  id:          number;
+  createdAt:   Date;
+  updatedAt:   Date;
+  title:       string;
+  tldr:        string;
+  description: string;
+  creatorID:   string;
+  votecount:   number;
+  votes:       IdeaVote[];
+  count:       IdeaCount;
+}
+
+export interface IdeaCount {
+  comments: number;
+}
+
+export interface IdeaVote {
+  id:        number;
+  direction: number;
+  ideaID:    number;
+  voterID:   string;
+  createdAt: Date;
+  updatedAt: Date;
+  voter:     IdeaVoter;
+}
+
+export interface IdeaVoter {
+  id:           number;
+  wallet:       string;
+  ens:          null;
+  lilnounCount: number;
+}
+
+export interface IIdeaLifecycleHandler {
+  handleNewIdea(idea: Idea): Promise<void>;
+  handlePopularIdea(idea: Idea): Promise<void>;
+}
