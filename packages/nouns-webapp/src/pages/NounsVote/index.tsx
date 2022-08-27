@@ -27,6 +27,7 @@ import VoteCard, { VoteCardVariant } from '../../components/VoteCard';
 import {
   proposalVotesQuery,
   delegateNounsAtBlockQuery,
+  delegateLilNounsAtBlockQuery,
   ProposalVotes,
   Delegates,
   snapshotSingularProposalVotesQuery,
@@ -44,7 +45,7 @@ dayjs.extend(advanced);
 
 const AVERAGE_BLOCK_TIME_IN_SECS = 13;
 
-interface SnapshotVotes {
+export interface SnapshotVoters {
   voter: string;
   vp: number;
   choice: number;
@@ -69,6 +70,7 @@ interface SnapshotProp {
   snapshotForCountAmt: number;
   snapshotAgainstCountAmt: number;
   snapshotAbstainCountAmt: number;
+  snapshotVoters: SnapshotVoters[];
 }
 
 const NounsVotePage = ({
@@ -78,50 +80,6 @@ const NounsVotePage = ({
 }: RouteComponentProps<{ id: string }>) => {
   const proposal = useBigNounProposal(id);
   // const isMobile = isMobileScreen();
-
-  const {
-    loading: snapshotProposalLoading,
-    error: snapshotProposalError,
-    data: snapshotProposalData,
-  } = useQuery(snapshotProposalsQuery(), {
-    context: { clientName: 'NounsDAOSnapshot' },
-    skip: !proposal,
-  });
-
-  const {
-    loading: snapshotVoteLoading,
-    error: snapshotVoteError,
-    data: snapshotVoteData,
-  } = useQuery(
-    snapshotSingularProposalVotesQuery(
-      snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
-        spi.body.includes(proposal?.transactionHash ?? ''),
-      ) !== undefined
-        ? snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
-            spi.body.includes(proposal?.transactionHash ?? ''),
-          ).id 
-        : '',
-    ),
-    {
-      skip: !snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
-        spi.body.includes(proposal?.transactionHash ?? ''),
-      ),
-      context: { clientName: 'NounsDAOSnapshot' },
-    },
-  );
-
-  const { loading: lilnounsVoteLoading, data: lilnounsVoteData } = useQuery(
-    lilNounsHeldByVoterQuery(
-      JSON.stringify(snapshotVoteData?.votes.map((a: { voter: string }) => a.voter)),
-    ),
-    {
-      context: {
-        clientName: 'ZoraAPI',
-        Headers: { 'X-API-KEY': config.app.zoraKey},
-      },
-      skip: !snapshotVoteData?.votes,
-    },
-  );
 
   const [showVoteModal, setShowVoteModal] = useState<boolean>(false);
   const [isDelegateView, setIsDelegateView] = useState(false);
@@ -306,13 +264,57 @@ const NounsVotePage = ({
     }
   }, [showToast]);
 
+  const {
+    loading: snapshotProposalLoading,
+    error: snapshotProposalError,
+    data: snapshotProposalData,
+  } = useQuery(snapshotProposalsQuery(), {
+    context: { clientName: 'NounsDAOSnapshot' },
+    skip: !proposal,
+  });
+
+  const {
+    loading: snapshotVoteLoading,
+    error: snapshotVoteError,
+    data: snapshotVoteData,
+  } = useQuery(
+    snapshotSingularProposalVotesQuery(
+      snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
+        spi.body.includes(proposal?.transactionHash ?? ''),
+      ) !== undefined
+        ? snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
+            spi.body.includes(proposal?.transactionHash ?? ''),
+          ).id
+        : '',
+    ),
+    {
+      skip: !snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
+        spi.body.includes(proposal?.transactionHash ?? ''),
+      ),
+      context: { clientName: 'NounsDAOSnapshot' },
+    },
+  );
+
+  const { loading: lilnounsDelegatedVotesLoading, data: lilnounsDelegatedVotesData } = useQuery(
+    delegateLilNounsAtBlockQuery(
+      snapshotVoteData?.votes.map((a: { voter: string }) => a.voter.toLowerCase()),
+      snapshotProposalData?.proposals.find((spi: SnapshotProposal) =>
+        spi.body.includes(proposal?.transactionHash ?? ''),
+      ).snapshot,
+    ),
+    {
+      skip: !snapshotVoteData?.votes,
+      fetchPolicy: 'no-cache',
+    },
+  );
+
   if (
     !proposal ||
     loading ||
     !data ||
     snapshotProposalLoading ||
     snapshotVoteLoading ||
-    lilnounsVoteLoading
+    lilnounsDelegatedVotesLoading
   ) {
     return (
       <div className={classes.spinner}>
@@ -320,6 +322,10 @@ const NounsVotePage = ({
       </div>
     );
   }
+
+  const forNouns = getNounVotes(data, 1);
+  const againstNouns = getNounVotes(data, 0);
+  const abstainNouns = getNounVotes(data, 2);
 
   if (error || snapshotProposalError || snapshotVoteError) {
     return <>{'Failed to fetch'}</>;
@@ -332,10 +338,6 @@ const NounsVotePage = ({
 
   const isWalletConnected = !(activeAccount === undefined);
   const isActiveForVoting = !snapProp ? false : snapProp.state == 'active' ? true : false;
-
-  const forNouns = getNounVotes(data, 1);
-  const againstNouns = getNounVotes(data, 0);
-  const abstainNouns = getNounVotes(data, 2);
 
   const prepareSnapshot = (): SnapshotProp => {
     let propStatus = proposal.status;
@@ -351,43 +353,28 @@ const NounsVotePage = ({
         snapshotForCountAmt: 0,
         snapshotAgainstCountAmt: 0,
         snapshotAbstainCountAmt: 0,
+        snapshotVoters: [],
       };
 
       return snap;
     }
 
-    const snapVotes: SnapshotVotes[] = Object.values(
-      lilnounsVoteData?.tokens?.nodes.reduce(
-        (res: any, obj: SnapshotVoterOwnedNouns, i: number) => {
+    const snapVotes: SnapshotVoters[] = Object.values(
+      snapshotVoteData?.votes.reduce((res: any, obj: SnapshotVoters, i: number) => {
+        const delegatedVoterRepresentedNounIds = lilnounsDelegatedVotesData?.delegates
+          .filter((d: any) => d.id === obj.voter.toLowerCase())
+          .flatMap((d: any) => d.nounsRepresented)
+          .map((d: any) => d.id);
 
-          const voterObj = snapshotVoteData?.votes.find(
-            (voterObject: SnapshotVotes) =>
-              voterObject.voter.toString().toLowerCase() ===
-              obj.token.owner.toString().toLowerCase(),
-          );
+        res[obj.voter] = res[obj.voter] || {
+          voter: obj.voter,
+          vp: obj.vp,
+          choice: obj.choice,
+          nounIds: delegatedVoterRepresentedNounIds,
+        };
 
-          snapshotVoteData?.votes.map((sobj: SnapshotVotes) => ({
-            ...sobj,
-            nounIds: [
-              lilnounsVoteData?.tokens?.nodes
-                .filter((d: SnapshotVoterOwnedNouns) => d.token.owner === obj.token.owner)
-                .flatMap((d: SnapshotVoterOwnedNouns) => d.token.tokenId),
-            ],
-          }));
-
-          res[obj.token.owner] = res[obj.token.owner] || {
-            voter: obj.token.owner,
-            vp: voterObj.vp,
-            choice: voterObj.choice,
-            nounIds: lilnounsVoteData?.tokens?.nodes
-              .filter((d: SnapshotVoterOwnedNouns) => d.token.owner === obj.token.owner)
-              .flatMap((d: SnapshotVoterOwnedNouns) => d.token.tokenId),
-          };
-
-          return res;
-        },
-        [],
-      ),
+        return res;
+      }, []),
     );
 
     switch (snapProp.state) {
@@ -424,6 +411,7 @@ const NounsVotePage = ({
       snapshotForCountAmt: snapProp.scores[0],
       snapshotAgainstCountAmt: snapProp.scores[1],
       snapshotAbstainCountAmt: snapProp.scores[2],
+      snapshotVoters: snapVotes,
     };
 
     return snap;
@@ -455,9 +443,9 @@ const NounsVotePage = ({
       }
 
       return snapshotPropEndDate;
-    } 
-    
-    return undefined
+    }
+
+    return undefined;
   };
 
   const snapshotForCountAmt = fetchedValues.snapshotForCountAmt;
@@ -621,7 +609,7 @@ const NounsVotePage = ({
                           : snapshotStartOrEndTimeTime() &&
                             snapshotStartOrEndTimeTime()?.format('h:mm A z')
                         : !isSnapshotView
-                        ? startOrEndTimeTime() && startOrEndTimeTime()?.format('MMM D, YYYY')
+                        ? startOrEndTimeTime() && startOrEndTimeTime()?.format('h:mm A z')
                         : 'Time'}
                     </span>
                     <h3>

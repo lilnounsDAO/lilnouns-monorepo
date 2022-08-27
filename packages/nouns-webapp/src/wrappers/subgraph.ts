@@ -240,6 +240,28 @@ export const delegateNounsAtBlockQuery = (delegates: string[], block: number) =>
 }
 `;
 
+export const delegateLilNounsAtBlockQuery = (delegatess: string[], blocks: number) => gql`
+{
+  delegates(where: { id_in: ${JSON.stringify(delegatess)} }, block: { number: ${blocks} }) {
+    id
+    nounsRepresented {
+      id
+    }
+  }
+}
+`;
+
+export const delegateNounsAtBlockQueryTest = (delegates: string, block: number) => gql`
+{
+  delegates(where: { id_in: ${delegates} }, block: { number: ${block} }) {
+    id
+    nounsRepresented {
+      id
+    }
+  }
+}
+`;
+
 export const snapshotProposalsQuery = () => gql`
   {
     proposals(
@@ -321,8 +343,26 @@ export const lilNounsHeldByVoterQuery = (snapshotProposalVoterIds: string) => gq
 }
 `;
 
+export const delegatedLilNounsHeldByVoterQuery = (voterId: string) => gql`
+  query {
+    accounts(where: { id: ${voterId} }) {
+      id
+      delegate {
+        id
+        tokenHoldersRepresentedAmount
+        nounsRepresented {
+          id
+        }
+      }
+    }
+  }
+`;
+
 export const clientFactory = (uri: string) =>
   new ApolloClient({
     uri,
     cache: new InMemoryCache(),
   });
+
+
+ 

@@ -11,24 +11,33 @@ import { useUserVotesAsOfBlock } from '../../wrappers/nounToken';
 import { useBlockTimestamp } from '../../hooks/useBlockTimestamp';
 import dayjs from 'dayjs';
 import { SnapshotProposal } from '../Proposals';
+import { SnapshotVoters } from '../../pages/NounsVote';
+import { useEthers } from '@usedapp/core';
 
 interface ProposalHeaderProps {
   proposal: Proposal;
   snapshotProposal?: SnapshotProposal;
+  snapshotVoters?: SnapshotVoters[];
   isNounsDAOProp?: boolean;
   isActiveForVoting?: boolean;
   isWalletConnected: boolean;
   submitButtonClickHandler: () => void;
 }
 
+export const useHasVotedOnSnapshotProposal = (snapshotVoters: SnapshotVoters[] | undefined): boolean => {
+  if(!snapshotVoters) return false;
+  const { account } = useEthers();
+  return snapshotVoters.flatMap(a => a.voter).includes(account?.toLowerCase() ?? "") ? true : false
+};
+
 const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
-  const { proposal, isActiveForVoting, isWalletConnected, submitButtonClickHandler , snapshotProposal, isNounsDAOProp} = props;
+  const { proposal, isActiveForVoting, isWalletConnected, submitButtonClickHandler , snapshotProposal, isNounsDAOProp, snapshotVoters} = props;
 
   const isMobile = isMobileScreen();
   const availableVotes = useUserVotesAsOfBlock(proposal?.createdBlock) ?? 0;
-  const hasVoted = useHasVotedOnProposal(proposal?.id);
+  const hasVoted = !snapshotProposal ? useHasVotedOnProposal(proposal?.id) : useHasVotedOnSnapshotProposal(snapshotVoters) 
   const proposalVote = useProposalVote(proposal?.id);
-  const proposalCreationTimestamp = useBlockTimestamp(proposal?.createdBlock);
+  const proposalCreationTimestamp = !snapshotProposal ? useBlockTimestamp(proposal?.createdBlock) : useBlockTimestamp(Number(snapshotProposal?.snapshot))
   const disableVoteButton = !isWalletConnected || !availableVotes;
 
   const voteButton = (
