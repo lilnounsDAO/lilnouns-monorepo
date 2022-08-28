@@ -5,7 +5,6 @@ import { Proposal } from '../../wrappers/nounsDao';
 import NounImageVoteTable from '../NounImageVoteTable';
 import VoteProgresBar from '../VoteProgressBar';
 import classes from './VoteCard.module.css';
-import { useEthers } from '@usedapp/core';
 
 export enum VoteCardVariant {
   FOR,

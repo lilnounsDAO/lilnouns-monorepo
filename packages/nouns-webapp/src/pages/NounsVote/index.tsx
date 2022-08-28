@@ -9,24 +9,27 @@ import {
 import { useUserVotesAsOfBlock } from '../../wrappers/nounToken';
 import classes from './NounsVote.module.css';
 import { RouteComponentProps } from 'react-router-dom';
-import { TransactionStatus, useBlockNumber } from '@usedapp/core';
+import { TransactionStatus, useBlockNumber, useEthers } from '@usedapp/core';
 import { AlertModal, setAlertModal } from '../../state/slices/application';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import advanced from 'dayjs/plugin/advancedFormat';
 import SnapshotVoteModalModal from '../../components/SnapshotVoteModal';
-import React, { useCallback, useEffect, useState } from 'react';
-import config from '../../config';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import clsx from 'clsx';
 import ProposalHeader from '../../components/ProposalHeader';
 import ProposalContent from '../../components/ProposalContent';
 import VoteCard, { VoteCardVariant } from '../../components/VoteCard';
 
+//TODO: votes query refetch on succesfull snapshot vote.
+// https://www.apollographql.com/docs/react/data/queries/#refetching
+
 import {
   proposalVotesQuery,
   delegateNounsAtBlockQuery,
+  delegateLilNounsAtBlockQuery,
   ProposalVotes,
   Delegates,
   snapshotSingularProposalVotesQuery,
@@ -44,18 +47,11 @@ dayjs.extend(advanced);
 
 const AVERAGE_BLOCK_TIME_IN_SECS = 13;
 
-interface SnapshotVotes {
+export interface SnapshotVoters {
   voter: string;
   vp: number;
   choice: number;
   nounIds: string[];
-}
-
-interface SnapshotVoterOwnedNouns {
-  token: {
-    tokenId: string;
-    owner: string;
-  };
 }
 
 interface SnapshotProp {
@@ -69,7 +65,16 @@ interface SnapshotProp {
   snapshotForCountAmt: number;
   snapshotAgainstCountAmt: number;
   snapshotAbstainCountAmt: number;
+  snapshotVoters: SnapshotVoters[];
 }
+
+// export const useUserSnapshotVotesAsOfBlock = (lilnounsDelegatedVotesData: Delegates | undefined): number | undefined => {
+//   if(!lilnounsDelegatedVotesData) return 0;
+
+//   const { account } = useEthers();
+//   const userVotes = lilnounsDelegatedVotesData?.delegates.filter((d: any) => d.id === account?.toLowerCase()).flatMap((d: any) => d.nounsRepresented).map((d: any) => d.id).length ?? 0
+//   return userVotes;
+// };
 
 const NounsVotePage = ({
   match: {
@@ -77,7 +82,38 @@ const NounsVotePage = ({
   },
 }: RouteComponentProps<{ id: string }>) => {
   const proposal = useBigNounProposal(id);
-  // const isMobile = isMobileScreen();
+
+  const activeAccount = useAppSelector(state => state.account.activeAccount);
+  const {
+    loading,
+    error,
+    data: voters,
+  } = useQuery<ProposalVotes>(proposalVotesQuery(proposal?.id ?? '0'), {
+    context: { clientName: 'NounsDAO' },
+  });
+
+  const voterIds = voters?.votes?.map(v => v.voter.id);
+  const { data: delegateSnapshot } = useQuery<Delegates>(
+    delegateNounsAtBlockQuery(voterIds ?? [], proposal?.createdBlock ?? 0),
+    {
+      skip: !voters?.votes?.length,
+      context: { clientName: 'NounsDAO' },
+      //* no cache to mitigate against object mutation between lils and nouns
+      fetchPolicy: 'no-cache',
+    },
+  );
+
+  const { delegates } = delegateSnapshot || {};
+  const delegateToNounIds = delegates?.reduce<Record<string, string[]>>((acc, curr) => {
+    acc[curr.id] = curr?.nounsRepresented?.map(nr => nr.id) ?? [];
+    return acc;
+  }, {});
+
+  const data = voters?.votes?.map(v => ({
+    delegate: v.voter.id,
+    supportDetailed: v.supportDetailed,
+    nounsRepresented: delegateToNounIds?.[v.voter.id] ?? [],
+  }));
 
   const {
     loading: snapshotProposalLoading,
@@ -99,7 +135,7 @@ const NounsVotePage = ({
       ) !== undefined
         ? snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
             spi.body.includes(proposal?.transactionHash ?? ''),
-          ).id 
+          ).id
         : '',
     ),
     {
@@ -110,22 +146,28 @@ const NounsVotePage = ({
     },
   );
 
-  const { loading: lilnounsVoteLoading, data: lilnounsVoteData } = useQuery(
-    lilNounsHeldByVoterQuery(
-      JSON.stringify(snapshotVoteData?.votes.map((a: { voter: string }) => a.voter)),
-    ),
-    {
-      context: {
-        clientName: 'ZoraAPI',
-        Headers: { 'X-API-KEY': config.app.zoraKey},
-      },
-      skip: !snapshotVoteData?.votes,
-    },
+  const snapProp = snapshotProposalData?.proposals.find((spi: SnapshotProposal) =>
+    spi.body.includes(proposal?.transactionHash ?? ''),
   );
+  const { loading: lilnounsDelegatedVotesLoading, data: lilnounsDelegatedVotesData } =
+    useQuery<Delegates>(
+      delegateLilNounsAtBlockQuery(
+        snapshotVoteData?.votes.map((a: { voter: string }) => a.voter.toLowerCase()) ?? [],
+        snapProp?.snapshot ?? 0,
+      ),
+      {
+        skip: !snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
+          spi.body.includes(proposal?.transactionHash ?? ''),
+        ),
+        // fetchPolicy: 'no-cache',
+      },
+    );
+
+  // const isMobile = isMobileScreen();
 
   const [showVoteModal, setShowVoteModal] = useState<boolean>(false);
   const [isDelegateView, setIsDelegateView] = useState(false);
-  const [isSnapshotView, setIsSnapshotView] = useState(false);
+  const [isSnapshotView, setIsSnapshotView] = useState(true);
 
   const [isQueuePending, setQueuePending] = useState<boolean>(false);
   const [isExecutePending, setExecutePending] = useState<boolean>(false);
@@ -164,7 +206,9 @@ const NounsVotePage = ({
   const abstainPercentage = proposal && totalVotes ? (proposal.abstainCount * 100) / totalVotes : 0;
 
   // Only count available votes as of the proposal created block
-  const availableVotes = useUserVotesAsOfBlock(proposal?.createdBlock ?? undefined);
+  const availableVotes = !isSnapshotView
+    ? useUserVotesAsOfBlock(proposal?.createdBlock ?? undefined)
+    : useUserVotesAsOfBlock(snapProp?.snapshot ?? undefined);
 
   const hasSucceeded = proposal?.status === ProposalState.SUCCEEDED;
   const isAwaitingStateChange = () => {
@@ -267,36 +311,6 @@ const NounsVotePage = ({
     [executeProposalState, onTransactionStateChange, setModal],
   );
 
-  const activeAccount = useAppSelector(state => state.account.activeAccount);
-  const {
-    loading,
-    error,
-    data: voters,
-  } = useQuery<ProposalVotes>(proposalVotesQuery(proposal?.id ?? '0'), {
-    context: { clientName: 'NounsDAO' },
-  });
-
-  const voterIds = voters?.votes?.map(v => v.voter.id);
-  const { data: delegateSnapshot } = useQuery<Delegates>(
-    delegateNounsAtBlockQuery(voterIds ?? [], proposal?.createdBlock ?? 0),
-    {
-      skip: !voters?.votes?.length,
-      context: { clientName: 'NounsDAO' },
-    },
-  );
-
-  const { delegates } = delegateSnapshot || {};
-  const delegateToNounIds = delegates?.reduce<Record<string, string[]>>((acc, curr) => {
-    acc[curr.id] = curr?.nounsRepresented?.map(nr => nr.id) ?? [];
-    return acc;
-  }, {});
-
-  const data = voters?.votes?.map(v => ({
-    delegate: v.voter.id,
-    supportDetailed: v.supportDetailed,
-    nounsRepresented: delegateToNounIds?.[v.voter.id] ?? [],
-  }));
-
   const [showToast, setShowToast] = useState(true);
   useEffect(() => {
     if (showToast) {
@@ -312,7 +326,7 @@ const NounsVotePage = ({
     !data ||
     snapshotProposalLoading ||
     snapshotVoteLoading ||
-    lilnounsVoteLoading
+    lilnounsDelegatedVotesLoading
   ) {
     return (
       <div className={classes.spinner}>
@@ -321,21 +335,16 @@ const NounsVotePage = ({
     );
   }
 
+  const forNouns = getNounVotes(data, 1);
+  const againstNouns = getNounVotes(data, 0);
+  const abstainNouns = getNounVotes(data, 2);
+
   if (error || snapshotProposalError || snapshotVoteError) {
     return <>{'Failed to fetch'}</>;
   }
 
-  //Technically not needed as this is provided top line in snapshot prop object
-  const snapProp: SnapshotProposal = snapshotProposalData?.proposals.find((spi: SnapshotProposal) =>
-    spi.body.includes(proposal?.transactionHash ?? ''),
-  );
-
   const isWalletConnected = !(activeAccount === undefined);
   const isActiveForVoting = !snapProp ? false : snapProp.state == 'active' ? true : false;
-
-  const forNouns = getNounVotes(data, 1);
-  const againstNouns = getNounVotes(data, 0);
-  const abstainNouns = getNounVotes(data, 2);
 
   const prepareSnapshot = (): SnapshotProp => {
     let propStatus = proposal.status;
@@ -351,43 +360,28 @@ const NounsVotePage = ({
         snapshotForCountAmt: 0,
         snapshotAgainstCountAmt: 0,
         snapshotAbstainCountAmt: 0,
+        snapshotVoters: [],
       };
 
       return snap;
     }
 
-    const snapVotes: SnapshotVotes[] = Object.values(
-      lilnounsVoteData?.tokens?.nodes.reduce(
-        (res: any, obj: SnapshotVoterOwnedNouns, i: number) => {
+    const snapVotes: SnapshotVoters[] = Object.values(
+      snapshotVoteData?.votes.reduce((res: any, obj: SnapshotVoters, i: number) => {
+        const delegatedVoterRepresentedNounIds = lilnounsDelegatedVotesData?.delegates
+          .filter((d: any) => d.id === obj.voter.toLowerCase())
+          .flatMap((d: any) => d.nounsRepresented)
+          .map((d: any) => d.id);
 
-          const voterObj = snapshotVoteData?.votes.find(
-            (voterObject: SnapshotVotes) =>
-              voterObject.voter.toString().toLowerCase() ===
-              obj.token.owner.toString().toLowerCase(),
-          );
+        res[obj.voter] = res[obj.voter] || {
+          voter: obj.voter,
+          vp: obj.vp,
+          choice: obj.choice,
+          nounIds: delegatedVoterRepresentedNounIds,
+        };
 
-          snapshotVoteData?.votes.map((sobj: SnapshotVotes) => ({
-            ...sobj,
-            nounIds: [
-              lilnounsVoteData?.tokens?.nodes
-                .filter((d: SnapshotVoterOwnedNouns) => d.token.owner === obj.token.owner)
-                .flatMap((d: SnapshotVoterOwnedNouns) => d.token.tokenId),
-            ],
-          }));
-
-          res[obj.token.owner] = res[obj.token.owner] || {
-            voter: obj.token.owner,
-            vp: voterObj.vp,
-            choice: voterObj.choice,
-            nounIds: lilnounsVoteData?.tokens?.nodes
-              .filter((d: SnapshotVoterOwnedNouns) => d.token.owner === obj.token.owner)
-              .flatMap((d: SnapshotVoterOwnedNouns) => d.token.tokenId),
-          };
-
-          return res;
-        },
-        [],
-      ),
+        return res;
+      }, []),
     );
 
     switch (snapProp.state) {
@@ -424,6 +418,7 @@ const NounsVotePage = ({
       snapshotForCountAmt: snapProp.scores[0],
       snapshotAgainstCountAmt: snapProp.scores[1],
       snapshotAbstainCountAmt: snapProp.scores[2],
+      snapshotVoters: snapVotes,
     };
 
     return snap;
@@ -455,9 +450,9 @@ const NounsVotePage = ({
       }
 
       return snapshotPropEndDate;
-    } 
-    
-    return undefined
+    }
+
+    return undefined;
   };
 
   const snapshotForCountAmt = fetchedValues.snapshotForCountAmt;
@@ -621,7 +616,7 @@ const NounsVotePage = ({
                           : snapshotStartOrEndTimeTime() &&
                             snapshotStartOrEndTimeTime()?.format('h:mm A z')
                         : !isSnapshotView
-                        ? startOrEndTimeTime() && startOrEndTimeTime()?.format('MMM D, YYYY')
+                        ? startOrEndTimeTime() && startOrEndTimeTime()?.format('h:mm A z')
                         : 'Time'}
                     </span>
                     <h3>

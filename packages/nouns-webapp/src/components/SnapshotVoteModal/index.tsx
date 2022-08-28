@@ -81,7 +81,7 @@ const SnapshotVoteModalModal = ({
   }, []);
 
   async function snapVote(proposalSnapshotId: string, vote: number) {
-    console.log(`proposalSnapshotId: ${proposalSnapshotId}`)
+    // console.log(`proposalSnapshotId: ${proposalSnapshotId}`)
     return await client
       .vote(new ethers.providers.Web3Provider(library?.provider!), account!, {
         space: 'leagueoflils.eth',

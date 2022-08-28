@@ -3,8 +3,8 @@ import { ZERO_ADDRESS, BIGINT_ZERO, BIGINT_ONE } from './constants';
 
 export function getOrCreateAccount(
   id: string,
-  createIfNotFound = true,
-  save = true,
+  createIfNotFound: boolean = true,
+  save: boolean = true,
 ): Account {
   let tokenHolder = Account.load(id);
 
@@ -26,20 +26,20 @@ export function getOrCreateAccount(
 
 export function getOrCreateDelegate(
   id: string,
-  createIfNotFound = true,
-  save = true,
+  createIfNotFound: boolean = true,
+  save: boolean = true,
 ): Delegate {
   let delegate = Delegate.load(id);
 
   if (delegate == null && createIfNotFound) {
-    delegate = new Delegate(id);
+    delegate = new Delegate(id); 
     delegate.delegatedVotesRaw = BIGINT_ZERO;
     delegate.delegatedVotes = BIGINT_ZERO;
     delegate.tokenHoldersRepresentedAmount = 0;
     delegate.nounsRepresented = [];
 
     if (id != ZERO_ADDRESS) {
-      const governance = getGovernanceEntity();
+      let governance = getGovernanceEntity();
       governance.totalDelegates = governance.totalDelegates + BIGINT_ONE;
       governance.save();
     }
@@ -54,8 +54,8 @@ export function getOrCreateDelegate(
 
 export function getOrCreateVote(
   id: string,
-  createIfNotFound = true,
-  save = false,
+  createIfNotFound: boolean = true,
+  save: boolean = false,
 ): Vote {
   let vote = Vote.load(id);
 
@@ -72,15 +72,15 @@ export function getOrCreateVote(
 
 export function getOrCreateProposal(
   id: string,
-  createIfNotFound = true,
-  save = false,
+  createIfNotFound: boolean = true,
+  save: boolean = false,
 ): Proposal {
   let proposal = Proposal.load(id);
 
   if (proposal == null && createIfNotFound) {
     proposal = new Proposal(id);
 
-    const governance = getGovernanceEntity();
+    let governance = getGovernanceEntity();
 
     governance.proposals = governance.proposals + BIGINT_ONE;
     governance.save();
