@@ -42,7 +42,7 @@ const NounInfoCard: React.FC<NounInfoCardProps> = props => {
       return;
     }
 
-    console.log(noun);
+    // console.log(noun);
     const png = await svg2png(noun.svg, 500, 500)
     if (!png) {
       return;
