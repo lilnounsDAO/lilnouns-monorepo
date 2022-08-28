@@ -4,7 +4,7 @@ const chainIdToAddresses: { [chainId: number]: ContractAddresses } = {
   [ChainId.Mainnet]: {
     nounsToken: '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B',
     nounsSeeder: '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515',
-    nounsDescriptor: '0x11fb55d9580cdbfb83de3510ff5ba74309800ad1 ',
+    nounsDescriptor: '0x11fb55d9580cdbfb83de3510ff5ba74309800ad1',
     nftDescriptor: '0x0BBAd8c947210ab6284699605ce2a61780958264',
     nounsAuctionHouse: '0x5B2003cA8FE9FfB93684cE377f52B415C7dC0216',
     nounsAuctionHouseProxy: '0x55e0F7A3bB39a28Bd7Bcc458e04b3cF00Ad3219E',

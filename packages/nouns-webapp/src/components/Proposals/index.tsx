@@ -13,11 +13,16 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useState } from 'react';
 import DelegationModal from '../DelegationModal';
-import { ethers } from 'ethers';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import advanced from 'dayjs/plugin/advancedFormat';
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advanced);
 dayjs.extend(relativeTime);
 
-const getCountdownCopy = (proposal: Proposal, currentBlock: number) => {
+const getCountdownCopy = (proposal: Proposal, currentBlock: number, propState?: ProposalState, snapshotProp?: SnapshotProposal) => {
   const AVERAGE_BLOCK_TIME_IN_SECS = 13;
   const timestamp = Date.now();
   const startDate =
@@ -40,6 +45,26 @@ const getCountdownCopy = (proposal: Proposal, currentBlock: number) => {
 
   const now = dayjs();
 
+  const past = dayjs.unix(1659942900)
+  const nows = dayjs().unix()
+  const present = dayjs.unix(nows)
+  const mm = present.diff(past, 'days')
+  
+  if(snapshotProp && (propState == ProposalState.METAGOV_ACTIVE || propState == ProposalState.METAGOV_CLOSED)){
+    const snapshotPropEndDate = dayjs.unix(snapshotProp.end)
+    const snapshotPropStartDate = dayjs.unix(snapshotProp.start) 
+
+    console.log(`getCountdownCopy: endDate: ${snapshotPropEndDate.fromNow()}. startDate: ${snapshotPropStartDate}`)
+
+    if (snapshotPropStartDate?.isBefore(now) && snapshotPropEndDate?.isAfter(now)) {
+      return `Lil Nouns Voting Ends ${snapshotPropEndDate.fromNow()}`;
+    }
+    if (snapshotPropEndDate?.isBefore(now)) {
+      return `Nouns Voting Ends ${endDate?.fromNow()}`;
+    }
+    return `Lil Nouns Voting Starts ${snapshotPropStartDate.fromNow()}`;
+  } 
+
   if (startDate?.isBefore(now) && endDate?.isAfter(now)) {
     return `Ends ${endDate.fromNow()}`;
   }
@@ -47,9 +72,58 @@ const getCountdownCopy = (proposal: Proposal, currentBlock: number) => {
     return `Expires ${expiresDate.fromNow()}`;
   }
   return `Starts ${dayjs(startDate).fromNow()}`;
+  
 };
 
-const Proposals = ({ proposals }: { proposals: Proposal[]}) => {
+export enum Vote_ {
+  AGAINST = 0,
+  FOR = 1,
+  ABSTAIN = 2,
+}
+
+export enum ProposalState_ {
+  UNDETERMINED = -1,
+  PENDING,
+  ACTIVE,
+  CANCELED,
+  DEFEATED,
+  SUCCEEDED,
+  QUEUED,
+  EXPIRED,
+  EXECUTED,
+  VETOED,
+}
+
+export interface SnapshotProposal {
+  id: string;
+  title: string;
+  body: string;
+  state: 'active' | 'closed' | 'pending';
+  choices: 'For' | 'Against' | 'Abstain';
+  start: number;
+  end: number;
+  snapshot: string;
+  author: string; //proposer
+  proposalNo: number;
+
+  scores_total: number
+  scores: number[]
+
+  transactionHash: string;
+  [key: string]: any;
+}
+
+const Proposals = ({
+  proposals,
+  nounsDAOProposals,
+  snapshotProposals,
+  isNounsDAOProp,
+}: {
+  proposals: Proposal[];
+  nounsDAOProposals: Proposal[];
+  snapshotProposals: SnapshotProposal[] | null;
+  isNounsDAOProp: boolean;
+}) => {
   const history = useHistory();
 
   const { account } = useEthers();
@@ -67,118 +141,254 @@ const Proposals = ({ proposals }: { proposals: Proposal[]}) => {
 
   const hasNounVotes = account !== undefined && connectedAccountNounVotes > 0;
   const hasNounBalance = (useNounTokenBalance(account || undefined) ?? 0) > 0;
- 
+
   return (
-    <div className={classes.proposals}>
-      {showDelegateModal && <DelegationModal onDismiss={() => setShowDelegateModal(false)} />}
-      <div className={clsx(classes.headerWrapper, !hasNounVotes ? classes.forceFlexRow : '')}>
-        <h3 className={classes.heading}>Proposals</h3>
-        {hasNounVotes ? (
-          <div className={classes.nounInWalletBtnWrapper}>
-            <div className={classes.submitProposalButtonWrapper}>
-              <Button
-                className={classes.generateBtn}
-                onClick={() => history.push('create-proposal')}
-              >
-                Submit Proposal
-              </Button>
-            </div>
-
-            {account !== null && account !== undefined && hasNounBalance && (
-              <div className={classes.delegateBtnWrapper}>
-                <Button
-                  className={classes.changeDelegateBtn}
-                  onClick={() => setShowDelegateModal(true)}
-                >
-                  Delegate
-                </Button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className={clsx('d-flex', classes.nullStateSubmitProposalBtnWrapper)}>
-            {!isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
-            <div className={classes.nullBtnWrapper}>
-              <Button className={classes.generateBtnDisabled}>Submit Proposal</Button>
-            </div>
-            {!isMobile && account !== null && account !== undefined && hasNounBalance && (
-              <div className={classes.delegateBtnWrapper}>
-                <Button
-                  className={classes.changeDelegateBtn}
-                  onClick={() => setShowDelegateModal(true)}
-                >
-                  Delegate
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
-      {isMobile && account !== null && account !== undefined && hasNounBalance && (
-        <div>
-          <Button className={classes.changeDelegateBtn} onClick={() => setShowDelegateModal(true)}>
-            Delegate
-          </Button>
-        </div>
-      )}
-      {proposals?.length ? (
-        proposals
-          .slice(0)
-          .reverse()
-          .map((p, i) => {
-            const isPropInStateToHaveCountDown =
-              p.status === ProposalState.PENDING ||
-              p.status === ProposalState.ACTIVE ||
-              p.status === ProposalState.QUEUED;
-
-            const countdownPill = (
-              <div className={classes.proposalStatusWrapper}>
-                <div className={clsx(proposalStatusClasses.proposalStatus, classes.countdownPill)}>
-                  <div className={classes.countdownPillContentWrapper}>
-                    <span className={classes.countdownPillClock}>
-                      <ClockIcon height={16} width={16} />
-                    </span>{' '}
-                    <span className={classes.countdownPillText}>
-                      {getCountdownCopy(p, currentBlock || 0)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-
-            return (
-              <div
-                className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
-                onClick={() => history.push(`/vote/${p.id}`)}
-                key={i}
-              >
-                <div className={classes.proposalInfoWrapper}>
-                  <span className={classes.proposalTitle}>
-                    <span className={classes.proposalId}>{p.id}</span> <span>{p.title}</span>
-                  </span>
-
-                  {isPropInStateToHaveCountDown && (
-                    <div className={classes.desktopCountdownWrapper}>{countdownPill}</div>
-                  )}
-                  <div className={clsx(classes.proposalStatusWrapper, classes.votePillWrapper)}>
-                    <ProposalStatus status={p.status}></ProposalStatus>
-                  </div>
+    <>
+      {!isNounsDAOProp ? (
+        <div className={classes.proposals}>
+          {showDelegateModal && <DelegationModal onDismiss={() => setShowDelegateModal(false)} />}
+          <div className={clsx(classes.headerWrapper, !hasNounVotes ? classes.forceFlexRow : '')}>
+            <h3 className={classes.heading}>Proposals</h3>
+            {hasNounVotes ? (
+              <div className={classes.nounInWalletBtnWrapper}>
+                <div className={classes.submitProposalButtonWrapper}>
+                  <Button
+                    className={classes.generateBtn}
+                    onClick={() => history.push('create-proposal')}
+                  >
+                    Submit Proposal
+                  </Button>
                 </div>
 
-                {isPropInStateToHaveCountDown && (
-                  <div className={classes.mobileCountdownWrapper}>{countdownPill}</div>
+                {account !== null && account !== undefined && hasNounBalance && (
+                  <div className={classes.delegateBtnWrapper}>
+                    <Button
+                      className={classes.changeDelegateBtn}
+                      onClick={() => setShowDelegateModal(true)}
+                    >
+                      Delegate
+                    </Button>
+                  </div>
                 )}
               </div>
-            );
-          })
+            ) : (
+              <div className={clsx('d-flex', classes.nullStateSubmitProposalBtnWrapper)}>
+                {!isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
+                <div className={classes.nullBtnWrapper}>
+                  <Button className={classes.generateBtnDisabled}>Submit Proposal</Button>
+                </div>
+                {!isMobile && account !== null && account !== undefined && hasNounBalance && (
+                  <div className={classes.delegateBtnWrapper}>
+                    <Button
+                      className={classes.changeDelegateBtn}
+                      onClick={() => setShowDelegateModal(true)}
+                    >
+                      Delegate
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
+          {isMobile && account !== null && account !== undefined && hasNounBalance && (
+            <div>
+              <Button
+                className={classes.changeDelegateBtn}
+                onClick={() => setShowDelegateModal(true)}
+              >
+                Delegate
+              </Button>
+            </div>
+          )}
+          {proposals?.length ? (
+            proposals
+              .slice(0)
+              .reverse()
+              .map((p, i) => {
+                const isPropInStateToHaveCountDown =
+                  p.status === ProposalState.PENDING ||
+                  p.status === ProposalState.ACTIVE ||
+                  p.status === ProposalState.QUEUED;
+
+                const countdownPill = (
+                  <div className={classes.proposalStatusWrapper}>
+                    <div
+                      className={clsx(proposalStatusClasses.proposalStatus, classes.countdownPill)}
+                    >
+                      <div className={classes.countdownPillContentWrapper}>
+                        <span className={classes.countdownPillClock}>
+                          <ClockIcon height={16} width={16} />
+                        </span>{' '}
+                        <span className={classes.countdownPillText}>
+                          {getCountdownCopy(p, currentBlock || 0)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+
+                return (
+                  <div
+                    className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
+                    onClick={() => history.push(`/vote/${p.id}`)}
+                    key={i}
+                  >
+                    <div className={classes.proposalInfoWrapper}>
+                      <span className={classes.proposalTitle}>
+                        <span className={classes.proposalId}>{p.id}</span> <span>{p.title}</span>
+                      </span>
+
+                      {isPropInStateToHaveCountDown && (
+                        <div className={classes.desktopCountdownWrapper}>{countdownPill}</div>
+                      )}
+                      <div className={clsx(classes.proposalStatusWrapper, classes.votePillWrapper)}>
+                        <ProposalStatus status={p.status}></ProposalStatus>
+                      </div>
+                    </div>
+
+                    {isPropInStateToHaveCountDown && (
+                      <div className={classes.mobileCountdownWrapper}>{countdownPill}</div>
+                    )}
+                  </div>
+                );
+              })
+          ) : (
+            <Alert variant="secondary">
+              <Alert.Heading>No proposals found</Alert.Heading>
+              <p>Proposals submitted by community members will appear here.</p>
+            </Alert>
+          )}
+        </div>
       ) : (
-        <Alert variant="secondary">
-          <Alert.Heading>No proposals found</Alert.Heading>
-          <p>Proposals submitted by community members will appear here.</p>
-        </Alert>
+        <div className={classes.proposals}>
+          {showDelegateModal && <DelegationModal onDismiss={() => setShowDelegateModal(false)} />}
+          <div className={clsx(classes.headerWrapper, !hasNounVotes ? classes.forceFlexRow : '')}>
+            <h3 className={classes.heading}>Proposals</h3>
+          </div>
+          {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
+          {isMobile && account !== null && account !== undefined && hasNounBalance && (
+            <div>
+              <Button
+                className={classes.changeDelegateBtn}
+                onClick={() => setShowDelegateModal(true)}
+              >
+                Delegate
+              </Button>
+            </div>
+          )}
+          {nounsDAOProposals?.length && snapshotProposals?.length ? (
+            nounsDAOProposals
+              .slice(0)
+              .reverse()
+              .map((p, i) => {
+                const snapshotVoteObject = snapshotProposals.find(spi =>
+                  spi.body.includes(p.transactionHash),
+                );
+
+                let propStatus = p.status;
+
+                if (snapshotVoteObject && !p.snapshotForCount) {
+                  p.snapshotProposalId = snapshotVoteObject.id
+
+                  if(snapshotVoteObject.scores_total){
+                    const scores = snapshotVoteObject.scores
+                    p.snapshotForCount == scores[0]
+                    p.snapshotAgainstCount == scores[1]
+                    p.snapshotAbstainCount == scores[2]
+                  }
+                  
+                  switch (snapshotVoteObject.state) {
+                    case 'active':
+                      p.snapshotEnd = snapshotVoteObject.end
+                      propStatus = ProposalState.METAGOV_ACTIVE;
+                      break;
+
+                    case 'closed':
+                      if (p.status == ProposalState.ACTIVE) {
+                        propStatus = ProposalState.METAGOV_CLOSED;
+                        break;
+                      }
+                      propStatus = p.status;
+                      break;
+
+                    case 'pending':
+                      propStatus = ProposalState.PENDING;
+                      break;
+
+                    default:
+
+                      propStatus = p.status;
+                      break;
+                  }
+                } else if (!snapshotVoteObject) {
+                  if (p.status == ProposalState.ACTIVE) {
+                    propStatus = ProposalState.METAGOV_PENDING
+                  } else {
+                    propStatus = p.status;
+                  }
+                }
+
+                const isPropInStateToHaveCountDown =
+                  propStatus === ProposalState.PENDING ||
+                  propStatus === ProposalState.METAGOV_ACTIVE ||
+                  propStatus === ProposalState.METAGOV_CLOSED ||
+                  propStatus === ProposalState.ACTIVE ||
+                  propStatus === ProposalState.QUEUED;
+
+                  //if lil nouns vote is active, change countdown pill to reflect snapshot voting window
+
+                const countdownPill = (
+                  <div className={classes.proposalStatusWrapper}>
+                    <div
+                      className={clsx(proposalStatusClasses.proposalStatus, classes.countdownPill)}
+                    >
+                      <div className={classes.countdownPillContentWrapper}>
+                        <span className={classes.countdownPillClock}>
+                          <ClockIcon height={16} width={16} />
+                        </span>{' '}
+                        <span className={classes.countdownPillText}>
+                        {getCountdownCopy(p, currentBlock || 0, propStatus, snapshotVoteObject)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+
+                return (
+                  <div
+                    className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
+                    onClick={() => history.push(`vote/nounsdao/${p.id}`)}
+                    key={i}
+                  >
+                    <div className={classes.proposalInfoWrapper}>
+                      <span className={classes.proposalTitle}>
+                        <span className={classes.proposalId}>{p.id}</span> <span>{p.title}</span>
+                      </span>
+
+                      {isPropInStateToHaveCountDown && (
+                        <div className={classes.desktopCountdownWrapper}>{countdownPill}</div>
+                      )}
+                      <div className={clsx(classes.proposalStatusWrapper, classes.votePillWrapper)}>
+                        <ProposalStatus status={propStatus}></ProposalStatus>
+                      </div>
+                    </div>
+
+                    {isPropInStateToHaveCountDown && (
+                      <div className={classes.mobileCountdownWrapper}>{countdownPill}</div>
+                    )}
+                  </div>
+                );
+              })
+          ) : (
+            <Alert variant="secondary">
+              <Alert.Heading>No proposals found</Alert.Heading>
+              <p>Proposals submitted by community members will appear here.</p>
+            </Alert>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 export default Proposals;

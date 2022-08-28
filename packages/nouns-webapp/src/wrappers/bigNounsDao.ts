@@ -5,92 +5,10 @@ import { defaultAbiCoder } from 'ethers/lib/utils';
 import { useMemo } from 'react';
 import { useLogs } from '../hooks/useLogs';
 import * as R from 'ramda';
-import config from '../config';
-
-export enum Vote {
-  AGAINST = 0,
-  FOR = 1,
-  ABSTAIN = 2,
-}
-
-export enum ProposalState {
-  UNDETERMINED = -1,
-  PENDING,
-  ACTIVE,
-  CANCELED,
-  DEFEATED,
-  SUCCEEDED,
-  QUEUED,
-  EXPIRED,
-  EXECUTED,
-  VETOED,
-  METAGOV_ACTIVE,
-  METAGOV_CLOSED,
-  METAGOV_PENDING
-}
-
-export interface ProposalCallResult {
-  id: EthersBN;
-  abstainVotes: EthersBN;
-  againstVotes: EthersBN;
-  forVotes: EthersBN;
-  canceled: boolean;
-  vetoed: boolean;
-  executed: boolean;
-  startBlock: EthersBN;
-  endBlock: EthersBN;
-  eta: EthersBN;
-  proposalThreshold: EthersBN;
-  proposer: string;
-  quorumVotes: EthersBN;
-}
-
-export interface ProposalDetail {
-  target: string;
-  value: string;
-  functionSig: string;
-  callData: string;
-}
-
-export interface Proposal {
-  id: string | undefined;
-  title: string;
-  description: string;
-  status: ProposalState;
-  forCount: number;
-  againstCount: number;
-  abstainCount: number;
-  createdBlock: number;
-  startBlock: number;
-  endBlock: number;
-  eta: Date | undefined;
-  proposer: string | undefined;
-  proposalThreshold: number;
-  quorumVotes: number;
-  details: ProposalDetail[];
-  transactionHash: string;
-  snapshotEnd?: number;
-  snapshotProposalId?: string;
-
-  snapshotForCount?: number;
-  snapshotAgainstCount?: number;
-  snapshotAbstainCount?: number;
-}
-
-export interface ProposalData {
-  data: Proposal[];
-  loading: boolean;
-}
-
-export interface ProposalTransaction {
-  address: string;
-  value: string;
-  signature: string;
-  calldata: string;
-}
+import { ProposalData, ProposalCallResult, ProposalState, Proposal } from './nounsDao';
 
 const abi = new utils.Interface(NounsDAOABI);
-const nounsDaoContract = new NounsDaoLogicV1Factory().attach(config.addresses.nounsDAOProxy);
+const nounsDaoContract = new NounsDaoLogicV1Factory().attach("0x6f3E6272A167e8AcCb32072d08E0957F9c79223d");
 const proposalCreatedFilter = nounsDaoContract.filters?.ProposalCreated(
   null,
   null,
@@ -103,7 +21,7 @@ const proposalCreatedFilter = nounsDaoContract.filters?.ProposalCreated(
   null,
 );
 
-export const useHasVotedOnProposal = (proposalId: string | undefined): boolean => {
+export const useHasVotedOnBigNounProposal = (proposalId: string | undefined): boolean => {
   const { account } = useEthers();
 
   // Fetch a voting receipt for the passed proposal id
@@ -117,7 +35,7 @@ export const useHasVotedOnProposal = (proposalId: string | undefined): boolean =
   return receipt?.hasVoted ?? false;
 };
 
-export const useProposalVote = (proposalId: string | undefined): string => {
+export const useBigNounProposalVote = (proposalId: string | undefined): string => {
   const { account } = useEthers();
 
   // Fetch a voting receipt for the passed proposal id
@@ -142,7 +60,7 @@ export const useProposalVote = (proposalId: string | undefined): string => {
   return '';
 };
 
-export const useProposalCount = (): number | undefined => {
+export const useBigNounProposalCount = (): number | undefined => {
   const [count] =
     useContractCall<[EthersBN]>({
       abi,
@@ -153,7 +71,7 @@ export const useProposalCount = (): number | undefined => {
   return count?.toNumber();
 };
 
-export const useProposalThreshold = (): number | undefined => {
+export const useBigNounProposalThreshold = (): number | undefined => {
   const [count] =
     useContractCall<[EthersBN]>({
       abi,
@@ -213,15 +131,16 @@ const useFormattedProposalCreatedLogs = () => {
   }, [useLogsResult]);
 };
 
-export const useAllProposals = (): ProposalData => {
-  const proposalCount = useProposalCount();
+
+export const useAllBigNounProposals = (): ProposalData => {
+  const proposalCount = useBigNounProposalCount();
   const votingDelay = useVotingDelay(nounsDaoContract.address);
 
   const govProposalIndexes = useMemo(() => {
     return countToIndices(proposalCount);
   }, [proposalCount]);
 
-  const proposals = useContractCalls<ProposalCallResult>(
+  const bigNounProposals = useContractCalls<ProposalCallResult>(
     govProposalIndexes.map(index => ({
       abi,
       address: nounsDaoContract.address,
@@ -244,7 +163,7 @@ export const useAllProposals = (): ProposalData => {
   // Early return until events are fetched
   return useMemo(() => {
     const logs = formattedLogs ?? [];
-    if (proposals.length && !logs.length) {
+    if (bigNounProposals.length && !logs.length) {
       return { data: [], loading: true };
     }
 
@@ -280,15 +199,18 @@ export const useAllProposals = (): ProposalData => {
 
     const removeMarkdownStyle = R.compose(removeBold, removeItalics);
 
+
     return {
-      data: proposals.map((proposal, i) => {
+      data: bigNounProposals.map((proposal, i) => {
         const description = logs[i]?.description?.replace(/\\n/g, '\n');
+        const status = proposalStates[i]?.[0] ?? ProposalState.UNDETERMINED;
+
         return {
           id: proposal?.id.toString(),
           title: R.pipe(extractTitle, removeMarkdownStyle)(description) ?? 'Untitled',
           description: description ?? 'No description.',
           proposer: proposal?.proposer,
-          status: proposalStates[i]?.[0] ?? ProposalState.UNDETERMINED,
+          status: status,
           proposalThreshold: parseInt(proposal?.proposalThreshold?.toString() ?? '0'),
           quorumVotes: parseInt(proposal?.quorumVotes?.toString() ?? '0'),
           forCount: parseInt(proposal?.forVotes?.toString() ?? '0'),
@@ -299,20 +221,22 @@ export const useAllProposals = (): ProposalData => {
           endBlock: parseInt(proposal?.endBlock?.toString() ?? ''),
           eta: proposal?.eta ? new Date(proposal?.eta?.toNumber() * 1000) : undefined,
           details: logs[i]?.details,
-          transactionHash: logs[i]?.transactionHash,
+          transactionHash: logs[i]?.transactionHash
         };
+
       }),
       loading: false,
     };
-  }, [formattedLogs, proposalStates, proposals, votingDelay]);
+  }, [formattedLogs, proposalStates, bigNounProposals, votingDelay]);
 };
 
-export const useProposal = (id: string | number): Proposal | undefined => {
-  const { data } = useAllProposals();
+export const useBigNounProposal = (id: string | number): Proposal | undefined => {
+  const { data } = useAllBigNounProposals();
+  
   return data?.find(p => p.id === id.toString());
 };
 
-export const useCastVote = () => {
+export const useCastBigNounVote = () => {
   const { send: castVote, state: castVoteState } = useContractFunction(
     nounsDaoContract,
     'castVote',
@@ -320,7 +244,7 @@ export const useCastVote = () => {
   return { castVote, castVoteState };
 };
 
-export const useCastVoteWithReason = () => {
+export const useCastBigNounVoteWithReason = () => {
   const { send: castVoteWithReason, state: castVoteWithReasonState } = useContractFunction(
     nounsDaoContract,
     'castVoteWithReason',
@@ -328,12 +252,12 @@ export const useCastVoteWithReason = () => {
   return { castVoteWithReason, castVoteWithReasonState };
 };
 
-export const usePropose = () => {
+export const useBigNounPropose = () => {
   const { send: propose, state: proposeState } = useContractFunction(nounsDaoContract, 'propose');
   return { propose, proposeState };
 };
 
-export const useQueueProposal = () => {
+export const useQueueBigNounProposal = () => {
   const { send: queueProposal, state: queueProposalState } = useContractFunction(
     nounsDaoContract,
     'queue',
@@ -341,7 +265,7 @@ export const useQueueProposal = () => {
   return { queueProposal, queueProposalState };
 };
 
-export const useExecuteProposal = () => {
+export const useExecuteBigNounProposal = () => {
   const { send: executeProposal, state: executeProposalState } = useContractFunction(
     nounsDaoContract,
     'execute',

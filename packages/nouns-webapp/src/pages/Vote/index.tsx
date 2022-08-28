@@ -286,19 +286,22 @@ const VotePage = ({
             proposal={proposal}
             percentage={forPercentage}
             nounIds={forNouns}
-            variant={VoteCardVariant.FOR}
-          />
+            variant={VoteCardVariant.FOR} 
+            lilnounIds={[]}          
+            />
           <VoteCard
             proposal={proposal}
             percentage={againstPercentage}
             nounIds={againstNouns}
-            variant={VoteCardVariant.AGAINST}
-          />
+            variant={VoteCardVariant.AGAINST} 
+            lilnounIds={[]}        
+            />
           <VoteCard
             proposal={proposal}
             percentage={abstainPercentage}
             nounIds={abstainNouns}
             variant={VoteCardVariant.ABSTAIN}
+            lilnounIds={[]}        
           />
         </Row>
 

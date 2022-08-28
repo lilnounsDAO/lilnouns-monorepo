@@ -18,6 +18,7 @@ interface AppConfig {
   enableHistory: boolean;
   nounsApiUri: string;
   enableRollbar: boolean;
+  zoraKey: string;
 }
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat;
@@ -32,21 +33,13 @@ const INFURA_PROJECT_ID = process.env.REACT_APP_INFURA_PROJECT_ID;
 export const createNetworkHttpUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_JSONRPC`];
 
-  if (network === 'rinkeby') {
-    return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
-  } else {
-    return custom || `https://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0`;
-  }
+  return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
 };
 
 export const createNetworkWsUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_WSRPC`];
 
-  if (network === 'rinkeby') {
-    return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
-  } else {
-    return custom || 'wss://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0';
-  }
+  return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
 };
 
 const app: Record<SupportedChains, AppConfig> = {
@@ -60,6 +53,7 @@ const app: Record<SupportedChains, AppConfig> = {
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_RINKEBY_NOUNSAPI`] || '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
+    zoraKey: process.env.ZORA_API_KEY || '',
   },
   [ChainId.Mainnet]: {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
@@ -69,6 +63,7 @@ const app: Record<SupportedChains, AppConfig> = {
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_MAINNET_NOUNSAPI`] || '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
+    zoraKey: process.env.ZORA_API_KEY || '',
   },
   [ChainId.Hardhat]: {
     jsonRpcUri: 'http://localhost:8545',
@@ -78,6 +73,7 @@ const app: Record<SupportedChains, AppConfig> = {
     enableHistory: false,
     nounsApiUri: 'http://localhost:5001',
     enableRollbar: false,
+    zoraKey: '',
   },
 };
 

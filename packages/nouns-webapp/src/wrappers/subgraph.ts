@@ -125,7 +125,7 @@ export const nounsIndex = () => gql`
   }
 `;
 
-// Subgraph queries are limited by 1000. 
+// Subgraph queries are limited by 1000.
 // As a result, site doesn't load auction when user attempts to fetch lil noun ids < latest 1000.
 // To ensure lil noun Ids < latest 1000 are fetchable, fetch backwards by 1000 using given lil noun auction startTime.
 export const latestAuctionsQuery = (auctionStartTime: number) => gql`
@@ -240,9 +240,129 @@ export const delegateNounsAtBlockQuery = (delegates: string[], block: number) =>
 }
 `;
 
+export const delegateLilNounsAtBlockQuery = (delegatess: string[], blocks: number) => gql`
+{
+  delegates(where: { id_in: ${JSON.stringify(delegatess)} }, block: { number: ${blocks} }) {
+    id
+    nounsRepresented {
+      id
+    }
+  }
+}
+`;
+
+export const delegateNounsAtBlockQueryTest = (delegates: string, block: number) => gql`
+{
+  delegates(where: { id_in: ${delegates} }, block: { number: ${block} }) {
+    id
+    nounsRepresented {
+      id
+    }
+  }
+}
+`;
+
+export const snapshotProposalsQuery = () => gql`
+  {
+    proposals(
+      first: 20
+      skip: 0
+      where: { space_in: ["League of Lils", "leagueoflils.eth"] }
+      orderBy: "created"
+      orderDirection: asc
+    ) {
+      id
+      title
+      body
+      choices
+      start
+      end
+      snapshot
+      state
+      author
+      scores
+      space {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const snapshotSingularProposalVotesQuery = (proposalId: string) => gql` {
+  votes(where: {
+    proposal: "${proposalId}"
+  }) {
+    id
+    voter
+    vp
+    choice
+  }
+}
+`;
+
+export const snapshotProposalVotesQuery = (snapshotProposalId: string) => gql`
+  {
+  votes(orderBy: "vp", where: { proposal: "${snapshotProposalId}"}) {
+    voter
+    vp
+    choice
+    }
+
+  }
+`;
+
+export const nounsInTreasuryQuery = () => gql`
+  {
+    accounts(where: { id: "0xd5f279ff9eb21c6d40c8f345a66f2751c4eea1fb" }) {
+      id
+      tokenBalance
+      nouns {
+        id
+      }
+    }
+  }
+`;
+
+export const lilNounsHeldByVoterQuery = (snapshotProposalVoterIds: string) => gql`
+ query {
+  tokens(
+    where:{
+      collectionAddresses:["0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B"],
+      ownerAddresses: ${snapshotProposalVoterIds}
+    },
+    pagination: {limit: 500}
+  ) {
+    nodes {
+      token {
+        tokenId
+        owner
+      }
+    }
+  }
+}
+`;
+
+export const delegatedLilNounsHeldByVoterQuery = (voterId: string) => gql`
+  query {
+    accounts(where: { id: ${voterId} }) {
+      id
+      delegate {
+        id
+        tokenHoldersRepresentedAmount
+        nounsRepresented {
+          id
+        }
+      }
+    }
+  }
+`;
+
 export const clientFactory = (uri: string) =>
   new ApolloClient({
     uri,
     cache: new InMemoryCache(),
   });
-  
+
+
+ 
