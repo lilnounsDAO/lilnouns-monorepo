@@ -65,6 +65,7 @@
   opacity: 0.5;
   transition: all 0.125s ease-in-out;
   margin-top: -4px;
+  display: inline-block;
 }
 
 .modal .closeButton img:hover {

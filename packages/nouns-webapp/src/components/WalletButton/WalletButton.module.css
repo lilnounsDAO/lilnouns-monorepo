@@ -10,6 +10,7 @@
 .walletButton img {
   margin-right: 10px;
   border-radius: 5px;
+  display: inline-block;
 }
 .walletButton:hover,
 .walletButton:active,
