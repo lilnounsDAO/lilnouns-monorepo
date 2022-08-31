@@ -97,7 +97,7 @@ const Documentation = () => {
               <p className={classes.aboutText}>
                 <h3>Bids</h3>
                 Once an auction starts, everyone has 15 minutes to bid. Anyone can bid an amount
-                at/above 0.01 eth. The Amount bid is returned to bidder if they lose the auction
+                at/above 0.15 eth. The Amount bid is returned to bidder if they lose the auction
                 (minus gas spent on bid transaction).
                 <br />
                 <br />
