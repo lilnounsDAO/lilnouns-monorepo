@@ -32,6 +32,10 @@
   height: 35px;
 }
 
+.noneHolderInforContainer img {
+  display: inline-block;
+}
+
 .nounHolderLoading {
   opacity: 0.5;
 }
