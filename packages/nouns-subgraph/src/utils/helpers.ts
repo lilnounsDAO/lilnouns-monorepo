@@ -32,7 +32,7 @@ export function getOrCreateDelegate(
   let delegate = Delegate.load(id);
 
   if (delegate == null && createIfNotFound) {
-    delegate = new Delegate(id); 
+    delegate = new Delegate(id);
     delegate.delegatedVotesRaw = BIGINT_ZERO;
     delegate.delegatedVotes = BIGINT_ZERO;
     delegate.tokenHoldersRepresentedAmount = 0;
