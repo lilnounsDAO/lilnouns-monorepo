@@ -39,7 +39,7 @@ const computeFatFingerNextBid = (
 
 const minBidEth = (minBid: BigNumber): string => {
   if (minBid.isZero()) {
-    return '0.01';
+    return '0.15';
   }
 
   const eth = utils.formatEther(EthersBN.from(minBid.toString()));
@@ -147,11 +147,12 @@ const Bid: React.FC<{
 
     //TODO: fat finger check here 900% increase
     //Operator '>' cannot be applied to types 'BigNumber' and 'number'.
-    //0.01 = 10000000000000000
-    //0.1 = 100000000000000000
+    
+    //0.15 = 150000000000000000
+    //1.5 = 1500000000000000000
     if (
-      minBid.gt('10000000000000000') &&
-      value.gte('100000000000000000') &&
+      minBid.gt('150000000000000000') &&
+      value.gte('1500000000000000000') &&
       value.gte(fatFingerBid.toString())
     ) {
       setModal({
@@ -159,7 +160,7 @@ const Bid: React.FC<{
         title: `Woah there!`,
         message: `The bid you're about to place is ${utils.formatEther(
           value,
-        )} Eth which is over 10x the bid before. Sure this wasn't fat-fingered?`,
+        )} ETH which is over 10x the bid before. Sure this wasn't fat-fingered?`,
         isActionPrompt: true,
         actionMessage: 'Place bid',
         action: placeBidWarned,
