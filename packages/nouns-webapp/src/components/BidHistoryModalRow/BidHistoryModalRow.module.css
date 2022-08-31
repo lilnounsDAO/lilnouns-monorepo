@@ -23,6 +23,10 @@
   line-height: 23px;
 }
 
+.bidderInfoText img {
+  display: inline-block;
+}
+
 .bidDate {
   color: rgba(140, 141, 146, 1);
   font-weight: 500;
