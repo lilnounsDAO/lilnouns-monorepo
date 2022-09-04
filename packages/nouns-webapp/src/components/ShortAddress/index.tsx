@@ -12,20 +12,16 @@ const ShortAddress: React.FC<{ address: string; avatar?: boolean; size?: number 
   const { address, avatar, size = 24 } = props;
   const { library: provider } = useEthers();
 
-  if (!address){
-    props.address = "0x0000000000000000000000000000000000000000"
-  }
-
-  const ens = useReverseENSLookUp(address);
-     //DONE: Add reverse lookup after stable rpc plan (temp fix)
-  const shortAddress = useShortAddress(address);
+  const addressString = address ? address: "0x0000000000000000000000000000000000000000"
+  const ens = useReverseENSLookUp(addressString);
+  const shortAddress = useShortAddress(addressString);
 
   if (avatar) {
     return (
       <div className={classes.shortAddress}>
         {avatar && (
-          <div key={address}>
-            <Identicon size={size} address={address} provider={provider} />
+          <div key={addressString}>
+            <Identicon size={size} address={addressString} provider={provider} />
           </div>
         )}
         <span>{ens ? ens : shortAddress}</span>

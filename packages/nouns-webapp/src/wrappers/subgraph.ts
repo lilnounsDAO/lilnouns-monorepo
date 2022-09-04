@@ -265,11 +265,11 @@ export const delegateNounsAtBlockQueryTest = (delegates: string, block: number) 
 export const snapshotProposalsQuery = () => gql`
   {
     proposals(
-      first: 20
+      first: 1000
       skip: 0
       where: { space_in: ["League of Lils", "leagueoflils.eth"] }
       orderBy: "created"
-      orderDirection: asc
+      orderDirection: desc
     ) {
       id
       title
