@@ -173,8 +173,21 @@ const Bid: React.FC<{
     }
   };
 
+  const settleAuctionHandlerFunc = () => {
+    settleAuction()
+  };
+
   const settleAuctionHandler = () => {
-    settleAuction();
+    //settleAuction()
+    setModal({
+      show: true,
+      title: `Reminder`,
+      message: `Settling this auction starts the next auction at a 0.15 eth minimum bid. Only settle if you plan on bidding for the next Lil Noun!`,
+      isActionPrompt: true,
+      actionMessage: 'Settle Auction',
+      action: settleAuctionHandlerFunc,
+    });
+
   };
 
   const clearBidInput = () => {
