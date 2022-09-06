@@ -23,15 +23,23 @@
     "prestart": "npm run build",
     "migrate:prisma": "prisma migrate dev",
     "generate:prisma": "prisma generate",
-    "build": "tsc -p ."
+    "build": "npm run clean && tsc -p . && npm run copy-files",
+    "generate-graphql": "graphql-codegen --config codegen.yml",
+    "clean": "rimraf dist/",
+    "copy-files": "cp -r src/graphql/schemas dist/src/graphql/schemas"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.12.0",
+    "@graphql-codegen/typescript": "2.7.3",
+    "@graphql-codegen/typescript-resolvers": "2.7.3",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.11",
     "@types/sharp": "^0.30.5",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
+    "@graphql-tools/utils": "^8.11.0",
     "@nouns/contracts": "^0.1.3",
     "@prisma/client": "^3.15.2",
     "@sentry/node": "^7.7.0",
@@ -39,12 +47,17 @@
     "@types/chance": "^1.1.3",
     "@types/cors": "^2.8.12",
     "@types/jsonwebtoken": "^8.5.8",
+    "apollo-server-core": "^3.10.2",
+    "apollo-server-express": "^3.10.2",
     "chance": "^1.1.8",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "ethers": "^5.4.0",
     "express": "^4.17.1",
     "express-validator": "^6.12.0",
+    "graphql": "^16.6.0",
+    "graphql-import-node": "0.0.5",
+    "graphql-tools": "^8.3.5",
     "jsonwebtoken": "^8.5.1",
     "nft.storage": "^2.1.1",
     "prisma": "^3.15.2",
