@@ -163,6 +163,13 @@ class IdeasService {
       if (!user) {
         throw new Error('Failed to save vote: missing user details');
       }
+      const direction = Math.min(Math.max(parseInt(data.direction), -1), 1);
+
+      if (isNaN(direction) || direction === 0) {
+        // votes can only be 1 or -1 right now as we only support up or down votes
+        throw new Error('Failed to save vote: direction is not valid');
+      }
+
       const vote = prisma.vote.upsert({
         where: {
           ideaId_voterId: {
@@ -171,10 +178,10 @@ class IdeasService {
           },
         },
         update: {
-          direction: data.direction,
+          direction,
         },
         create: {
-          direction: data.direction,
+          direction,
           voterId: user.wallet,
           ideaId: data.ideaId,
         },
