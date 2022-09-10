@@ -51,7 +51,7 @@ type Idea {
 }
 
 input IdeaInputOptions {
-  sort: SORT_TYPE!
+  sort: SORT_TYPE
 }
 
 input UserInputOptions {

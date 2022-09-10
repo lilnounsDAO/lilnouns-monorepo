@@ -40,7 +40,7 @@ export type Idea = {
 };
 
 export type IdeaInputOptions = {
-  sort: Sort_Type;
+  sort?: InputMaybe<Sort_Type>;
 };
 
 export type IdeaStats = {
