@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@lingui/detect-locale": "^3.13.2",
+    "@lingui/cli": "^3.9.0",
+    "@lingui/core": "^3.9.0",
+    "@lingui/macro": "^3.9.0",
+    "@lingui/react": "^3.9.0",
     "@apollo/client": "^3.3.21",
     "@davatar/react": "^1.10.3",
     "@fortawesome/fontawesome-svg-core": "1.2.35",
