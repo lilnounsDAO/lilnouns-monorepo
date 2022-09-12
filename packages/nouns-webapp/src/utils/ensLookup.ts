@@ -1,69 +1,58 @@
-// import { useEthers } from '@usedapp/core';
-import { useEnsName } from 'wagmi';
+import { useEthers } from '@usedapp/core';
 import { useEffect, useState } from 'react';
+import { cache, cacheKey, CHAIN_ID } from '../config';
+import { lookupNNSOrENS } from './lookupNNSOrENS';
+
+export const ensCacheKey = (address: string) => {
+  return cacheKey(cache.ens, CHAIN_ID, address);
+};
 
 export const useReverseENSLookUp = (address: string) => {
-  //  const { library } = useEthers();
+  const { library } = useEthers();
   const [ens, setEns] = useState<string>();
-  const {
-    data: ensName,
-    error: ensNameError,
-    isLoading,
-    isError,
-    refetch
-  } = useEnsName({
-    address: address,
-    cacheTime: 86400000,
-  })
 
   useEffect(() => {
     let mounted = true;
-    if (address) {
-
-      if (!ensName) {
-        return;
+    if (address && library) {
+      // Look for resolved ENS in local storage (result of pre-fetching)
+      const maybeCachedENSResultRaw = localStorage.getItem(ensCacheKey(address));
+      if (maybeCachedENSResultRaw) {
+        const maybeCachedENSResult = JSON.parse(maybeCachedENSResultRaw);
+        if (parseInt(maybeCachedENSResult.expires) > Date.now() / 1000) {
+          setEns(maybeCachedENSResult.name);
+        } else {
+          localStorage.removeItem(ensCacheKey(address));
+        }
       }
-      if (mounted && ensName) {
-        setEns(ensName);
-        console.log(`error resolving no == ${ensName}`);
-      } else {
-        console.log(`error resolving reverse ens lookup: `, ensNameError?.message);
+
+      // If address not in local storage, attempt to resolve via RPC call.
+      // At this stage if the item is in local storage we know it isn't expired.
+      if (!localStorage.getItem(ensCacheKey(address))) {
+        lookupNNSOrENS(library, address)
+          .then(name => {
+            if (!name) return;
+            if (mounted) {
+              localStorage.setItem(
+                ensCacheKey(address),
+                JSON.stringify({
+                  name,
+                  expires: Date.now() / 1000 + 30 * 60,
+                }),
+              );
+              setEns(name);
+            }
+          })
+          .catch(error => {
+            console.log(`error resolving reverse ens lookup: `, error);
+          });
       }
     }
+
     return () => {
       setEns('');
       mounted = false;
     };
-  }, [address, ensName, ensNameError?.message, refetch]);
+  }, [address, library]);
 
-
-  if (isLoading) return "Fetching name…"
-  if (isError) return "Error fetching name"
-  if (ensName) return ens
-
-  return ens
-
-  // useEffect(() => {
-  //   let mounted = true;
-  //   if (address && library) {
-  //     library
-  //       .lookupAddress(address)
-  //       .then(name => {
-  //         if (!name) return;
-  //         if (mounted) {
-  //           setEns(name);
-  //         }
-  //       })
-  //       .catch(error => {
-  //         console.log(`error resolving reverse ens lookup: `, error);
-  //       });
-  //   }
-
-  //   return () => {
-  //     setEns('');
-  //     mounted = false;
-  //   };
-  // }, [address, library]);
-
-  // return ens;
+  return ens;
 };

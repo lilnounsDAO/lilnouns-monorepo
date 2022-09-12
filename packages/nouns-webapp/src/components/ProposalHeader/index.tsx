@@ -61,7 +61,7 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
     <>
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex justify-content-start align-items-start">
-          <Link to={'/vote'}>
+          <Link to={isNounsDAOProp ? '/vote/nounsdao' : '/vote' }>
             <button className={clsx(classes.backButton, navBarButtonClasses.whiteInfo)}>←</button>
           </Link>
           <div className={classes.headerRow}>

@@ -11,7 +11,9 @@
 
 .navBarLogo {
   width: 135px;
-  height: 135px;
+  height: 75px;
+  object-fit: fill;
+  overflow: hidden;
 }
 
 .navBarCustom {
@@ -20,8 +22,10 @@
 
 @media (max-width: 992px) {
   .navBarLogo {
-    width: 95px;
-    height: 95px;
+    width: 105px;
+    height: 65px;
+    object-fit: fill;
+    overflow: hidden;
   }
 
   .navBarCustom {
