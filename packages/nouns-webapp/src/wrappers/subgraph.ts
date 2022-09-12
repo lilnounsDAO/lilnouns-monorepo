@@ -43,6 +43,60 @@ export interface Delegates {
   delegates: Delegate[];
 }
 
+export const proposalsQuery = (first = 1_000) => gql`
+{
+  proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
+    id
+    description
+    status
+    proposalThreshold
+    quorumVotes
+    forVotes
+    againstVotes
+    abstainVotes
+    createdTransactionHash
+    createdBlock
+    startBlock
+    endBlock
+    executionETA
+    targets
+    values
+    signatures
+    calldatas
+    proposer {
+      id
+    }
+  }
+}
+`;
+
+export const bigNounsProposalsQuery = (first = 1_000) => gql`
+{
+  proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
+    id
+    description
+    status
+    proposalThreshold
+    quorumVotes
+    forVotes
+    againstVotes
+    abstainVotes
+    createdTransactionHash
+    createdBlock
+    startBlock
+    endBlock
+    executionETA
+    targets
+    values
+    signatures
+    calldatas
+    proposer {
+      id
+    }
+  }
+}
+`;
+
 export const auctionQuery = (auctionId: number) => gql`
 {
 	auction(id: ${auctionId}) {
@@ -199,13 +253,47 @@ export const nounVotingHistoryQuery = (nounId: number) => gql`
 	noun(id: ${nounId}) {
 		id
 		votes {
-		proposal {
-			id
-		}
-		support
-		supportDetailed
+      blockNumber
+      proposal {
+        id
+      }
+      support
+      supportDetailed
+      voter {
+        id
+      }
 		}
 	}
+}
+`;
+
+export const nounTransferHistoryQuery = (nounId: number) => gql`
+{
+  transferEvents(where: {noun: "${nounId}"}) {
+    id
+    previousHolder {
+      id
+    }
+    newHolder {
+      id
+    }
+    blockNumber
+  }
+}
+`;
+
+export const nounDelegationHistoryQuery = (nounId: number) => gql`
+{
+  delegationEvents(where: {noun: "${nounId}"}) {
+    id
+    previousDelegate {
+      id
+    }
+    newDelegate {
+      id
+    }
+    blockNumber
+  }
 }
 `;
 

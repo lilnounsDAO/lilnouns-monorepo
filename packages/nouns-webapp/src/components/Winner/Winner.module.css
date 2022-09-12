@@ -2,10 +2,29 @@
   margin-left: 0.5rem;
   margin-top: 2px;
   padding-left: 1.5rem;
+  display: flex;
 }
 
 .youCopy {
   margin-top: 0.25rem;
+}
+
+.winnerContent {
+  margin-right: 0.5rem;
+  white-space: nowrap;
+}
+
+.winnerCopy {
+  min-width: 250px;
+}
+
+.link,
+.link:hover,
+.link:active {
+  color: black;
+  text-decoration: none;
+  display: flex;
+  cursor: pointer;
 }
 
 .verifyButton {
@@ -76,6 +95,7 @@
 
   .winnerContent {
     margin-right: 0.5rem;
+    white-space: nowrap;
   }
 
   .wrapper {
