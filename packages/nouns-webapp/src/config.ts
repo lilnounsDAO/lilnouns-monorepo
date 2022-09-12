@@ -22,12 +22,35 @@ interface AppConfig {
 }
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat;
+interface CacheBucket {
+  name: string;
+  version: string;
+}
+
+export const cache: Record<string, CacheBucket> = {
+  ens: {
+    name: 'ens',
+    version: 'v1',
+  },
+};
+
+export const cacheKey = (bucket: CacheBucket, ...parts: (string | number)[]) => {
+  return [bucket.name, bucket.version, ...parts].join('-').toLowerCase();
+};
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1');
 
 export const ETHERSCAN_API_KEY = process.env.REACT_APP_ETHERSCAN_API_KEY ?? '';
 
 const INFURA_PROJECT_ID = process.env.REACT_APP_INFURA_PROJECT_ID;
+
+const isLocalhost = Boolean(
+  window.location.hostname === 'localhost' ||
+    // [::1] is the IPv6 localhost address.
+    window.location.hostname === '[::1]' ||
+    // 127.0.0.1/8 is considered localhost for IPv4.
+    window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/),
+);
 
 //TODO: replaced infura for prod
 export const createNetworkHttpUrl = (network: string): string => {
@@ -36,7 +59,9 @@ export const createNetworkHttpUrl = (network: string): string => {
   if (network === 'rinkeby') {
     return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
   } else {
-    return custom || `https://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0`;
+    return custom || isLocalhost
+      ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
+      : `https://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0`;
   }
 };
 
@@ -46,7 +71,9 @@ export const createNetworkWsUrl = (network: string): string => {
   if (network === 'rinkeby') {
     return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
   } else {
-    return custom || 'wss://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0';
+    return custom || isLocalhost
+      ? `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
+      : 'wss://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0';
   }
 };
 
