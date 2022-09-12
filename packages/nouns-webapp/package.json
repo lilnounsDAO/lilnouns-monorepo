@@ -104,7 +104,10 @@
     "start": "CI=false react-app-rewired start",
     "build": "CI=false react-app-rewired build",
     "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "i18n:extract": "lingui extract",
+    "i18n:compile": "lingui compile",
+    "i18n:pseudo": "lingui extract --locale pseudo && lingui compile"
   },
   "browserslist": {
     "production": [
