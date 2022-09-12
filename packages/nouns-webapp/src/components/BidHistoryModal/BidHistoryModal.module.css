@@ -11,7 +11,7 @@
 
 .content {
   padding: 1rem;
-  max-height: 100vh;
+  max-height: 50vh;
   overflow-y: hidden;
 }
 
@@ -19,7 +19,7 @@
   font-family: 'PT Root UI', sans-serif;
   font-weight: bold;
   position: fixed;
-  top: 5vh;
+  top: 15vh;
   left: 10%;
   z-index: 100;
   background-color: rgba(244, 244, 248, 1);
@@ -65,7 +65,7 @@
   border-radius: 16px;
   margin-top: 1rem;
 
-  height: 60vh;
+  height: 35vh;
   padding: 0.75rem;
 }
 
@@ -128,10 +128,6 @@
     box-shadow: none;
   }
 
-  .nullStateText {
-    color: white;
-  }
-
   .modal .header h2 {
     color: rgba(140, 141, 146, 1);
   }
@@ -147,5 +143,9 @@
     border-radius: 0;
     padding: 0rem;
     height: 100%;
+  }
+
+  .nullStateText {
+    color: white;
   }
 }
