@@ -20,7 +20,7 @@ const ProposalStatusCopy: React.FC<ProposalStatusCopyProps> = props => {
       return <>Defeated</>;
     case ProposalState.QUEUED:
       return <>Queued</>;
-    case ProposalState.CANCELED:
+    case ProposalState.CANCELLED:
       return <>Canceled</>;
     case ProposalState.VETOED:
       return <>Vetoed</>;

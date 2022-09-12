@@ -108,7 +108,7 @@ const useNounProposalVoteEvents = (nounId: number): NounProfileEventFetcherRespo
     }
     // Filter props which were cancelled and got 0 votes of any kind
     if (
-      p.status === ProposalState.CANCELED &&
+      p.status === ProposalState.CANCELLED &&
       p.forCount + p.abstainCount + p.againstCount === 0
     ) {
       return false;

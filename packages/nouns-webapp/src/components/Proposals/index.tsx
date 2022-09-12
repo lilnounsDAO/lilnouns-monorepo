@@ -85,7 +85,7 @@ export enum ProposalState_ {
   UNDETERMINED = -1,
   PENDING,
   ACTIVE,
-  CANCELED,
+  CANCELLED,
   DEFEATED,
   SUCCEEDED,
   QUEUED,
@@ -358,7 +358,7 @@ const Proposals = ({
                 return (
                   <div
                     className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
-                    onClick={() => history.push(`vote/nounsdao/${p.id}`)}
+                    onClick={() => history.push(`/vote/nounsdao/${p.id}`)}
                     key={i}
                   >
                     <div className={classes.proposalInfoWrapper}>
