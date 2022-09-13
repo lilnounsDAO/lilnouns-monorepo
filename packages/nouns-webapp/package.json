@@ -51,7 +51,7 @@
     "dompurify": "^2.3.10",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react-hooks": "^4.6.0-next-7a5b8227c-20220602",
-    "ethers": "^5.6.9",
+    "ethers": "^5.6.8",
     "graphql": "^15.5.1",
     "https-browserify": "^1.0.0",
     "js-cookie": "^3.0.1",

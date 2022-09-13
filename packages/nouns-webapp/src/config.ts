@@ -28,6 +28,14 @@ interface CacheBucket {
 }
 
 export const cache: Record<string, CacheBucket> = {
+  bigNounSeed: {
+    name: 'bigNounSeed',
+    version: 'v1',
+  },
+  seed: {
+    name: 'seed',
+    version: 'v1',
+  },
   ens: {
     name: 'ens',
     version: 'v1',

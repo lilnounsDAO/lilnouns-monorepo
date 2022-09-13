@@ -43,6 +43,33 @@ export interface Delegates {
   delegates: Delegate[];
 }
 
+//TODO: figure out way to fetch seeds for more than first 1k
+export const lilnounsSeedsQuery = (lilnounIds: string[]) => gql`
+{
+  seeds(where: { id_in: ${JSON.stringify(lilnounIds)} } })  {
+    id
+    background
+    body
+    accessory
+    head
+    glasses
+  }
+}
+`;
+
+export const seedsQuery = (first = 1_000) => gql`
+{
+  seeds(first: ${first}) {
+    id
+    background
+    body
+    accessory
+    head
+    glasses
+  }
+}
+`;
+
 export const proposalsQuery = (first = 1_000) => gql`
 {
   proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
