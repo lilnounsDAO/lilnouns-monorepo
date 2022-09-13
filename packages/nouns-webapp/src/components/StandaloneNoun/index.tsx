@@ -15,6 +15,7 @@ interface StandaloneNounProps {
 }
 interface StandaloneCircularNounProps {
   nounId: EthersBN;
+  border?: boolean;
 }
 
 interface StandaloneNounWithSeedProps {
@@ -23,7 +24,7 @@ interface StandaloneNounWithSeedProps {
   shouldLinkToProfile: boolean;
 }
 
-const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
+export const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
   const id = nounId.toString();
   const name = `Noun ${id}`;
   const description = `Lil Noun ${id} is a member of the Lil Nouns DAO`;
@@ -42,7 +43,7 @@ const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
   };
 };
 
-const getBigNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
+export const getBigNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
   const id = nounId.toString();
   const name = `Noun ${id}`;
   const description = `Noun ${id} is a member of the Nouns DAO`;
@@ -89,7 +90,7 @@ const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProp
 export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
   props: StandaloneCircularNounProps,
 ) => {
-  const { nounId } = props;
+  const { nounId, border } = props;
   const seed = useNounSeed(nounId);
   const noun = seed && getNoun(nounId, seed);
 
@@ -108,7 +109,7 @@ export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
         imgPath={noun ? noun.image : ''}
         alt={noun ? noun.description : 'Lil Noun'}
         wrapperClassName={nounClasses.circularNounWrapper}
-        className={nounClasses.circular}
+        className={border ? nounClasses.circleWithBorder : nounClasses.circular}
       />
     </Link>
   );

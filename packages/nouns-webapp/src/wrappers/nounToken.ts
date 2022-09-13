@@ -1,7 +1,10 @@
 import { useContractCall, useContractFunction, useEthers } from '@usedapp/core';
 import { BigNumber as EthersBN, ethers, utils } from 'ethers';
 import { NounsTokenABI, NounsTokenFactory } from '@nouns/contracts';
-import config from '../config';
+import config, { cache, cacheKey, CHAIN_ID } from '../config';
+import { useQuery } from '@apollo/client';
+import { useEffect } from 'react';
+import { seedsQuery } from './subgraph';
 
 interface NounToken {
   name: string;
@@ -22,6 +25,16 @@ export enum NounsTokenContractFunction {
 }
 
 const abi = new utils.Interface(NounsTokenABI);
+const seedCacheKey = cacheKey(cache.seed, CHAIN_ID, config.addresses.nounsToken);
+const bigNounSeedCacheKey = cacheKey(cache.bigNounSeed, CHAIN_ID, "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03");
+
+
+const isSeedValid = (seed: Record<string, any> | undefined) => {
+  const expectedKeys = ['background', 'body', 'accessory', 'head', 'glasses'];
+  const hasExpectedKeys = expectedKeys.every(key => (seed || {}).hasOwnProperty(key));
+  const hasValidValues = Object.values(seed || {}).some(v => v !== 0);
+  return hasExpectedKeys && hasValidValues;
+};
 
 export const useNounToken = (nounId: EthersBN) => {
   const [noun] =
@@ -42,24 +55,119 @@ export const useNounToken = (nounId: EthersBN) => {
   return json;
 };
 
+const seedArrayToObject = (seeds: (INounSeed & { id: string })[]) => {
+  return seeds.reduce<Record<string, INounSeed>>((acc, seed) => {
+    acc[seed.id] = {
+      background: Number(seed.background),
+      body: Number(seed.body),
+      accessory: Number(seed.accessory),
+      head: Number(seed.head),
+      glasses: Number(seed.glasses),
+    };
+    return acc;
+  }, {});
+};
+
+const useNounSeeds = () => {
+  const cache = localStorage.getItem(seedCacheKey);
+  const cachedSeeds = cache ? JSON.parse(cache) : undefined;
+  const { data } = useQuery(seedsQuery(), {
+    skip: !!cachedSeeds,
+  });
+
+  useEffect(() => {
+    if (!cachedSeeds && data?.seeds?.length) {
+      localStorage.setItem(seedCacheKey, JSON.stringify(seedArrayToObject(data.seeds)));
+    }
+  }, [data, cachedSeeds]);
+
+  return cachedSeeds;
+};
+
+const useBigNounSeeds = () => {
+  const cache = localStorage.getItem(bigNounSeedCacheKey);
+  const cachedSeeds = cache ? JSON.parse(cache) : undefined;
+  const { data } = useQuery(seedsQuery(), {
+    skip: !!cachedSeeds,
+    context: { clientName: 'NounsDAO' },
+    fetchPolicy: 'no-cache',
+  });
+
+  useEffect(() => {
+    if (!cachedSeeds && data?.seeds?.length) {
+      localStorage.setItem(bigNounSeedCacheKey, JSON.stringify(seedArrayToObject(data.seeds)));
+    }
+  }, [data, cachedSeeds]);
+
+  return cachedSeeds;
+};
+
 export const useNounSeed = (nounId: EthersBN) => {
-  const seed = useContractCall<INounSeed>({
+  const seeds = useNounSeeds();
+  const seed = seeds?.[nounId.toString()];
+  // prettier-ignore
+  const request = seed ? false : {
     abi,
     address: config.addresses.nounsToken,
     method: 'seeds',
     args: [nounId],
-  });
+  };
+  const response = useContractCall<INounSeed>(request);
+  if (response) {
+    const seedCache = localStorage.getItem(seedCacheKey);
+    if (seedCache && isSeedValid(response)) {
+      const updatedSeedCache = JSON.stringify({
+        ...JSON.parse(seedCache),
+        [nounId.toString()]: {
+          accessory: response.accessory,
+          background: response.background,
+          body: response.body,
+          glasses: response.glasses,
+          head: response.head,
+        },
+      });
+      localStorage.setItem(seedCacheKey, updatedSeedCache);
+
+      //TODO: find way to cache all lils as query is set for first 1k
+      console.log(`cached seed = ${JSON.stringify(cache.seed)}`)
+    }
+    return response;
+  }
   return seed;
 };
 
 export const useBigNounSeed = (nounId: EthersBN) => {
-  const seed = useContractCall<INounSeed>({
-    abi,
-    address: "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
-    method: 'seeds',
-    args: [nounId],
-  });
-  return seed;
+    const seeds = useBigNounSeeds();
+    const seed = seeds?.[nounId.toString()];
+    // prettier-ignore
+    const request = seed ? false : {
+      abi,
+      address: "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
+      method: 'seeds',
+      args: [nounId],
+    };
+    const response = useContractCall<INounSeed>(request);
+    if (response) {
+      const seedCache = localStorage.getItem(bigNounSeedCacheKey);
+      if (seedCache && isSeedValid(response)) {
+        const updatedSeedCache = JSON.stringify({
+          ...JSON.parse(seedCache),
+          [nounId.toString()]: {
+            accessory: response.accessory,
+            background: response.background,
+            body: response.body,
+            glasses: response.glasses,
+            head: response.head,
+          },
+        });
+        localStorage.setItem(bigNounSeedCacheKey, updatedSeedCache);
+  
+        //TODO: find way to cache all lils as query is set for first 1k
+        console.log(`cached seed = ${JSON.stringify(cache.seed)}`)
+      }
+      return response;
+    }
+    return seed;
 };
 
 export const useUserVotes = (): number | undefined => {
