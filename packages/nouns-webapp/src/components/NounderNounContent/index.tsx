@@ -7,7 +7,7 @@ import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
 import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
 import AuctionTitleAndNavWrapper from '../AuctionTitleAndNavWrapper';
 import { Link as DocLink } from 'react-router-dom';
-import Link  from '../Link';
+import Link from '../Link';
 import nounContentClasses from './NounderNounContent.module.css';
 import auctionBidClasses from '../AuctionActivity/BidHistory.module.css';
 import bidBtnClasses from '../BidHistoryBtn/BidHistoryBtn.module.css';
@@ -16,6 +16,7 @@ import CurrentBid, { BID_N_A } from '../CurrentBid';
 import Winner from '../Winner';
 
 import { useAppSelector } from '../../hooks';
+import { useCallback, useEffect } from 'react';
 
 const NounderNounContent: React.FC<{
   mintTimestamp: BigNumber;
@@ -34,19 +35,18 @@ const NounderNounContent: React.FC<{
     onNextAuctionClick,
   } = props;
 
-
   const isCool = useAppSelector(state => state.application.isCoolBackground);
 
   const nounIdNumber: number = nounId.toNumber();
   let block: any;
-  let isNoundersNoun = false
-  let isNounsDAONoun = false
+  let isNoundersNoun = false;
+  let isNounsDAONoun = false;
 
   const nounsDao = <Link text="Nouns DAO" url="https://nouns.wtf" leavesPage={true} />;
 
   if (nounIdNumber % 10 === 0) {
-    isNoundersNoun = true
-    isNounsDAONoun = false
+    isNoundersNoun = true;
+    isNounsDAONoun = false;
 
     block = (
       <ul className={auctionBidClasses.bidCollection}>
@@ -69,8 +69,8 @@ const NounderNounContent: React.FC<{
   }
 
   if (nounIdNumber % 10 === 1) {
-    isNoundersNoun = false
-    isNounsDAONoun = true
+    isNoundersNoun = false;
+    isNounsDAONoun = true;
 
     block = (
       <ul className={auctionBidClasses.bidCollection}>
@@ -80,13 +80,39 @@ const NounderNounContent: React.FC<{
             ` ${nounContentClasses.bidRow}`
           }
         >
-          As a thank you to the {nounsDao} for being selfless stewards of cc0 we, the project's founders (‘Lil Nounders’) have chosen to compensate
-          the NounsDAO with Lil Nouns. Every 11th Lil Noun for the first 5 years of the project will be
-          sent to the NounsDAO, where they'll be distributed to individual Nouns, Nounders, and community members alike.
+          As a thank you to the {nounsDao} for being selfless stewards of cc0 we, the project's
+          founders (‘Lil Nounders’) have chosen to compensate the NounsDAO with Lil Nouns. Every
+          11th Lil Noun for the first 5 years of the project will be sent to the NounsDAO, where
+          they'll be distributed to individual Nouns, Nounders, and community members alike.
         </li>
       </ul>
     );
   }
+
+  // Page through Nouns via keyboard
+  // handle what happens on key press
+  const handleKeyPress = useCallback(
+    event => {
+      console.log(event);
+      if (event.key === 'ArrowLeft') {
+        onPrevAuctionClick();
+      }
+      if (event.key === 'ArrowRight') {
+        onNextAuctionClick();
+      }
+    },
+    [onNextAuctionClick, onPrevAuctionClick],
+  );
+
+  useEffect(() => {
+    // attach the event listener
+    document.addEventListener('keydown', handleKeyPress);
+
+    // remove the event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   return (
     <AuctionActivityWrapper>
@@ -128,18 +154,16 @@ const NounderNounContent: React.FC<{
               isCool ? bidBtnClasses.bidHistoryWrapperCool : bidBtnClasses.bidHistoryWrapperWarm
             }
           >
-
             {nounIdNumber % 10 === 0 ? (
-                <DocLink
+              <DocLink
                 to="/lilnounders"
                 className={isCool ? bidBtnClasses.bidHistoryCool : bidBtnClasses.bidHistoryWarm}
               >
                 Learn more →
               </DocLink>
-            ): (
+            ) : (
               <></>
             )}
-          
           </div>
         </Col>
       </Row>
