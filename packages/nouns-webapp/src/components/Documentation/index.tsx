@@ -166,9 +166,9 @@ const Documentation = () => {
               <ul>
                 <li>backgrounds (2) </li>
                 <li>bodies (30)</li>
-                <li>accessories (137) </li>
-                <li>heads (234) </li>
-                <li>glasses (21)</li>
+                <li>accessories (140) </li>
+                <li>heads (242) </li>
+                <li>glasses (23)</li>
               </ul>
               You can experiment with off-chain Lil Noun generation at the {playgroundLink}.
             </Accordion.Body>

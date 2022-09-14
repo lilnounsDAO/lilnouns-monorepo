@@ -16,6 +16,7 @@ import config from '../../config';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import { useNounData } from '../StandaloneNoun';
 import { svg2png } from '../../utils/svg2png';
+import { buildEtherscanTokenLink } from '../../utils/etherscan';
 
 interface NounInfoCardProps {
   nounId: number;
@@ -25,16 +26,14 @@ interface NounInfoCardProps {
 const NounInfoCard: React.FC<NounInfoCardProps> = props => {
   const { nounId, bidHistoryOnClickHandler } = props;
 
+  const etherscanButtonClickHandler = () =>
+  window.open(buildEtherscanTokenLink(config.addresses.nounsToken, nounId));
+
   const noun = useNounData(nounId);
 
   const etherscanBaseURL = useMemo(
     () => buildEtherscanAddressLink(config.addresses.nounsToken),
     [config.addresses.nounsToken],
-  );
-
-  const etherscanButtonClickHandler = useCallback(
-    () => window.open(`${etherscanBaseURL}/${nounId}`, '_blank'),
-    [etherscanBaseURL, nounId],
   );
 
   const downloadPngClicked = useCallback(async () => {
