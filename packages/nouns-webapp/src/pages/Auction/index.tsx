@@ -15,7 +15,7 @@ interface AuctionPageProps {
 
 const AuctionPage: React.FC<AuctionPageProps> = props => {
   const { initialAuctionId } = props;
-  const onDisplayAuction = useOnDisplayAuction(initialAuctionId);
+  const onDisplayAuction = useOnDisplayAuction();
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
   const lastAuctionStartTime = useAppSelector(state => state.onDisplayAuction.lastAuctionStartTime);
   const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
