@@ -3,7 +3,8 @@ import * as Sentry from '@sentry/node';
 import { verifyAccessToken } from '../utils/jwt';
 import { Request, Response } from 'express';
 
-const authMiddleware = async (req: Request, res: Response, next: any) => {
+// REST API auth middleware
+export const authMiddleware = async (req: Request, res: Response, next: any) => {
   if (!req.headers.authorization) {
     return res
       .status(401)
@@ -38,4 +39,48 @@ const authMiddleware = async (req: Request, res: Response, next: any) => {
   }
 };
 
-export default authMiddleware;
+// GraphQL server auth scope. Parse auth token and add it to the context property. Can be used in resolvers to authenticate queries.
+export const apolloAuthScope = async (authHeader: string | undefined) => {
+  if (!authHeader) {
+    return {
+      isAuthorized: false,
+      user: undefined,
+      error: {
+        status: 401,
+        message: 'Unauthorized: Auth Header missing',
+      }
+    }
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  if (!token || token === 'undefined') {
+    return {
+      isAuthorized: false,
+      user: undefined,
+      error: {
+        status: 401,
+        message: 'Unauthorized: Access Token missing',
+      }
+    }
+  }
+
+  try {
+    const user: any = await verifyAccessToken(token);
+    Sentry.setUser({ username: user.payload.wallet, ip_address: '{{auto}}' });
+    return {
+      isAuthorized: true,
+      user: user.payload,
+      error: undefined
+    }
+  } catch (e) {
+    return {
+      isAuthorized: false,
+      user: undefined,
+      error: {
+        status: 401,
+        message: 'Unauthorized: Failed to validate token',
+      }
+    }
+  }
+}

@@ -54,7 +54,7 @@ class AuthService {
         user = await this.update(data);
       }
 
-      const accessToken = await signAccessToken(user);
+      const accessToken = await signAccessToken({ wallet: user.wallet, lilnounCount: user.lilnounCount });
       return { ...user, accessToken };
     } catch (e: any) {
       throw e;
