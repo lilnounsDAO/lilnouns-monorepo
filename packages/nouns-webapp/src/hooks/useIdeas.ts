@@ -132,6 +132,9 @@ export const useIdeas = () => {
   }, [sortBy]);
 
   const fetcher: Fetcher = async (input: RequestInfo, init?: RequestInit, ...args: any[]) => {
+    if (!HOST) {
+      throw new Error('API host not defined');
+    }
     const res = await fetch(input, init);
     if (!res.ok) throw new Error('Failed to fetch');
     return res.json();

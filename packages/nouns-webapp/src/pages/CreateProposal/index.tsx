@@ -145,7 +145,7 @@ const CreateProposalPage = () => {
         <h3 className={classes.heading}>Create Proposal</h3>
         <Alert variant="secondary" className={classes.voterIneligibleAlert}>
           <b>Tip</b>: Add one or more transactions and describe your proposal for the community. The
-          proposal cannot modified after submission, so please verify all information before
+          proposal cannot be modified after submission, so please verify all information before
           submitting. The voting period will begin after 2 1/3 days and last for 3 days.
         </Alert>
         <div className="d-grid">
