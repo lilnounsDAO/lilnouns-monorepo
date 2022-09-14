@@ -70,7 +70,6 @@ export type IdeaTags = {
 export type PropLotInputOptions = {
   filters?: InputMaybe<Array<FilterInput>>;
   requestUUID: Scalars['String'];
-  wallet?: InputMaybe<Scalars['String']>;
 };
 
 export type PropLotListResponse = {
