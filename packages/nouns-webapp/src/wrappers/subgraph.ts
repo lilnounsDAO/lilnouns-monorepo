@@ -44,9 +44,9 @@ export interface Delegates {
 }
 
 //TODO: figure out way to fetch seeds for more than first 1k
-export const lilnounsSeedsQuery = (lilnounIds: string[]) => gql`
+export const lilnounsSeedsQuery = (nounIds: string[], first = 1_000) => gql`
 {
-  seeds(where: { id_in: ${JSON.stringify(lilnounIds)} } })  {
+  seeds(first: ${first}, where: { id_in: ${JSON.stringify(nounIds)} } ) {
     id
     background
     body
