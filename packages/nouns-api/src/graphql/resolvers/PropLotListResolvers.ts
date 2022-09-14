@@ -1,31 +1,31 @@
 import IdeasService from '../../services/ideas';
 
 import { IResolvers } from '@graphql-tools/utils';
-import { Idea, QueryGetPropLotListArgs, PropLotListResponse, FilterInput, UiIdeaRow, UiFilterPillGroup, UiFilterType, UiDropdownPill, TargetFilterParam, UiSortPillGroup } from '../generated';
-const buildTargetParam = (id: string, value: string): TargetFilterParam => ({ param: { id, value } })
+import { UiListItemResolvers, Idea, QueryGetPropLotListArgs, FilterInput, UiIdeaRow, UiFilterPillGroup, UiFilterType, UiDropdownPill, TargetFilterParam, UiSortPillGroup, UiListItem, PropLotListResponseMetadataResolvers } from '../generated';
+
 const FILTER_IDS = {
   DATE: "date",
   SORT: "sort",
   TAG: "tag",
-}
+};
 
+const buildTargetParam = (id: string, value: string): TargetFilterParam => ({ param: { id, value } });
 const getSortParam = (appliedFilters: FilterInput[]) => appliedFilters.find((aF: any) => aF.id === FILTER_IDS.SORT) || { id: FILTER_IDS.SORT, value: "LATEST" };
 const getDateParam = (appliedFilters: FilterInput[]) => appliedFilters.find((aF: any) => aF.id === FILTER_IDS.DATE);
 
 const resolvers: IResolvers = {
   Query: {
     getPropLotList: async (_parent: any, args: QueryGetPropLotListArgs) => {
-      return { appliedFilters: args.options.filters || [], wallet: args.options.wallet, requestUUID: args.options.requestUUID }
+      return { appliedFilters: args.options.filters || [], requestUUID: args.options.requestUUID }
     },
   },
   PropLotListResponse: {
-    list: async (root) => {
+    list: async (root): Promise<UiListItem[]> => {
       const sortParam = getSortParam(root.appliedFilters);
       const ideas: Idea[] = await IdeasService.all(sortParam.value);
       const ideaRows: UiIdeaRow[] = ideas.map(idea => {
         const row: UiIdeaRow = {
           data: idea,
-          __typename: "UIIdeaRow"
         }
 
         return row;
@@ -50,16 +50,18 @@ const resolvers: IResolvers = {
       };
 
       const filterPills: UiFilterPillGroup = {
+        __typename: "UIFilterPillGroup",
         id: "FILTER_PILLS",
         pills: [dropDownPill],
         type: UiFilterType.MultiSelect,
-      }
+      };
 
       // SORT FILTERS
 
       const sortParam = getSortParam(root.appliedFilters);
 
       const sortPills: UiSortPillGroup = {
+        __typename: "UISortPillGroup",
         id: FILTER_IDS.SORT,
         pills: [{
           __typename: 'UITogglePill',
@@ -98,17 +100,25 @@ const resolvers: IResolvers = {
           ],
         },
       ],
-      }
+      };
 
       return {
         sortPills,
         filterPills,
       };
     },
-    metadata: (root) => ({
+    metadata: (root): PropLotListResponseMetadataResolvers => ({
       requestUUID: root.requestUUID,
       appliedFilters: root.appliedFilters,
     })
+  },
+  UIListItem:<UiListItemResolvers> {
+    __resolveType(item){
+      if(item.data?.tldr){
+        return 'UIIdeaRow';
+      }
+      return null;
+    },
   },
 };
 
