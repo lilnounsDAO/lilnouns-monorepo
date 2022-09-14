@@ -4,7 +4,7 @@ import { NounsTokenABI, NounsTokenFactory } from '@nouns/contracts';
 import config, { cache, cacheKey, CHAIN_ID } from '../config';
 import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
-import { seedsQuery } from './subgraph';
+import { seedsQuery, lilnounsSeedsQuery } from './subgraph';
 
 interface NounToken {
   name: string;
@@ -26,8 +26,11 @@ export enum NounsTokenContractFunction {
 
 const abi = new utils.Interface(NounsTokenABI);
 const seedCacheKey = cacheKey(cache.seed, CHAIN_ID, config.addresses.nounsToken);
-const bigNounSeedCacheKey = cacheKey(cache.bigNounSeed, CHAIN_ID, "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03");
-
+const bigNounSeedCacheKey = cacheKey(
+  cache.bigNounSeed,
+  CHAIN_ID,
+  '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
+);
 
 const isSeedValid = (seed: Record<string, any> | undefined) => {
   const expectedKeys = ['background', 'body', 'accessory', 'head', 'glasses'];
@@ -68,12 +71,25 @@ const seedArrayToObject = (seeds: (INounSeed & { id: string })[]) => {
   }, {});
 };
 
-const useNounSeeds = () => {
+const useNounSeeds = (nounId: EthersBN) => {
+  // use nounId to get last 1000 from that point
+  const res = Array.from(Array(nounId.toNumber()).keys())
+    .map(x => x + 1)
+    .sort((a, b) => b - a);
+
+  const newArray = res
+    .slice(0, 1000)
+    .sort((a, b) => b - a)
+
   const cache = localStorage.getItem(seedCacheKey);
   const cachedSeeds = cache ? JSON.parse(cache) : undefined;
-  const { data } = useQuery(seedsQuery(), {
-    skip: !!cachedSeeds,
-  });
+  
+  const { data } = useQuery(
+    lilnounsSeedsQuery(newArray.map(String)),
+    {
+      skip: !!cachedSeeds,
+    },
+  );
 
   useEffect(() => {
     if (!cachedSeeds && data?.seeds?.length) {
@@ -103,7 +119,7 @@ const useBigNounSeeds = () => {
 };
 
 export const useNounSeed = (nounId: EthersBN) => {
-  const seeds = useNounSeeds();
+  const seeds = useNounSeeds(nounId);
   const seed = seeds?.[nounId.toString()];
   // prettier-ignore
   const request = seed ? false : {
@@ -129,7 +145,7 @@ export const useNounSeed = (nounId: EthersBN) => {
       localStorage.setItem(seedCacheKey, updatedSeedCache);
 
       //TODO: find way to cache all lils as query is set for first 1k
-      console.log(`cached seed = ${JSON.stringify(cache.seed)}`)
+      console.log(`cached seed = ${JSON.stringify(cache.seed)}`);
     }
     return response;
   }
@@ -137,37 +153,34 @@ export const useNounSeed = (nounId: EthersBN) => {
 };
 
 export const useBigNounSeed = (nounId: EthersBN) => {
-    const seeds = useBigNounSeeds();
-    const seed = seeds?.[nounId.toString()];
-    // prettier-ignore
-    const request = seed ? false : {
+  const seeds = useBigNounSeeds();
+  const seed = seeds?.[nounId.toString()];
+  // prettier-ignore
+  const request = seed ? false : {
       abi,
       address: "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
       method: 'seeds',
       args: [nounId],
     };
-    const response = useContractCall<INounSeed>(request);
-    if (response) {
-      const seedCache = localStorage.getItem(bigNounSeedCacheKey);
-      if (seedCache && isSeedValid(response)) {
-        const updatedSeedCache = JSON.stringify({
-          ...JSON.parse(seedCache),
-          [nounId.toString()]: {
-            accessory: response.accessory,
-            background: response.background,
-            body: response.body,
-            glasses: response.glasses,
-            head: response.head,
-          },
-        });
-        localStorage.setItem(bigNounSeedCacheKey, updatedSeedCache);
-  
-        //TODO: find way to cache all lils as query is set for first 1k
-        console.log(`cached seed = ${JSON.stringify(cache.seed)}`)
-      }
-      return response;
+  const response = useContractCall<INounSeed>(request);
+  if (response) {
+    const seedCache = localStorage.getItem(bigNounSeedCacheKey);
+    if (seedCache && isSeedValid(response)) {
+      const updatedSeedCache = JSON.stringify({
+        ...JSON.parse(seedCache),
+        [nounId.toString()]: {
+          accessory: response.accessory,
+          background: response.background,
+          body: response.body,
+          glasses: response.glasses,
+          head: response.head,
+        },
+      });
+      localStorage.setItem(bigNounSeedCacheKey, updatedSeedCache);
     }
-    return seed;
+    return response;
+  }
+  return seed;
 };
 
 export const useUserVotes = (): number | undefined => {
@@ -221,11 +234,9 @@ export const useDelegateVotes = () => {
 };
 
 export const useNounTokenBalance = (address: string | undefined): number | undefined => {
-
-
   //  const { account } = useEthers();
 
-    const [tokenBalance] =
+  const [tokenBalance] =
     useContractCall<[EthersBN]>({
       abi,
       address: config.addresses.nounsToken,
@@ -233,6 +244,32 @@ export const useNounTokenBalance = (address: string | undefined): number | undef
       args: [address],
     }) || [];
 
-    return tokenBalance?.toNumber();
-
+  return tokenBalance?.toNumber();
 };
+
+
+/**
+ * 
+ *       // console.log(`arrstring 3: data length == ${data?.seeds?.length}`);
+
+      // const oldItems: Array<string> = JSON.parse(localStorage.getItem(seedCacheKey) || "") || [];
+      // //JSON.parse(localStorage.getItem(seedCacheKey) || '');
+      // console.log(`arrstring 3: oldItems lenght==${oldItems.length} == ${JSON.stringify(oldItems)}`);
+      // // console.log(`arrstring 4: newItems lenght==${data.seeds.length} == ${JSON.stringify(data.seeds)}`);
+      // // const mkmnfer = {"4793":{"background":0,"body":23,"accessory":125,"head":27,"glasses":11}}
+      // oldItems.push("3");
+
+      // localStorage.setItem(seedCacheKey, JSON.stringify(seedArrayToObject(data.seeds)))
+
+     
+
+      // const stored = JSON.parse(localStorage.getItem(seedCacheKey) || "");
+      // const student2 = JSON.stringify(seedArrayToObject(data.seeds))
+      // stored.push(student2);
+
+      //localStorage.setItem(localStorage.getItem(seedCacheKey) || "", JSON.stringify(stored));
+
+      // var result = JSON.parse(localStorage.getItem('students'));
+      // console.log(result);
+
+ */
