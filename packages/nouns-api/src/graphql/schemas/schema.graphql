@@ -2,7 +2,6 @@ type Query {
   getIdeas(options: IdeaInputOptions!): [Idea!]
   getAllUsers: [User!]
   getUser(options: UserInputOptions!): User
-  getPropLotList(options: PropLotInputOptions!): PropLotListResponse!
   getPropLot(options: PropLotInputOptions!): PropLotResponse!
 }
 
@@ -41,20 +40,9 @@ type UIPropLotFilterBar {
   filterDropdown: UIDropdownFilter
 }
 
+### UIListItem can be extended to support any new list of components we want to display in the future
 type UIPropLotComponentList {
   list: [UIListItem!]
-}
-
-type PropLotListResponse {
-  list: [UIListItem!]
-  uiFilters: UIFilterGroup
-  metadata: PropLotResponseMetadata!
-}
-
-type UIFilterGroup {
-  sortPills: UISortPillGroup
-  filterPills: UIFilterPillGroup
-  filterDropdown: UIDropdownFilter
 }
 
 type PropLotResponseMetadata {

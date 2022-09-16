@@ -1,7 +1,7 @@
 import IdeasService from '../../services/ideas';
 
 import { IResolvers } from '@graphql-tools/utils';
-import {UiPropLotSections, PropLotResponseMetadataResolvers, UiListItemResolvers, Idea, QueryGetPropLotListArgs, FilterInput, UiIdeaRow, UiFilterPillGroup, UiFilterType, UiDropdownPill, TargetFilterParam, UiSortPillGroup, UiListItem, UiPropLotComponentList, UiPropLotFilterBar } from '../generated';
+import {UiPropLotSections, PropLotResponseMetadataResolvers, QueryGetPropLotArgs, UiListItemResolvers, Idea, FilterInput, UiIdeaRow, UiFilterPillGroup, UiFilterType, UiDropdownPill, TargetFilterParam, UiSortPillGroup, UiPropLotComponentList, UiPropLotFilterBar } from '../generated';
 
 const FILTER_IDS = {
   DATE: "date",
@@ -15,10 +15,7 @@ const getDateParam = (appliedFilters: FilterInput[]) => appliedFilters.find((aF:
 
 const resolvers: IResolvers = {
   Query: {
-    getPropLotList: async (_parent: any, args: QueryGetPropLotListArgs) => {
-      return { appliedFilters: args.options.filters || [], requestUUID: args.options.requestUUID }
-    },
-    getPropLot: async (_parent: any, args: QueryGetPropLotListArgs) => {
+    getPropLot: async (_parent: any, args: QueryGetPropLotArgs) => {
       return { appliedFilters: args.options.filters || [], requestUUID: args.options.requestUUID }
     },
   },
@@ -111,99 +108,6 @@ const resolvers: IResolvers = {
     },
     metadata: (root): PropLotResponseMetadataResolvers => ({
       requestUUID: root.requestUUID || "",
-      appliedFilters: root.appliedFilters,
-    })
-  },
-  PropLotListResponse: {
-    list: async (root): Promise<UiListItem[]> => {
-      const sortParam = getSortParam(root.appliedFilters);
-      const ideas: Idea[] = await IdeasService.all(sortParam.value);
-      const ideaRows: UiIdeaRow[] = ideas.map(idea => {
-        const row: UiIdeaRow = {
-          data: idea,
-        }
-
-        return row;
-      })
-
-      return ideaRows;
-    },
-    uiFilters: (root) => {
-      const dateParam = getDateParam(root.appliedFilters);
-
-      const dropDownPill: UiDropdownPill = {
-        __typename: 'UIDropdownPill',
-        id: FILTER_IDS.DATE,
-        selected: dateParam?.key === FILTER_IDS.DATE,
-        label: "Top",
-        options: [{
-          id: "TODAY",
-          selected: dateParam?.value === "TODAY",
-          label: "Today",
-          target: buildTargetParam(FILTER_IDS.DATE, "TODAY"),
-        }],
-      };
-
-      const filterPills: UiFilterPillGroup = {
-        __typename: "UIFilterPillGroup",
-        id: "FILTER_PILLS",
-        pills: [dropDownPill],
-        type: UiFilterType.MultiSelect,
-      };
-
-      // SORT FILTERS
-
-      const sortParam = getSortParam(root.appliedFilters);
-
-      const sortPills: UiSortPillGroup = {
-        __typename: "UISortPillGroup",
-        id: FILTER_IDS.SORT,
-        pills: [{
-          __typename: 'UITogglePill',
-          id: "sort_created",
-          options: [
-            {
-              id: "LATEST",
-              selected: sortParam?.value === "LATEST",
-              label: "Created",
-              target: buildTargetParam(FILTER_IDS.SORT, "LATEST"),
-            },
-            {
-              id: "OLDEST",
-              selected: sortParam?.value === "OLDEST",
-              label: "Created",
-              target: buildTargetParam(FILTER_IDS.SORT, "OLDEST"),
-            }
-          ],
-        },
-        {
-          __typename: 'UITogglePill',
-          id: "sort_votes",
-          options: [
-            {
-              id: "VOTES_ASC",
-              selected: sortParam?.value === "VOTES_ASC",
-              label: "Votes",
-              target: buildTargetParam(FILTER_IDS.SORT, "VOTES_ASC"),
-            },
-            {
-              id: "VOTES_DESC",
-              selected: sortParam?.value === "VOTES_DESC",
-              label: "Votes",
-              target: buildTargetParam(FILTER_IDS.SORT, "VOTES_DESC"),
-            }
-          ],
-        },
-      ],
-      };
-
-      return {
-        sortPills,
-        filterPills,
-      };
-    },
-    metadata: (root): PropLotResponseMetadataResolvers => ({
-      requestUUID: root.requestUUID,
       appliedFilters: root.appliedFilters,
     })
   },
