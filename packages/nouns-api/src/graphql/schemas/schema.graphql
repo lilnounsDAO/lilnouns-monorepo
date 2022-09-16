@@ -3,6 +3,7 @@ type Query {
   getAllUsers: [User!]
   getUser(options: UserInputOptions!): User
   getPropLotList(options: PropLotInputOptions!): PropLotListResponse!
+  getPropLot(options: PropLotInputOptions!): PropLotResponse!
 }
 
 # Query input types
@@ -21,16 +22,33 @@ input PropLotInputOptions {
 }
 
 input FilterInput {
-  id: String!
+  key: String!
   value: String!
 }
 
 # Query response types
 
+type PropLotResponse {
+  sections: [UIPropLotSections!]
+  metadata: PropLotResponseMetadata!
+}
+
+union UIPropLotSections = UIPropLotFilterBar | UIPropLotComponentList
+
+type UIPropLotFilterBar {
+  sortPills: UISortPillGroup
+  filterPills: UIFilterPillGroup
+  filterDropdown: UIDropdownFilter
+}
+
+type UIPropLotComponentList {
+  list: [UIListItem!]
+}
+
 type PropLotListResponse {
   list: [UIListItem!]
   uiFilters: UIFilterGroup
-  metadata: PropLotListResponseMetadata!
+  metadata: PropLotResponseMetadata!
 }
 
 type UIFilterGroup {
@@ -39,7 +57,7 @@ type UIFilterGroup {
   filterDropdown: UIDropdownFilter
 }
 
-type PropLotListResponseMetadata {
+type PropLotResponseMetadata {
   appliedFilters: [FilterParam!]
   requestUUID: String!
 }
@@ -101,13 +119,13 @@ type Idea {
 # Target Types - Uses to apply user actions e.g. apply a filter/sort option or archive a idea.
 
 type FilterParam {
-  id: String!
+  key: String!
   value: String!
 }
 
 # Used to apply the param value to the getPropLotList query
 type TargetFilterParam {
-  param: FilterParam! # Example: {id: "tag", value: "archived" } or {id: "date", value: "LAST_WEEK" }
+  param: FilterParam! # Example: {key: "tag", value: "archived" } or {key: "date", value: "LAST_WEEK" }
 }
 
 # Used to tell the client to handle a specific action on the UI e.g. archive an idea.
@@ -143,7 +161,7 @@ type UIDropdownFilter {
 type UIFilterOption {
   id: String!
   selected: Boolean!
-  label: String!
+  label: String
   target: TargetFilterParam!
 }
 

@@ -104,9 +104,6 @@ const wagmiClient = createClient({
   },
 });
 
-
-
-
 const defaultLink = new HttpLink({
   uri: config.app.subgraphApiUri
 })
@@ -123,6 +120,9 @@ const zoraAPILink = new HttpLink({
   uri: 'https://api.zora.co/graphql'
 })
 
+const propLotLink = new HttpLink({
+  uri: config.app.nounsApiUri + '/graphql'
+})
 
 //pass them to apollo-client config
 const client = new ApolloClient({
@@ -131,9 +131,9 @@ const client = new ApolloClient({
     nounsDAOLink, //if above 
     ApolloLink.split(operation => operation.getContext().clientName === 'NounsDAOSnapshot',
     nounsDAOVotingSnapshotLink,
-    ApolloLink.split(operation => operation.getContext().clientName === 'ZoraAPI',
-    zoraAPILink,
-    defaultLink))
+    ApolloLink.split(operation => operation.getContext().clientName === 'PropLot',
+    propLotLink,
+    defaultLink)),
 ),
   cache: new InMemoryCache(),
 })

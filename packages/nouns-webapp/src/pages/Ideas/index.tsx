@@ -1,6 +1,8 @@
 import { Col, Row } from 'react-bootstrap';
 import Section from '../../layout/Section';
 import Ideas from '../../components/Ideas';
+import PropLotList from '../../components/PropLotList';
+
 import classes from './Ideas.module.css';
 
 const IdeasPage = () => {
@@ -19,7 +21,8 @@ const IdeasPage = () => {
           submit an idea and vote on others. There is no limit to the number of ideas you can submit
           and vote on.
         </p>
-        <Ideas />
+        {/* <Ideas /> */}
+        <PropLotList />
       </Col>
     </Section>
   );

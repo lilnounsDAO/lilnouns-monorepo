@@ -27,13 +27,13 @@ export type Comment = {
 };
 
 export type FilterInput = {
-  id: Scalars['String'];
+  key: Scalars['String'];
   value: Scalars['String'];
 };
 
 export type FilterParam = {
   __typename?: 'FilterParam';
-  id: Scalars['String'];
+  key: Scalars['String'];
   value: Scalars['String'];
 };
 
@@ -75,12 +75,18 @@ export type PropLotInputOptions = {
 export type PropLotListResponse = {
   __typename?: 'PropLotListResponse';
   list?: Maybe<Array<UiListItem>>;
-  metadata: PropLotListResponseMetadata;
+  metadata: PropLotResponseMetadata;
   uiFilters?: Maybe<UiFilterGroup>;
 };
 
-export type PropLotListResponseMetadata = {
-  __typename?: 'PropLotListResponseMetadata';
+export type PropLotResponse = {
+  __typename?: 'PropLotResponse';
+  metadata: PropLotResponseMetadata;
+  sections?: Maybe<Array<UiPropLotSections>>;
+};
+
+export type PropLotResponseMetadata = {
+  __typename?: 'PropLotResponseMetadata';
   appliedFilters?: Maybe<Array<FilterParam>>;
   requestUUID: Scalars['String'];
 };
@@ -89,6 +95,7 @@ export type Query = {
   __typename?: 'Query';
   getAllUsers?: Maybe<Array<User>>;
   getIdeas?: Maybe<Array<Idea>>;
+  getPropLot: PropLotResponse;
   getPropLotList: PropLotListResponse;
   getUser?: Maybe<User>;
 };
@@ -96,6 +103,11 @@ export type Query = {
 
 export type QueryGetIdeasArgs = {
   options: IdeaInputOptions;
+};
+
+
+export type QueryGetPropLotArgs = {
+  options: PropLotInputOptions;
 };
 
 
@@ -166,7 +178,7 @@ export type UiFilterGroup = {
 export type UiFilterOption = {
   __typename?: 'UIFilterOption';
   id: Scalars['String'];
-  label: Scalars['String'];
+  label?: Maybe<Scalars['String']>;
   selected: Scalars['Boolean'];
   target: TargetFilterParam;
 };
@@ -193,6 +205,20 @@ export type UiIdeaRow = {
 };
 
 export type UiListItem = UiIdeaRow;
+
+export type UiPropLotComponentList = {
+  __typename?: 'UIPropLotComponentList';
+  list?: Maybe<Array<UiListItem>>;
+};
+
+export type UiPropLotFilterBar = {
+  __typename?: 'UIPropLotFilterBar';
+  filterDropdown?: Maybe<UiDropdownFilter>;
+  filterPills?: Maybe<UiFilterPillGroup>;
+  sortPills?: Maybe<UiSortPillGroup>;
+};
+
+export type UiPropLotSections = UiPropLotComponentList | UiPropLotFilterBar;
 
 export type UiSortPillGroup = {
   __typename?: 'UISortPillGroup';
@@ -314,7 +340,8 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   PropLotInputOptions: PropLotInputOptions;
   PropLotListResponse: ResolverTypeWrapper<Omit<PropLotListResponse, 'list'> & { list?: Maybe<Array<ResolversTypes['UIListItem']>> }>;
-  PropLotListResponseMetadata: ResolverTypeWrapper<PropLotListResponseMetadata>;
+  PropLotResponse: ResolverTypeWrapper<Omit<PropLotResponse, 'sections'> & { sections?: Maybe<Array<ResolversTypes['UIPropLotSections']>> }>;
+  PropLotResponseMetadata: ResolverTypeWrapper<PropLotResponseMetadata>;
   Query: ResolverTypeWrapper<{}>;
   SORT_TYPE: Sort_Type;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -332,6 +359,9 @@ export type ResolversTypes = {
   UIFilterType: UiFilterType;
   UIIdeaRow: ResolverTypeWrapper<UiIdeaRow>;
   UIListItem: ResolversTypes['UIIdeaRow'];
+  UIPropLotComponentList: ResolverTypeWrapper<Omit<UiPropLotComponentList, 'list'> & { list?: Maybe<Array<ResolversTypes['UIListItem']>> }>;
+  UIPropLotFilterBar: ResolverTypeWrapper<UiPropLotFilterBar>;
+  UIPropLotSections: ResolversTypes['UIPropLotComponentList'] | ResolversTypes['UIPropLotFilterBar'];
   UISortPillGroup: ResolverTypeWrapper<Omit<UiSortPillGroup, 'pills'> & { pills: Array<ResolversTypes['UIFilterPills']> }>;
   UITogglePill: ResolverTypeWrapper<UiTogglePill>;
   User: ResolverTypeWrapper<User>;
@@ -353,7 +383,8 @@ export type ResolversParentTypes = {
   Int: Scalars['Int'];
   PropLotInputOptions: PropLotInputOptions;
   PropLotListResponse: Omit<PropLotListResponse, 'list'> & { list?: Maybe<Array<ResolversParentTypes['UIListItem']>> };
-  PropLotListResponseMetadata: PropLotListResponseMetadata;
+  PropLotResponse: Omit<PropLotResponse, 'sections'> & { sections?: Maybe<Array<ResolversParentTypes['UIPropLotSections']>> };
+  PropLotResponseMetadata: PropLotResponseMetadata;
   Query: {};
   String: Scalars['String'];
   Target: ResolversParentTypes['TargetAction'] | ResolversParentTypes['TargetFilterParam'];
@@ -367,6 +398,9 @@ export type ResolversParentTypes = {
   UIFilterPills: ResolversParentTypes['UIDropdownPill'] | ResolversParentTypes['UITogglePill'];
   UIIdeaRow: UiIdeaRow;
   UIListItem: ResolversParentTypes['UIIdeaRow'];
+  UIPropLotComponentList: Omit<UiPropLotComponentList, 'list'> & { list?: Maybe<Array<ResolversParentTypes['UIListItem']>> };
+  UIPropLotFilterBar: UiPropLotFilterBar;
+  UIPropLotSections: ResolversParentTypes['UIPropLotComponentList'] | ResolversParentTypes['UIPropLotFilterBar'];
   UISortPillGroup: Omit<UiSortPillGroup, 'pills'> & { pills: Array<ResolversParentTypes['UIFilterPills']> };
   UITogglePill: UiTogglePill;
   User: User;
@@ -387,7 +421,7 @@ export type CommentResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type FilterParamResolvers<ContextType = any, ParentType extends ResolversParentTypes['FilterParam'] = ResolversParentTypes['FilterParam']> = {
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -420,12 +454,18 @@ export type IdeaTagsResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type PropLotListResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotListResponse'] = ResolversParentTypes['PropLotListResponse']> = {
   list?: Resolver<Maybe<Array<ResolversTypes['UIListItem']>>, ParentType, ContextType>;
-  metadata?: Resolver<ResolversTypes['PropLotListResponseMetadata'], ParentType, ContextType>;
+  metadata?: Resolver<ResolversTypes['PropLotResponseMetadata'], ParentType, ContextType>;
   uiFilters?: Resolver<Maybe<ResolversTypes['UIFilterGroup']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PropLotListResponseMetadataResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotListResponseMetadata'] = ResolversParentTypes['PropLotListResponseMetadata']> = {
+export type PropLotResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotResponse'] = ResolversParentTypes['PropLotResponse']> = {
+  metadata?: Resolver<ResolversTypes['PropLotResponseMetadata'], ParentType, ContextType>;
+  sections?: Resolver<Maybe<Array<ResolversTypes['UIPropLotSections']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PropLotResponseMetadataResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotResponseMetadata'] = ResolversParentTypes['PropLotResponseMetadata']> = {
   appliedFilters?: Resolver<Maybe<Array<ResolversTypes['FilterParam']>>, ParentType, ContextType>;
   requestUUID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -434,6 +474,7 @@ export type PropLotListResponseMetadataResolvers<ContextType = any, ParentType e
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getAllUsers?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
   getIdeas?: Resolver<Maybe<Array<ResolversTypes['Idea']>>, ParentType, ContextType, RequireFields<QueryGetIdeasArgs, 'options'>>;
+  getPropLot?: Resolver<ResolversTypes['PropLotResponse'], ParentType, ContextType, RequireFields<QueryGetPropLotArgs, 'options'>>;
   getPropLotList?: Resolver<ResolversTypes['PropLotListResponse'], ParentType, ContextType, RequireFields<QueryGetPropLotListArgs, 'options'>>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'options'>>;
 };
@@ -478,7 +519,7 @@ export type UiFilterGroupResolvers<ContextType = any, ParentType extends Resolve
 
 export type UiFilterOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIFilterOption'] = ResolversParentTypes['UIFilterOption']> = {
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   selected?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   target?: Resolver<ResolversTypes['TargetFilterParam'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -504,6 +545,22 @@ export type UiIdeaRowResolvers<ContextType = any, ParentType extends ResolversPa
 
 export type UiListItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIListItem'] = ResolversParentTypes['UIListItem']> = {
   __resolveType: TypeResolveFn<'UIIdeaRow', ParentType, ContextType>;
+};
+
+export type UiPropLotComponentListResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIPropLotComponentList'] = ResolversParentTypes['UIPropLotComponentList']> = {
+  list?: Resolver<Maybe<Array<ResolversTypes['UIListItem']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UiPropLotFilterBarResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIPropLotFilterBar'] = ResolversParentTypes['UIPropLotFilterBar']> = {
+  filterDropdown?: Resolver<Maybe<ResolversTypes['UIDropdownFilter']>, ParentType, ContextType>;
+  filterPills?: Resolver<Maybe<ResolversTypes['UIFilterPillGroup']>, ParentType, ContextType>;
+  sortPills?: Resolver<Maybe<ResolversTypes['UISortPillGroup']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UiPropLotSectionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIPropLotSections'] = ResolversParentTypes['UIPropLotSections']> = {
+  __resolveType: TypeResolveFn<'UIPropLotComponentList' | 'UIPropLotFilterBar', ParentType, ContextType>;
 };
 
 export type UiSortPillGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['UISortPillGroup'] = ResolversParentTypes['UISortPillGroup']> = {
@@ -549,7 +606,8 @@ export type Resolvers<ContextType = any> = {
   IdeaStats?: IdeaStatsResolvers<ContextType>;
   IdeaTags?: IdeaTagsResolvers<ContextType>;
   PropLotListResponse?: PropLotListResponseResolvers<ContextType>;
-  PropLotListResponseMetadata?: PropLotListResponseMetadataResolvers<ContextType>;
+  PropLotResponse?: PropLotResponseResolvers<ContextType>;
+  PropLotResponseMetadata?: PropLotResponseMetadataResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Target?: TargetResolvers<ContextType>;
   TargetAction?: TargetActionResolvers<ContextType>;
@@ -562,6 +620,9 @@ export type Resolvers<ContextType = any> = {
   UIFilterPills?: UiFilterPillsResolvers<ContextType>;
   UIIdeaRow?: UiIdeaRowResolvers<ContextType>;
   UIListItem?: UiListItemResolvers<ContextType>;
+  UIPropLotComponentList?: UiPropLotComponentListResolvers<ContextType>;
+  UIPropLotFilterBar?: UiPropLotFilterBarResolvers<ContextType>;
+  UIPropLotSections?: UiPropLotSectionsResolvers<ContextType>;
   UISortPillGroup?: UiSortPillGroupResolvers<ContextType>;
   UITogglePill?: UiTogglePillResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
