@@ -2,9 +2,7 @@ import { Button } from 'react-bootstrap';
 import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
 import { useRef } from 'react';
-import clsx from 'clsx';
 import { useAccountVotes } from '../../wrappers/nounToken';
-import classes from './PropLotHome.module.css';
 import { useIdeas } from '../../hooks/useIdeas';
 import { useQuery } from '@apollo/client';
 import propLotClient from '../graphql/config';
@@ -83,23 +81,29 @@ const PropLotHome = () => {
   return (
     <div>
       <div>
-        <div className={clsx('d-flex', classes.submitIdeaButtonWrapper)}>
-          <h3 className={classes.heading}>Ideas</h3>
+        <div className="flex mb-4 justify-between items-center text-right pt-2">
+          <h3 className="text-4xl lodrina">Ideas</h3>
           {account !== undefined && hasNouns ? (
-            <Button className={classes.generateBtn} onClick={() => history.push('/ideas/create')}>
+            <Button
+              className="rounded-lg !bg-[#2B83F6] !text-white !font-bold p-2"
+              onClick={() => history.push('/ideas/create')}
+            >
               Submit Idea
             </Button>
           ) : (
             <>
-              <div className={classes.nullBtnWrapper}>
-                <Button className={classes.generateBtnDisabled}>Submit Idea</Button>
+              <div className="flex justify-end">
+                <Button className="!text-[#8C8D92] !bg-[#F4F4F8] !border-[#E2E3E8] !font-bold p-2">
+                  Submit Idea
+                </Button>
               </div>
             </>
           )}
         </div>
       </div>
+
       {(!Boolean(account) || !hasNouns) && (
-        <div className={classes.nullStateCopy}>{nullStateCopy()}</div>
+        <div className="mt-2 text-[#8C8D92]">{nullStateCopy()}</div>
       )}
 
       {data?.propLot?.sections?.map((section, idx) => {
