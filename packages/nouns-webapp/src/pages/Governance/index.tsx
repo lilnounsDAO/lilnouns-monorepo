@@ -8,7 +8,7 @@ import { utils } from 'ethers/lib/ethers';
 import clsx from 'clsx';
 import { useTreasuryBalance, useTreasuryUSDValue } from '../../hooks/useTreasuryBalance';
 
-import NounImageInllineTable from '../../components/NounImageInllineTable';
+import NounImageInllineTable from '../../components/NounImageInlineTable';
 import { isMobileScreen } from '../../utils/isMobile';
 import { useEffect, useState } from 'react';
 
@@ -95,6 +95,8 @@ const GovernancePage = ({
       </div>
     );
   }
+
+  const nounCount = nounsInTreasury.accounts.length ? nounsInTreasury.accounts[0].tokenBalance : "0"
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -184,7 +186,7 @@ const GovernancePage = ({
               <Row>
                 <Col className={clsx(classes.ethTreasuryAmt)} lg={3}>
                   <h1 className={classes.BigNounBalance}>
-                    {nounsInTreasury.accounts[0].tokenBalance}
+                    {nounCount}
                   </h1>
                   <h1>{' Nouns'}</h1>
                 </Col>
@@ -193,9 +195,9 @@ const GovernancePage = ({
                   <Col className={classes.usdTreasuryAmt}>
                     <Row className={classes.nounProfilePics}>
                       <NounImageInllineTable
-                        nounIds={nounsInTreasury.accounts[0].nouns.flatMap(
+                        nounIds={nounsInTreasury.accounts.length ? nounsInTreasury.accounts[0].nouns.flatMap(
                           (obj: { id: any }) => obj.id,
-                        )}
+                        ) : []}
                       />
                     </Row>
                   </Col>

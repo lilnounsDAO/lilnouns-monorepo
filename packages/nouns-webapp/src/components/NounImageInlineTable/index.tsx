@@ -1,17 +1,17 @@
-import { StandaloneBigNounCircular } from '../../components/StandaloneNoun';
+import { StandaloneBigNounCircular } from '../StandaloneNoun';
 import { BigNumber as EthersBN } from 'ethers';
-import classes from './NounImageInllineTable.module.css';
+import classes from './NounImageInlineTable.module.css';
 import { GrayCircle } from '../GrayCircle';
 import { pseudoRandomPredictableShuffle } from '../../utils/pseudoRandomPredictableShuffle';
 
-interface NounImageInllineTableProps {
+interface NounImageInlineTableTableProps {
   nounIds: string[];
 }
 const NOUNS_PER_VOTE_CARD_DESKTOP = 7;
 
 const isXLScreen = window.innerWidth > 1200;
 
-const NounImageInllineTable: React.FC<NounImageInllineTableProps> = props => {
+const NounImageInlineTable: React.FC<NounImageInlineTableTableProps> = props => {
   const { nounIds } = props;
 
   const shuffledNounIds = pseudoRandomPredictableShuffle(nounIds);
@@ -42,4 +42,4 @@ const NounImageInllineTable: React.FC<NounImageInllineTableProps> = props => {
   return <table className={classes.wrapper}>{content()}</table>;
 };
 
-export default NounImageInllineTable;
+export default NounImageInlineTable;
