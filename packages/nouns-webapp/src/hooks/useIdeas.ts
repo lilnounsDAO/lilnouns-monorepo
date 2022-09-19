@@ -36,9 +36,9 @@ export interface Idea {
   title: string;
   tldr: string;
   description: string;
-  votes: Vote[];
+  votes?: Vote[];
   creatorId: string;
-  comments: Comment[];
+  comments?: Comment[];
   votecount: number;
   createdAt: string;
   _count?: {
@@ -78,15 +78,16 @@ const updateVotesState = (ideas: Idea[], vote: Vote) => {
       let seenVote = false;
       let voteCount = idea.votecount + direction * lilnounCount;
 
-      const newIdeaVotes = idea.votes.map(v => {
-        if (v.voterId === voterId) {
-          seenVote = true;
-          voteCount = idea.votecount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
-          return { ...vote, direction };
-        } else {
-          return vote;
-        }
-      });
+      const newIdeaVotes =
+        idea.votes?.map(v => {
+          if (v.voterId === voterId) {
+            seenVote = true;
+            voteCount = idea.votecount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
+            return { ...vote, direction };
+          } else {
+            return vote;
+          }
+        }) || [];
 
       if (!seenVote) {
         newIdeaVotes.push(vote);
