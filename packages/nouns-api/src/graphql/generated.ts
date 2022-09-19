@@ -139,20 +139,12 @@ export type TargetFilterParam = {
   param: FilterParam;
 };
 
-export type UiDropdownFilter = {
-  __typename?: 'UIDropdownFilter';
+export type UiFilter = {
+  __typename?: 'UIFilter';
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   options: Array<UiFilterOption>;
   type: UiFilterType;
-};
-
-export type UiDropdownPill = {
-  __typename?: 'UIDropdownPill';
-  id: Scalars['String'];
-  label?: Maybe<Scalars['String']>;
-  options: Array<UiFilterOption>;
-  selected: Scalars['Boolean'];
 };
 
 export type UiFilterOption = {
@@ -162,16 +154,6 @@ export type UiFilterOption = {
   selected: Scalars['Boolean'];
   target: TargetFilterParam;
 };
-
-export type UiFilterPillGroup = {
-  __typename?: 'UIFilterPillGroup';
-  id: Scalars['String'];
-  label?: Maybe<Scalars['String']>;
-  pills: Array<UiFilterPills>;
-  type: UiFilterType;
-};
-
-export type UiFilterPills = UiDropdownPill | UiTogglePill;
 
 export enum UiFilterType {
   MultiSelect = 'MULTI_SELECT',
@@ -193,26 +175,10 @@ export type UiPropLotComponentList = {
 
 export type UiPropLotFilterBar = {
   __typename?: 'UIPropLotFilterBar';
-  filterDropdown?: Maybe<UiDropdownFilter>;
-  filterPills?: Maybe<UiFilterPillGroup>;
-  sortPills?: Maybe<UiSortPillGroup>;
+  filters?: Maybe<Array<UiFilter>>;
 };
 
 export type UiPropLotSections = UiPropLotComponentList | UiPropLotFilterBar;
-
-export type UiSortPillGroup = {
-  __typename?: 'UISortPillGroup';
-  id: Scalars['String'];
-  label?: Maybe<Scalars['String']>;
-  pills: Array<UiFilterPills>;
-};
-
-export type UiTogglePill = {
-  __typename?: 'UITogglePill';
-  id: Scalars['String'];
-  label?: Maybe<Scalars['String']>;
-  options: Array<UiFilterOption>;
-};
 
 export type User = {
   __typename?: 'User';
@@ -329,19 +295,14 @@ export type ResolversTypes = {
   TargetAction: ResolverTypeWrapper<TargetAction>;
   TargetActionType: TargetActionType;
   TargetFilterParam: ResolverTypeWrapper<TargetFilterParam>;
-  UIDropdownFilter: ResolverTypeWrapper<UiDropdownFilter>;
-  UIDropdownPill: ResolverTypeWrapper<UiDropdownPill>;
+  UIFilter: ResolverTypeWrapper<UiFilter>;
   UIFilterOption: ResolverTypeWrapper<UiFilterOption>;
-  UIFilterPillGroup: ResolverTypeWrapper<Omit<UiFilterPillGroup, 'pills'> & { pills: Array<ResolversTypes['UIFilterPills']> }>;
-  UIFilterPills: ResolversTypes['UIDropdownPill'] | ResolversTypes['UITogglePill'];
   UIFilterType: UiFilterType;
   UIIdeaRow: ResolverTypeWrapper<UiIdeaRow>;
   UIListItem: ResolversTypes['UIIdeaRow'];
   UIPropLotComponentList: ResolverTypeWrapper<Omit<UiPropLotComponentList, 'list'> & { list?: Maybe<Array<ResolversTypes['UIListItem']>> }>;
   UIPropLotFilterBar: ResolverTypeWrapper<UiPropLotFilterBar>;
   UIPropLotSections: ResolversTypes['UIPropLotComponentList'] | ResolversTypes['UIPropLotFilterBar'];
-  UISortPillGroup: ResolverTypeWrapper<Omit<UiSortPillGroup, 'pills'> & { pills: Array<ResolversTypes['UIFilterPills']> }>;
-  UITogglePill: ResolverTypeWrapper<UiTogglePill>;
   User: ResolverTypeWrapper<User>;
   UserInputOptions: UserInputOptions;
   UserStats: ResolverTypeWrapper<UserStats>;
@@ -367,18 +328,13 @@ export type ResolversParentTypes = {
   Target: ResolversParentTypes['TargetAction'] | ResolversParentTypes['TargetFilterParam'];
   TargetAction: TargetAction;
   TargetFilterParam: TargetFilterParam;
-  UIDropdownFilter: UiDropdownFilter;
-  UIDropdownPill: UiDropdownPill;
+  UIFilter: UiFilter;
   UIFilterOption: UiFilterOption;
-  UIFilterPillGroup: Omit<UiFilterPillGroup, 'pills'> & { pills: Array<ResolversParentTypes['UIFilterPills']> };
-  UIFilterPills: ResolversParentTypes['UIDropdownPill'] | ResolversParentTypes['UITogglePill'];
   UIIdeaRow: UiIdeaRow;
   UIListItem: ResolversParentTypes['UIIdeaRow'];
   UIPropLotComponentList: Omit<UiPropLotComponentList, 'list'> & { list?: Maybe<Array<ResolversParentTypes['UIListItem']>> };
   UIPropLotFilterBar: UiPropLotFilterBar;
   UIPropLotSections: ResolversParentTypes['UIPropLotComponentList'] | ResolversParentTypes['UIPropLotFilterBar'];
-  UISortPillGroup: Omit<UiSortPillGroup, 'pills'> & { pills: Array<ResolversParentTypes['UIFilterPills']> };
-  UITogglePill: UiTogglePill;
   User: User;
   UserInputOptions: UserInputOptions;
   UserStats: UserStats;
@@ -462,19 +418,11 @@ export type TargetFilterParamResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UiDropdownFilterResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIDropdownFilter'] = ResolversParentTypes['UIDropdownFilter']> = {
+export type UiFilterResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIFilter'] = ResolversParentTypes['UIFilter']> = {
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   options?: Resolver<Array<ResolversTypes['UIFilterOption']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['UIFilterType'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UiDropdownPillResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIDropdownPill'] = ResolversParentTypes['UIDropdownPill']> = {
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  options?: Resolver<Array<ResolversTypes['UIFilterOption']>, ParentType, ContextType>;
-  selected?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -484,18 +432,6 @@ export type UiFilterOptionResolvers<ContextType = any, ParentType extends Resolv
   selected?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   target?: Resolver<ResolversTypes['TargetFilterParam'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UiFilterPillGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIFilterPillGroup'] = ResolversParentTypes['UIFilterPillGroup']> = {
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  pills?: Resolver<Array<ResolversTypes['UIFilterPills']>, ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['UIFilterType'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UiFilterPillsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIFilterPills'] = ResolversParentTypes['UIFilterPills']> = {
-  __resolveType: TypeResolveFn<'UIDropdownPill' | 'UITogglePill', ParentType, ContextType>;
 };
 
 export type UiIdeaRowResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIIdeaRow'] = ResolversParentTypes['UIIdeaRow']> = {
@@ -514,28 +450,12 @@ export type UiPropLotComponentListResolvers<ContextType = any, ParentType extend
 };
 
 export type UiPropLotFilterBarResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIPropLotFilterBar'] = ResolversParentTypes['UIPropLotFilterBar']> = {
-  filterDropdown?: Resolver<Maybe<ResolversTypes['UIDropdownFilter']>, ParentType, ContextType>;
-  filterPills?: Resolver<Maybe<ResolversTypes['UIFilterPillGroup']>, ParentType, ContextType>;
-  sortPills?: Resolver<Maybe<ResolversTypes['UISortPillGroup']>, ParentType, ContextType>;
+  filters?: Resolver<Maybe<Array<ResolversTypes['UIFilter']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UiPropLotSectionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UIPropLotSections'] = ResolversParentTypes['UIPropLotSections']> = {
   __resolveType: TypeResolveFn<'UIPropLotComponentList' | 'UIPropLotFilterBar', ParentType, ContextType>;
-};
-
-export type UiSortPillGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['UISortPillGroup'] = ResolversParentTypes['UISortPillGroup']> = {
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  pills?: Resolver<Array<ResolversTypes['UIFilterPills']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UiTogglePillResolvers<ContextType = any, ParentType extends ResolversParentTypes['UITogglePill'] = ResolversParentTypes['UITogglePill']> = {
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  options?: Resolver<Array<ResolversTypes['UIFilterOption']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -572,18 +492,13 @@ export type Resolvers<ContextType = any> = {
   Target?: TargetResolvers<ContextType>;
   TargetAction?: TargetActionResolvers<ContextType>;
   TargetFilterParam?: TargetFilterParamResolvers<ContextType>;
-  UIDropdownFilter?: UiDropdownFilterResolvers<ContextType>;
-  UIDropdownPill?: UiDropdownPillResolvers<ContextType>;
+  UIFilter?: UiFilterResolvers<ContextType>;
   UIFilterOption?: UiFilterOptionResolvers<ContextType>;
-  UIFilterPillGroup?: UiFilterPillGroupResolvers<ContextType>;
-  UIFilterPills?: UiFilterPillsResolvers<ContextType>;
   UIIdeaRow?: UiIdeaRowResolvers<ContextType>;
   UIListItem?: UiListItemResolvers<ContextType>;
   UIPropLotComponentList?: UiPropLotComponentListResolvers<ContextType>;
   UIPropLotFilterBar?: UiPropLotFilterBarResolvers<ContextType>;
   UIPropLotSections?: UiPropLotSectionsResolvers<ContextType>;
-  UISortPillGroup?: UiSortPillGroupResolvers<ContextType>;
-  UITogglePill?: UiTogglePillResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserStats?: UserStatsResolvers<ContextType>;
   Vote?: VoteResolvers<ContextType>;

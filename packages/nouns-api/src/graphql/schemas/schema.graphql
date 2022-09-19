@@ -35,9 +35,14 @@ type PropLotResponse {
 union UIPropLotSections = UIPropLotFilterBar | UIPropLotComponentList
 
 type UIPropLotFilterBar {
-  sortPills: UISortPillGroup
-  filterPills: UIFilterPillGroup
-  filterDropdown: UIDropdownFilter
+  filters: [UIFilter!]
+}
+
+type UIFilter {
+  id: String!
+  label: String
+  type: UIFilterType!
+  options: [UIFilterOption!]!
 }
 
 ### UIListItem can be extended to support any new list of components we want to display in the future
@@ -126,26 +131,6 @@ union Target = TargetFilterParam | TargetAction
 
 # UI types
 
-type UISortPillGroup {
-  id: String!
-  label: String
-  pills: [UIFilterPills!]!
-}
-
-type UIFilterPillGroup {
-  id: String!
-  label: String
-  pills: [UIFilterPills!]!
-  type: UIFilterType!
-}
-
-type UIDropdownFilter {
-  id: String!
-  label: String
-  options: [UIFilterOption!]!
-  type: UIFilterType!
-}
-
 type UIFilterOption {
   id: String!
   selected: Boolean!
@@ -157,21 +142,6 @@ enum UIFilterType {
   SINGLE_SELECT
   MULTI_SELECT
 }
-
-type UITogglePill {
-  id: String!
-  label: String
-  options: [UIFilterOption!]!
-}
-
-type UIDropdownPill {
-  id: String!
-  selected: Boolean!
-  label: String
-  options: [UIFilterOption!]!
-}
-
-union UIFilterPills = UITogglePill | UIDropdownPill
 
 # Wrapper aroung the raw idea data, allows us to add an action menu
 type UIIdeaRow {

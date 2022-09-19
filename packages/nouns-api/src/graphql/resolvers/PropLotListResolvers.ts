@@ -1,22 +1,44 @@
 import IdeasService from '../../services/ideas';
 
 import { IResolvers } from '@graphql-tools/utils';
-import {UiPropLotSections, PropLotResponseMetadataResolvers, QueryGetPropLotArgs, UiListItemResolvers, Idea, FilterInput, UiIdeaRow, UiFilterPillGroup, UiFilterType, UiDropdownPill, TargetFilterParam, UiSortPillGroup, UiPropLotComponentList, UiPropLotFilterBar } from '../generated';
+import {
+  UiPropLotSections,
+  PropLotResponseMetadataResolvers,
+  QueryGetPropLotArgs,
+  UiListItemResolvers,
+  Idea,
+  FilterInput,
+  UiIdeaRow,
+  UiFilterType,
+  TargetFilterParam,
+  UiPropLotComponentList,
+  UiPropLotFilterBar,
+  UiFilter,
+} from '../generated';
 
 const FILTER_IDS = {
-  DATE: "date",
-  SORT: "sort",
-  TAG: "tag",
+  DATE: 'date',
+  SORT: 'sort',
+  TAG: 'tag',
 };
 
-const buildTargetParam = (key: string, value: string): TargetFilterParam => ({ param: { key, value } });
-const getSortParam = (appliedFilters: FilterInput[]) => appliedFilters.find((aF: any) => aF.key === FILTER_IDS.SORT) || { key: FILTER_IDS.SORT, value: "LATEST" };
-const getDateParam = (appliedFilters: FilterInput[]) => appliedFilters.find((aF: any) => aF.key === FILTER_IDS.DATE);
+const buildTargetParam = (key: string, value: string): TargetFilterParam => ({
+  param: { key, value },
+});
+const getSortParam = (appliedFilters: FilterInput[]) =>
+  appliedFilters.find((aF: any) => aF.key === FILTER_IDS.SORT) || {
+    key: FILTER_IDS.SORT,
+    value: 'LATEST',
+  };
+const getDateParam = (appliedFilters: FilterInput[]) =>
+  appliedFilters.find((aF: any) => aF.key === FILTER_IDS.DATE);
+const getTagParams = (appliedFilters: FilterInput[]) =>
+  appliedFilters.filter((aF: any) => aF.key === FILTER_IDS.TAG);
 
 const resolvers: IResolvers = {
   Query: {
     getPropLot: async (_parent: any, args: QueryGetPropLotArgs) => {
-      return { appliedFilters: args.options.filters || [], requestUUID: args.options.requestUUID }
+      return { appliedFilters: args.options.filters || [], requestUUID: args.options.requestUUID };
     },
   },
   PropLotResponse: {
@@ -26,94 +48,108 @@ const resolvers: IResolvers = {
       const ideaRows: UiIdeaRow[] = ideas.map(idea => {
         const row: UiIdeaRow = {
           data: idea,
-        }
+        };
 
         return row;
-      })
+      });
 
       const dateParam = getDateParam(root.appliedFilters);
 
-      const dropDownPill: UiDropdownPill = {
-        __typename: 'UIDropdownPill',
-        id: FILTER_IDS.DATE,
-        selected: dateParam?.key === FILTER_IDS.DATE,
-        label: "Top",
-        options: [{
-          id: "TODAY",
-          selected: dateParam?.value === "TODAY",
-          label: "Today",
-          target: buildTargetParam(FILTER_IDS.DATE, "TODAY"),
-        }],
-      };
+      const tagParams = getTagParams(root.appliedFilters);
+      const selectedTagValues = tagParams.map(tag => tag.value);
 
-      const filterPills: UiFilterPillGroup = {
-        __typename: "UIFilterPillGroup",
-        id: "FILTER_PILLS",
-        pills: [dropDownPill],
-        type: UiFilterType.MultiSelect,
-      };
-
-      const sortPills: UiSortPillGroup = {
-        __typename: "UISortPillGroup",
-        id: FILTER_IDS.SORT,
-        pills: [{
-          __typename: 'UITogglePill',
-          id: "sort_created",
-          label: "Created",
+      const filters: UiFilter[] = [
+        {
+          id: FILTER_IDS.SORT,
+          type: UiFilterType.SingleSelect,
+          label: 'Sort',
           options: [
             {
-              id: "LATEST",
-              selected: sortParam?.value === "LATEST" || !sortParam,
-              target: buildTargetParam(FILTER_IDS.SORT, "LATEST"),
+              id: 'LATEST',
+              selected: sortParam?.value === 'LATEST' || !sortParam,
+              target: buildTargetParam(FILTER_IDS.SORT, 'LATEST'),
+              label: 'Latest',
             },
             {
-              id: "OLDEST",
-              selected: sortParam?.value === "OLDEST",
-              target: buildTargetParam(FILTER_IDS.SORT, "OLDEST"),
-            }
+              id: 'OLDEST',
+              selected: sortParam?.value === 'OLDEST',
+              target: buildTargetParam(FILTER_IDS.SORT, 'OLDEST'),
+              label: 'Oldest',
+            },
+            {
+              id: 'VOTES_ASC',
+              selected: sortParam?.value === 'VOTES_ASC',
+              target: buildTargetParam(FILTER_IDS.SORT, 'VOTES_ASC'),
+              label: 'Most Votes',
+            },
+            {
+              id: 'VOTES_DESC',
+              selected: sortParam?.value === 'VOTES_DESC',
+              target: buildTargetParam(FILTER_IDS.SORT, 'VOTES_DESC'),
+              label: 'Least Votes',
+            },
           ],
         },
         {
-          __typename: 'UITogglePill',
-          id: "sort_votes",
-          label: "Votes",
+          id: FILTER_IDS.DATE,
+          type: UiFilterType.SingleSelect,
+          label: 'Date',
           options: [
             {
-              id: "VOTES_ASC",
-              selected: sortParam?.value === "VOTES_ASC",
-              target: buildTargetParam(FILTER_IDS.SORT, "VOTES_ASC"),
+              id: 'TODAY',
+              selected: dateParam?.value === 'TODAY',
+              label: 'Today',
+              target: buildTargetParam(FILTER_IDS.DATE, 'TODAY'),
             },
             {
-              id: "VOTES_DESC",
-              selected: sortParam?.value === "VOTES_DESC",
-              target: buildTargetParam(FILTER_IDS.SORT, "VOTES_DESC"),
-            }
+              id: 'LAST_WEEK',
+              selected: dateParam?.value === 'LAST_WEEK',
+              label: 'Last week',
+              target: buildTargetParam(FILTER_IDS.DATE, 'LAST_WEEK'),
+            },
           ],
         },
-      ],
-      };
+        {
+          id: FILTER_IDS.TAG,
+          type: UiFilterType.MultiSelect,
+          label: 'Tags',
+          options: [
+            {
+              id: 'Hot',
+              selected: selectedTagValues.includes('Hot'),
+              label: 'Hot',
+              target: buildTargetParam(FILTER_IDS.TAG, 'Hot'),
+            },
+            {
+              id: 'Discussion',
+              selected: selectedTagValues.includes('Discussion'),
+              label: 'Discussion',
+              target: buildTargetParam(FILTER_IDS.TAG, 'Discussion'),
+            },
+          ],
+        },
+      ];
 
       const filterSection: UiPropLotFilterBar = {
         __typename: 'UIPropLotFilterBar',
-        filterPills,
-        sortPills,
-      }
+        filters,
+      };
 
       const listSection: UiPropLotComponentList = {
         __typename: 'UIPropLotComponentList',
         list: ideaRows,
-      }
+      };
 
       return [filterSection, listSection];
     },
     metadata: (root): PropLotResponseMetadataResolvers => ({
-      requestUUID: root.requestUUID || "",
+      requestUUID: root.requestUUID || '',
       appliedFilters: root.appliedFilters,
-    })
+    }),
   },
-  UIListItem:<UiListItemResolvers> {
-    __resolveType(item){
-      if(item.data?.tldr){
+  UIListItem: <UiListItemResolvers>{
+    __resolveType(item) {
+      if (item.data?.tldr) {
         return 'UIIdeaRow';
       }
       return null;
