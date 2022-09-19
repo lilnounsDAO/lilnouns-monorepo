@@ -1,7 +1,7 @@
 import { Col, Row } from 'react-bootstrap';
 import Section from '../../layout/Section';
 import Ideas from '../../components/Ideas';
-import PropLotList from '../../components/PropLotList';
+import PropLotHome from '../../propLot/pages/PropLotHome';
 
 import classes from './Ideas.module.css';
 
@@ -22,7 +22,7 @@ const IdeasPage = () => {
           and vote on.
         </p>
         {/* <Ideas /> */}
-        <PropLotList />
+        <PropLotHome />
       </Col>
     </Section>
   );
