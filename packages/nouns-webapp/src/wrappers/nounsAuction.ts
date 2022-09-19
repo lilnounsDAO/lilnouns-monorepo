@@ -72,6 +72,6 @@ export const useNounCanVoteTimestamp = (nounId: number) => {
   }
 
   const auction = findAuction(EthersBN.from(nounId), pastAuctions);
-  return EthersBN.from(auction?.startTime);
+  return auction?.startTime ? EthersBN.from(auction?.startTime) : EthersBN.from(0);;
 
 };
