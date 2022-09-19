@@ -44,20 +44,15 @@ const resolvers: IResolvers = {
   PropLotResponse: {
     sections: async (root): Promise<UiPropLotSections[]> => {
       const sortParam = getSortParam(root.appliedFilters);
-      const ideas: Idea[] = await IdeasService.all(sortParam.value);
-      const ideaRows: UiIdeaRow[] = ideas.map(idea => {
-        const row: UiIdeaRow = {
-          data: idea,
-        };
-
-        return row;
-      });
-
       const dateParam = getDateParam(root.appliedFilters);
-
       const tagParams = getTagParams(root.appliedFilters);
       const selectedTagValues = tagParams.map(tag => tag.value);
 
+      /* Build Filters **START**
+          TODO:
+            - Extract some of this logic into util functions
+            - Fetch Tags from DB and populate in the tags section
+      */
       const filters: UiFilter[] = [
         {
           id: FILTER_IDS.SORT,
@@ -135,10 +130,29 @@ const resolvers: IResolvers = {
         filters,
       };
 
+      /* Build Filters **END** */
+
+      /* Build PropLot List **START**
+        TODO:
+          - Create new service method to pass in applied sort, dates and tag params
+          - Filter results based on those inputs
+      */
+
+      const ideas: Idea[] = await IdeasService.all(sortParam.value);
+      const ideaRows: UiIdeaRow[] = ideas.map(idea => {
+        const row: UiIdeaRow = {
+          data: idea,
+        };
+
+        return row;
+      });
+
       const listSection: UiPropLotComponentList = {
         __typename: 'UIPropLotComponentList',
         list: ideaRows,
       };
+
+      /* Build PropLot List **END** */
 
       return [filterSection, listSection];
     },
