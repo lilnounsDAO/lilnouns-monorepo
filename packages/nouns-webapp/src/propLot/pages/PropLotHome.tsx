@@ -7,6 +7,7 @@ import { useAccountVotes } from '../../wrappers/nounToken';
 import classes from './PropLotHome.module.css';
 import { useIdeas } from '../../hooks/useIdeas';
 import { useQuery } from '@apollo/client';
+import propLotClient from '../graphql/config';
 import { GET_PROPLOT_QUERY } from '../graphql/propLotQuery';
 import { v4 } from 'uuid';
 
@@ -44,6 +45,7 @@ const PropLotHome = () => {
         filters: [] as FilterInput[],
       },
     },
+    client: propLotClient,
   });
 
   /*
