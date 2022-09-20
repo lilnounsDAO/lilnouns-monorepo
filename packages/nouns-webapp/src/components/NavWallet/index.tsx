@@ -12,7 +12,7 @@ import WalletConnectModal from '../WalletConnectModal';
 import { useAppSelector } from '../../hooks';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
-import { useShortAddress } from '../ShortAddress';
+import { useShortAddress } from '../../utils/addressAndENSDisplayUtils';
 import { isMobileScreen } from '../../utils/isMobile';
 import { usePickByState } from '../../utils/colorResponsiveUIUtils';
 import WalletConnectButton from './WalletConnectButton';
