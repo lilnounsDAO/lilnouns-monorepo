@@ -13,6 +13,9 @@ import dayjs from 'dayjs';
 import { SnapshotProposal } from '../Proposals';
 import { SnapshotVoters } from '../../pages/NounsVote';
 import { useEthers } from '@usedapp/core';
+import { buildEtherscanAddressLink } from '../../utils/etherscan';
+import { transactionLink } from '../ProposalContent';
+import ShortAddress from '../ShortAddress';
 
 interface ProposalHeaderProps {
   proposal: Proposal;
@@ -57,6 +60,27 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
     </>
   );
 
+  const proposer = (
+    <a
+      href={buildEtherscanAddressLink(proposal.proposer || '')}
+      target="_blank"
+      rel="noreferrer"
+      className={classes.proposerLinkJp}
+    >
+      <ShortAddress address={proposal.proposer || ''} avatar={false} />
+    </a>
+  );
+
+
+  const proposedAtTransactionHash = (
+    <>
+      at{' '}
+      <span className={classes.propTransactionHash}>
+        {transactionLink(proposal.transactionHash)}
+      </span>
+    </>
+  );
+
   return (
     <>
       <div className="d-flex justify-content-between align-items-center">
@@ -86,6 +110,29 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
           </div>
         )}
       </div>
+
+      <div className={classes.byLineWrapper}>
+        {
+          <>
+            <h3>Proposed by</h3>
+            <div className={classes.byLineContentWrapper}>
+              {/* <HoverCard
+                hoverCardContent={(tip: string) => <ByLineHoverCard proposerAddress={tip} />}
+                tip={proposal && proposal.proposer ? proposal.proposer : ''}
+                id="byLineHoverCard"
+              > */}
+                <h3>
+                  {proposer}
+                  <span className={classes.propTransactionWrapper}>
+                    {proposedAtTransactionHash}
+                  </span>
+                </h3>
+              {/* </HoverCard> */}
+            </div>
+          </>
+        }
+      </div>
+
 
       {isMobile && (
         <div className={classes.mobileSubmitProposalButton}>{isActiveForVoting && voteButton}</div>

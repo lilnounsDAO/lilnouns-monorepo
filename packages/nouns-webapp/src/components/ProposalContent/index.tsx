@@ -12,7 +12,7 @@ interface ProposalContentProps {
   proposal?: Proposal;
 }
 
-const linkIfAddress = (content: string) => {
+export const linkIfAddress = (content: string) => {
   if (utils.isAddress(content)) {
     return (
       <a href={buildEtherscanAddressLink(content)} target="_blank" rel="noreferrer">
@@ -23,7 +23,7 @@ const linkIfAddress = (content: string) => {
   return <span>{content}</span>;
 };
 
-const transactionLink = (content: string) => {
+export const transactionLink = (content: string) => {
   return (
     <a href={buildEtherscanTxLink(content)} target="_blank" rel="noreferrer">
       {content.substring(0, 7)}
