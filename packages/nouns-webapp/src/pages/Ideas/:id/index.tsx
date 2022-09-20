@@ -7,7 +7,7 @@ import classes from '../Ideas.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { useReverseENSLookUp } from '../../../utils/ensLookup';
-import { useShortAddress } from '../../../components/ShortAddress';
+import { useShortAddress } from '../../../utils/addressAndENSDisplayUtils';
 import {
   useIdeas,
   CommentFormData,

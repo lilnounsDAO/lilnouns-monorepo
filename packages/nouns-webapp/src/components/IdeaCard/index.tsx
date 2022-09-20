@@ -4,7 +4,7 @@ import { Idea, VoteFormData } from '../../hooks/useIdeas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { useReverseENSLookUp } from '../../utils/ensLookup';
-import { useShortAddress } from '../ShortAddress';
+import { useShortAddress } from '../../utils/addressAndENSDisplayUtils';
 import moment from 'moment';
 import { createBreakpoint } from 'react-use';
 

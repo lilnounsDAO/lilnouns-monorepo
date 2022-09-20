@@ -1,13 +1,10 @@
 import { useReverseENSLookUp } from '../../utils/ensLookup';
 import { resolveNounContractAddress } from '../../utils/resolveNounsContractAddress';
 import { useEthers } from '@usedapp/core';
-// import Davatar from '@davatar/react';
-import Identicon from '../Identicon';
 import classes from './ShortAddress.module.css';
-
-export const useShortAddress = (address: string): string => {
-  return address && [address.substr(0, 4), address.substr(38, 4)].join('...');
-};
+import { useShortAddress } from '../../utils/addressAndENSDisplayUtils';
+import React from 'react';
+import Identicon from '../Identicon';
 
 const ShortAddress: React.FC<{ address: string; avatar?: boolean; size?: number }> = props => {
   const { address, avatar, size = 24 } = props;
@@ -31,8 +28,7 @@ const ShortAddress: React.FC<{ address: string; avatar?: boolean; size?: number 
     );
   }
 
-  // return <>{ens ? ens : shortAddress}</>;
-  return <>{shortAddress}</>;
+  return <>{ens ? ens : shortAddress}</>;
 };
 
 export default ShortAddress;
