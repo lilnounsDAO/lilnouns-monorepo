@@ -14,6 +14,8 @@ import {
   UiPropLotComponentList,
   UiPropLotFilterBar,
   UiFilter,
+  UiFilterResolvers,
+  UiPropLotComponentListResolvers,
 } from '../generated';
 
 const FILTER_IDS = {
@@ -42,7 +44,7 @@ const resolvers: IResolvers = {
     },
   },
   PropLotResponse: {
-    sections: async (root): Promise<UiPropLotSections[]> => {
+    sections: async (root): Promise<any> => {
       const sortParam = getSortParam(root.appliedFilters);
       const dateParam = getDateParam(root.appliedFilters);
       const tagParams = getTagParams(root.appliedFilters);
@@ -125,9 +127,12 @@ const resolvers: IResolvers = {
         },
       ];
 
-      const filterSection: UiPropLotFilterBar = {
-        __typename: 'UIPropLotFilterBar',
-        filters,
+      const filterSection = {
+        sortParam,
+        dateParam,
+        tagParams,
+        selectedTagValues,
+        ofType: 'filterBar',
       };
 
       /* Build Filters **END** */
@@ -147,9 +152,12 @@ const resolvers: IResolvers = {
         return row;
       });
 
-      const listSection: UiPropLotComponentList = {
-        __typename: 'UIPropLotComponentList',
-        list: ideaRows,
+      const listSection = {
+        sortParam,
+        dateParam,
+        tagParams,
+        selectedTagValues,
+        ofType: 'componentList',
       };
 
       /* Build PropLot List **END** */
@@ -160,6 +168,121 @@ const resolvers: IResolvers = {
       requestUUID: root.requestUUID || '',
       appliedFilters: root.appliedFilters,
     }),
+  },
+  UIPropLotSections: {
+    __resolveType(root: any) {
+      if (root.ofType === 'componentList') {
+        return 'UIPropLotComponentList';
+      }
+      if (root.ofType === 'filterBar') {
+        return 'UIPropLotFilterBar';
+      }
+      return null;
+    },
+  },
+  UIPropLotComponentList: <UiPropLotComponentListResolvers>{
+    list: async (root: any): Promise<UiIdeaRow[]> => {
+      const ideas: Idea[] = await IdeasService.all(root.sortParam);
+      const ideaRows: UiIdeaRow[] = ideas.map(idea => {
+        const row: UiIdeaRow = {
+          data: idea,
+        };
+
+        return row;
+      });
+
+      return ideaRows;
+    },
+    __resolveType(root: any) {
+      if (root.ofType === 'componentList') {
+        return 'UIPropLotComponentList';
+      }
+      return null;
+    },
+  },
+  UIPropLotFilterBar: <UiFilterResolvers>{
+    filters: async (root: any) => {
+      const { sortParam, dateParam, tagParams, selectedTagValues } = root;
+      const filters: UiFilter[] = [
+        {
+          id: FILTER_IDS.SORT,
+          type: UiFilterType.SingleSelect,
+          label: 'Sort',
+          options: [
+            {
+              id: 'LATEST',
+              selected: sortParam?.value === 'LATEST' || !sortParam,
+              target: buildTargetParam(FILTER_IDS.SORT, 'LATEST'),
+              label: 'Latest',
+            },
+            {
+              id: 'OLDEST',
+              selected: sortParam?.value === 'OLDEST',
+              target: buildTargetParam(FILTER_IDS.SORT, 'OLDEST'),
+              label: 'Oldest',
+            },
+            {
+              id: 'VOTES_ASC',
+              selected: sortParam?.value === 'VOTES_ASC',
+              target: buildTargetParam(FILTER_IDS.SORT, 'VOTES_ASC'),
+              label: 'Most Votes',
+            },
+            {
+              id: 'VOTES_DESC',
+              selected: sortParam?.value === 'VOTES_DESC',
+              target: buildTargetParam(FILTER_IDS.SORT, 'VOTES_DESC'),
+              label: 'Least Votes',
+            },
+          ],
+        },
+        {
+          id: FILTER_IDS.DATE,
+          type: UiFilterType.SingleSelect,
+          label: 'Date',
+          options: [
+            {
+              id: 'TODAY',
+              selected: dateParam?.value === 'TODAY',
+              label: 'Today',
+              target: buildTargetParam(FILTER_IDS.DATE, 'TODAY'),
+            },
+            {
+              id: 'LAST_WEEK',
+              selected: dateParam?.value === 'LAST_WEEK',
+              label: 'Last week',
+              target: buildTargetParam(FILTER_IDS.DATE, 'LAST_WEEK'),
+            },
+          ],
+        },
+        {
+          id: FILTER_IDS.TAG,
+          type: UiFilterType.MultiSelect,
+          label: 'Tags',
+          options: [
+            {
+              id: 'Hot',
+              selected: selectedTagValues.includes('Hot'),
+              label: 'Hot',
+              target: buildTargetParam(FILTER_IDS.TAG, 'Hot'),
+            },
+            {
+              id: 'Discussion',
+              selected: selectedTagValues.includes('Discussion'),
+              label: 'Discussion',
+              target: buildTargetParam(FILTER_IDS.TAG, 'Discussion'),
+            },
+          ],
+        },
+      ];
+
+      return filters;
+    },
+    __resolveType(root: any, context: any, info: any) {
+      if (root.ofType === 'filterBar') {
+        return 'UIPropLotFilterBar';
+      }
+      return null;
+    },
   },
   UIListItem: <UiListItemResolvers>{
     __resolveType(item) {
