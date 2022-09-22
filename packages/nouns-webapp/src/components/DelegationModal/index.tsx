@@ -15,7 +15,7 @@ const DelegationModalOverlay: React.FC<{
 }> = props => {
   const { onDismiss, delegateTo } = props;
 
-  const [isChangingDelegation, setIsChangingDelegation] = useState(false);
+  const [isChangingDelegation, setIsChangingDelegation] = useState(delegateTo !== undefined);
 
   return (
     <>
