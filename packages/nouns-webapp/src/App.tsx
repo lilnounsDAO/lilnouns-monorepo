@@ -36,6 +36,7 @@ import { AvatarProvider } from '@davatar/react';
 import IdeasPage from './pages/Ideas';
 import IdeaPage from './pages/Ideas/:id';
 import CreateIdeaPage from './pages/Ideas/Create';
+import DelegatePage from './pages/DelegatePage';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function App() {
@@ -142,6 +143,7 @@ function App() {
               <Route exact path="/vote/:id" component={VotePage} />
               <Route exact path="/vote/nounsdao/:id" component={NounsVotePage} />
               <Route exact path="/playground" component={Playground} />
+              <Route exact path="/delegate" component={DelegatePage} />
               <Route exact path="/nouniverse/:id" component={Nouniverse} />
               <Route exact path="/nouniverse" component={Nouniverse} />
               <Route component={NotFoundPage} />
