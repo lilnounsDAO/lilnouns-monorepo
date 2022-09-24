@@ -9,25 +9,12 @@ import propLotClient from '../graphql/config';
 import { GET_PROPLOT_QUERY } from '../graphql/propLotQuery';
 import { v4 } from 'uuid';
 
-import {
-  getPropLot,
-  getPropLot_propLot_sections_UIPropLotFilterBar_filters_options_target_param as TargetParamType,
-  getPropLot_propLot_sections_UIPropLotComponentList as UIPropLotComponentListType,
-  getPropLot_propLot_sections_UIPropLotFilterBar as UIPropLotFilterBarType,
-} from '../graphql/__generated__/getPropLot';
+import { getPropLot } from '../graphql/__generated__/getPropLot';
 
 import { FilterInput } from '../graphql/__generated__/globalTypes';
 
-import UIFilter from '../components/UIFilter';
-import UIIdeaRow from '../components/UIIdeaRow';
-
-const SUPPORTED_SECTIONS = {
-  UIPropLotComponentList: 'UIPropLotComponentList',
-  UIPropLotFilterBar: 'UIPropLotFilterBar',
-};
-const SUPPORTED_COMPONENTS = {
-  UIIdeaRow: 'UIIdeaRow',
-};
+import UIFilter from '../components/DropdownFilter';
+import IdeaRow from '../components/IdeaRow';
 
 const PropLotHome = () => {
   const { account } = useEthers();
@@ -52,17 +39,19 @@ const PropLotHome = () => {
   */
   const appliedFilters = data?.propLot?.metadata?.appliedFilters || [];
 
-  const handleUpdateFilters = (updatedFilters: TargetParamType[], filterId: string) => {
+  const handleUpdateFilters = (updatedFilters: FilterInput[], filterId: string) => {
     /*
       Keep previously applied filters, remove any that match the filterId value.
       Then add the selection of updatedFilters and remove the __typename property.
     */
     const selectedfilters: FilterInput[] = [
-      ...appliedFilters.filter((f: any) => {
-        return f.key !== filterId;
-      }),
+      ...appliedFilters
+        .map(({ __typename, ...rest }) => rest)
+        .filter((f: any) => {
+          return f.id !== filterId;
+        }),
       ...updatedFilters,
-    ].map(({ __typename, ...rest }) => rest);
+    ];
 
     refetch({ options: { requestUUID: v4(), filters: selectedfilters } });
   };
@@ -106,49 +95,31 @@ const PropLotHome = () => {
         <div className="mt-2 text-[#8C8D92]">{nullStateCopy()}</div>
       )}
 
-      {data?.propLot?.sections?.map((section, idx) => {
-        if (section.__typename === SUPPORTED_SECTIONS.UIPropLotComponentList) {
-          return (
-            <span className="space-y-4" key={`${section.__typename}-${idx}`}>
-              {(section as UIPropLotComponentListType).list?.map(item => {
-                if (item.__typename === SUPPORTED_COMPONENTS.UIIdeaRow) {
-                  return (
-                    <UIIdeaRow
-                      idea={item.data}
-                      key={`idea-${item.data.id}`}
-                      voteOnIdea={voteOnIdeaList}
-                      nounBalance={nounBalance}
-                    />
-                  );
-                }
-                return null;
-              })}
-            </span>
-          );
-        }
+      <div className="mt-2 mb-2 flex flex-col">
+        <div className="flex">
+          {data?.propLot?.sortFilter && (
+            <UIFilter filter={data.propLot.sortFilter} updateFilters={handleUpdateFilters} />
+          )}
+          {data?.propLot?.dateFilter && (
+            <UIFilter filter={data.propLot.dateFilter} updateFilters={handleUpdateFilters} />
+          )}
+          {data?.propLot?.tagFilter && (
+            <UIFilter filter={data.propLot.tagFilter} updateFilters={handleUpdateFilters} />
+          )}
+        </div>
+      </div>
 
-        if (section.__typename === SUPPORTED_SECTIONS.UIPropLotFilterBar) {
-          const { filters } = section as UIPropLotFilterBarType;
-
-          return (
-            <div className="mt-2 mb-2 flex flex-col" key={`${section.__typename}-${idx}`}>
-              {Boolean(filters) && (
-                <div className="flex">
-                  {filters?.map((filter: any) => {
-                    return (
-                      <UIFilter
-                        key={filter.id}
-                        filter={filter}
-                        updateFilters={handleUpdateFilters}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        }
-        return null;
+      {data?.propLot?.ideas?.map(idea => {
+        return (
+          <div className="mt-2 mb-2 space-y-4">
+            <IdeaRow
+              idea={idea}
+              key={`idea-${idea.id}`}
+              voteOnIdea={voteOnIdeaList}
+              nounBalance={nounBalance}
+            />
+          </div>
+        );
       })}
     </div>
   );

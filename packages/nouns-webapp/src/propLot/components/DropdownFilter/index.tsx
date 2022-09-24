@@ -3,26 +3,32 @@ import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dropdown } from 'react-bootstrap';
 import {
-  getPropLot_propLot_sections_UIPropLotFilterBar_filters as UIFilterType,
-  getPropLot_propLot_sections_UIPropLotFilterBar_filters_options_target_param as TargetParamType,
-  getPropLot_propLot_sections_UIPropLotFilterBar_filters_options as UIFilterOptionType,
+  getPropLot_propLot_tagFilter as TagFilter,
+  getPropLot_propLot_tagFilter_options as TagFilterOptions,
+  getPropLot_propLot_sortFilter as SortFilter,
+  getPropLot_propLot_sortFilter_options as SortFilterOptions,
+  getPropLot_propLot_dateFilter as DateFilter,
+  getPropLot_propLot_dateFilter_options as DateFilterOptions,
 } from '../../graphql/__generated__/getPropLot';
 
-import { UIFilterType as UIFilterTyeEnum } from '../../graphql/__generated__/globalTypes';
+import { FilterInput, FilterType as FilterTyeEnum } from '../../graphql/__generated__/globalTypes';
 
 type CustomToggleProps = {
   children?: React.ReactNode;
   onClick: (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => any;
 };
 
+type Filter = TagFilter | SortFilter | DateFilter;
+type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
+
 /*
   Find and return the preselected filter options from the GraphQL response.
 */
-export const buildSelectedFilters = (filter: UIFilterType) => {
-  const selectedParams: TargetParamType[] = [];
-  filter.options.forEach(({ selected, target }) => {
+export const buildSelectedFilters = (filter: Filter) => {
+  const selectedParams: FilterInput[] = [];
+  filter.options.forEach(({ selected, value }) => {
     if (selected) {
-      selectedParams.push(target.param);
+      selectedParams.push({ id: filter.id, value });
     }
   });
   return selectedParams;
@@ -43,16 +49,12 @@ const CustomToggle = React.forwardRef(
   ),
 );
 
-/*
-  Current designs have the filters as dropdowns. If we want to customise the design we can add a style
-  type to the UIFilter schema to alter the design. E.g. style = UIFilterStylePills if we want a pill layout.
-*/
-const UIFilter = ({
+const DropdownFilter = ({
   filter,
   updateFilters,
 }: {
-  filter: UIFilterType;
-  updateFilters: (filters: TargetParamType[], filterId: string) => void;
+  filter: Filter;
+  updateFilters: (filters: FilterInput[], filterId: string) => void;
 }) => {
   const [selectedFilters, setSelectedFilters] = useState(buildSelectedFilters(filter));
 
@@ -60,25 +62,21 @@ const UIFilter = ({
     setSelectedFilters(buildSelectedFilters(filter));
   }, [filter]);
 
-  const handleUpdateFilters = (opt: UIFilterOptionType, isSelected: boolean) => {
+  const handleUpdateFilters = (opt: FilterOptions, isSelected: boolean) => {
     let newFilters = [...selectedFilters];
-    if (filter.type === UIFilterTyeEnum.SINGLE_SELECT) {
+    if (filter.type === FilterTyeEnum.SINGLE_SELECT) {
       if (isSelected) {
-        newFilters = selectedFilters.filter(
-          selectedFilter => selectedFilter.value !== opt.target.param.value,
-        );
+        newFilters = selectedFilters.filter(selectedFilter => selectedFilter.value !== opt.value);
       } else {
-        newFilters = [opt.target.param];
+        newFilters = [{ id: filter.id, value: opt.value }];
       }
     }
 
-    if (filter.type === UIFilterTyeEnum.MULTI_SELECT) {
+    if (filter.type === FilterTyeEnum.MULTI_SELECT) {
       if (isSelected) {
-        newFilters = selectedFilters.filter(
-          selectedFilter => selectedFilter.value !== opt.target.param.value,
-        );
+        newFilters = selectedFilters.filter(selectedFilter => selectedFilter.value !== opt.value);
       } else {
-        newFilters = [...selectedFilters, opt.target.param];
+        newFilters = [...selectedFilters, { id: filter.id, value: opt.value }];
       }
     }
 
@@ -93,7 +91,7 @@ const UIFilter = ({
       <Dropdown.Menu>
         {filter.options.map(opt => {
           const isSelected = selectedFilters.some(
-            selectedFilter => selectedFilter.value === opt.target.param.value,
+            selectedFilter => selectedFilter.value === opt.value,
           );
           return (
             <Dropdown.Item
@@ -113,4 +111,4 @@ const UIFilter = ({
   );
 };
 
-export default UIFilter;
+export default DropdownFilter;

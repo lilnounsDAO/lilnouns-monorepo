@@ -1,7 +1,7 @@
 // COPIED FROM IDEA CARD COMPONENT
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Idea, VoteFormData } from '../../../hooks/useIdeas';
+import { VoteFormData } from '../../../hooks/useIdeas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { useReverseENSLookUp } from '../../../utils/ensLookup';
@@ -12,16 +12,16 @@ import { createBreakpoint } from 'react-use';
 
 import IdeaVoteControls from '../../../components/IdeaVoteControls';
 
+import { getPropLot_propLot_ideas as Idea } from '../../graphql/__generated__/getPropLot';
+
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
 /*
     TODO:
-
-    - Update to be driven by proplot schema types
-    - Add voting properties to proplot schema to support vote counts and actions
+    - Add voting mutations to proplot schema to support voting
 */
 
-const UIIdeaRow = ({
+const IdeaRow = ({
   idea,
   voteOnIdea,
   nounBalance,
@@ -33,7 +33,7 @@ const UIIdeaRow = ({
   const breakpoint = useBreakpoint();
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { id, tldr, title, creatorId, votecount: voteCount, votes, createdAt, _count } = idea;
+  const { id, tldr, title, creatorId, votecount: voteCount, votes, createdAt, ideaStats } = idea;
   const isMobile = breakpoint === 'S';
 
   const ens = useReverseENSLookUp(creatorId);
@@ -53,7 +53,7 @@ const UIIdeaRow = ({
             voteOnIdea={voteOnIdea}
             nounBalance={nounBalance}
             voteCount={voteCount}
-            votes={votes}
+            votes={votes || []}
             withAvatars={!isMobile}
           />
         </div>
@@ -77,7 +77,7 @@ const UIIdeaRow = ({
           voteOnIdea={voteOnIdea}
           nounBalance={nounBalance}
           voteCount={voteCount}
-          votes={votes}
+          votes={votes || []}
           withAvatars={!isMobile}
         />
       </div>
@@ -102,10 +102,10 @@ const UIIdeaRow = ({
             <span className="flex flex-1 font-bold text-sm text-[#8c8d92]">
               {`${ens || shortAddress} | ${
                 creatorLilNoun === 1 ? `${creatorLilNoun} lil noun` : `${creatorLilNoun} lil nouns`
-              } | ${moment(createdAt).format('MMM Do YYYY')} | ${
-                _count?.comments === 1
-                  ? `${_count?.comments} comment`
-                  : `${_count?.comments || 0} comments`
+              } | ${moment(createdAt, 'x').format('MMM Do YYYY')} | ${
+                ideaStats?.comments === 1
+                  ? `${ideaStats?.comments} comment`
+                  : `${ideaStats?.comments || 0} comments`
               }`}
             </span>
             <span className="flex justify-self-end text-[#2b83f6] text-sm font-bold flex justify-end">
@@ -128,4 +128,4 @@ const UIIdeaRow = ({
   );
 };
 
-export default UIIdeaRow;
+export default IdeaRow;
