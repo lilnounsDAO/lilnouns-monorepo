@@ -3,53 +3,56 @@ import { gql } from '@apollo/client';
 export const GET_PROPLOT_QUERY = gql`
   query getPropLot($options: PropLotInputOptions!) {
     propLot: getPropLot(options: $options) {
+      ideas {
+        id
+        title
+        tldr
+        creatorId
+        description
+        votecount
+        createdAt
+        ideaStats {
+          comments
+        }
+        votes {
+          id
+          voterId
+          ideaId
+          direction
+          voter {
+            wallet
+            lilnounCount
+          }
+        }
+      }
+      sortFilter {
+        ...filterProperties
+      }
+      dateFilter {
+        ...filterProperties
+      }
+      tagFilter {
+        ...filterProperties
+      }
       metadata {
         requestUUID
         appliedFilters {
-          key
+          id
           value
         }
       }
-      sections {
-        __typename
-        ... on UIPropLotComponentList {
-          list {
-            __typename
-            ... on UIIdeaRow {
-              data {
-                id
-                title
-                tldr
-                creatorId
-                description
-                votecount
-                createdAt
-              }
-            }
-          }
-        }
-        ... on UIPropLotFilterBar {
-          filters {
-            id
-            type
-            label
-            options {
-              id
-              label
-              selected
-              target {
-                __typename
-                ... on TargetFilterParam {
-                  param {
-                    key
-                    value
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    }
+  }
+
+  fragment filterProperties on PropLotFilter {
+    id
+    type
+    label
+    options {
+      id
+      label
+      selected
+      value
     }
   }
 `;

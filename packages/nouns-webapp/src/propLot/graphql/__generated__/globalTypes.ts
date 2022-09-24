@@ -7,13 +7,13 @@
 // START Enums and Input Objects
 //==============================================================
 
-export enum UIFilterType {
+export enum FilterType {
   MULTI_SELECT = "MULTI_SELECT",
   SINGLE_SELECT = "SINGLE_SELECT",
 }
 
 export interface FilterInput {
-  key: string;
+  id: string;
   value: string;
 }
 
