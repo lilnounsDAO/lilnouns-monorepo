@@ -21,37 +21,41 @@ input PropLotInputOptions {
 }
 
 input FilterInput {
-  key: String!
+  id: String!
   value: String!
 }
 
 # Query response types
 
 type PropLotResponse {
-  sections: [UIPropLotSections!]
+  ideas: [Idea!]
+  sortFilter: PropLotFilter
+  tagFilter: PropLotFilter
+  dateFilter: PropLotFilter
   metadata: PropLotResponseMetadata!
 }
 
-union UIPropLotSections = UIPropLotFilterBar | UIPropLotComponentList
-
-type UIPropLotFilterBar {
-  filters: [UIFilter!]
-}
-
-type UIFilter {
+type PropLotFilter {
   id: String!
   label: String
-  type: UIFilterType!
-  options: [UIFilterOption!]!
+  type: FilterType!
+  options: [FilterOption!]!
 }
 
-### UIListItem can be extended to support any new list of components we want to display in the future
-type UIPropLotComponentList {
-  list: [UIListItem!]
+type FilterOption {
+  id: String!
+  selected: Boolean!
+  label: String
+  value: String!
+}
+
+type AppliedFilter {
+  id: String!
+  value: String!
 }
 
 type PropLotResponseMetadata {
-  appliedFilters: [FilterParam!]
+  appliedFilters: [AppliedFilter!]
   requestUUID: String!
 }
 
@@ -65,6 +69,7 @@ type UserStats {
 
 type User {
   wallet: String!
+  lilnounCount: Int!
   userStats: UserStats
 }
 
@@ -109,60 +114,18 @@ type Idea {
   tags: [IdeaTags!]
 }
 
-# Target Types - Uses to apply user actions e.g. apply a filter/sort option or archive a idea.
+# Enums
 
-type FilterParam {
-  key: String!
-  value: String!
-}
-
-# Used to apply the param value to the getPropLotList query
-type TargetFilterParam {
-  param: FilterParam! # Example: {key: "tag", value: "archived" } or {key: "date", value: "LAST_WEEK" }
-}
-
-# Used to tell the client to handle a specific action on the UI e.g. archive an idea.
-type TargetAction {
-  displayName: String!
-  action: TargetActionType!
-}
-
-union Target = TargetFilterParam | TargetAction
-
-# UI types
-
-type UIFilterOption {
-  id: String!
-  selected: Boolean!
-  label: String
-  target: TargetFilterParam!
-}
-
-enum UIFilterType {
+enum FilterType {
   SINGLE_SELECT
   MULTI_SELECT
 }
-
-# Wrapper aroung the raw idea data, allows us to add an action menu
-type UIIdeaRow {
-  data: Idea!
-  actionMenu: [TargetAction!]
-}
-
-# Can be extended to show different UI types in the list - ideas, comments or votes
-union UIListItem = UIIdeaRow
-
-# Enums
 
 enum SORT_TYPE {
   VOTES_DESC
   VOTES_ASC
   LATEST
   OLDEST
-}
-
-enum TargetActionType {
-  ARCHIVE_IDEA
 }
 
 enum TagType {
