@@ -23,6 +23,7 @@ import NounersPage from './pages/Nouners';
 import NotFoundPage from './pages/NotFound';
 import Playground from './pages/Playground';
 import Nouniverse from './pages/Nouniverse';
+import BadgesPage from './pages/Badges';
 import config, { CHAIN_ID } from './config';
 import { Col, Row } from 'react-bootstrap';
 
@@ -146,6 +147,7 @@ function App() {
               <Route exact path="/delegate" component={DelegatePage} />
               <Route exact path="/nouniverse/:id" component={Nouniverse} />
               <Route exact path="/nouniverse" component={Nouniverse} />
+              <Route exact path="/badges" component={BadgesPage} />
               <Route component={NotFoundPage} />
             </Switch>
           )}

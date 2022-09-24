@@ -2,6 +2,8 @@ import Davatar from '@davatar/react';
 import { useEthers } from '@usedapp/core';
 import React, { useState } from 'react';
 // import { useReverseENSLookUp } from '../../utils/ensLookup';
+import { Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { getNavBarButtonVariant, NavBarButtonStyle } from '../NavBarButton';
 import classes from './NavWallet.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -141,10 +143,28 @@ const NavWallet: React.FC<NavWalletProps> = props => {
         aria-labelledby={props.labeledBy}
       >
         <div>
+          <Link style={{textDecoration: 'none'}} to="/badges">
+            <div 
+              className={clsx(
+                classes.dropDownTop,
+                classes.button,
+                classes.switchWalletText,
+                usePickByState(
+                  classes.whiteInfoSelectedTop,
+                  classes.coolInfoSelected,
+                  classes.warmInfoSelected,
+                  history,
+                ),
+              )}
+            >
+              Badges 
+              <span className={clsx(classes.badge)}>new</span>
+            </div>
+          </Link>
           <div
             onClick={switchWalletHandler}
             className={clsx(
-              classes.dropDownTop,
+              classes.dropDownItem,
               classes.button,
               classes.switchWalletText,
               usePickByState(
@@ -157,7 +177,6 @@ const NavWallet: React.FC<NavWalletProps> = props => {
           >
             Switch wallet
           </div>
-
           <div
             onClick={disconectWalletHandler}
             className={clsx(
@@ -180,7 +199,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
   });
 
   const walletConnectedContentMobile = (
-    <div className="d-flex flex-row justify-content-between">
+    <div className="d-flex flex-column justify-content-between">
       <div className={classes.connectContentMobileWrapper}>
         <div className={clsx(classes.wrapper, getNavBarButtonVariant(buttonStyle))}>
           <div className={classes.button}>
@@ -188,13 +207,24 @@ const NavWallet: React.FC<NavWalletProps> = props => {
               {' '}
               <Davatar size={21} address={address} provider={provider} />
             </div>
-            {/* <div className={classes.address}>{ens ? ens : shortAddress}</div> */}
             <div className={classes.address}>{shortAddress}</div>
           </div>
         </div>
       </div>
 
-      <div className={`d-flex flex-row ${classes.connectContentMobileText}`}>
+      <div className={`d-flex flex-row ${classes.connectContentMobileRoutes}`}>
+        <Link style={{textDecoration: 'none'}} to="/badges">
+          <div 
+             style={{
+              borderRight: `1px solid ${mobileBorderColor}`,
+              color: mobileTextColor,
+            }}
+            className={classes.mobileSwitchWalletText}
+          >
+            Badges 
+            <span className={clsx(classes.badge)}>new</span>
+          </div>
+        </Link>
         <div
           style={{
             borderRight: `1px solid ${mobileBorderColor}`,

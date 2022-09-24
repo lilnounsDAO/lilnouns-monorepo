@@ -1,0 +1,215 @@
+.heroSection {
+  padding-left: 120px;
+  padding-right: 120px;
+  padding-top: 80px;
+  display: flex;
+  flex-direction: row;
+}
+
+@media (max-width: 1200px) {
+  .heroSection {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+@media (max-width: 992px) {
+  .heroSection {
+    flex-direction: column;
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+@media (max-width: 568px) {
+  .heroSection {
+    flex-direction: column;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.heroSectionLeft {
+  width: 40%;
+}
+
+@media (max-width: 1200px) {
+  .heroSectionLeft {
+    width: 30%;
+  }
+}
+
+@media (max-width: 992px) {
+  .heroSectionLeft {
+    width: 100%;
+  }
+}
+
+.heroSectionRight {
+  width: 30%;
+  align-items: flex-end;
+}
+
+@media (max-width: 992px) {
+  .heroSectionRight {
+    width: 100%;
+    align-items: flex-start;
+  }
+}
+
+.heroSectionHeader {
+  color: #14161b;
+  font-size: 64px;
+  font-weight: 400;
+  font-family: 'Londrina Solid';
+  line-height: normal;
+}
+
+@media (max-width: 568px) {
+  .heroSectionHeader {
+    font-size: 48px;
+  }
+}
+
+.heroSectionDesc {
+  color: #212529;;
+  font-size: 26px;
+  font-family: 'PT Root UI';
+  font-weight: 500;
+}
+
+@media (max-width: 992px) {
+  .heroSectionDesc {
+    font-size: 24px;
+  }
+}
+
+.heroSectionBg {
+  width: 380px;
+  height: 461px;
+}
+
+@media (max-width: 992px) {
+  .heroSectionBg {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.heroSectionBtn {
+  max-width: 18rem;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-weight: normal;
+  margin-bottom: 0.5rem;
+  border-radius: 12px;
+  background-color: var(--brand-color-blue);
+  border: var(--brand-color-blue);
+  font-family: 'Londrina Solid';
+  font-size: 28px;
+  letter-spacing: 8%;
+}
+
+.heroSectionBtn:focus,
+.heroSectionBtn:hover {
+  background-color: var(--brand-color-blue) !important;
+  box-shadow: 0 0 0 0.2rem rgba(50, 24, 217, 0.75);
+}
+.heroSectionBtn:active {
+  background-color: var(--brand-color-blue) !important;
+}
+
+.badgeSection {
+  margin-top: 120px;
+  padding-left: 120px;
+  padding-right: 120px;
+  padding-top: 80px;
+  padding-bottom: 80px;
+  background-color: #D9D9D9;
+  display: flex;
+  flex-direction: row;
+}
+
+@media (max-width: 1200px) {
+  .badgeSection {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+@media (max-width: 992px) {
+  .badgeSection {
+    flex-direction: column;
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+@media (max-width: 568px) {
+  .badgeSection {
+    flex-direction: column;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.badgeSectionLeft {
+  width: 40%;
+}
+
+@media (max-width: 992px) {
+  .badgeSectionLeft {
+    width: 100%;
+  }
+}
+
+.badgeSectionRight {
+  align-items: flex-end;
+  align-self: center;
+}
+
+@media (max-width: 992px) {
+  .badgeSectionRight {
+    width: 100%;
+    align-items: flex-start;
+  }
+}
+
+.badgeSectionBg {
+  width: 433px;
+  height: 195px;
+}
+
+@media (max-width: 992px) {
+  .badgeSectionBg {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.badgeSectionHeader {
+  color: #14161b;
+  font-size: 64px;
+  font-weight: 400;
+  font-family: 'Londrina Solid';
+  line-height: normal;
+}
+
+@media (max-width: 568px) {
+  .badgeSectionHeader {
+    font-size: 48px;
+  }
+}
+
+.badgeSectionDesc {
+  color: #212529;
+  font-size: 26px;
+  font-family: 'PT Root UI';
+  font-weight: 500;
+}
+
+@media (max-width: 568px) {
+  .badgeSectionDesc {
+    font-size: 24px;
+  }
+}
