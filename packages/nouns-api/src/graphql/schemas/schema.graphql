@@ -16,13 +16,8 @@ input IdeaInputOptions {
 }
 
 input PropLotInputOptions {
-  filters: [FilterInput!]
+  filters: [String!]
   requestUUID: String!
-}
-
-input FilterInput {
-  id: String!
-  value: String!
 }
 
 # Query response types
@@ -49,13 +44,8 @@ type FilterOption {
   value: String!
 }
 
-type AppliedFilter {
-  id: String!
-  value: String!
-}
-
 type PropLotResponseMetadata {
-  appliedFilters: [AppliedFilter!]
+  appliedFilters: [String!]
   requestUUID: String!
 }
 

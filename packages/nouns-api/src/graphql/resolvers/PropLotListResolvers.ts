@@ -5,7 +5,6 @@ import {
   PropLotResponseMetadataResolvers,
   QueryGetPropLotArgs,
   Idea,
-  FilterInput,
   PropLotFilter,
   FilterType,
 } from '../generated';
@@ -16,15 +15,25 @@ const FILTER_IDS = {
   TAG: 'tag',
 };
 
-const getSortParam = (appliedFilters: FilterInput[]) =>
-  appliedFilters.find((aF: any) => aF.id === FILTER_IDS.SORT) || {
-    id: FILTER_IDS.SORT,
-    value: 'LATEST',
-  };
-const getDateParam = (appliedFilters: FilterInput[]) =>
-  appliedFilters.find((aF: any) => aF.id === FILTER_IDS.DATE);
-const getTagParams = (appliedFilters: FilterInput[]) =>
-  appliedFilters.filter((aF: any) => aF.id === FILTER_IDS.TAG);
+const buildFilterParam = (id: string, value: string) => {
+  return `${id}=${value}`;
+};
+
+const parseFilterParam = (param: string) => {
+  const [id, value] = param.split('=');
+
+  return { id, value };
+};
+
+const getSortParam = (appliedFilters: string[]) =>
+  appliedFilters.find((aF: any) => parseFilterParam(aF).id === FILTER_IDS.SORT) ||
+  buildFilterParam(FILTER_IDS.SORT, 'LATEST');
+
+const getDateParam = (appliedFilters: string[]) =>
+  appliedFilters.find((aF: any) => parseFilterParam(aF).id === FILTER_IDS.DATE);
+
+const getTagParams = (appliedFilters: string[]) =>
+  appliedFilters.filter((aF: any) => parseFilterParam(aF).id === FILTER_IDS.TAG);
 
 const resolvers: IResolvers = {
   Query: {
@@ -33,24 +42,28 @@ const resolvers: IResolvers = {
       const sortParam = getSortParam(appliedFilters);
       const dateParam = getDateParam(appliedFilters);
       const tagParams = getTagParams(appliedFilters);
-      const selectedTagValues = tagParams.map(tag => tag.value);
 
       return {
         appliedFilters,
         sortParam,
         dateParam,
         tagParams,
-        selectedTagValues,
         requestUUID: args.options.requestUUID,
       };
     },
   },
   PropLotResponse: {
     ideas: async (root): Promise<Idea[]> => {
-      const ideas: Idea[] = await IdeasService.all(root.sortParam.value);
+      const ideas: Idea[] = await IdeasService.all(parseFilterParam(root.sortParam).value);
       return ideas;
     },
     sortFilter: (root): PropLotFilter => {
+      const SORT_FILTER_VALUES = {
+        LATEST: buildFilterParam(FILTER_IDS.SORT, 'LATEST'),
+        OLDEST: buildFilterParam(FILTER_IDS.SORT, 'OLDEST'),
+        VOTES_DESC: buildFilterParam(FILTER_IDS.SORT, 'VOTES_DESC'),
+        VOTES_ASC: buildFilterParam(FILTER_IDS.SORT, 'VOTES_ASC'),
+      };
       const sortFilter: PropLotFilter = {
         __typename: 'PropLotFilter',
         id: FILTER_IDS.SORT,
@@ -59,26 +72,26 @@ const resolvers: IResolvers = {
         options: [
           {
             id: `${FILTER_IDS.SORT}-LATEST`,
-            selected: root.sortParam?.value === 'LATEST' || !root.sortParam,
-            value: 'LATEST',
+            selected: root.sortParam === SORT_FILTER_VALUES['LATEST'] || !root.sortParam,
+            value: SORT_FILTER_VALUES['LATEST'],
             label: 'Latest',
           },
           {
             id: `${FILTER_IDS.SORT}-OLDEST`,
-            selected: root.sortParam?.value === 'OLDEST',
-            value: 'OLDEST',
+            selected: root.sortParam === SORT_FILTER_VALUES['OLDEST'],
+            value: SORT_FILTER_VALUES['OLDEST'],
             label: 'Oldest',
           },
           {
             id: `${FILTER_IDS.SORT}-VOTES_DESC`,
-            selected: root.sortParam?.value === 'VOTES_DESC',
-            value: 'VOTES_DESC',
+            selected: root.sortParam === SORT_FILTER_VALUES['VOTES_DESC'],
+            value: SORT_FILTER_VALUES['VOTES_DESC'],
             label: 'Most Votes',
           },
           {
             id: `${FILTER_IDS.SORT}-VOTES_ASC`,
-            selected: root.sortParam?.value === 'VOTES_ASC',
-            value: 'VOTES_ASC',
+            selected: root.sortParam === SORT_FILTER_VALUES['VOTES_ASC'],
+            value: SORT_FILTER_VALUES['VOTES_ASC'],
             label: 'Least Votes',
           },
         ],
@@ -87,6 +100,10 @@ const resolvers: IResolvers = {
       return sortFilter;
     },
     dateFilter: (root): PropLotFilter => {
+      const DATE_FILTER_VALUES = {
+        TODAY: buildFilterParam(FILTER_IDS.DATE, 'TODAY'),
+        LAST_WEEK: buildFilterParam(FILTER_IDS.DATE, 'LAST_WEEK'),
+      };
       const dateFilter: PropLotFilter = {
         __typename: 'PropLotFilter',
         id: FILTER_IDS.DATE,
@@ -95,15 +112,15 @@ const resolvers: IResolvers = {
         options: [
           {
             id: `${FILTER_IDS.DATE}-TODAY`,
-            selected: root.dateParam?.value === 'TODAY',
+            selected: root.dateParam === DATE_FILTER_VALUES['TODAY'],
             label: 'Today',
-            value: 'TODAY',
+            value: DATE_FILTER_VALUES['TODAY'],
           },
           {
             id: `${FILTER_IDS.DATE}-LAST_WEEK`,
-            selected: root.dateParam?.value === 'LAST_WEEK',
+            selected: root.dateParam === DATE_FILTER_VALUES['LAST_WEEK'],
             label: 'Last week',
-            value: 'LAST_WEEK',
+            value: DATE_FILTER_VALUES['LAST_WEEK'],
           },
         ],
       };
@@ -111,6 +128,7 @@ const resolvers: IResolvers = {
       return dateFilter;
     },
     tagFilter: (root): PropLotFilter => {
+      // Load tags from DB and build the filters here
       const tagFilter: PropLotFilter = {
         __typename: 'PropLotFilter',
         id: FILTER_IDS.TAG,
@@ -119,15 +137,17 @@ const resolvers: IResolvers = {
         options: [
           {
             id: `${FILTER_IDS.TAG}-HOT`,
-            selected: root.selectedTagValues.includes('HOT'),
+            selected: Boolean(root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, 'HOT'))),
             label: 'Hot',
-            value: 'HOT',
+            value: buildFilterParam(FILTER_IDS.TAG, 'HOT'),
           },
           {
             id: `${FILTER_IDS.TAG}-DISCUSSION`,
-            selected: root.selectedTagValues.includes('DISCUSSION'),
+            selected: Boolean(
+              root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, 'DISCUSSION')),
+            ),
             label: 'Discussion',
-            value: 'DISCUSSION',
+            value: buildFilterParam(FILTER_IDS.TAG, 'DISCUSSION'),
           },
         ],
       };

@@ -14,12 +14,6 @@ export type Scalars = {
   Float: number;
 };
 
-export type AppliedFilter = {
-  __typename?: 'AppliedFilter';
-  id: Scalars['String'];
-  value: Scalars['String'];
-};
-
 export type Comment = {
   __typename?: 'Comment';
   authorId: Scalars['String'];
@@ -29,11 +23,6 @@ export type Comment = {
   ideaId: Scalars['Int'];
   parentId?: Maybe<Scalars['Int']>;
   replies?: Maybe<Array<Comment>>;
-};
-
-export type FilterInput = {
-  id: Scalars['String'];
-  value: Scalars['String'];
 };
 
 export type FilterOption = {
@@ -88,7 +77,7 @@ export type PropLotFilter = {
 };
 
 export type PropLotInputOptions = {
-  filters?: InputMaybe<Array<FilterInput>>;
+  filters?: InputMaybe<Array<Scalars['String']>>;
   requestUUID: Scalars['String'];
 };
 
@@ -103,7 +92,7 @@ export type PropLotResponse = {
 
 export type PropLotResponseMetadata = {
   __typename?: 'PropLotResponseMetadata';
-  appliedFilters?: Maybe<Array<AppliedFilter>>;
+  appliedFilters?: Maybe<Array<Scalars['String']>>;
   requestUUID: Scalars['String'];
 };
 
@@ -241,10 +230,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  AppliedFilter: ResolverTypeWrapper<AppliedFilter>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Comment: ResolverTypeWrapper<Comment>;
-  FilterInput: FilterInput;
   FilterOption: ResolverTypeWrapper<FilterOption>;
   FilterType: FilterType;
   Idea: ResolverTypeWrapper<Idea>;
@@ -268,10 +255,8 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  AppliedFilter: AppliedFilter;
   Boolean: Scalars['Boolean'];
   Comment: Comment;
-  FilterInput: FilterInput;
   FilterOption: FilterOption;
   Idea: Idea;
   IdeaInputOptions: IdeaInputOptions;
@@ -288,12 +273,6 @@ export type ResolversParentTypes = {
   UserInputOptions: UserInputOptions;
   UserStats: UserStats;
   Vote: Vote;
-};
-
-export type AppliedFilterResolvers<ContextType = any, ParentType extends ResolversParentTypes['AppliedFilter'] = ResolversParentTypes['AppliedFilter']> = {
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CommentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Comment'] = ResolversParentTypes['Comment']> = {
@@ -359,7 +338,7 @@ export type PropLotResponseResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type PropLotResponseMetadataResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotResponseMetadata'] = ResolversParentTypes['PropLotResponseMetadata']> = {
-  appliedFilters?: Resolver<Maybe<Array<ResolversTypes['AppliedFilter']>>, ParentType, ContextType>;
+  appliedFilters?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   requestUUID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -395,7 +374,6 @@ export type VoteResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type Resolvers<ContextType = any> = {
-  AppliedFilter?: AppliedFilterResolvers<ContextType>;
   Comment?: CommentResolvers<ContextType>;
   FilterOption?: FilterOptionResolvers<ContextType>;
   Idea?: IdeaResolvers<ContextType>;
