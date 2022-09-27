@@ -6,5 +6,8 @@ module.exports = {
   corePlugins: {
     preflight: false,
   },
-  plugins: [],
+  plugins: [require("daisyui")],
+  daisyui: {
+    prefix: "dui-",
+  },
 };
