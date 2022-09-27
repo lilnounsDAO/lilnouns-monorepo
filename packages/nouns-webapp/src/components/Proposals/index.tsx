@@ -23,12 +23,12 @@ dayjs.extend(advanced);
 dayjs.extend(relativeTime);
 
 const getCountdownCopy = (proposal: Proposal, currentBlock: number, propState?: ProposalState, snapshotProp?: SnapshotProposal) => {
-  const AVERAGE_BLOCK_TIME_IN_SECS = 13;
+  const BLOCK_TIME_IN_SECS = 12;
   const timestamp = Date.now();
   const startDate =
     proposal && timestamp && currentBlock
       ? dayjs(timestamp).add(
-          AVERAGE_BLOCK_TIME_IN_SECS * (proposal.startBlock - currentBlock),
+          BLOCK_TIME_IN_SECS * (proposal.startBlock - currentBlock),
           'seconds',
         )
       : undefined;
@@ -36,7 +36,7 @@ const getCountdownCopy = (proposal: Proposal, currentBlock: number, propState?: 
   const endDate =
     proposal && timestamp && currentBlock
       ? dayjs(timestamp).add(
-          AVERAGE_BLOCK_TIME_IN_SECS * (proposal.endBlock - currentBlock),
+          BLOCK_TIME_IN_SECS * (proposal.endBlock - currentBlock),
           'seconds',
         )
       : undefined;
