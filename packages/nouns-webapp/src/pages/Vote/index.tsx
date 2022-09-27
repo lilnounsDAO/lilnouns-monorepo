@@ -47,6 +47,7 @@ const VotePage = ({
   const { account } = useEthers();
   
   const [showVoteModal, setShowVoteModal] = useState<boolean>(false);
+  const [isDelegateView, setIsDelegateView] = useState(false);
 
   const [isQueuePending, setQueuePending] = useState<boolean>(false);
   const [isExecutePending, setExecutePending] = useState<boolean>(false);
@@ -245,6 +246,7 @@ const VotePage = ({
   }, {});
 
   const data = voters?.votes?.map(v => ({
+    delegate: v.voter.id,
     supportDetailed: v.supportDetailed,
     nounsRepresented: delegateToNounIds?.[v.voter.id] ?? [],
   }));
@@ -329,30 +331,43 @@ const VotePage = ({
                     )}
                   </Button>
                 )}
-            </Col>
-          </Row>
-        )}
+              </Col>
+            </Row>
+          )}
+
+        <p
+          onClick={() => setIsDelegateView(!isDelegateView)}
+          className={classes.toggleDelegateVoteView}
+        >
+          {isDelegateView ? 'Switch to Noun view' : 'Switch to delegate view'}
+        </p>
         <Row>
           <VoteCard
             proposal={proposal}
             percentage={forPercentage}
             nounIds={forNouns}
-            variant={VoteCardVariant.FOR} 
-            lilnounIds={[]}          
-            />
+            variant={VoteCardVariant.FOR}
+            delegateView={isDelegateView}
+            delegateGroupedVoteData={data}
+            lilnounIds={[]}
+          />
           <VoteCard
             proposal={proposal}
             percentage={againstPercentage}
             nounIds={againstNouns}
-            variant={VoteCardVariant.AGAINST} 
-            lilnounIds={[]}        
-            />
+            variant={VoteCardVariant.AGAINST}
+            delegateView={isDelegateView}
+            delegateGroupedVoteData={data}
+            lilnounIds={[]}
+          />
           <VoteCard
             proposal={proposal}
             percentage={abstainPercentage}
             nounIds={abstainNouns}
             variant={VoteCardVariant.ABSTAIN}
-            lilnounIds={[]}        
+            delegateView={isDelegateView}
+            delegateGroupedVoteData={data}
+            lilnounIds={[]}
           />
         </Row>
 
