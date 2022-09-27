@@ -96,11 +96,11 @@ const PropLotHome = () => {
           {data?.propLot?.sortFilter && (
             <UIFilter filter={data.propLot.sortFilter} updateFilters={handleUpdateFilters} />
           )}
-          {data?.propLot?.dateFilter && (
-            <UIFilter filter={data.propLot.dateFilter} updateFilters={handleUpdateFilters} />
-          )}
           {data?.propLot?.tagFilter && (
             <UIFilter filter={data.propLot.tagFilter} updateFilters={handleUpdateFilters} />
+          )}
+          {data?.propLot?.dateFilter && (
+            <UIFilter filter={data.propLot.dateFilter} updateFilters={handleUpdateFilters} />
           )}
         </div>
       </div>
