@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 import { isMobileScreen } from '../../utils/isMobile';
 import { Proposal } from '../../wrappers/nounsDao';
 import NounImageVoteTable from '../NounImageVoteTable';
 import VoteProgresBar from '../VoteProgressBar';
 import classes from './VoteCard.module.css';
+import responsiveUiUtilsClasses from '../../utils/ResponsiveUIUtils.module.css';
+import clsx from 'clsx';
+import { ensCacheKey } from '../../utils/ensLookup';
+import { lookupNNSOrENS } from '../../utils/lookupNNSOrENS';
+import { useEthers } from '@usedapp/core';
+import DelegateGroupedNounImageVoteTable from '../DelegateGroupedNounImageVoteTable';
 
 export enum VoteCardVariant {
   FOR,
@@ -25,7 +31,6 @@ interface VoteCardProps {
   delegateGroupedVoteData?:
     | { delegate: string; supportDetailed: 0 | 1 | 2; nounsRepresented: string[] }[]
     | undefined;
-
 }
 
 const VoteCard: React.FC<VoteCardProps> = props => {
@@ -39,7 +44,7 @@ const VoteCard: React.FC<VoteCardProps> = props => {
     delegateGroupedVoteData,
     lilnounIds,
     snapshotView,
-    snapshotVoteCount
+    snapshotVoteCount,
   } = props;
   const isMobile = isMobileScreen();
 
@@ -70,8 +75,43 @@ const VoteCard: React.FC<VoteCardProps> = props => {
       break;
   }
 
+  const { library } = useEthers();
+  const [ensCached, setEnsCached] = useState(false);
   const filteredDelegateGroupedVoteData =
     delegateGroupedVoteData?.filter(v => v.supportDetailed === supportDetailedValue) ?? [];
+
+  // Pre-fetch ENS  of delegates (with 30min TTL)
+  // This makes hover cards load more smoothly
+  useEffect(() => {
+    if (isNounsDAOProp) return;
+
+    if (!delegateGroupedVoteData || !library || ensCached) {
+      return;
+    }
+    delegateGroupedVoteData.forEach((delegateInfo: { delegate: string }) => {
+      if (localStorage.getItem(ensCacheKey(delegateInfo.delegate))) {
+        return;
+      }
+
+      lookupNNSOrENS(library, delegateInfo.delegate)
+        .then(name => {
+          // Store data as mapping of address_Expiration => address or ENS
+          if (name) {
+            localStorage.setItem(
+              ensCacheKey(delegateInfo.delegate),
+              JSON.stringify({
+                name,
+                expires: Date.now() / 1000 + 30 * 60,
+              }),
+            );
+          }
+        })
+        .catch(error => {
+          console.log(`error resolving reverse ens lookup: `, error);
+        });
+    });
+    setEnsCached(true);
+  }, [library, ensCached, delegateGroupedVoteData]);
 
   return (
     <Col lg={4} className={classes.wrapper}>
@@ -80,8 +120,13 @@ const VoteCard: React.FC<VoteCardProps> = props => {
           <Card.Text className="py-2 m-0">
             <span className={`${classes.voteCardHeaderText} ${titleClass}`}>{titleCopy}</span>
             {!isMobile && (
-              <span className={classes.voteCardVoteCount}>
-
+              <span
+                className={clsx(
+                  classes.voteCardVoteCount,
+                  responsiveUiUtilsClasses.desktopOnly,
+                  classes.smallerVoteCountText,
+                )}
+              >
                 {delegateView ? (
                   <>
                     {filteredDelegateGroupedVoteData.length === 1 ? (
@@ -96,7 +141,7 @@ const VoteCard: React.FC<VoteCardProps> = props => {
                   </>
                 ) : snapshotView ? (
                   <>
-                    {voteCount} 
+                    {voteCount}
                     {/* <span>Lil Nouns</span> */}
                   </>
                 ) : (
@@ -115,11 +160,10 @@ const VoteCard: React.FC<VoteCardProps> = props => {
           {!isMobile && (
             <Row className={classes.nounProfilePics}>
               {delegateView ? (
-                
-                <NounImageVoteTable
-                  nounIds={nounIds}
+                <DelegateGroupedNounImageVoteTable
+                  filteredDelegateGroupedVoteData={filteredDelegateGroupedVoteData}
                   propId={parseInt(proposal.id || '0')}
-                  isNounsDAOProp={isNounsDAOProp}
+                  proposalCreationBlock={proposal.createdBlock}
                 />
               ) : snapshotView ? (
                 <NounImageVoteTable
