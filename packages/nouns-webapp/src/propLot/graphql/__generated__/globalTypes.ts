@@ -12,13 +12,8 @@ export enum FilterType {
   SINGLE_SELECT = "SINGLE_SELECT",
 }
 
-export interface FilterInput {
-  id: string;
-  value: string;
-}
-
 export interface PropLotInputOptions {
-  filters?: FilterInput[] | null;
+  filters?: string[] | null;
   requestUUID: string;
 }
 

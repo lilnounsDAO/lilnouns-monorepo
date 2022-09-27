@@ -11,8 +11,6 @@ import { v4 } from 'uuid';
 
 import { getPropLot } from '../graphql/__generated__/getPropLot';
 
-import { FilterInput } from '../graphql/__generated__/globalTypes';
-
 import UIFilter from '../components/DropdownFilter';
 import IdeaRow from '../components/IdeaRow';
 
@@ -27,7 +25,7 @@ const PropLotHome = () => {
     variables: {
       options: {
         requestUUID: uuid.current,
-        filters: [] as FilterInput[],
+        filters: [] as string[],
       },
     },
     client: propLotClient,
@@ -39,17 +37,15 @@ const PropLotHome = () => {
   */
   const appliedFilters = data?.propLot?.metadata?.appliedFilters || [];
 
-  const handleUpdateFilters = (updatedFilters: FilterInput[], filterId: string) => {
+  const handleUpdateFilters = (updatedFilters: string[], filterId: string) => {
     /*
       Keep previously applied filters, remove any that match the filterId value.
       Then add the selection of updatedFilters and remove the __typename property.
     */
-    const selectedfilters: FilterInput[] = [
-      ...appliedFilters
-        .map(({ __typename, ...rest }) => rest)
-        .filter((f: any) => {
-          return f.id !== filterId;
-        }),
+    const selectedfilters: string[] = [
+      ...appliedFilters.filter((f: string) => {
+        return !f.includes(`${filterId}=`);
+      }),
       ...updatedFilters,
     ];
 

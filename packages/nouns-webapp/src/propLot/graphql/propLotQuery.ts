@@ -36,10 +36,7 @@ export const GET_PROPLOT_QUERY = gql`
       }
       metadata {
         requestUUID
-        appliedFilters {
-          id
-          value
-        }
+        appliedFilters
       }
     }
   }

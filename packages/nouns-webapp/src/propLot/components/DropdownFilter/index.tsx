@@ -11,12 +11,7 @@ import {
   getPropLot_propLot_dateFilter_options as DateFilterOptions,
 } from '../../graphql/__generated__/getPropLot';
 
-import { FilterInput, FilterType as FilterTyeEnum } from '../../graphql/__generated__/globalTypes';
-
-type CustomToggleProps = {
-  children?: React.ReactNode;
-  onClick: (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => any;
-};
+import { FilterType as FilterTyeEnum } from '../../graphql/__generated__/globalTypes';
 
 type Filter = TagFilter | SortFilter | DateFilter;
 type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
@@ -25,36 +20,21 @@ type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
   Find and return the preselected filter options from the GraphQL response.
 */
 export const buildSelectedFilters = (filter: Filter) => {
-  const selectedParams: FilterInput[] = [];
+  const selectedParams: string[] = [];
   filter.options.forEach(({ selected, value }) => {
     if (selected) {
-      selectedParams.push({ id: filter.id, value });
+      selectedParams.push(value);
     }
   });
   return selectedParams;
 };
-
-const CustomToggle = React.forwardRef(
-  ({ children, onClick }: CustomToggleProps, ref: React.Ref<HTMLSpanElement>) => (
-    <span
-      ref={ref}
-      onClick={e => {
-        e.preventDefault();
-        onClick(e);
-      }}
-    >
-      {children}
-      <FontAwesomeIcon icon={faArrowDown} />
-    </span>
-  ),
-);
 
 const DropdownFilter = ({
   filter,
   updateFilters,
 }: {
   filter: Filter;
-  updateFilters: (filters: FilterInput[], filterId: string) => void;
+  updateFilters: (filters: string[], filterId: string) => void;
 }) => {
   const [selectedFilters, setSelectedFilters] = useState(buildSelectedFilters(filter));
 
@@ -66,17 +46,17 @@ const DropdownFilter = ({
     let newFilters = [...selectedFilters];
     if (filter.type === FilterTyeEnum.SINGLE_SELECT) {
       if (isSelected) {
-        newFilters = selectedFilters.filter(selectedFilter => selectedFilter.value !== opt.value);
+        newFilters = selectedFilters.filter(selectedFilter => selectedFilter !== opt.value);
       } else {
-        newFilters = [{ id: filter.id, value: opt.value }];
+        newFilters = [opt.value];
       }
     }
 
     if (filter.type === FilterTyeEnum.MULTI_SELECT) {
       if (isSelected) {
-        newFilters = selectedFilters.filter(selectedFilter => selectedFilter.value !== opt.value);
+        newFilters = selectedFilters.filter(selectedFilter => selectedFilter !== opt.value);
       } else {
-        newFilters = [...selectedFilters, { id: filter.id, value: opt.value }];
+        newFilters = [...selectedFilters, opt.value];
       }
     }
 
@@ -90,9 +70,7 @@ const DropdownFilter = ({
 
       <Dropdown.Menu>
         {filter.options.map(opt => {
-          const isSelected = selectedFilters.some(
-            selectedFilter => selectedFilter.value === opt.value,
-          );
+          const isSelected = selectedFilters.some(selectedFilter => selectedFilter === opt.value);
           return (
             <Dropdown.Item
               onClick={evt => {

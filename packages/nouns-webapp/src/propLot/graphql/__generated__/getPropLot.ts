@@ -90,16 +90,10 @@ export interface getPropLot_propLot_tagFilter {
   options: getPropLot_propLot_tagFilter_options[];
 }
 
-export interface getPropLot_propLot_metadata_appliedFilters {
-  __typename: "AppliedFilter";
-  id: string;
-  value: string;
-}
-
 export interface getPropLot_propLot_metadata {
   __typename: "PropLotResponseMetadata";
   requestUUID: string;
-  appliedFilters: getPropLot_propLot_metadata_appliedFilters[] | null;
+  appliedFilters: string[] | null;
 }
 
 export interface getPropLot_propLot {
