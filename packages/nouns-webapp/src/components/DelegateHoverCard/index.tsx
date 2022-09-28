@@ -36,7 +36,8 @@ const DelegateHoverCard: React.FC<DelegateHoverCardProps> = props => {
     return <>Error fetching Vote info</>;
   }
 
-  const numVotesForProp = data.delegates[0].nounsRepresented.length;
+  // nounsRepresented fetched from subgraph is limited to fetch the last 100 delegated tokens per account whereas delegatedVotes outputs entire total delegated token amt 
+  const numVotesForProp = data.delegates[0].delegatedVotes; //data.delegates[0].nounsRepresented.length;
 
   return (
     <div className={classes.wrapper}>
