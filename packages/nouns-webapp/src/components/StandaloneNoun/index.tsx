@@ -32,6 +32,8 @@ export const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => 
   const svg = buildSVG(parts, data.palette, background);
   const image = `data:image/svg+xml;base64,${btoa(svg)}`;
 
+  console.log(`🟢-- ${image}`)
+
   return {
     name,
     svg,
