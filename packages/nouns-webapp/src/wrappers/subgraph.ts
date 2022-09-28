@@ -348,6 +348,7 @@ export const delegateNounsAtBlockQuery = (delegates: string[], block: number) =>
 {
   delegates(where: { id_in: ${JSON.stringify(delegates)} }, block: { number: ${block} }) {
     id
+    delegatedVotes
     nounsRepresented {
       id
     }
@@ -359,17 +360,7 @@ export const delegateLilNounsAtBlockQuery = (delegatess: string[], blocks: numbe
 {
   delegates(where: { id_in: ${JSON.stringify(delegatess)} }, block: { number: ${blocks} }) {
     id
-    nounsRepresented {
-      id
-    }
-  }
-}
-`;
-
-export const delegateNounsAtBlockQueryTest = (delegates: string, block: number) => gql`
-{
-  delegates(where: { id_in: ${delegates} }, block: { number: ${block} }) {
-    id
+    delegatedVotes
     nounsRepresented {
       id
     }
@@ -478,6 +469,3 @@ export const clientFactory = (uri: string) =>
     uri,
     cache: new InMemoryCache(),
   });
-
-
- 
