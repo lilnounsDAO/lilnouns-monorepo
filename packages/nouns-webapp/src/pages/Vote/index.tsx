@@ -45,7 +45,7 @@ const VotePage = ({
 }: RouteComponentProps<{ id: string }>) => {
   const proposal = useProposal(id);
   const { account } = useEthers();
-  
+
   const [showVoteModal, setShowVoteModal] = useState<boolean>(false);
   const [isDelegateView, setIsDelegateView] = useState(false);
 
@@ -96,7 +96,9 @@ const VotePage = ({
   const isActive = proposal?.status === ProposalState.ACTIVE;
   const isPending = proposal?.status === ProposalState.PENDING;
 
-  const isCancellable = (isQueued || isActive || isPending) && proposal?.proposer?.toLowerCase() === account?.toLowerCase();
+  const isCancellable =
+    (isQueued || isActive || isPending) &&
+    proposal?.proposer?.toLowerCase() === account?.toLowerCase();
 
   const isAwaitingStateChange = () => {
     if (hasSucceeded) {
@@ -158,7 +160,7 @@ const VotePage = ({
       };
     }
   })();
-  
+
   const onTransactionStateChange = useCallback(
     (
       tx: TransactionStatus,
@@ -298,42 +300,41 @@ const VotePage = ({
         )}
       </Col>
       <Col lg={10} className={clsx(classes.proposal, classes.wrapper)}>
-
         {(isAwaitingStateChange() || isAwaitingDesctructiveStateChange()) && (
-            <Row className={clsx(classes.section, classes.transitionStateButtonSection)}>
-              <Col className="d-grid gap-4">
-                {isAwaitingStateChange() && (
-                  <Button
-                    onClick={moveStateAction}
-                    disabled={isQueuePending || isExecutePending}
-                    variant="dark"
-                    className={classes.transitionStateButton}
-                  >
-                    {isQueuePending || isExecutePending ? (
-                      <Spinner animation="border" />
-                    ) : (
-                      `${moveStateButtonAction} Proposal ⌐◧-◧`
-                    )}
-                  </Button>
-                )}
+          <Row className={clsx(classes.section, classes.transitionStateButtonSection)}>
+            <Col className="d-grid gap-4">
+              {isAwaitingStateChange() && (
+                <Button
+                  onClick={moveStateAction}
+                  disabled={isQueuePending || isExecutePending}
+                  variant="dark"
+                  className={classes.transitionStateButton}
+                >
+                  {isQueuePending || isExecutePending ? (
+                    <Spinner animation="border" />
+                  ) : (
+                    `${moveStateButtonAction} Proposal ⌐◧-◧`
+                  )}
+                </Button>
+              )}
 
-                {isAwaitingDesctructiveStateChange() && (
-                  <Button
-                    onClick={desctructiveStateAction}
-                    disabled={isCancelPending}
-                    variant="danger"
-                    className={classes.desturctiveTransitionStateButton}
-                  >
-                    {isCancelPending ? (
-                      <Spinner animation="border" />
-                    ) : (
-                      `${desctructiveStateButtonAction} Proposal ⌐◧-◧`
-                    )}
-                  </Button>
-                )}
-              </Col>
-            </Row>
-          )}
+              {isAwaitingDesctructiveStateChange() && (
+                <Button
+                  onClick={desctructiveStateAction}
+                  disabled={isCancelPending}
+                  variant="danger"
+                  className={classes.desturctiveTransitionStateButton}
+                >
+                  {isCancelPending ? (
+                    <Spinner animation="border" />
+                  ) : (
+                    `${desctructiveStateButtonAction} Proposal ⌐◧-◧`
+                  )}
+                </Button>
+              )}
+            </Col>
+          </Row>
+        )}
 
         <p
           onClick={() => setIsDelegateView(!isDelegateView)}
