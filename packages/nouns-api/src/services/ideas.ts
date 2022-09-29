@@ -1,4 +1,5 @@
 import { prisma } from '../api';
+import { TagType } from '@prisma/client';
 
 // const SORT_BY: { [key: string]: any } = {
 //   LATEST: [
@@ -60,7 +61,7 @@ const calculateVotes = (votes: any) => {
 };
 
 class IdeasService {
-  static async all(sortBy?: string) {
+  static async all({ sortBy, filterBy }: { sortBy?: string; filterBy?: TagType[] }) {
     try {
       // Investigate issue with votecount db triggers
 
@@ -76,6 +77,18 @@ class IdeasService {
       // });
 
       const ideas = await prisma.idea.findMany({
+        where: {
+          ...(filterBy &&
+            filterBy.length > 0 && {
+              tags: {
+                some: {
+                  type: {
+                    in: filterBy,
+                  },
+                },
+              },
+            }),
+        },
         include: {
           votes: {
             include: {

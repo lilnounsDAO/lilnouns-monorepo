@@ -54,7 +54,11 @@ const resolvers: IResolvers = {
   },
   PropLotResponse: {
     ideas: async (root): Promise<Idea[]> => {
-      const ideas: Idea[] = await IdeasService.all(parseFilterParam(root.sortParam).value);
+      console.log(root);
+      const ideas: Idea[] = await IdeasService.all({
+        sortBy: parseFilterParam(root.sortParam).value,
+        filterBy: root.tagParams.map((tag: string) => parseFilterParam(tag).value),
+      });
       return ideas;
     },
     sortFilter: (root): PropLotFilter => {
@@ -135,6 +139,14 @@ const resolvers: IResolvers = {
         type: FilterType.MultiSelect,
         label: 'Tags',
         options: [
+          {
+            id: `${FILTER_IDS.TAG}-REQUEST`,
+            selected: Boolean(
+              root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, 'REQUEST')),
+            ),
+            label: 'Request',
+            value: buildFilterParam(FILTER_IDS.TAG, 'REQUEST'),
+          },
           {
             id: `${FILTER_IDS.TAG}-HOT`,
             selected: Boolean(root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, 'HOT'))),

@@ -22,6 +22,7 @@ model Idea {
   comments    Comment[]
   votes       Vote[]
   votecount   Int       @default(value: 0) // Vote.direction * Vote.voter.lilnounCount
+  tags        Tag[]
 }
 
 model User {
@@ -63,4 +64,17 @@ model Comment {
   parentId    Int?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+// maybe add unique on TagType
+model Tag {
+  id     Int @id @default(autoincrement())
+  type   TagType
+  Ideas  Idea[]
+}
+
+enum TagType {
+  HOT
+  REQUEST
+  DISCUSSION
 }
