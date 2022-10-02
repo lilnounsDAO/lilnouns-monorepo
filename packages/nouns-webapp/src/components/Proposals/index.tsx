@@ -16,6 +16,7 @@ import DelegationModal from '../DelegationModal';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import advanced from 'dayjs/plugin/advancedFormat';
+import { AVERAGE_BLOCK_TIME_IN_SECS } from '../../utils/constants';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -28,7 +29,6 @@ const getCountdownCopy = (
   propState?: ProposalState,
   snapshotProp?: SnapshotProposal,
 ) => {
-  const AVERAGE_BLOCK_TIME_IN_SECS = 13;
   const timestamp = Date.now();
   const startDate =
     proposal && timestamp && currentBlock
