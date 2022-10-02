@@ -40,12 +40,12 @@ import { getNounVotes } from '../../utils/getNounsVotes';
 import { useQuery } from '@apollo/client';
 import { SnapshotProposal } from '../../components/Proposals';
 // import { isMobileScreen } from '../../utils/isMobile';
+import { AVERAGE_BLOCK_TIME_IN_SECS } from '../../utils/constants';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(advanced);
 
-const AVERAGE_BLOCK_TIME_IN_SECS = 13;
 
 export interface SnapshotVoters {
   voter: string;

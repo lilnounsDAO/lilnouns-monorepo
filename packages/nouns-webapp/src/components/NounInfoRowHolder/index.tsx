@@ -11,6 +11,7 @@ import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import ShortAddress from '../ShortAddress';
 
 import { useAppSelector } from '../../hooks';
+import Tooltip from '../Tooltip';
 
 interface NounInfoRowHolderProps {
   nounId: number;
@@ -36,30 +37,38 @@ const NounInfoRowHolder: React.FC<NounInfoRowHolderProps> = props => {
   const shortAddressComponent = <ShortAddress address={data && data.noun.owner.id} />;
 
   return (
-    <div className={classes.nounHolderInfoContainer}>
-      <span>
-        <Image src={_HeartIcon} className={classes.heartIcon} />
-      </span>
-      <span>Held by</span>
-      <span>
-        <a
-          className={
-            isCool ? classes.nounHolderEtherscanLinkCool : classes.nounHolderEtherscanLinkWarm
-          }
-          href={etherscanURL}
-          target={'_blank'}
-          rel="noreferrer"
-        >
-          {data.noun.owner.id.toLowerCase() ===
-          config.addresses.nounsAuctionHouseProxy.toLowerCase()
-            ? 'Nouns Auction House'
-            : shortAddressComponent}
-        </a>
-      </span>
-      <span className={classes.linkIconSpan}>
-        <Image src={_LinkIcon} className={classes.linkIcon} />
-      </span>
-    </div>
+    <Tooltip
+      tip="View on Etherscan"
+      tooltipContent={(tip: string) => {
+        return 'View on Etherscan';
+      }}
+      id="holder-etherscan-tooltip"
+    >
+      <div className={classes.nounHolderInfoContainer}>
+        <span>
+          <Image src={_HeartIcon} className={classes.heartIcon} />
+        </span>
+        <span>Held by</span>
+        <span>
+          <a
+            className={
+              isCool ? classes.nounHolderEtherscanLinkCool : classes.nounHolderEtherscanLinkWarm
+            }
+            href={etherscanURL}
+            target={'_blank'}
+            rel="noreferrer"
+          >
+            {data.noun.owner.id.toLowerCase() ===
+            config.addresses.nounsAuctionHouseProxy.toLowerCase()
+              ? 'Nouns Auction House'
+              : shortAddressComponent}
+            <span className={classes.linkIconSpan}>
+              <Image src={_LinkIcon} className={classes.linkIcon} />
+            </span>
+          </a>
+        </span>
+      </div>
+    </Tooltip>
   );
 };
 
