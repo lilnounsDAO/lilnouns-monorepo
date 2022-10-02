@@ -1,4 +1,4 @@
-import { Proposal, ProposalState } from '../../wrappers/nounsDao';
+import { Proposal, ProposalState, useProposalThreshold } from '../../wrappers/nounsDao';
 import { Alert, Button } from 'react-bootstrap';
 import ProposalStatus from '../ProposalStatus';
 import classes from './Proposals.module.css';
@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { useBlockNumber, useEthers } from '@usedapp/core';
 import { isMobileScreen } from '../../utils/isMobile';
 import clsx from 'clsx';
-import { useNounTokenBalance, useUserVotes } from '../../wrappers/nounToken';
+import { useNounTokenBalance, useUserDelegatee, useUserVotes } from '../../wrappers/nounToken';
 import { ClockIcon } from '@heroicons/react/solid';
 import proposalStatusClasses from '../ProposalStatus/ProposalStatus.module.css';
 import dayjs from 'dayjs';
@@ -22,7 +22,12 @@ dayjs.extend(timezone);
 dayjs.extend(advanced);
 dayjs.extend(relativeTime);
 
-const getCountdownCopy = (proposal: Proposal, currentBlock: number, propState?: ProposalState, snapshotProp?: SnapshotProposal) => {
+const getCountdownCopy = (
+  proposal: Proposal,
+  currentBlock: number,
+  propState?: ProposalState,
+  snapshotProp?: SnapshotProposal,
+) => {
   const AVERAGE_BLOCK_TIME_IN_SECS = 13;
   const timestamp = Date.now();
   const startDate =
@@ -45,16 +50,12 @@ const getCountdownCopy = (proposal: Proposal, currentBlock: number, propState?: 
 
   const now = dayjs();
 
-  const past = dayjs.unix(1659942900)
-  const nows = dayjs().unix()
-  const present = dayjs.unix(nows)
-  const mm = present.diff(past, 'days')
-  
-  if(snapshotProp && (propState == ProposalState.METAGOV_ACTIVE || propState == ProposalState.METAGOV_CLOSED)){
-    const snapshotPropEndDate = dayjs.unix(snapshotProp.end)
-    const snapshotPropStartDate = dayjs.unix(snapshotProp.start) 
-
-    console.log(`getCountdownCopy: endDate: ${snapshotPropEndDate.fromNow()}. startDate: ${snapshotPropStartDate}`)
+  if (
+    snapshotProp &&
+    (propState == ProposalState.METAGOV_ACTIVE || propState == ProposalState.METAGOV_CLOSED)
+  ) {
+    const snapshotPropEndDate = dayjs.unix(snapshotProp.end);
+    const snapshotPropStartDate = dayjs.unix(snapshotProp.start);
 
     if (snapshotPropStartDate?.isBefore(now) && snapshotPropEndDate?.isAfter(now)) {
       return `Lil Nouns Voting Ends ${snapshotPropEndDate.fromNow()}`;
@@ -63,7 +64,7 @@ const getCountdownCopy = (proposal: Proposal, currentBlock: number, propState?: 
       return `Nouns Voting Ends ${endDate?.fromNow()}`;
     }
     return `Lil Nouns Voting Starts ${snapshotPropStartDate.fromNow()}`;
-  } 
+  }
 
   if (startDate?.isBefore(now) && endDate?.isAfter(now)) {
     return `Ends ${endDate.fromNow()}`;
@@ -72,7 +73,6 @@ const getCountdownCopy = (proposal: Proposal, currentBlock: number, propState?: 
     return `Expires ${expiresDate.fromNow()}`;
   }
   return `Starts ${dayjs(startDate).fromNow()}`;
-  
 };
 
 export enum Vote_ {
@@ -106,8 +106,8 @@ export interface SnapshotProposal {
   author: string; //proposer
   proposalNo: number;
 
-  scores_total: number
-  scores: number[]
+  scores_total: number;
+  scores: number[];
 
   transactionHash: string;
   [key: string]: any;
@@ -132,24 +132,38 @@ const Proposals = ({
   const isMobile = isMobileScreen();
   const [showDelegateModal, setShowDelegateModal] = useState(false);
 
+  const threshold = (useProposalThreshold() ?? 0) + 1;
+  const hasEnoughVotesToPropose = account !== undefined && connectedAccountNounVotes >= threshold;
+  const hasNounBalance = (useNounTokenBalance(account || undefined) ?? 0) > 0;
+  const userDelegatee = useUserDelegatee();
+  const hasDelegatedVotes = account !== undefined && userDelegatee != account;
+
   const nullStateCopy = () => {
     if (account !== null) {
+      if (connectedAccountNounVotes > 0) {
+        return hasDelegatedVotes
+          ? 'Your votes have been delegated'
+          : `Making a proposal requires ${threshold} votes`;
+      }
+
       return 'You have no Votes.';
     }
     return 'Connect wallet to make a proposal.';
   };
-
-  const hasNounVotes = account !== undefined && connectedAccountNounVotes > 0;
-  const hasNounBalance = (useNounTokenBalance(account || undefined) ?? 0) > 0;
 
   return (
     <>
       {!isNounsDAOProp ? (
         <div className={classes.proposals}>
           {showDelegateModal && <DelegationModal onDismiss={() => setShowDelegateModal(false)} />}
-          <div className={clsx(classes.headerWrapper, !hasNounVotes ? classes.forceFlexRow : '')}>
+          <div
+            className={clsx(
+              classes.headerWrapper,
+              !hasEnoughVotesToPropose ? classes.forceFlexRow : '',
+            )}
+          >
             <h3 className={classes.heading}>Proposals</h3>
-            {hasNounVotes ? (
+            {hasEnoughVotesToPropose ? (
               <div className={classes.nounInWalletBtnWrapper}>
                 <div className={classes.submitProposalButtonWrapper}>
                   <Button
@@ -160,7 +174,7 @@ const Proposals = ({
                   </Button>
                 </div>
 
-                {account !== null && account !== undefined && hasNounBalance && (
+                {hasNounBalance && (
                   <div className={classes.delegateBtnWrapper}>
                     <Button
                       className={classes.changeDelegateBtn}
@@ -177,13 +191,13 @@ const Proposals = ({
                 <div className={classes.nullBtnWrapper}>
                   <Button className={classes.generateBtnDisabled}>Submit Proposal</Button>
                 </div>
-                {!isMobile && account !== null && account !== undefined && hasNounBalance && (
+                {!isMobile && hasNounBalance && (
                   <div className={classes.delegateBtnWrapper}>
                     <Button
                       className={classes.changeDelegateBtn}
                       onClick={() => setShowDelegateModal(true)}
                     >
-                      Delegate
+                      {!hasDelegatedVotes ? 'Delegate' : 'Update Delegate'}
                     </Button>
                   </div>
                 )}
@@ -191,13 +205,13 @@ const Proposals = ({
             )}
           </div>
           {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
-          {isMobile && account !== null && account !== undefined && hasNounBalance && (
+          {isMobile && hasNounBalance && (
             <div>
               <Button
                 className={classes.changeDelegateBtn}
                 onClick={() => setShowDelegateModal(true)}
               >
-                Delegate
+                {!hasDelegatedVotes ? 'Delegate' : 'Update Delegate'}
               </Button>
             </div>
           )}
@@ -263,20 +277,14 @@ const Proposals = ({
       ) : (
         <div className={classes.proposals}>
           {showDelegateModal && <DelegationModal onDismiss={() => setShowDelegateModal(false)} />}
-          <div className={clsx(classes.headerWrapper, !hasNounVotes ? classes.forceFlexRow : '')}>
+          <div
+            className={clsx(
+              classes.headerWrapper,
+              !hasEnoughVotesToPropose ? classes.forceFlexRow : '',
+            )}
+          >
             <h3 className={classes.heading}>Proposals</h3>
           </div>
-          {isMobile && <div className={classes.nullStateCopy}>{nullStateCopy()}</div>}
-          {isMobile && account !== null && account !== undefined && hasNounBalance && (
-            <div>
-              <Button
-                className={classes.changeDelegateBtn}
-                onClick={() => setShowDelegateModal(true)}
-              >
-                Delegate
-              </Button>
-            </div>
-          )}
           {nounsDAOProposals?.length && snapshotProposals?.length ? (
             nounsDAOProposals
               .slice(0)
@@ -289,18 +297,18 @@ const Proposals = ({
                 let propStatus = p.status;
 
                 if (snapshotVoteObject && !p.snapshotForCount) {
-                  p.snapshotProposalId = snapshotVoteObject.id
+                  p.snapshotProposalId = snapshotVoteObject.id;
 
-                  if(snapshotVoteObject.scores_total){
-                    const scores = snapshotVoteObject.scores
-                    p.snapshotForCount == scores[0]
-                    p.snapshotAgainstCount == scores[1]
-                    p.snapshotAbstainCount == scores[2]
+                  if (snapshotVoteObject.scores_total) {
+                    const scores = snapshotVoteObject.scores;
+                    p.snapshotForCount == scores[0];
+                    p.snapshotAgainstCount == scores[1];
+                    p.snapshotAbstainCount == scores[2];
                   }
-                  
+
                   switch (snapshotVoteObject.state) {
                     case 'active':
-                      p.snapshotEnd = snapshotVoteObject.end
+                      p.snapshotEnd = snapshotVoteObject.end;
                       propStatus = ProposalState.METAGOV_ACTIVE;
                       break;
 
@@ -317,13 +325,12 @@ const Proposals = ({
                       break;
 
                     default:
-
                       propStatus = p.status;
                       break;
                   }
                 } else if (!snapshotVoteObject) {
                   if (p.status == ProposalState.ACTIVE) {
-                    propStatus = ProposalState.METAGOV_PENDING
+                    propStatus = ProposalState.METAGOV_PENDING;
                   } else {
                     propStatus = p.status;
                   }
@@ -336,7 +343,7 @@ const Proposals = ({
                   propStatus === ProposalState.ACTIVE ||
                   propStatus === ProposalState.QUEUED;
 
-                  //if lil nouns vote is active, change countdown pill to reflect snapshot voting window
+                //if lil nouns vote is active, change countdown pill to reflect snapshot voting window
 
                 const countdownPill = (
                   <div className={classes.proposalStatusWrapper}>
@@ -348,7 +355,7 @@ const Proposals = ({
                           <ClockIcon height={16} width={16} />
                         </span>{' '}
                         <span className={classes.countdownPillText}>
-                        {getCountdownCopy(p, currentBlock || 0, propStatus, snapshotVoteObject)}
+                          {getCountdownCopy(p, currentBlock || 0, propStatus, snapshotVoteObject)}
                         </span>
                       </div>
                     </div>
