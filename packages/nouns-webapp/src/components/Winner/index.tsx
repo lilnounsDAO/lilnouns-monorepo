@@ -66,7 +66,7 @@ const Winner: React.FC<WinnerProps> = props => {
 
   const nounsDAOContent = (
     <a
-      href={buildEtherscanAddressLink('nounders.eth')}
+      href={buildEtherscanAddressLink('0x0BC3807Ec262cB779b38D65b38158acC3bfedE10')}
       target={'_blank'}
       rel="noreferrer"
       className={classes.link}
@@ -78,7 +78,7 @@ const Winner: React.FC<WinnerProps> = props => {
         }}
         id="winner-etherscan-tooltip"
       >
-        nounders.eth
+        NounsDAO
       </Tooltip>
     </a>
   );
