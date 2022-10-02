@@ -6,11 +6,13 @@ import ShortAddress from '../ShortAddress';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { isMobileScreen } from '../../utils/isMobile';
+import Tooltip from '../Tooltip';
+import { buildEtherscanAddressLink } from '../../utils/etherscan';
 
 interface WinnerProps {
   winner: string;
   isNounders?: boolean;
-  isNounsDAO?: boolean
+  isNounsDAO?: boolean;
 }
 
 const Winner: React.FC<WinnerProps> = props => {
@@ -44,15 +46,61 @@ const Winner: React.FC<WinnerProps> = props => {
       )}
     </Row>
   ) : (
-   
-    
-    <ShortAddress size={40} address={winner} avatar={true}
-     />
-      
+    <a
+      href={buildEtherscanAddressLink(winner)}
+      target={'_blank'}
+      rel="noreferrer"
+      className={classes.link}
+    >
+      <Tooltip
+        tip="View on Etherscan"
+        tooltipContent={(tip: string) => {
+          return 'View on Etherscan';
+        }}
+        id="winner-etherscan-tooltip"
+      >
+        <ShortAddress size={40} address={winner} avatar={true} />
+      </Tooltip>
+    </a>
   );
 
-  const nounsDAOContent = <h2>NounsDAO</h2>;
-  const lilnounderNounContent = <h2>lilnounders.eth</h2>;
+  const nounsDAOContent = (
+    <a
+      href={buildEtherscanAddressLink('0x0BC3807Ec262cB779b38D65b38158acC3bfedE10')}
+      target={'_blank'}
+      rel="noreferrer"
+      className={classes.link}
+    >
+      <Tooltip
+        tip="View on Etherscan"
+        tooltipContent={(tip: string) => {
+          return 'View on Etherscan';
+        }}
+        id="winner-etherscan-tooltip"
+      >
+        NounsDAO
+      </Tooltip>
+    </a>
+  );
+
+  const lilnounderNounContent = (
+    <a
+      href={buildEtherscanAddressLink('0x3cf6a7f06015aCad49F76044d3c63D7fE477D945')}
+      target={'_blank'}
+      rel="noreferrer"
+      className={classes.link}
+    >
+      <Tooltip
+        tip="View on Etherscan"
+        tooltipContent={(tip: string) => {
+          return 'View on Etherscan';
+        }}
+        id="winner-etherscan-tooltip"
+      >
+        lilnounders.eth
+      </Tooltip>
+    </a>
+  );
 
   return (
     <>
@@ -73,8 +121,11 @@ const Winner: React.FC<WinnerProps> = props => {
               color: isCool ? 'var(--brand-cool-dark-text)' : 'var(--brand-warm-dark-text)',
             }}
           >
-             
-            {isNounders ? lilnounderNounContent : isNounsDAO ? nounsDAOContent : nonNounderNounContent}
+            {isNounders
+              ? lilnounderNounContent
+              : isNounsDAO
+              ? nounsDAOContent
+              : nonNounderNounContent}
           </h2>
         </Col>
       </Row>
