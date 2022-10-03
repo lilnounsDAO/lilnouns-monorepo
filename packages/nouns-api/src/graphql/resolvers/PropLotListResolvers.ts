@@ -1,124 +1,167 @@
 import IdeasService from '../../services/ideas';
 
 import { IResolvers } from '@graphql-tools/utils';
-import { UiListItemResolvers, Idea, QueryGetPropLotListArgs, FilterInput, UiIdeaRow, UiFilterPillGroup, UiFilterType, UiDropdownPill, TargetFilterParam, UiSortPillGroup, UiListItem, PropLotListResponseMetadataResolvers } from '../generated';
+import {
+  PropLotResponseMetadataResolvers,
+  QueryGetPropLotArgs,
+  Idea,
+  PropLotFilter,
+  FilterType,
+} from '../generated';
 
 const FILTER_IDS = {
-  DATE: "date",
-  SORT: "sort",
-  TAG: "tag",
+  DATE: 'date',
+  SORT: 'sort',
+  TAG: 'tag',
 };
 
-const buildTargetParam = (id: string, value: string): TargetFilterParam => ({ param: { id, value } });
-const getSortParam = (appliedFilters: FilterInput[]) => appliedFilters.find((aF: any) => aF.id === FILTER_IDS.SORT) || { id: FILTER_IDS.SORT, value: "LATEST" };
-const getDateParam = (appliedFilters: FilterInput[]) => appliedFilters.find((aF: any) => aF.id === FILTER_IDS.DATE);
+const buildFilterParam = (id: string, value: string) => {
+  return `${id}=${value}`;
+};
+
+const parseFilterParam = (param: string) => {
+  const [id, value] = param.split('=');
+
+  return { id, value };
+};
+
+const getSortParam = (appliedFilters: string[]) =>
+  appliedFilters.find((aF: any) => parseFilterParam(aF).id === FILTER_IDS.SORT) ||
+  buildFilterParam(FILTER_IDS.SORT, 'LATEST');
+
+const getDateParam = (appliedFilters: string[]) =>
+  appliedFilters.find((aF: any) => parseFilterParam(aF).id === FILTER_IDS.DATE);
+
+const getTagParams = (appliedFilters: string[]) =>
+  appliedFilters.filter((aF: any) => parseFilterParam(aF).id === FILTER_IDS.TAG);
 
 const resolvers: IResolvers = {
   Query: {
-    getPropLotList: async (_parent: any, args: QueryGetPropLotListArgs) => {
-      return { appliedFilters: args.options.filters || [], requestUUID: args.options.requestUUID }
-    },
-  },
-  PropLotListResponse: {
-    list: async (root): Promise<UiListItem[]> => {
-      const sortParam = getSortParam(root.appliedFilters);
-      const ideas: Idea[] = await IdeasService.all(sortParam.value);
-      const ideaRows: UiIdeaRow[] = ideas.map(idea => {
-        const row: UiIdeaRow = {
-          data: idea,
-        }
-
-        return row;
-      })
-
-      return ideaRows;
-    },
-    uiFilters: (root) => {
-      const dateParam = getDateParam(root.appliedFilters);
-
-      const dropDownPill: UiDropdownPill = {
-        __typename: 'UIDropdownPill',
-        id: FILTER_IDS.DATE,
-        selected: dateParam?.id === FILTER_IDS.DATE,
-        label: "Top",
-        options: [{
-          id: "TODAY",
-          selected: dateParam?.value === "TODAY",
-          label: "Today",
-          target: buildTargetParam(FILTER_IDS.DATE, "TODAY"),
-        }],
-      };
-
-      const filterPills: UiFilterPillGroup = {
-        __typename: "UIFilterPillGroup",
-        id: "FILTER_PILLS",
-        pills: [dropDownPill],
-        type: UiFilterType.MultiSelect,
-      };
-
-      // SORT FILTERS
-
-      const sortParam = getSortParam(root.appliedFilters);
-
-      const sortPills: UiSortPillGroup = {
-        __typename: "UISortPillGroup",
-        id: FILTER_IDS.SORT,
-        pills: [{
-          __typename: 'UITogglePill',
-          id: "sort_created",
-          options: [
-            {
-              id: "LATEST",
-              selected: sortParam?.value === "LATEST",
-              label: "Created",
-              target: buildTargetParam(FILTER_IDS.SORT, "LATEST"),
-            },
-            {
-              id: "OLDEST",
-              selected: sortParam?.value === "OLDEST",
-              label: "Created",
-              target: buildTargetParam(FILTER_IDS.SORT, "OLDEST"),
-            }
-          ],
-        },
-        {
-          __typename: 'UITogglePill',
-          id: "sort_votes",
-          options: [
-            {
-              id: "VOTES_ASC",
-              selected: sortParam?.value === "VOTES_ASC",
-              label: "Votes",
-              target: buildTargetParam(FILTER_IDS.SORT, "VOTES_ASC"),
-            },
-            {
-              id: "VOTES_DESC",
-              selected: sortParam?.value === "VOTES_DESC",
-              label: "Votes",
-              target: buildTargetParam(FILTER_IDS.SORT, "VOTES_DESC"),
-            }
-          ],
-        },
-      ],
-      };
+    getPropLot: async (_parent: any, args: QueryGetPropLotArgs) => {
+      const appliedFilters = args.options.filters || [];
+      const sortParam = getSortParam(appliedFilters);
+      const dateParam = getDateParam(appliedFilters);
+      const tagParams = getTagParams(appliedFilters);
 
       return {
-        sortPills,
-        filterPills,
+        appliedFilters,
+        sortParam,
+        dateParam,
+        tagParams,
+        requestUUID: args.options.requestUUID,
       };
     },
-    metadata: (root): PropLotListResponseMetadataResolvers => ({
-      requestUUID: root.requestUUID,
-      appliedFilters: root.appliedFilters,
-    })
   },
-  UIListItem:<UiListItemResolvers> {
-    __resolveType(item){
-      if(item.data?.tldr){
-        return 'UIIdeaRow';
-      }
-      return null;
+  PropLotResponse: {
+    ideas: async (root): Promise<Idea[]> => {
+      const ideas: Idea[] = await IdeasService.all(parseFilterParam(root.sortParam).value);
+      return ideas;
     },
+    sortFilter: (root): PropLotFilter => {
+      const SORT_FILTER_VALUES = {
+        LATEST: buildFilterParam(FILTER_IDS.SORT, 'LATEST'),
+        OLDEST: buildFilterParam(FILTER_IDS.SORT, 'OLDEST'),
+        VOTES_DESC: buildFilterParam(FILTER_IDS.SORT, 'VOTES_DESC'),
+        VOTES_ASC: buildFilterParam(FILTER_IDS.SORT, 'VOTES_ASC'),
+      };
+      const sortFilter: PropLotFilter = {
+        __typename: 'PropLotFilter',
+        id: FILTER_IDS.SORT,
+        type: FilterType.SingleSelect,
+        label: 'Sort',
+        options: [
+          {
+            id: `${FILTER_IDS.SORT}-LATEST`,
+            selected: root.sortParam === SORT_FILTER_VALUES['LATEST'] || !root.sortParam,
+            value: SORT_FILTER_VALUES['LATEST'],
+            label: 'Created',
+            icon: 'ARROW_UP',
+          },
+          {
+            id: `${FILTER_IDS.SORT}-OLDEST`,
+            selected: root.sortParam === SORT_FILTER_VALUES['OLDEST'],
+            value: SORT_FILTER_VALUES['OLDEST'],
+            label: 'Created',
+            icon: 'ARROW_DOWN',
+          },
+          {
+            id: `${FILTER_IDS.SORT}-VOTES_DESC`,
+            selected: root.sortParam === SORT_FILTER_VALUES['VOTES_DESC'],
+            value: SORT_FILTER_VALUES['VOTES_DESC'],
+            label: 'Votes',
+            icon: 'ARROW_UP',
+          },
+          {
+            id: `${FILTER_IDS.SORT}-VOTES_ASC`,
+            selected: root.sortParam === SORT_FILTER_VALUES['VOTES_ASC'],
+            value: SORT_FILTER_VALUES['VOTES_ASC'],
+            label: 'Votes',
+            icon: 'ARROW_DOWN',
+          },
+        ],
+      };
+
+      return sortFilter;
+    },
+    dateFilter: (root): PropLotFilter => {
+      const DATE_FILTER_VALUES = {
+        TODAY: buildFilterParam(FILTER_IDS.DATE, 'TODAY'),
+        LAST_WEEK: buildFilterParam(FILTER_IDS.DATE, 'LAST_WEEK'),
+      };
+      const dateFilter: PropLotFilter = {
+        __typename: 'PropLotFilter',
+        id: FILTER_IDS.DATE,
+        type: FilterType.SingleSelect,
+        label: 'Date',
+        options: [
+          {
+            id: `${FILTER_IDS.DATE}-TODAY`,
+            selected: root.dateParam === DATE_FILTER_VALUES['TODAY'],
+            label: 'Today',
+            value: DATE_FILTER_VALUES['TODAY'],
+          },
+          {
+            id: `${FILTER_IDS.DATE}-LAST_WEEK`,
+            selected: root.dateParam === DATE_FILTER_VALUES['LAST_WEEK'],
+            label: 'Last week',
+            value: DATE_FILTER_VALUES['LAST_WEEK'],
+          },
+        ],
+      };
+
+      return dateFilter;
+    },
+    tagFilter: (root): PropLotFilter => {
+      // Load tags from DB and build the filters here
+      const tagFilter: PropLotFilter = {
+        __typename: 'PropLotFilter',
+        id: FILTER_IDS.TAG,
+        type: FilterType.MultiSelect,
+        label: 'Tags',
+        options: [
+          {
+            id: `${FILTER_IDS.TAG}-HOT`,
+            selected: Boolean(root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, 'HOT'))),
+            label: 'Hot',
+            value: buildFilterParam(FILTER_IDS.TAG, 'HOT'),
+          },
+          {
+            id: `${FILTER_IDS.TAG}-DISCUSSION`,
+            selected: Boolean(
+              root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, 'DISCUSSION')),
+            ),
+            label: 'Discussion',
+            value: buildFilterParam(FILTER_IDS.TAG, 'DISCUSSION'),
+          },
+        ],
+      };
+
+      return tagFilter;
+    },
+    metadata: (root): PropLotResponseMetadataResolvers => ({
+      requestUUID: root.requestUUID || '',
+      appliedFilters: root.appliedFilters,
+    }),
   },
 };
 

@@ -144,6 +144,7 @@ const config = {
   app: app[CHAIN_ID],
   isPreLaunch: process.env.REACT_APP_IS_PRELAUNCH || 'false',
   addresses: getAddresses(),
+  isPropLotBetaEnabled: process.env.REACT_APP_PROP_LOT_BETA_ENABLED === 'true',
 };
 
 export default config;

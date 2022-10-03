@@ -13,7 +13,7 @@ const IdeaVoteControls = ({
   withAvatars = false,
 }: {
   id: number;
-  votes: Vote[];
+  votes?: Vote[];
   voteOnIdea: (args: any) => void;
   nounBalance: number;
   voteCount: number;
