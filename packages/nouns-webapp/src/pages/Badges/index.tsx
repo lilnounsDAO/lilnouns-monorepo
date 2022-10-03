@@ -1,5 +1,4 @@
-import { Stack } from 'react-bootstrap';
-import { Button } from 'react-bootstrap';
+import { Stack, Button } from 'react-bootstrap';
 import classes from './Badges.module.css';
 import LilNounsBg from '../../assets/lil-nouners-bg.png';
 import LilNounsBgMobile from '../../assets/lil-nouners-bg-mobile.png';
@@ -13,7 +12,11 @@ const BadgesPage = () => {
           <h1 className={classes.heroSectionHeader}>It’s time you get rewarded for actively participating in PropLot.</h1>
           <p className={classes.heroSectionDesc}>The PropLot Contributor Badge is created to reward the top contributors for 
             actively participating in the creation of new ideas & voting.</p>
-          <Button className={classes.heroSectionBtn}>
+          <Button 
+            className={classes.heroSectionBtn}
+            href='https://playground.sismo.io/lilnouns-proplot-contributors'
+            target='blank'
+          >
             Claim your Badge
           </Button>
         </Stack>
