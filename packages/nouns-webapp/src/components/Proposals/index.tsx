@@ -309,7 +309,12 @@ const Proposals = ({
                   switch (snapshotVoteObject.state) {
                     case 'active':
                       p.snapshotEnd = snapshotVoteObject.end;
-                      propStatus = ProposalState.METAGOV_ACTIVE;
+                      if(p.status == ProposalState.PENDING || p.status == ProposalState.ACTIVE){
+                        propStatus = ProposalState.METAGOV_ACTIVE;
+                      } else {
+                        propStatus = p.status;
+                      }
+                      
                       break;
 
                     case 'closed':
