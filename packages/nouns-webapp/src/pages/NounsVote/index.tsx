@@ -386,7 +386,11 @@ const NounsVotePage = ({
 
     switch (snapProp.state) {
       case 'active':
-        propStatus = ProposalState.METAGOV_ACTIVE;
+        if(proposal.status == ProposalState.PENDING || proposal.status == ProposalState.ACTIVE ){
+          propStatus = ProposalState.METAGOV_ACTIVE;
+        } else {
+          propStatus = proposal.status;
+        }
         break;
 
       case 'closed':
