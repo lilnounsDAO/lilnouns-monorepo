@@ -2,7 +2,7 @@ type Query {
   getIdeas(options: IdeaInputOptions!): [Idea!]
   getAllUsers: [User!]
   getUser(options: UserInputOptions!): User
-  getPropLotList(options: PropLotInputOptions!): PropLotListResponse!
+  getPropLot(options: PropLotInputOptions!): PropLotResponse!
 }
 
 # Query input types
@@ -16,31 +16,37 @@ input IdeaInputOptions {
 }
 
 input PropLotInputOptions {
-  filters: [FilterInput!]
+  filters: [String!]
   requestUUID: String!
-}
-
-input FilterInput {
-  id: String!
-  value: String!
 }
 
 # Query response types
 
-type PropLotListResponse {
-  list: [UIListItem!]
-  uiFilters: UIFilterGroup
-  metadata: PropLotListResponseMetadata!
+type PropLotResponse {
+  ideas: [Idea!]
+  sortFilter: PropLotFilter
+  tagFilter: PropLotFilter
+  dateFilter: PropLotFilter
+  metadata: PropLotResponseMetadata!
 }
 
-type UIFilterGroup {
-  sortPills: UISortPillGroup
-  filterPills: UIFilterPillGroup
-  filterDropdown: UIDropdownFilter
+type PropLotFilter {
+  id: String!
+  label: String
+  type: FilterType!
+  options: [FilterOption!]!
 }
 
-type PropLotListResponseMetadata {
-  appliedFilters: [FilterParam!]
+type FilterOption {
+  id: String!
+  selected: Boolean!
+  label: String
+  value: String!
+  icon: String
+}
+
+type PropLotResponseMetadata {
+  appliedFilters: [String!]
   requestUUID: String!
 }
 
@@ -54,6 +60,7 @@ type UserStats {
 
 type User {
   wallet: String!
+  lilnounCount: Int!
   userStats: UserStats
 }
 
@@ -98,95 +105,18 @@ type Idea {
   tags: [IdeaTags!]
 }
 
-# Target Types - Uses to apply user actions e.g. apply a filter/sort option or archive a idea.
+# Enums
 
-type FilterParam {
-  id: String!
-  value: String!
-}
-
-# Used to apply the param value to the getPropLotList query
-type TargetFilterParam {
-  param: FilterParam! # Example: {id: "tag", value: "archived" } or {id: "date", value: "LAST_WEEK" }
-}
-
-# Used to tell the client to handle a specific action on the UI e.g. archive an idea.
-type TargetAction {
-  displayName: String!
-  action: TargetActionType!
-}
-
-union Target = TargetFilterParam | TargetAction
-
-# UI types
-
-type UISortPillGroup {
-  id: String!
-  label: String
-  pills: [UIFilterPills!]!
-}
-
-type UIFilterPillGroup {
-  id: String!
-  label: String
-  pills: [UIFilterPills!]!
-  type: UIFilterType!
-}
-
-type UIDropdownFilter {
-  id: String!
-  label: String
-  options: [UIFilterOption!]!
-  type: UIFilterType!
-}
-
-type UIFilterOption {
-  id: String!
-  selected: Boolean!
-  label: String!
-  target: TargetFilterParam!
-}
-
-enum UIFilterType {
+enum FilterType {
   SINGLE_SELECT
   MULTI_SELECT
 }
-
-type UITogglePill {
-  id: String!
-  label: String
-  options: [UIFilterOption!]!
-}
-
-type UIDropdownPill {
-  id: String!
-  selected: Boolean!
-  label: String
-  options: [UIFilterOption!]!
-}
-
-union UIFilterPills = UITogglePill | UIDropdownPill
-
-# Wrapper aroung the raw idea data, allows us to add an action menu
-type UIIdeaRow {
-  data: Idea!
-  actionMenu: [TargetAction!]
-}
-
-# Can be extended to show different UI types in the list - ideas, comments or votes
-union UIListItem = UIIdeaRow
-
-# Enums
 
 enum SORT_TYPE {
   VOTES_DESC
   VOTES_ASC
   LATEST
   OLDEST
-}
-
-enum TargetActionType {
-  ARCHIVE_IDEA
 }
 
 enum TagType {

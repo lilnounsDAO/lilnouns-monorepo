@@ -24,7 +24,15 @@ import onDisplayAuction, {
   setOnDisplayAuctionNounId,
   setOnDisplayAuctionStartTime,
 } from './state/slices/onDisplayAuction';
-import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, Operation, useQuery } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  HttpLink,
+  InMemoryCache,
+  Operation,
+  useQuery,
+} from '@apollo/client';
 import { clientFactory, latestAuctionsQuery, singularAuctionQuery } from './wrappers/subgraph';
 import { useEffect } from 'react';
 import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
@@ -104,40 +112,39 @@ const wagmiClient = createClient({
   },
 });
 
-
-
-
 const defaultLink = new HttpLink({
-  uri: config.app.subgraphApiUri
-})
+  uri: config.app.subgraphApiUri,
+});
 
 const nounsDAOLink = new HttpLink({
-  uri: config.app.nounsDAOSubgraphApiUri
-})
+  uri: config.app.nounsDAOSubgraphApiUri,
+});
 
 const nounsDAOVotingSnapshotLink = new HttpLink({
-  uri: 'https://hub.snapshot.org/graphql'
-})
+  uri: 'https://hub.snapshot.org/graphql',
+});
 
 const zoraAPILink = new HttpLink({
-  uri: 'https://api.zora.co/graphql'
-})
-
+  uri: 'https://api.zora.co/graphql',
+});
 
 //pass them to apollo-client config
 const client = new ApolloClient({
   link: ApolloLink.split(
     operation => operation.getContext().clientName === 'NounsDAO',
-    nounsDAOLink, //if above 
-    ApolloLink.split(operation => operation.getContext().clientName === 'NounsDAOSnapshot',
-    nounsDAOVotingSnapshotLink,
-    ApolloLink.split(operation => operation.getContext().clientName === 'ZoraAPI',
-    zoraAPILink,
-    defaultLink))
-),
+    nounsDAOLink, //if above
+    ApolloLink.split(
+      operation => operation.getContext().clientName === 'NounsDAOSnapshot',
+      nounsDAOVotingSnapshotLink,
+      ApolloLink.split(
+        operation => operation.getContext().clientName === 'ZoraAPI',
+        zoraAPILink,
+        defaultLink,
+      ),
+    ),
+  ),
   cache: new InMemoryCache(),
-})
-
+});
 
 const Updaters = () => {
   return (
@@ -247,13 +254,13 @@ const PastAuctions: React.FC = () => {
 
   const nounId = BigNumber.from(onDisplayAuctionNounId ?? 0);
   const distanceToAuctionAbove = isNounderNoun(BigNumber.from(onDisplayAuctionNounId ?? 0)) ? 2 : 1;
-  const nextNounId = nounId.add(distanceToAuctionAbove)
+  const nextNounId = nounId.add(distanceToAuctionAbove);
 
-  const { data: postData } = useQuery(
-    singularAuctionQuery(nextNounId?.toString() || '0'),
+  const { data: postData } = useQuery(singularAuctionQuery(nextNounId?.toString() || '0'));
+
+  const { data } = useQuery(
+    latestAuctionsQuery(postData?.auctions?.[0]?.startTime || onDisplayAuctionStartTime || 0),
   );
-
-  const { data } = useQuery(latestAuctionsQuery(postData?.auctions?.[0]?.startTime || onDisplayAuctionStartTime || 0));
 
   const { data: auctionData } = useQuery(
     singularAuctionQuery(onDisplayAuctionNounId?.toString() || '0'),

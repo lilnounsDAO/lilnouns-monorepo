@@ -108,7 +108,9 @@
     "eject": "react-scripts eject",
     "i18n:extract": "lingui extract",
     "i18n:compile": "lingui compile",
-    "i18n:pseudo": "lingui extract --locale pseudo && lingui compile"
+    "i18n:pseudo": "lingui extract --locale pseudo && lingui compile",
+    "proplot-schema:fetch": "npx apollo service:download --endpoint=http://localhost:5001/graphql/ ./src/propLot/graphql/proplot-schema.json",
+    "proplot-schema:build": "npx apollo codegen:generate --localSchemaFile=./src/propLot/graphql/proplot-schema.json --globalTypesFile=./src/propLot/graphql/__generated__/globalTypes.ts --target=typescript --tagName=gql --excludes=src/wrappers/subgraph.ts"
   },
   "browserslist": {
     "production": [
