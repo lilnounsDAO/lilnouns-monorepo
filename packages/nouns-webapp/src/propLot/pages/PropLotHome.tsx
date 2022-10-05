@@ -91,37 +91,14 @@ const PropLotHome = () => {
   };
 
   const hasNouns = nounBalance > 0;
+  const isNounOwner = account !== undefined && hasNouns;
 
   return (
     <div>
-      <div>
-        <div className="flex mb-4 justify-between items-center text-right pt-2">
-          <h3 className="text-4xl lodrina">Ideas</h3>
-          {account !== undefined && hasNouns ? (
-            <Button
-              className="rounded-lg !bg-[#2B83F6] !text-white !font-bold p-2"
-              onClick={() => history.push('/ideas/create')}
-            >
-              Submit Idea
-            </Button>
-          ) : (
-            <>
-              <div className="flex justify-end">
-                <Button className="!text-[#8C8D92] !bg-[#F4F4F8] !border-[#E2E3E8] !font-bold p-2">
-                  Submit Idea
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+      {!isNounOwner && <div className="mt-[16px] text-[#8C8D92]">{nullStateCopy()}</div>}
 
-      {(!Boolean(account) || !hasNouns) && (
-        <div className="mt-2 text-[#8C8D92]">{nullStateCopy()}</div>
-      )}
-
-      <div className="mt-2 mb-2 flex flex-col">
-        <div className="flex">
+      <div className="mt-[16px] mb-[16px] flex flex-col-reverse sm:flex-row">
+        <div className="flex flex-1">
           {data?.propLot?.sortFilter && (
             <UIFilter filter={data.propLot.sortFilter} updateFilters={handleUpdateFilters} />
           )}
@@ -131,6 +108,19 @@ const PropLotHome = () => {
           {data?.propLot?.dateFilter && (
             <UIFilter filter={data.propLot.dateFilter} updateFilters={handleUpdateFilters} />
           )}
+        </div>
+        <div className="flex justify-end mb-[16px] sm:mb-0">
+          <Button
+            disabled={!isNounOwner}
+            className={`${
+              isNounOwner
+                ? '!bg-[#2B83F6] !text-white !text-[16px]'
+                : '!text-[#8C8D92] !bg-[#F4F4F8] !border-[#E2E3E8]'
+            } flex-1 sm:flex-none !rounded-[10px] !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`}
+            onClick={() => history.push('/ideas/create')}
+          >
+            New Submission
+          </Button>
         </div>
       </div>
 
