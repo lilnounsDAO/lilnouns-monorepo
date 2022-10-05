@@ -60,9 +60,9 @@ const CustomToggle = forwardRef(
         e.preventDefault();
         onClick(e);
       }}
-      className="btn mr-[8px] !rounded-[10px] bg-white border border-[#e2e3e8] p-0 focus:!bg-[#F4F4F8] focus:!text-[#231F20] !text-[#8C8D92]"
+      className="flex flex-1 btn !rounded-[10px] bg-white border border-[#e2e3e8] p-0 focus:!bg-[#F4F4F8] focus:!text-[#231F20] !text-[#8C8D92]"
     >
-      <span className="flex items-center font-semibold text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
+      <span className="flex items-center justify-center font-semibold text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
         {children}
       </span>
     </a>
@@ -105,13 +105,13 @@ const DropdownFilter = ({
   };
 
   return (
-    <Dropdown>
+    <Dropdown className="flex flex-1 sm:block sm:flex-none mr-[8px] last:mr-[0px]">
       <Dropdown.Toggle as={CustomToggle} id={`dropdown-${filter.id}`}>
         <span className="pr-2">{filter.label}</span>
         <FontAwesomeIcon icon={faCaretDown} />
       </Dropdown.Toggle>
 
-      <Dropdown.Menu className="!p-[8px] !bg-[#F4F4F8] border border-[#E2E3E8] rounded-[10px]">
+      <Dropdown.Menu className="!min-w-[220px] !p-[8px] !mt-[8px] !bg-[#F4F4F8] !border !border-[#E2E3E8] !rounded-[10px]">
         {filter.options.map(opt => {
           const isSelected = selectedFilters.some(selectedFilter => selectedFilter === opt.value);
           return (
@@ -123,7 +123,7 @@ const DropdownFilter = ({
               key={opt.id}
               className={`${
                 isSelected ? 'bg-white border border-[#E2E3E8]' : ''
-              } cursor-pointer active:!bg-white !hover:bg-[#E2E3E8] rounded-[6px] justify-start mb-[2px] mt-[2px] !pt-[8px] !pb-[8px] pl-[16px] pr-[16px]`}
+              } min-width-[250px] cursor-pointer active:!bg-white !hover:bg-[#E2E3E8] rounded-[6px] justify-start mb-[2px] mt-[2px] !pt-[8px] !pb-[8px] pl-[16px] pr-[16px]`}
             >
               <div className="flex items-center">
                 {filter.type === FilterTyeEnum.MULTI_SELECT && (
