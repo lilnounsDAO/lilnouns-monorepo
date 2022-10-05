@@ -59,6 +59,8 @@
     "graphql": "^15.5.1",
     "graphql-import-node": "0.0.5",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.37",
     "nft.storage": "^2.1.1",
     "prisma": "^3.15.2",
     "rollbar": "^2.25.0",
