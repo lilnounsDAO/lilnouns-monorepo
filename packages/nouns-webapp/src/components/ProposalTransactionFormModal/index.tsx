@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
-import { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import {
   Button,
   Col,
@@ -12,7 +12,10 @@ import {
   Modal,
   Row,
 } from 'react-bootstrap';
-import { useStepProgress, Step, StepProgressBar } from 'react-stepz';
+import { StepProps } from 'react-stepz/dist/models';
+
+import { useStepProgress, Step as StepBase, StepProgressBar } from 'react-stepz';
+
 import { buildEtherscanAddressLink, buildEtherscanApiQuery } from '../../utils/etherscan';
 import { ProposalTransaction } from '../../wrappers/nounsDao';
 import classes from './ProposalTransactionFormModal.module.css';
@@ -25,6 +28,8 @@ interface ProposalTransactionFormModalProps {
   onHide: () => void;
   onProposalTransactionAdded: (transaction: ProposalTransaction) => void;
 }
+
+const Step: React.FC<StepProps & { children: React.ReactNode }> = StepBase;
 
 const ProposalTransactionFormModal = ({
   show,
