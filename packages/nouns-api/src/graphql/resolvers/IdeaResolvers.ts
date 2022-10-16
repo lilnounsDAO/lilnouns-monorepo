@@ -1,7 +1,7 @@
 import IdeasService from '../../services/ideas';
 
 import { IResolvers } from '@graphql-tools/utils';
-import { QueryGetIdeasArgs, Idea } from '../generated';
+import { QueryGetIdeasArgs, MutationSubmitIdeaVoteArgs, Idea, Vote } from '../generated';
 
 const resolvers: IResolvers = {
   Query: {
@@ -10,13 +10,33 @@ const resolvers: IResolvers = {
       return ideas;
     },
   },
-  Idea: {
-    comments: async (root) => {
-        const comments = await IdeasService.getIdeaComments(root.id);
-        return comments;
+  Mutation: {
+    submitIdeaVote: async (
+      _parent: any,
+      args: MutationSubmitIdeaVoteArgs,
+      context,
+    ): Promise<Vote> => {
+      if (!context.authScope.isAuthorized) {
+        throw new Error('Failed to save vote: unauthorized');
+      }
+
+      const vote: Vote = await IdeasService.voteOnIdea(
+        {
+          ideaId: args.options.ideaId,
+          direction: args.options.direction,
+        },
+        context.authScope.user,
+      );
+      return vote;
     },
-    ideaStats: (root) => root._count,
-  }
+  },
+  Idea: {
+    comments: async root => {
+      const comments = await IdeasService.getIdeaComments(root.id);
+      return comments;
+    },
+    ideaStats: root => root._count,
+  },
 };
 
 export default resolvers;

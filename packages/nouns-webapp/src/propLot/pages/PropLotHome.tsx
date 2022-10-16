@@ -1,12 +1,13 @@
 import { Alert, Button } from 'react-bootstrap';
 import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useAccountVotes } from '../../wrappers/nounToken';
-import { useIdeas } from '../../hooks/useIdeas';
-import { useQuery } from '@apollo/client';
+import { useAuth } from '../../hooks/useAuth';
+import { useLazyQuery } from '@apollo/client';
 import propLotClient from '../graphql/config';
 import { GET_PROPLOT_QUERY } from '../graphql/propLotQuery';
+
 import { v4 } from 'uuid';
 
 import { getPropLot } from '../graphql/__generated__/getPropLot';
@@ -17,9 +18,21 @@ import IdeaRow from '../components/IdeaRow';
 const PropLotHome = () => {
   const { account } = useEthers();
   const history = useHistory();
-  const { voteOnIdeaList } = useIdeas();
-  const uuid = useRef(v4());
-  const currentURLParams = useRef([] as string[]);
+  const { getAuthHeader } = useAuth();
+
+  const [getPropLotQuery, { loading, error, data, refetch }] = useLazyQuery<getPropLot>(
+    GET_PROPLOT_QUERY,
+    {
+      context: {
+        clientName: 'PropLot',
+        headers: {
+          ...getAuthHeader(),
+          'proplot-tz': Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      },
+      client: propLotClient,
+    },
+  );
 
   /*
     Parse the query params from the url on page load and send them as filters in the initial
@@ -27,27 +40,20 @@ const PropLotHome = () => {
   */
   useEffect(() => {
     const urlParams = window.location.search;
-    currentURLParams.current = urlParams
+    const currentURLParams = urlParams
       .substring(1)
       .split('&')
       .filter(str => Boolean(str));
-  }, []);
 
-  const { loading, error, data, refetch } = useQuery<getPropLot>(GET_PROPLOT_QUERY, {
-    context: {
-      clientName: 'PropLot',
-      headers: {
-        'proplot-tz': Intl.DateTimeFormat().resolvedOptions().timeZone,
+    getPropLotQuery({
+      variables: {
+        options: {
+          requestUUID: v4(),
+          filters: currentURLParams,
+        },
       },
-    },
-    variables: {
-      options: {
-        requestUUID: uuid.current,
-        filters: currentURLParams.current,
-      },
-    },
-    client: propLotClient,
-  });
+    });
+  }, []);
 
   /*
     Filters that are applied to the current response.
@@ -132,12 +138,7 @@ const PropLotHome = () => {
       {data?.propLot?.ideas?.map(idea => {
         return (
           <div className="mt-2 mb-2 space-y-4">
-            <IdeaRow
-              idea={idea}
-              key={`idea-${idea.id}`}
-              voteOnIdea={voteOnIdeaList}
-              nounBalance={nounBalance}
-            />
+            <IdeaRow idea={idea} key={`idea-${idea.id}`} nounBalance={nounBalance} />
           </div>
         );
       })}

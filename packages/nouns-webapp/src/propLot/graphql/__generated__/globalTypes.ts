@@ -17,6 +17,11 @@ export interface PropLotInputOptions {
   requestUUID: string;
 }
 
+export interface SubmitVoteInputOptions {
+  direction: number;
+  ideaId: number;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

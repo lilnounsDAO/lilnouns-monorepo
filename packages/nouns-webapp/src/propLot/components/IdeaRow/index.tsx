@@ -1,7 +1,5 @@
-// COPIED FROM IDEA CARD COMPONENT
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { VoteFormData } from '../../../hooks/useIdeas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { useReverseENSLookUp } from '../../../utils/ensLookup';
@@ -10,26 +8,13 @@ import { useShortAddress } from '../../../utils/addressAndENSDisplayUtils';
 import moment from 'moment';
 import { createBreakpoint } from 'react-use';
 
-import IdeaVoteControls from '../../../components/IdeaVoteControls';
+import IdeaVoteControls from '../IdeaVoteControls';
 
 import { getPropLot_propLot_ideas as Idea } from '../../graphql/__generated__/getPropLot';
 
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
-/*
-    TODO:
-    - Add voting mutations to proplot schema to support voting
-*/
-
-const IdeaRow = ({
-  idea,
-  voteOnIdea,
-  nounBalance,
-}: {
-  idea: Idea;
-  voteOnIdea: (formData: VoteFormData) => void;
-  nounBalance: number;
-}) => {
+const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => {
   const breakpoint = useBreakpoint();
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -50,11 +35,11 @@ const IdeaRow = ({
         <div className="flex justify-self-end">
           <IdeaVoteControls
             id={id}
-            voteOnIdea={voteOnIdea}
             nounBalance={nounBalance}
             voteCount={voteCount}
             votes={votes || []}
             withAvatars={!isMobile}
+            refetchPropLotOnVote
           />
         </div>
       </div>
@@ -74,11 +59,11 @@ const IdeaRow = ({
       <div className="flex justify-self-end">
         <IdeaVoteControls
           id={id}
-          voteOnIdea={voteOnIdea}
           nounBalance={nounBalance}
           voteCount={voteCount}
           votes={votes || []}
           withAvatars={!isMobile}
+          refetchPropLotOnVote
         />
       </div>
     </div>

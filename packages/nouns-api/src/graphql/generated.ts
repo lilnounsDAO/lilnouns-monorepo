@@ -69,6 +69,16 @@ export type IdeaTags = {
   type: TagType;
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  submitIdeaVote: Idea;
+};
+
+
+export type MutationSubmitIdeaVoteArgs = {
+  options: SubmitVoteInputOptions;
+};
+
 export type PropLotFilter = {
   __typename?: 'PropLotFilter';
   id: Scalars['String'];
@@ -126,6 +136,11 @@ export enum Sort_Type {
   VotesAsc = 'VOTES_ASC',
   VotesDesc = 'VOTES_DESC'
 }
+
+export type SubmitVoteInputOptions = {
+  direction: Scalars['Int'];
+  ideaId: Scalars['Int'];
+};
 
 export enum TagType {
   Archived = 'ARCHIVED',
@@ -240,6 +255,7 @@ export type ResolversTypes = {
   IdeaStats: ResolverTypeWrapper<IdeaStats>;
   IdeaTags: ResolverTypeWrapper<IdeaTags>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Mutation: ResolverTypeWrapper<{}>;
   PropLotFilter: ResolverTypeWrapper<PropLotFilter>;
   PropLotInputOptions: PropLotInputOptions;
   PropLotResponse: ResolverTypeWrapper<PropLotResponse>;
@@ -247,6 +263,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   SORT_TYPE: Sort_Type;
   String: ResolverTypeWrapper<Scalars['String']>;
+  SubmitVoteInputOptions: SubmitVoteInputOptions;
   TagType: TagType;
   User: ResolverTypeWrapper<User>;
   UserInputOptions: UserInputOptions;
@@ -264,12 +281,14 @@ export type ResolversParentTypes = {
   IdeaStats: IdeaStats;
   IdeaTags: IdeaTags;
   Int: Scalars['Int'];
+  Mutation: {};
   PropLotFilter: PropLotFilter;
   PropLotInputOptions: PropLotInputOptions;
   PropLotResponse: PropLotResponse;
   PropLotResponseMetadata: PropLotResponseMetadata;
   Query: {};
   String: Scalars['String'];
+  SubmitVoteInputOptions: SubmitVoteInputOptions;
   User: User;
   UserInputOptions: UserInputOptions;
   UserStats: UserStats;
@@ -320,6 +339,10 @@ export type IdeaTagsResolvers<ContextType = any, ParentType extends ResolversPar
   label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['TagType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  submitIdeaVote?: Resolver<ResolversTypes['Idea'], ParentType, ContextType, RequireFields<MutationSubmitIdeaVoteArgs, 'options'>>;
 };
 
 export type PropLotFilterResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotFilter'] = ResolversParentTypes['PropLotFilter']> = {
@@ -381,6 +404,7 @@ export type Resolvers<ContextType = any> = {
   Idea?: IdeaResolvers<ContextType>;
   IdeaStats?: IdeaStatsResolvers<ContextType>;
   IdeaTags?: IdeaTagsResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   PropLotFilter?: PropLotFilterResolvers<ContextType>;
   PropLotResponse?: PropLotResponseResolvers<ContextType>;
   PropLotResponseMetadata?: PropLotResponseMetadataResolvers<ContextType>;

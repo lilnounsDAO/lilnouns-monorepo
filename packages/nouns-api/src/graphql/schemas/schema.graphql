@@ -5,6 +5,10 @@ type Query {
   getPropLot(options: PropLotInputOptions!): PropLotResponse!
 }
 
+type Mutation {
+  submitIdeaVote(options: SubmitVoteInputOptions!): Vote!
+}
+
 # Query input types
 
 input UserInputOptions {
@@ -13,6 +17,11 @@ input UserInputOptions {
 
 input IdeaInputOptions {
   sort: SORT_TYPE
+}
+
+input SubmitVoteInputOptions {
+  direction: Int!
+  ideaId: Int!
 }
 
 input PropLotInputOptions {
