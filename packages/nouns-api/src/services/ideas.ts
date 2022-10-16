@@ -1,39 +1,5 @@
 import { prisma } from '../api';
-
-// const SORT_BY: { [key: string]: any } = {
-//   LATEST: [
-//     {
-//       createdAt: 'desc',
-//     },
-//     {
-//       id: 'asc',
-//     },
-//   ],
-//   VOTES_DESC: [
-//     {
-//       votecount: 'desc',
-//     },
-//     {
-//       id: 'asc',
-//     },
-//   ],
-//   VOTES_ASC: [
-//     {
-//       votecount: 'asc',
-//     },
-//     {
-//       id: 'asc',
-//     },
-//   ],
-//   OLDEST: [
-//     {
-//       createdAt: 'asc',
-//     },
-//     {
-//       id: 'asc',
-//     },
-//   ],
-// };
+import { DATE_FILTERS } from '../graphql/utils/queryUtils';
 
 const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
@@ -76,6 +42,49 @@ class IdeasService {
       // });
 
       const ideas = await prisma.idea.findMany({
+        include: {
+          votes: {
+            include: {
+              voter: true,
+            },
+          },
+          _count: {
+            select: { comments: true },
+          },
+        },
+      });
+
+      const ideaData = ideas
+        .map((idea: any) => {
+          const votecount = calculateVotes(idea.votes);
+          return { ...idea, votecount };
+        })
+        .sort(sortFn[sortBy || 'LATEST']);
+
+      return ideaData;
+    } catch (e: any) {
+      throw e;
+    }
+  }
+
+  static async findWhere({
+    sortBy,
+    tags,
+    date,
+  }: {
+    sortBy?: string;
+    tags?: string[];
+    date?: string;
+  }) {
+    try {
+      const dateRange: any = DATE_FILTERS[date || 'ALL_TIME'].filterFn();
+      const ideas = await prisma.idea.findMany({
+        where: {
+          createdAt: {
+            gte: dateRange.gte,
+            lte: dateRange.lte,
+          },
+        },
         include: {
           votes: {
             include: {

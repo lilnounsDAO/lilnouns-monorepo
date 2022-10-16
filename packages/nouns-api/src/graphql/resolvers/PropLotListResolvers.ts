@@ -9,35 +9,19 @@ import {
   FilterType,
 } from '../generated';
 
-const FILTER_IDS = {
-  DATE: 'date',
-  SORT: 'sort',
-  TAG: 'tag',
-};
+import { FILTER_IDS, DATE_FILTERS } from '../utils/queryUtils';
 
-const buildFilterParam = (id: string, value: string) => {
-  return `${id}=${value}`;
-};
-
-const parseFilterParam = (param: string) => {
-  const [id, value] = param.split('=');
-
-  return { id, value };
-};
-
-const getSortParam = (appliedFilters: string[]) =>
-  appliedFilters.find((aF: any) => parseFilterParam(aF).id === FILTER_IDS.SORT) ||
-  buildFilterParam(FILTER_IDS.SORT, 'LATEST');
-
-const getDateParam = (appliedFilters: string[]) =>
-  appliedFilters.find((aF: any) => parseFilterParam(aF).id === FILTER_IDS.DATE);
-
-const getTagParams = (appliedFilters: string[]) =>
-  appliedFilters.filter((aF: any) => parseFilterParam(aF).id === FILTER_IDS.TAG);
+import {
+  buildFilterParam,
+  parseFilterParam,
+  getSortParam,
+  getDateParam,
+  getTagParams,
+} from '../utils/queryUtils';
 
 const resolvers: IResolvers = {
   Query: {
-    getPropLot: async (_parent: any, args: QueryGetPropLotArgs) => {
+    getPropLot: async (_parent: any, args: QueryGetPropLotArgs, context) => {
       const appliedFilters = args.options.filters || [];
       const sortParam = getSortParam(appliedFilters);
       const dateParam = getDateParam(appliedFilters);
@@ -49,12 +33,18 @@ const resolvers: IResolvers = {
         dateParam,
         tagParams,
         requestUUID: args.options.requestUUID,
+        timeZone: context.timeZone,
       };
     },
   },
   PropLotResponse: {
     ideas: async (root): Promise<Idea[]> => {
-      const ideas: Idea[] = await IdeasService.all(parseFilterParam(root.sortParam).value);
+      const ideas: Idea[] = await IdeasService.findWhere({
+        sortBy: parseFilterParam(root.sortParam)?.value,
+        date: parseFilterParam(root.dateParam)?.value,
+        // Add tags here
+      });
+
       return ideas;
     },
     sortFilter: (root): PropLotFilter => {
@@ -104,29 +94,20 @@ const resolvers: IResolvers = {
       return sortFilter;
     },
     dateFilter: (root): PropLotFilter => {
-      const DATE_FILTER_VALUES = {
-        TODAY: buildFilterParam(FILTER_IDS.DATE, 'TODAY'),
-        LAST_WEEK: buildFilterParam(FILTER_IDS.DATE, 'LAST_WEEK'),
-      };
+      const options = Object.keys(DATE_FILTERS).map((key: string) => {
+        return {
+          id: `${FILTER_IDS.DATE}-${key}`,
+          selected: root.dateParam === DATE_FILTERS[key].value,
+          label: DATE_FILTERS[key].displayName,
+          value: DATE_FILTERS[key].value,
+        };
+      });
       const dateFilter: PropLotFilter = {
         __typename: 'PropLotFilter',
         id: FILTER_IDS.DATE,
         type: FilterType.SingleSelect,
         label: 'Date',
-        options: [
-          {
-            id: `${FILTER_IDS.DATE}-TODAY`,
-            selected: root.dateParam === DATE_FILTER_VALUES['TODAY'],
-            label: 'Today',
-            value: DATE_FILTER_VALUES['TODAY'],
-          },
-          {
-            id: `${FILTER_IDS.DATE}-LAST_WEEK`,
-            selected: root.dateParam === DATE_FILTER_VALUES['LAST_WEEK'],
-            label: 'Last week',
-            value: DATE_FILTER_VALUES['LAST_WEEK'],
-          },
-        ],
+        options,
       };
 
       return dateFilter;

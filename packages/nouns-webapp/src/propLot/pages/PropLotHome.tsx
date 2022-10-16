@@ -1,4 +1,4 @@
-import { Button } from 'react-bootstrap';
+import { Alert, Button } from 'react-bootstrap';
 import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
@@ -34,7 +34,12 @@ const PropLotHome = () => {
   }, []);
 
   const { loading, error, data, refetch } = useQuery<getPropLot>(GET_PROPLOT_QUERY, {
-    context: { clientName: 'PropLot' },
+    context: {
+      clientName: 'PropLot',
+      headers: {
+        'proplot-tz': Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+    },
     variables: {
       options: {
         requestUUID: uuid.current,
@@ -136,6 +141,12 @@ const PropLotHome = () => {
           </div>
         );
       })}
+      {!Boolean(data?.propLot?.ideas?.length) && (
+        <Alert variant="secondary">
+          <Alert.Heading>No ideas found.</Alert.Heading>
+          <p>We couldn't find any ideas for this search!</p>
+        </Alert>
+      )}
     </div>
   );
 };
