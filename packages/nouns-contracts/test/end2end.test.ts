@@ -43,7 +43,8 @@ let timelock: NounsDaoExecutor;
 let deployer: SignerWithAddress;
 let wethDeployer: SignerWithAddress;
 let bidderA: SignerWithAddress;
-let noundersDAO: SignerWithAddress;
+let nounsDAO: SignerWithAddress;
+let lilNoundersDAO: SignerWithAddress;
 
 // Governance Config
 const TIME_LOCK_DELAY = 172_800; // 2 days
@@ -67,7 +68,7 @@ const MIN_INCREMENT_BID_PERCENTAGE = 5;
 const DURATION = 60 * 60 * 24;
 
 async function deploy() {
-  [deployer, bidderA, wethDeployer, noundersDAO] = await ethers.getSigners();
+  [deployer, bidderA, wethDeployer, nounsDAO, lilNoundersDAO] = await ethers.getSigners();
 
   // Deployed by another account to simulate real network
 
@@ -87,7 +88,8 @@ async function deploy() {
   // 1. DEPLOY Nouns token
   nounsToken = await deployNounsToken(
     deployer,
-    noundersDAO.address,
+    lilNoundersDAO.address,
+    nounsDAO.address,
     deployer.address, // do not know minter/auction house yet
   );
 
@@ -132,7 +134,7 @@ async function deploy() {
   const nounsDAOProxy = await new NounsDaoProxyFactory(deployer).deploy(
     timelock.address,
     nounsToken.address,
-    noundersDAO.address, // NoundersDAO is vetoer
+    lilNoundersDAO.address, // LilNoundersDAO is vetoer
     timelock.address,
     govDelegate.address,
     VOTING_PERIOD,
@@ -167,28 +169,31 @@ describe('End to End test with deployment, auction, proposing, voting, executing
     expect(await nounsAuctionHouse.owner()).to.equal(timelock.address);
 
     expect(await nounsToken.minter()).to.equal(nounsAuctionHouse.address);
-    expect(await nounsToken.noundersDAO()).to.equal(noundersDAO.address);
+    expect(await nounsToken.nounsDAO()).to.equal(nounsDAO.address);
+    expect(await nounsToken.lilnoundersDAO()).to.equal(lilNoundersDAO.address);
 
     expect(await gov.admin()).to.equal(timelock.address);
     expect(await timelock.admin()).to.equal(gov.address);
     expect(await gov.timelock()).to.equal(timelock.address);
 
-    expect(await gov.vetoer()).to.equal(noundersDAO.address);
+    expect(await gov.vetoer()).to.equal(lilNoundersDAO.address);
 
-    expect(await nounsToken.totalSupply()).to.equal(EthersBN.from('2'));
+    // minted to lilnounders and nounsdao
+    expect(await nounsToken.totalSupply()).to.equal(EthersBN.from('3'));
 
-    expect(await nounsToken.ownerOf(0)).to.equal(noundersDAO.address);
-    expect(await nounsToken.ownerOf(1)).to.equal(nounsAuctionHouse.address);
+    expect(await nounsToken.ownerOf(0)).to.equal(lilNoundersDAO.address);
+    expect(await nounsToken.ownerOf(1)).to.equal(nounsDAO.address);
+    expect(await nounsToken.ownerOf(2)).to.equal(nounsAuctionHouse.address);
 
-    expect((await nounsAuctionHouse.auction()).nounId).to.equal(EthersBN.from('1'));
+    expect((await nounsAuctionHouse.auction()).nounId).to.equal(EthersBN.from('2'));
   });
 
   it('allows bidding, settling, and transferring ETH correctly', async () => {
-    await nounsAuctionHouse.connect(bidderA).createBid(1, { value: RESERVE_PRICE });
+    await nounsAuctionHouse.connect(bidderA).createBid(2, { value: RESERVE_PRICE });
     await setNextBlockTimestamp(Number(await blockTimestamp('latest')) + DURATION);
     await nounsAuctionHouse.settleCurrentAndCreateNewAuction();
 
-    expect(await nounsToken.ownerOf(1)).to.equal(bidderA.address);
+    expect(await nounsToken.ownerOf(2)).to.equal(bidderA.address);
     expect(await ethers.provider.getBalance(timelock.address)).to.equal(RESERVE_PRICE);
   });
 
