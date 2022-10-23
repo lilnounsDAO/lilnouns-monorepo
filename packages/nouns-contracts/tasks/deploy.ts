@@ -8,9 +8,9 @@ promptjs.message = '> ';
 promptjs.delimiter = '';
 
 type ContractName =
-  // | 'NFTDescriptor'
-  // | 'NounsDescriptor'
-  // | 'NounsSeeder'
+  | 'NFTDescriptor'
+  | 'NounsDescriptor'
+  | 'NounsSeeder'
   | 'NounsToken'
   | 'NounsAuctionHouse'
   | 'NounsAuctionHouseProxyAdmin'
@@ -50,8 +50,8 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
         ? '0xa5409ec958c83c3f309868babaca7c86dcb077c1'
         : '0xf57b2c51ded3a29e6891aba85459d600256cf317';
 
-    const AUCTION_HOUSE_PROXY_NONCE_OFFSET = 3  //6 - 3;
-    const GOVERNOR_N_DELEGATOR_NONCE_OFFSET = 6 //9 - 3;
+    const AUCTION_HOUSE_PROXY_NONCE_OFFSET = 6;
+    const GOVERNOR_N_DELEGATOR_NONCE_OFFSET = 9;
 
     const [deployer] = await ethers.getSigners();
     const nonce = await deployer.getTransactionCount();
@@ -69,25 +69,21 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
     console.log(`expectedAuctionHouseProxyAddress = ${expectedAuctionHouseProxyAddress}`)
     console.log(`expectedNounsDAOProxyAddress = ${expectedNounsDAOProxyAddress}`)
 
-    
-    const NounsDescriptorAddress = '0x11fb55d9580CdBfB83DE3510fF5Ba74309800Ad1'
-    const NounsSeederAddress = '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515'
-
     const contracts: Record<ContractName, Contract> = {
-      // NFTDescriptor: {},
-      // NounsDescriptor: {
-      //   libraries: () => ({
-      //     NFTDescriptor: contracts['NFTDescriptor'].address as string,
-      //   }),
-      // },
-      // NounsSeeder: {},
+      NFTDescriptor: {},
+      NounsDescriptor: {
+        libraries: () => ({
+          NFTDescriptor: contracts['NFTDescriptor'].address as string,
+        }),
+      },
+      NounsSeeder: {},
       NounsToken: {
         args: [
           args.lilnoundersDAO,
           args.nounsDAO,
           expectedAuctionHouseProxyAddress,
-          NounsDescriptorAddress, // () => contracts['NounsDescriptor'].address,
-          NounsSeederAddress, // () => contracts['NounsSeeder'].address,
+          () => contracts['NounsDescriptor'].address,
+          () => contracts['NounsSeeder'].address,
           proxyRegistryAddress,
         ],
       },
