@@ -10,27 +10,23 @@ import { useAuth } from '../../../hooks/useAuth';
 import propLotClient from '../../graphql/config';
 import { SUBMIT_VOTE_MUTATION } from '../../graphql/propLotMutations';
 
-import {
-  submitIdeaVote,
-  submitIdeaVote_submitIdeaVote as Vote,
-} from '../../graphql/__generated__/submitIdeaVote';
+import { submitIdeaVote } from '../../graphql/__generated__/submitIdeaVote';
+import { getPropLot_propLot_ideas as Idea } from '../../graphql/__generated__/getPropLot';
+
 import { useEffect, useState } from 'react';
 
 const IdeaVoteControls = ({
-  id,
-  votes,
+  idea,
   nounBalance,
-  voteCount,
   withAvatars = false,
   refetchPropLotOnVote = false,
 }: {
-  id: number;
-  votes?: Vote[];
+  idea: Idea;
   nounBalance: number;
-  voteCount: number;
   withAvatars?: boolean;
   refetchPropLotOnVote?: boolean;
 }) => {
+  const { id, votecount: voteCount, closed, votes } = idea;
   const { account, library: provider } = useEthers();
   const { getAuthHeader, isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
@@ -132,7 +128,7 @@ const IdeaVoteControls = ({
           onClick={e => {
             // this prevents the click from bubbling up and opening / closing the hidden section
             e.stopPropagation();
-            if (hasVotes && !userHasUpVote && !loading) {
+            if (hasVotes && !userHasUpVote && !loading && !closed) {
               vote(1);
             }
           }}
@@ -145,7 +141,7 @@ const IdeaVoteControls = ({
           icon={faCaretDown}
           onClick={e => {
             e.stopPropagation();
-            if (hasVotes && !userHasDownVote && !loading) {
+            if (hasVotes && !userHasDownVote && !loading && !closed) {
               vote(-1);
             }
           }}

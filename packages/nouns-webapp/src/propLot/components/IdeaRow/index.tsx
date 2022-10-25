@@ -16,17 +16,7 @@ const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => 
   const breakpoint = useBreakpoint();
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const {
-    id,
-    tldr,
-    title,
-    creatorId,
-    votecount: voteCount,
-    votes,
-    createdAt,
-    ideaStats,
-    tags,
-  } = idea;
+  const { id, tldr, title, creatorId, votes, createdAt, ideaStats, tags } = idea;
   const isMobile = breakpoint === 'S';
 
   const ens = useReverseENSLookUp(creatorId);
@@ -42,10 +32,8 @@ const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => 
         </span>
         <div className="flex justify-self-end">
           <IdeaVoteControls
-            id={id}
+            idea={idea}
             nounBalance={nounBalance}
-            voteCount={voteCount}
-            votes={votes || []}
             withAvatars={!isMobile}
             refetchPropLotOnVote
           />
@@ -102,10 +90,8 @@ const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => 
       </div>
       <div className="flex justify-self-end">
         <IdeaVoteControls
-          id={id}
+          idea={idea}
           nounBalance={nounBalance}
-          voteCount={voteCount}
-          votes={votes || []}
           withAvatars={!isMobile}
           refetchPropLotOnVote
         />

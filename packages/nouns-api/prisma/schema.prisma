@@ -23,6 +23,7 @@ model Idea {
   votes       Vote[]
   votecount   Int       @default(value: 0) // Vote.direction * Vote.voter.lilnounCount
   tags        Tag[]
+  tokenSupplyOnCreate Int? @default(value: 0) // token supply at time of Idea creation.
 }
 
 model User {

@@ -13,6 +13,8 @@ export const GET_IDEA_QUERY = gql`
       ideaStats {
         comments
       }
+      closed
+      consensus
       tags {
         type
         label

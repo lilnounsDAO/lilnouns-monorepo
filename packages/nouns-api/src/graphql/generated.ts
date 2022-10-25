@@ -41,7 +41,9 @@ export enum FilterType {
 
 export type Idea = {
   __typename?: 'Idea';
+  closed: Scalars['Boolean'];
   comments?: Maybe<Array<Comment>>;
+  consensus?: Maybe<Scalars['Float']>;
   createdAt: Scalars['String'];
   creatorId: Scalars['String'];
   description: Scalars['String'];
@@ -262,6 +264,7 @@ export type ResolversTypes = {
   Comment: ResolverTypeWrapper<Comment>;
   FilterOption: ResolverTypeWrapper<FilterOption>;
   FilterType: FilterType;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   Idea: ResolverTypeWrapper<Idea>;
   IdeaInputOptions: IdeaInputOptions;
   IdeaStats: ResolverTypeWrapper<IdeaStats>;
@@ -288,6 +291,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   Comment: Comment;
   FilterOption: FilterOption;
+  Float: Scalars['Float'];
   Idea: Idea;
   IdeaInputOptions: IdeaInputOptions;
   IdeaStats: IdeaStats;
@@ -328,7 +332,9 @@ export type FilterOptionResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type IdeaResolvers<ContextType = any, ParentType extends ResolversParentTypes['Idea'] = ResolversParentTypes['Idea']> = {
+  closed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   comments?: Resolver<Maybe<Array<ResolversTypes['Comment']>>, ParentType, ContextType>;
+  consensus?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

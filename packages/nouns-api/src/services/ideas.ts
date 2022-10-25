@@ -1,7 +1,8 @@
+import { Idea, TagType } from '@prisma/client';
 import { prisma } from '../api';
-import { DATE_FILTERS } from '../graphql/utils/queryUtils';
-import { TagType, Idea } from '@prisma/client';
+import { DATE_FILTERS, getIsClosed } from '../graphql/utils/queryUtils';
 import { VirtualTags } from '../virtual';
+import { nounsTotalSupply } from '../utils/utils';
 
 const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
@@ -25,6 +26,15 @@ const calculateVotes = (votes: any) => {
   });
 
   return count;
+};
+
+const calculateConsensus = (idea: Idea, voteCount: number) => {
+  if (!idea.tokenSupplyOnCreate) {
+    return undefined;
+  }
+
+  const consensus = (voteCount / idea.tokenSupplyOnCreate) * 100;
+  return Math.min(Math.max(Math.floor(consensus), 0), 100);
 };
 
 class IdeasService {
@@ -59,7 +69,9 @@ class IdeasService {
       const ideaData = ideas
         .map((idea: any) => {
           const votecount = calculateVotes(idea.votes);
-          return { ...idea, votecount };
+          const closed = getIsClosed(idea);
+
+          return { ...idea, votecount, closed };
         })
         .sort(sortFn[sortBy || 'LATEST']);
 
@@ -103,7 +115,10 @@ class IdeasService {
       const ideaData = ideas
         .map((idea: any) => {
           const votecount = calculateVotes(idea.votes);
-          return { ...idea, votecount };
+          const consensus = calculateConsensus(idea, votecount);
+          const closed = getIsClosed(idea);
+
+          return { ...idea, votecount, consensus, closed };
         })
         .filter((idea: any) => {
           if (!tags || tags.length === 0) {
@@ -145,7 +160,11 @@ class IdeasService {
         throw new Error('Idea not found');
       }
 
-      const ideaData = { ...idea, votecount: calculateVotes(idea.votes) };
+      const votecount = calculateVotes(idea.votes);
+      const consensus = calculateConsensus(idea, votecount);
+      const closed = getIsClosed(idea);
+
+      const ideaData = { ...idea, closed, consensus, votecount };
 
       return ideaData;
     } catch (e: any) {
@@ -161,6 +180,13 @@ class IdeasService {
       if (!user) {
         throw new Error('Failed to save idea: missing user details');
       }
+
+      const totalSupply = await nounsTotalSupply();
+
+      if (!totalSupply) {
+        throw new Error("Failed to save idea: couldn't fetch token supply");
+      }
+
       const idea = await prisma.idea.create({
         data: {
           title: data.title,
@@ -168,6 +194,7 @@ class IdeasService {
           description: data.description,
           creatorId: user.wallet,
           votecount: 0,
+          tokenSupplyOnCreate: totalSupply,
           votes: {
             create: {
               direction: 1,
@@ -184,7 +211,7 @@ class IdeasService {
         },
       });
 
-      return idea;
+      return { ...idea, closed: false };
     } catch (e) {
       throw e;
     }
@@ -200,6 +227,12 @@ class IdeasService {
       if (isNaN(direction) || direction === 0) {
         // votes can only be 1 or -1 right now as we only support up or down votes
         throw new Error('Failed to save vote: direction is not valid');
+      }
+
+      const isClosed = await this.isIdeaClosed(data.ideaId);
+
+      if (isClosed) {
+        throw new Error('Idea has been closed');
       }
 
       const vote = prisma.vote.upsert({
@@ -274,6 +307,12 @@ class IdeasService {
         throw new Error('Failed to save comment: missing user details');
       }
 
+      const isClosed = await this.isIdeaClosed(data.ideaId);
+
+      if (isClosed) {
+        throw new Error('Idea has been closed');
+      }
+
       const comment = prisma.comment.create({
         data: {
           body: data.body,
@@ -287,6 +326,21 @@ class IdeasService {
     } catch (e) {
       throw e;
     }
+  }
+
+  static async isIdeaClosed(id: number) {
+    // Load idea first to check if it's been closed before allowing updates.
+    const idea = await prisma.idea.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!idea) {
+      throw new Error('Idea not found for comment');
+    }
+
+    return getIsClosed(idea);
   }
 }
 
