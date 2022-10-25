@@ -31,11 +31,17 @@ export interface Vote {
   };
 }
 
+export interface Tag {
+  label: string;
+  type: string;
+}
+
 export interface Idea {
   id: number;
   title: string;
   tldr: string;
   description: string;
+  tags?: Tag[];
   votes?: Vote[];
   creatorId: string;
   comments?: Comment[];
@@ -278,10 +284,12 @@ export const useIdeas = () => {
     title,
     tldr,
     description,
+    tags,
   }: {
     title: string;
     tldr: string;
     description: string;
+    tags?: string[];
   }) => {
     try {
       const res = await fetch(`${HOST}/ideas`, {
@@ -294,6 +302,7 @@ export const useIdeas = () => {
           title,
           tldr,
           description,
+          tags,
         }),
       });
 
@@ -334,7 +343,12 @@ export const useIdeas = () => {
         voteOnIdea(formData);
       }
     },
-    submitIdea: async (data: { title: string; tldr: string; description: string }) => {
+    submitIdea: async (data: {
+      title: string;
+      tldr: string;
+      description: string;
+      tags: string[];
+    }) => {
       if (!isLoggedIn()) {
         try {
           await triggerSignIn();

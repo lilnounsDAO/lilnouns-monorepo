@@ -1,12 +1,23 @@
 import IdeasService from '../../services/ideas';
 
 import { IResolvers } from '@graphql-tools/utils';
-import { QueryGetIdeasArgs, MutationSubmitIdeaVoteArgs, Idea, Vote } from '../generated';
+import {
+  QueryGetIdeaArgs,
+  QueryGetIdeasArgs,
+  MutationSubmitIdeaVoteArgs,
+  Idea,
+  Vote,
+} from '../generated';
+import { VirtualTags } from '../../virtual';
 
 const resolvers: IResolvers = {
   Query: {
+    getIdea: async (_parent: any, args: QueryGetIdeaArgs) => {
+      const idea = await IdeasService.get(args.options.ideaId as number);
+      return idea;
+    },
     getIdeas: async (_parent: any, args: QueryGetIdeasArgs): Promise<Idea[]> => {
-      const ideas: Idea[] = await IdeasService.all(args.options.sort as string);
+      const ideas: Idea[] = await IdeasService.all({ sortBy: args.options.sort as string });
       return ideas;
     },
   },
@@ -31,6 +42,17 @@ const resolvers: IResolvers = {
     },
   },
   Idea: {
+    tags: async root => {
+      const tags = root.tags;
+      const matchingVirtualTags = Object.keys(VirtualTags)
+        .filter(key => {
+          const vT = VirtualTags[key];
+          return vT.filterFn(root);
+        })
+        .map(key => VirtualTags[key]);
+
+      return [...tags, ...matchingVirtualTags];
+    },
     comments: async root => {
       const comments = await IdeasService.getIdeaComments(root.id);
       return comments;

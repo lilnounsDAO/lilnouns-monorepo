@@ -1,5 +1,7 @@
 import { prisma } from '../api';
 import { DATE_FILTERS } from '../graphql/utils/queryUtils';
+import { TagType, Idea } from '@prisma/client';
+import { VirtualTags } from '../virtual';
 
 const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
@@ -26,7 +28,7 @@ const calculateVotes = (votes: any) => {
 };
 
 class IdeasService {
-  static async all(sortBy?: string) {
+  static async all({ sortBy }: { sortBy?: string }) {
     try {
       // Investigate issue with votecount db triggers
 
@@ -73,7 +75,7 @@ class IdeasService {
     date,
   }: {
     sortBy?: string;
-    tags?: string[];
+    tags?: TagType[];
     date?: string;
   }) {
     try {
@@ -86,6 +88,7 @@ class IdeasService {
           },
         },
         include: {
+          tags: true,
           votes: {
             include: {
               voter: true,
@@ -102,6 +105,18 @@ class IdeasService {
           const votecount = calculateVotes(idea.votes);
           return { ...idea, votecount };
         })
+        .filter((idea: any) => {
+          if (!tags || tags.length === 0) {
+            return true;
+          }
+          return tags.some(tag => {
+            const virtualTag = VirtualTags[tag];
+            if (virtualTag) {
+              return virtualTag.filterFn(idea);
+            }
+            return idea.tags.some((ideaTag: any) => ideaTag.type === tag);
+          });
+        })
         .sort(sortFn[sortBy || 'LATEST']);
 
       return ideaData;
@@ -117,6 +132,7 @@ class IdeasService {
           id,
         },
         include: {
+          tags: true,
           votes: {
             include: {
               voter: true,
@@ -138,7 +154,7 @@ class IdeasService {
   }
 
   static async createIdea(
-    data: { title: string; tldr: string; description: string },
+    data: { title: string; tldr: string; description: string; tags: TagType[] },
     user?: { wallet: string },
   ) {
     try {
@@ -157,6 +173,13 @@ class IdeasService {
               direction: 1,
               voterId: user.wallet,
             },
+          },
+          tags: {
+            connect: data.tags.map(tag => {
+              return {
+                type: tag,
+              };
+            }),
           },
         },
       });

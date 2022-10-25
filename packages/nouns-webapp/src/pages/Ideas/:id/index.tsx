@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Col, FormControl, Row } from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import { useEthers } from '@usedapp/core';
 import Section from '../../../layout/Section';
-import classes from '../Ideas.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { useReverseENSLookUp } from '../../../utils/ensLookup';
@@ -14,6 +13,7 @@ import {
   Comment as CommentType,
   VoteFormData,
 } from '../../../hooks/useIdeas';
+import { useAuth } from '../../../hooks/useAuth';
 import { useAccountVotes } from '../../../wrappers/nounToken';
 import IdeaVoteControls from '../../../components/IdeaVoteControls';
 import moment from 'moment';
@@ -21,6 +21,11 @@ import Davatar from '@davatar/react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { createBreakpoint } from 'react-use';
+import { getIdea } from '../../../propLot/graphql/__generated__/getIdea';
+import { useLazyQuery } from '@apollo/client';
+import propLotClient from '../../../propLot/graphql/config';
+import { GET_IDEA_QUERY } from '../../../propLot/graphql/ideaQuery';
+import { virtualTagColorMap } from '../../../utils/virtualTagColors';
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -189,14 +194,30 @@ const IdeaPage = () => {
   const { id } = useParams() as { id: string };
   const history = useHistory();
   const { account } = useEthers();
-  const { getIdea, getComments, commentOnIdea, voteOnIdea } = useIdeas();
+  const { getComments, commentOnIdea, voteOnIdea } = useIdeas();
   const { comments, error } = getComments(id);
-  const idea = getIdea(id);
+  const { getAuthHeader } = useAuth();
 
   const [comment, setComment] = useState<string>('');
   const nounBalance = useAccountVotes(account || undefined) ?? 0;
-  const ens = useReverseENSLookUp(idea?.creatorId);
-  const shortAddress = useShortAddress(idea?.creatorId);
+
+  const [getIdeaQuery, { data, error: _getIdeaError }] = useLazyQuery<getIdea>(GET_IDEA_QUERY, {
+    context: {
+      clientName: 'PropLot',
+      headers: {
+        ...getAuthHeader(),
+        'proplot-tz': Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+    },
+    client: propLotClient,
+  });
+
+  const ens = useReverseENSLookUp(data?.getIdea?.creatorId || '');
+  const shortAddress = useShortAddress(data?.getIdea?.creatorId || '');
+
+  useEffect(() => {
+    getIdeaQuery({ variables: { ideaId: parseInt(id) } });
+  }, []);
 
   const castVote = async (formData: VoteFormData) => {
     await voteOnIdea(formData);
@@ -211,51 +232,72 @@ const IdeaPage = () => {
     setComment('');
   };
 
-  if (!idea) {
+  if (!data?.getIdea) {
     return <div>loading</div>;
   }
 
   const hasNouns = nounBalance > 0;
-  const creatorLilNoun = idea.votes?.find(vote => vote.voterId === idea.creatorId)?.voter
-    ?.lilnounCount;
+  const creatorLilNoun = data.getIdea.votes?.find(vote =>
+    data.getIdea ? vote.voterId === data.getIdea.creatorId : false,
+  )?.voter?.lilnounCount;
 
   return (
-    <Section fullWidth={false} className={classes.section}>
-      <Col lg={10} className={classes.wrapper}>
-        <Row className={classes.headerRow}>
+    <Section fullWidth={false}>
+      <Col lg={10} className="mx-auto">
+        <Row>
           <div>
-            <span className="cursor-pointer inline-block" onClick={() => history.push('/ideas')}>
+            <span
+              className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
+              onClick={() => history.push('/ideas')}
+            >
               <FontAwesomeIcon
                 icon={faArrowAltCircleLeft}
                 className={`mr-2 text-2xl cursor-pointer`}
               />
-              Back
+              <span className="text-lg lodrina">Back</span>
             </span>
           </div>
-          <div className="flex flex-row justify-between items-center mb-12">
-            <h1 className="mb-0">{idea.title}</h1>
-            <div className="flex flex-row justify-end">
-              <IdeaVoteControls
-                id={idea.id}
-                voteOnIdea={castVote}
-                nounBalance={nounBalance}
-                voteCount={idea.votecount}
-                votes={idea.votes}
-                withAvatars
-              />
+          <div className="flex flex-col mb-12">
+            <div className="flex flex-row justify-between items-center">
+              <h1 className="mb-0 lodrina">{data.getIdea.title}</h1>
+              <div className="flex flex-row justify-end">
+                <IdeaVoteControls
+                  id={data.getIdea.id}
+                  voteOnIdea={castVote}
+                  nounBalance={nounBalance}
+                  voteCount={data.getIdea.votecount ?? 0}
+                  votes={data.getIdea.votes ?? []}
+                  withAvatars
+                />
+              </div>
             </div>
+            {data.getIdea.tags && data.getIdea.tags.length > 0 && (
+              <div className="flex flex-row space-x-2 mt-4">
+                {data.getIdea.tags.map(tag => {
+                  return (
+                    <span
+                      className={`${
+                        virtualTagColorMap[tag.type] || 'text-blue-500 bg-blue-200'
+                      } text-xs font-bold rounded-full px-2 py-0.5 inline`}
+                    >
+                      {tag.label}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </Row>
         <div className="space-y-8">
           <div className="flex flex-col">
             <h3 className="lodrina font-bold text-2xl mb-2">tl:dr</h3>
-            <p>{idea.tldr}</p>
+            <p>{data.getIdea.tldr}</p>
           </div>
           <div className="flex flex-col">
             <h3 className="lodrina font-bold text-2xl mb-2">Description</h3>
             <div
               dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(marked.parse(idea.description), {
+                __html: DOMPurify.sanitize(marked.parse(data.getIdea.description), {
                   ADD_ATTR: ['target'],
                 }),
               }}
@@ -266,7 +308,7 @@ const IdeaPage = () => {
         <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-12">
           {`${ens || shortAddress} | ${
             creatorLilNoun === 1 ? `${creatorLilNoun} lil noun` : `${creatorLilNoun} lil nouns`
-          } | ${moment(idea.createdAt).format('MMM Do YYYY')}`}
+          } | ${moment(parseInt(data.getIdea.createdAt)).format('MMM Do YYYY')}`}
         </div>
 
         <div className="mt-2 mb-2">

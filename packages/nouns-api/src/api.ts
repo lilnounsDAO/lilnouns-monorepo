@@ -43,7 +43,6 @@ export const createAPI = (): Express => {
       plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
       introspection: true,
       context: async ({ req }) => {
-        console.log(req.headers);
         return {
           authScope: await apolloAuthScope(req.headers.authorization),
           timeZone: req.headers['proplot-tz'] || 'UTC',
@@ -71,7 +70,6 @@ export const createAPI = (): Express => {
   });
 
   app.use(express.json());
-
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 

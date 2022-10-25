@@ -1,6 +1,6 @@
-import IdeasService from '../../services/ideas';
-
 import { IResolvers } from '@graphql-tools/utils';
+import { prisma } from '../../api';
+import IdeasService from '../../services/ideas';
 import {
   PropLotResponseMetadataResolvers,
   QueryGetPropLotArgs,
@@ -10,6 +10,7 @@ import {
 } from '../generated';
 
 import { FILTER_IDS, DATE_FILTERS } from '../utils/queryUtils';
+import { VirtualTags } from '../../virtual';
 
 import {
   buildFilterParam,
@@ -42,7 +43,7 @@ const resolvers: IResolvers = {
       const ideas: Idea[] = await IdeasService.findWhere({
         sortBy: parseFilterParam(root.sortParam)?.value,
         date: parseFilterParam(root.dateParam)?.value,
-        // Add tags here
+        tags: root.tagParams.map((tag: string) => parseFilterParam(tag)?.value),
       });
 
       return ideas;
@@ -112,29 +113,34 @@ const resolvers: IResolvers = {
 
       return dateFilter;
     },
-    tagFilter: (root): PropLotFilter => {
-      // Load tags from DB and build the filters here
+    tagFilter: async (root): Promise<PropLotFilter> => {
+      const tags = await prisma.tag.findMany();
+      // static tag filters are the tags that come from the database
+      // contrast with virtual tags (hot, etc)
+      const staticTagFilterOptions = tags.map(tag => {
+        return {
+          id: `${FILTER_IDS.TAG}-${tag.type}`,
+          label: tag.label,
+          value: buildFilterParam(FILTER_IDS.TAG, tag.type),
+          selected: Boolean(root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, tag.type))),
+        };
+      });
+
+      const virtualTagFilterOptions = Object.keys(VirtualTags).map(key => {
+        const vT = VirtualTags[key];
+        return {
+          id: `${FILTER_IDS.TAG}-${vT.type}`,
+          label: vT.label,
+          value: buildFilterParam(FILTER_IDS.TAG, vT.type),
+          selected: Boolean(root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, vT.type))),
+        };
+      });
       const tagFilter: PropLotFilter = {
         __typename: 'PropLotFilter',
         id: FILTER_IDS.TAG,
         type: FilterType.MultiSelect,
         label: 'Tags',
-        options: [
-          {
-            id: `${FILTER_IDS.TAG}-HOT`,
-            selected: Boolean(root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, 'HOT'))),
-            label: 'Hot',
-            value: buildFilterParam(FILTER_IDS.TAG, 'HOT'),
-          },
-          {
-            id: `${FILTER_IDS.TAG}-DISCUSSION`,
-            selected: Boolean(
-              root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, 'DISCUSSION')),
-            ),
-            label: 'Discussion',
-            value: buildFilterParam(FILTER_IDS.TAG, 'DISCUSSION'),
-          },
-        ],
+        options: [...staticTagFilterOptions, ...virtualTagFilterOptions],
       };
 
       return tagFilter;

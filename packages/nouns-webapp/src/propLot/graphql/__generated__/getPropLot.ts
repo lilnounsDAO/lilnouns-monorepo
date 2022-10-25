@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { PropLotInputOptions, FilterType } from "./globalTypes";
+import { PropLotInputOptions, TagType, FilterType } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: getPropLot
@@ -12,6 +12,12 @@ import { PropLotInputOptions, FilterType } from "./globalTypes";
 export interface getPropLot_propLot_ideas_ideaStats {
   __typename: "IdeaStats";
   comments: number | null;
+}
+
+export interface getPropLot_propLot_ideas_tags {
+  __typename: "IdeaTags";
+  type: TagType;
+  label: string;
 }
 
 export interface getPropLot_propLot_ideas_votes_voter {
@@ -39,6 +45,7 @@ export interface getPropLot_propLot_ideas {
   votecount: number;
   createdAt: string;
   ideaStats: getPropLot_propLot_ideas_ideaStats | null;
+  tags: getPropLot_propLot_ideas_tags[] | null;
   votes: getPropLot_propLot_ideas_votes[] | null;
 }
 

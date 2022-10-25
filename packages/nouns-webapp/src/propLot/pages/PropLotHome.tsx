@@ -1,17 +1,15 @@
+import React from 'react';
+import { v4 } from 'uuid';
 import { Alert, Button } from 'react-bootstrap';
 import { useEthers } from '@usedapp/core';
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAccountVotes } from '../../wrappers/nounToken';
 import { useAuth } from '../../hooks/useAuth';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useQuery, gql } from '@apollo/client';
 import propLotClient from '../graphql/config';
 import { GET_PROPLOT_QUERY } from '../graphql/propLotQuery';
-
-import { v4 } from 'uuid';
-
 import { getPropLot } from '../graphql/__generated__/getPropLot';
-
 import UIFilter from '../components/DropdownFilter';
 import IdeaRow from '../components/IdeaRow';
 
@@ -20,19 +18,16 @@ const PropLotHome = () => {
   const history = useHistory();
   const { getAuthHeader } = useAuth();
 
-  const [getPropLotQuery, { loading, error, data, refetch }] = useLazyQuery<getPropLot>(
-    GET_PROPLOT_QUERY,
-    {
-      context: {
-        clientName: 'PropLot',
-        headers: {
-          ...getAuthHeader(),
-          'proplot-tz': Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
+  const [getPropLotQuery, { data, refetch }] = useLazyQuery<getPropLot>(GET_PROPLOT_QUERY, {
+    context: {
+      clientName: 'PropLot',
+      headers: {
+        ...getAuthHeader(),
+        'proplot-tz': Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
-      client: propLotClient,
     },
-  );
+    client: propLotClient,
+  });
 
   /*
     Parse the query params from the url on page load and send them as filters in the initial

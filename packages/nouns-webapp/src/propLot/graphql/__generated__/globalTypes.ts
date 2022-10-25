@@ -12,6 +12,19 @@ export enum FilterType {
   SINGLE_SELECT = "SINGLE_SELECT",
 }
 
+export enum TagType {
+  ARCHIVED = "ARCHIVED",
+  COMMUNITY = "COMMUNITY",
+  DISCUSSION = "DISCUSSION",
+  GOVERNANCE = "GOVERNANCE",
+  INFO = "INFO",
+  NEW = "NEW",
+  OTHER = "OTHER",
+  QUORUM = "QUORUM",
+  REQUEST = "REQUEST",
+  SUGGESTION = "SUGGESTION",
+}
+
 export interface PropLotInputOptions {
   filters?: string[] | null;
   requestUUID: string;

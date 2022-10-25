@@ -14,6 +14,10 @@ export const GET_PROPLOT_QUERY = gql`
         ideaStats {
           comments
         }
+        tags {
+          type
+          label
+        }
         votes {
           id
           voterId

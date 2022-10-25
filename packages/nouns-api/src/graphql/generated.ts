@@ -55,6 +55,7 @@ export type Idea = {
 };
 
 export type IdeaInputOptions = {
+  ideaId?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<Sort_Type>;
 };
 
@@ -71,7 +72,7 @@ export type IdeaTags = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  submitIdeaVote: Idea;
+  submitIdeaVote: Vote;
 };
 
 
@@ -110,9 +111,15 @@ export type PropLotResponseMetadata = {
 export type Query = {
   __typename?: 'Query';
   getAllUsers?: Maybe<Array<User>>;
+  getIdea?: Maybe<Idea>;
   getIdeas?: Maybe<Array<Idea>>;
   getPropLot: PropLotResponse;
   getUser?: Maybe<User>;
+};
+
+
+export type QueryGetIdeaArgs = {
+  options: IdeaInputOptions;
 };
 
 
@@ -144,10 +151,15 @@ export type SubmitVoteInputOptions = {
 
 export enum TagType {
   Archived = 'ARCHIVED',
+  Community = 'COMMUNITY',
   Discussion = 'DISCUSSION',
+  Governance = 'GOVERNANCE',
   Info = 'INFO',
   New = 'NEW',
-  Quorum = 'QUORUM'
+  Other = 'OTHER',
+  Quorum = 'QUORUM',
+  Request = 'REQUEST',
+  Suggestion = 'SUGGESTION'
 }
 
 export type User = {
@@ -342,7 +354,7 @@ export type IdeaTagsResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  submitIdeaVote?: Resolver<ResolversTypes['Idea'], ParentType, ContextType, RequireFields<MutationSubmitIdeaVoteArgs, 'options'>>;
+  submitIdeaVote?: Resolver<ResolversTypes['Vote'], ParentType, ContextType, RequireFields<MutationSubmitIdeaVoteArgs, 'options'>>;
 };
 
 export type PropLotFilterResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotFilter'] = ResolversParentTypes['PropLotFilter']> = {
@@ -370,6 +382,7 @@ export type PropLotResponseMetadataResolvers<ContextType = any, ParentType exten
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getAllUsers?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
+  getIdea?: Resolver<Maybe<ResolversTypes['Idea']>, ParentType, ContextType, RequireFields<QueryGetIdeaArgs, 'options'>>;
   getIdeas?: Resolver<Maybe<Array<ResolversTypes['Idea']>>, ParentType, ContextType, RequireFields<QueryGetIdeasArgs, 'options'>>;
   getPropLot?: Resolver<ResolversTypes['PropLotResponse'], ParentType, ContextType, RequireFields<QueryGetPropLotArgs, 'options'>>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'options'>>;
