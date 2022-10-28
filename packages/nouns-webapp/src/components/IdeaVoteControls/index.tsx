@@ -49,34 +49,36 @@ const IdeaVoteControls = ({
       <span className="text-3xl text-black font-bold lodrina self-center justify-end pl-2">
         {voteCount}
       </span>
-      <div className="flex flex-col ml-4">
-        <FontAwesomeIcon
-          icon={faCaretUp}
-          onClick={e => {
-            // this prevents the click from bubbling up and opening / closing the hidden section
-            e.stopPropagation();
-            if (hasVotes && !userHasUpVote && !closed) {
-              vote(1);
-            }
-          }}
-          className={`text-3xl cursor-pointer ${
-            hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'
-          }`}
-        />
+      {!closed && (
+        <div className="flex flex-col ml-4">
+          <FontAwesomeIcon
+            icon={faCaretUp}
+            onClick={e => {
+              // this prevents the click from bubbling up and opening / closing the hidden section
+              e.stopPropagation();
+              if (hasVotes && !userHasUpVote && !closed) {
+                vote(1);
+              }
+            }}
+            className={`text-3xl cursor-pointer ${
+              hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'
+            }`}
+          />
 
-        <FontAwesomeIcon
-          icon={faCaretDown}
-          onClick={e => {
-            e.stopPropagation();
-            if (hasVotes && !userHasDownVote && !closed) {
-              vote(-1);
-            }
-          }}
-          className={`text-3xl cursor-pointer ${
-            hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'
-          }`}
-        />
-      </div>
+          <FontAwesomeIcon
+            icon={faCaretDown}
+            onClick={e => {
+              e.stopPropagation();
+              if (hasVotes && !userHasDownVote && !closed) {
+                vote(-1);
+              }
+            }}
+            className={`text-3xl cursor-pointer ${
+              hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'
+            }`}
+          />
+        </div>
+      )}
     </>
   );
 };

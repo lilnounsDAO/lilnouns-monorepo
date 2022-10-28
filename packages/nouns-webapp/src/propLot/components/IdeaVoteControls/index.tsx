@@ -122,34 +122,36 @@ const IdeaVoteControls = ({
           calculatedVoteCount
         )}
       </span>
-      <div className="flex flex-col ml-4">
-        <FontAwesomeIcon
-          icon={faCaretUp}
-          onClick={e => {
-            // this prevents the click from bubbling up and opening / closing the hidden section
-            e.stopPropagation();
-            if (hasVotes && !userHasUpVote && !loading && !closed) {
-              vote(1);
-            }
-          }}
-          className={`${loading ? 'fa-beat-fade' : ''} text-3xl cursor-pointer ${
-            hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'
-          }`}
-        />
+      {!closed && (
+        <div className="flex flex-col ml-4">
+          <FontAwesomeIcon
+            icon={faCaretUp}
+            onClick={e => {
+              // this prevents the click from bubbling up and opening / closing the hidden section
+              e.stopPropagation();
+              if (hasVotes && !userHasUpVote && !loading && !closed) {
+                vote(1);
+              }
+            }}
+            className={`${loading ? 'fa-beat-fade' : ''} text-3xl cursor-pointer ${
+              hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'
+            }`}
+          />
 
-        <FontAwesomeIcon
-          icon={faCaretDown}
-          onClick={e => {
-            e.stopPropagation();
-            if (hasVotes && !userHasDownVote && !loading && !closed) {
-              vote(-1);
-            }
-          }}
-          className={`${loading ? 'fa-beat-fade' : ''} text-3xl cursor-pointer ${
-            hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'
-          }`}
-        />
-      </div>
+          <FontAwesomeIcon
+            icon={faCaretDown}
+            onClick={e => {
+              e.stopPropagation();
+              if (hasVotes && !userHasDownVote && !loading && !closed) {
+                vote(-1);
+              }
+            }}
+            className={`${loading ? 'fa-beat-fade' : ''} text-3xl cursor-pointer ${
+              hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'
+            }`}
+          />
+        </div>
+      )}
     </>
   );
 };
