@@ -153,6 +153,9 @@ class IdeasService {
               voter: true,
             },
           },
+          _count: {
+            select: { comments: true },
+          },
         },
       });
 

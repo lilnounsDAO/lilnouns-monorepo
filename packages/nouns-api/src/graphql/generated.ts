@@ -153,7 +153,9 @@ export type SubmitVoteInputOptions = {
 
 export enum TagType {
   Archived = 'ARCHIVED',
+  Closed = 'CLOSED',
   Community = 'COMMUNITY',
+  Consensus = 'CONSENSUS',
   Discussion = 'DISCUSSION',
   Governance = 'GOVERNANCE',
   Info = 'INFO',

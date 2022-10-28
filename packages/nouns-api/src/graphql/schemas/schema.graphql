@@ -142,4 +142,6 @@ enum TagType {
   COMMUNITY
   REQUEST
   OTHER
+  CONSENSUS
+  CLOSED
 }

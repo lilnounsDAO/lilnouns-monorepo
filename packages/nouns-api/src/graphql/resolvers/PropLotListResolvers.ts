@@ -126,15 +126,17 @@ const resolvers: IResolvers = {
         };
       });
 
-      const virtualTagFilterOptions = Object.keys(VirtualTags).map(key => {
-        const vT = VirtualTags[key];
-        return {
-          id: `${FILTER_IDS.TAG}-${vT.type}`,
-          label: vT.label,
-          value: buildFilterParam(FILTER_IDS.TAG, vT.type),
-          selected: Boolean(root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, vT.type))),
-        };
-      });
+      const virtualTagFilterOptions = Object.keys(VirtualTags)
+        .filter(key => key !== 'CONSENSUS') // We don't want a consensus tag appearing in the filter dropdown
+        .map(key => {
+          const vT = VirtualTags[key];
+          return {
+            id: `${FILTER_IDS.TAG}-${vT.type}`,
+            label: vT.label,
+            value: buildFilterParam(FILTER_IDS.TAG, vT.type),
+            selected: Boolean(root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, vT.type))),
+          };
+        });
       const tagFilter: PropLotFilter = {
         __typename: 'PropLotFilter',
         id: FILTER_IDS.TAG,

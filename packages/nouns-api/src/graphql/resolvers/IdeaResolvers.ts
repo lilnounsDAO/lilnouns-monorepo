@@ -49,7 +49,12 @@ const resolvers: IResolvers = {
           const vT = VirtualTags[key];
           return vT.filterFn(root);
         })
-        .map(key => VirtualTags[key]);
+        .map(key => {
+          if (key === 'CONSENSUS') {
+            return { ...VirtualTags[key], label: `${root.consensus}% consensus` };
+          }
+          return VirtualTags[key];
+        });
 
       return [...matchingVirtualTags, ...tags];
     },
