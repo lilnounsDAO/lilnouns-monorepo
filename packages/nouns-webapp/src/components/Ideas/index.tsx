@@ -32,7 +32,6 @@ const Ideas = () => {
   return (
     <div>
       <div>
-        <h3 className={classes.heading}>Ideas</h3>
         <div className={clsx('d-flex', classes.submitIdeaButtonWrapper)}>
           {ideas?.length > 0 && (
             <div className={classes.sortFilter}>

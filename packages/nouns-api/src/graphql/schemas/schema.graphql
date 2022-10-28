@@ -1,8 +1,66 @@
 type Query {
+  getIdea(options: IdeaInputOptions!): Idea
   getIdeas(options: IdeaInputOptions!): [Idea!]
   getAllUsers: [User!]
   getUser(options: UserInputOptions!): User
+  getPropLot(options: PropLotInputOptions!): PropLotResponse!
 }
+
+type Mutation {
+  submitIdeaVote(options: SubmitVoteInputOptions!): Vote!
+}
+
+# Query input types
+input UserInputOptions {
+  wallet: String!
+}
+
+input IdeaInputOptions {
+  ideaId: Int
+  sort: SORT_TYPE
+}
+
+input SubmitVoteInputOptions {
+  direction: Int!
+  ideaId: Int!
+}
+
+input PropLotInputOptions {
+  filters: [String!]
+  requestUUID: String!
+}
+
+# Query response types
+
+type PropLotResponse {
+  ideas: [Idea!]
+  sortFilter: PropLotFilter
+  tagFilter: PropLotFilter
+  dateFilter: PropLotFilter
+  metadata: PropLotResponseMetadata!
+}
+
+type PropLotFilter {
+  id: String!
+  label: String
+  type: FilterType!
+  options: [FilterOption!]!
+}
+
+type FilterOption {
+  id: String!
+  selected: Boolean!
+  label: String
+  value: String!
+  icon: String
+}
+
+type PropLotResponseMetadata {
+  appliedFilters: [String!]
+  requestUUID: String!
+}
+
+# Raw Data Types
 
 type UserStats {
   totalVotes: Int
@@ -12,6 +70,7 @@ type UserStats {
 
 type User {
   wallet: String!
+  lilnounCount: Int!
   userStats: UserStats
 }
 
@@ -37,6 +96,11 @@ type IdeaStats {
   comments: Int
 }
 
+type IdeaTags {
+  label: String!
+  type: TagType!
+}
+
 type Idea {
   id: Int!
   title: String!
@@ -48,14 +112,16 @@ type Idea {
   votecount: Int!
   createdAt: String!
   ideaStats: IdeaStats
+  tags: [IdeaTags!]
+  closed: Boolean!
+  consensus: Float
 }
 
-input IdeaInputOptions {
-  sort: SORT_TYPE
-}
+# Enums
 
-input UserInputOptions {
-  wallet: String!
+enum FilterType {
+  SINGLE_SELECT
+  MULTI_SELECT
 }
 
 enum SORT_TYPE {
@@ -63,4 +129,19 @@ enum SORT_TYPE {
   VOTES_ASC
   LATEST
   OLDEST
+}
+
+enum TagType {
+  NEW
+  INFO
+  QUORUM
+  ARCHIVED
+  DISCUSSION
+  SUGGESTION
+  GOVERNANCE
+  COMMUNITY
+  REQUEST
+  OTHER
+  CONSENSUS
+  CLOSED
 }

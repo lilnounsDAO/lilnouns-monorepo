@@ -95,6 +95,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const one_hour = new Date(new Date().getTime() + 3600 * 1000);
       Cookies.set('lil-noun-token', data.data.accessToken, { expires: one_hour });
+
+      return data;
     } catch (e: any) {
       setError({ message: e.message || 'Login Failed', status: e.status });
       throw e;
