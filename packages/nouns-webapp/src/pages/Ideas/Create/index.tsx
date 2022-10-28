@@ -8,6 +8,8 @@ import { useIdeas } from '../../../hooks/useIdeas';
 import classes from '../Ideas.module.css';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 enum FORM_VALIDATION {
   TITLE_MAX = 50,
@@ -44,6 +46,39 @@ const CreateIdeaPage = () => {
   const handleSelect = (e: any) => {
     setDescriptionTab(e);
   };
+
+  const [selectedTags, setSelectedTags] = useState([] as string[]);
+
+  const handleTagChange = (tagName: string) => {
+    if (selectedTags.includes(tagName)) {
+      setSelectedTags(selectedTags.filter(t => t !== tagName));
+    } else {
+      setSelectedTags([...selectedTags, tagName]);
+    }
+  };
+
+  const tags = [
+    {
+      label: 'Suggestion',
+      value: 'SUGGESTION',
+    },
+    {
+      label: 'Governance',
+      value: 'GOVERNANCE',
+    },
+    {
+      label: 'Community',
+      value: 'COMMUNITY',
+    },
+    {
+      label: 'Request',
+      value: 'REQUEST',
+    },
+    {
+      label: 'Other',
+      value: 'OTHER',
+    },
+  ];
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -116,7 +151,6 @@ const CreateIdeaPage = () => {
           is no limit to the number of ideas you can submit and vote on.
         </p>
         <form
-          className="space-y-8"
           id="submit-form"
           onSubmit={event => {
             event.preventDefault();
@@ -136,29 +170,32 @@ const CreateIdeaPage = () => {
             });
           }}
         >
-          <div className="flex flex-row space-x-4">
-            <div className="flex flex-col items-start">
-              <label>Suggestion</label>
-              <input type="checkbox" name="tags" value="SUGGESTION" />
-            </div>
-            <div className="flex flex-col items-start">
-              <label>Governance</label>
-              <input type="checkbox" name="tags" value="GOVERNANCE" />
-            </div>
-            <div className="flex flex-col items-start">
-              <label>Community</label>
-              <input type="checkbox" name="tags" value="COMMUNITY" />
-            </div>
-            <div className="flex flex-col items-start">
-              <label>Request</label>
-              <input type="checkbox" name="tags" value="REQUEST" />
-            </div>
-            <div className="flex flex-col items-start">
-              <label>Other</label>
-              <input type="checkbox" name="tags" value="OTHER" />
-            </div>
+          <p className="lodrina font-bold text-2xl mb-2">Tags</p>
+          <span className="text-xs">Apply the tags that relate to your idea. Click to apply.</span>
+          <div className="flex flex-row flex-wrap gap-[16px] my-[16px]">
+            {tags.map(tag => (
+              <div className="flex flex-col items-center">
+                <label
+                  htmlFor={tag.label}
+                  className={`cursor-pointer text-blue-500 bg-blue-200 text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex`}
+                >
+                  {tag.label}
+                </label>
+                <input
+                  type="checkbox"
+                  onChange={() => handleTagChange(tag.label)}
+                  name="tags"
+                  id={tag.label}
+                  value={tag.value}
+                  hidden
+                />
+                {selectedTags.includes(tag.label) && (
+                  <FontAwesomeIcon icon={faCheckCircle} className="text-[#49A758] mt-[8px]" />
+                )}
+              </div>
+            ))}
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col my-[16px]">
             <div className="flex justify-between w-full items-center">
               <label className="lodrina font-bold text-2xl mb-2">Title</label>
               <span className={`${!titleValid ? 'text-[#E40535]' : 'text-[#8C8D92]'}`}>
@@ -176,7 +213,7 @@ const CreateIdeaPage = () => {
               placeholder="Give your idea a name..."
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col my-[16px]">
             <div className="flex justify-between w-full items-center">
               <label className="lodrina font-bold text-2xl mb-2">tl;dr</label>
               <span className={`${!tldrValid ? 'text-[#E40535]' : 'text-[#8C8D92]'}`}>
@@ -193,7 +230,7 @@ const CreateIdeaPage = () => {
               placeholder="In the simplest language possible, describe your idea in a few sentences..."
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col my-[16px]">
             <div className="flex justify-between w-full items-center">
               <div className="space-x-2">
                 <label className="lodrina font-bold text-2xl mb-2">Description</label>
@@ -237,12 +274,12 @@ const CreateIdeaPage = () => {
               />
             )}
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end my-[16px]">
             <button
               type="submit"
-              className={`rounded-lg ${
-                formValid ? 'bg-[#2B83F6] text-white' : 'bg-[#F4F4F8] text-[#E2E3E8]'
-              } font-bold p-2 rounded`}
+              className={`${
+                formValid ? '!bg-[#2B83F6] !text-white' : '!bg-[#F4F4F8] !text-[#E2E3E8]'
+              } !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`}
             >
               Submit
             </button>

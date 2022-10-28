@@ -277,13 +277,13 @@ const IdeaPage = () => {
               </div>
             </div>
             {data.getIdea.tags && data.getIdea.tags.length > 0 && (
-              <div className="flex flex-row space-x-2 mt-4">
+              <div className="flex flex-row gap-[8px] mt-4 flex-wrap">
                 {data.getIdea.tags.map(tag => {
                   return (
                     <span
                       className={`${
                         virtualTagColorMap[tag.type] || 'text-blue-500 bg-blue-200'
-                      } text-xs font-bold rounded-full px-2 py-0.5 inline`}
+                      } text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex`}
                     >
                       {tag.label}
                     </span>

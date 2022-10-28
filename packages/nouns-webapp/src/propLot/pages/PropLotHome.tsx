@@ -100,7 +100,7 @@ const PropLotHome = () => {
   const isNounOwner = account !== undefined && hasNouns;
 
   return (
-    <div>
+    <div className="font-propLot">
       {!isNounOwner && <div className="mt-[16px] text-[#8C8D92]">{nullStateCopy()}</div>}
 
       <div className="mt-[16px] mb-[16px] flex flex-col-reverse sm:flex-row">
@@ -122,7 +122,7 @@ const PropLotHome = () => {
               isNounOwner
                 ? '!bg-[#2B83F6] !text-white !text-[16px]'
                 : '!text-[#8C8D92] !bg-[#F4F4F8] !border-[#E2E3E8]'
-            } flex-1 sm:flex-none !rounded-[10px] !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`}
+            } flex-1 sm:flex-none !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`}
             onClick={() => history.push('/ideas/create')}
           >
             New Submission
@@ -132,7 +132,7 @@ const PropLotHome = () => {
 
       {data?.propLot?.ideas?.map(idea => {
         return (
-          <div className="mt-2 mb-2 space-y-4">
+          <div className="mb-[16px] space-y-4">
             <IdeaRow idea={idea} key={`idea-${idea.id}`} nounBalance={nounBalance} />
           </div>
         );

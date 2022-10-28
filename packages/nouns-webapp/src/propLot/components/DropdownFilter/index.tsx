@@ -60,7 +60,7 @@ const CustomToggle = forwardRef(
         e.preventDefault();
         onClick(e);
       }}
-      className="flex flex-1 btn !rounded-[10px] bg-white border border-[#e2e3e8] p-0 focus:!bg-[#F4F4F8] focus:!text-[#231F20] !text-[#8C8D92]"
+      className="font-propLot font-semibold flex flex-1 btn !rounded-[10px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#2B83F6]"
     >
       <span className="flex items-center justify-center font-semibold text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
         {children}

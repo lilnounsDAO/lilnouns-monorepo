@@ -51,7 +51,7 @@ const resolvers: IResolvers = {
         })
         .map(key => VirtualTags[key]);
 
-      return [...tags, ...matchingVirtualTags];
+      return [...matchingVirtualTags, ...tags];
     },
     comments: async root => {
       const comments = await IdeasService.getIdeaComments(root.id);

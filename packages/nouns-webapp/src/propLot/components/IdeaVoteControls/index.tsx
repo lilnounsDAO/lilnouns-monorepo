@@ -112,7 +112,7 @@ const IdeaVoteControls = ({
           ))}
         </span>
       )}
-      <span className="text-3xl text-black font-bold lodrina self-center justify-end pl-2">
+      <span className="text-[#212529] font-propLot font-bold text-[18px] sm:text-[26px] self-center justify-end pl-2">
         {loading ? (
           <FontAwesomeIcon
             icon={faCircleNotch}

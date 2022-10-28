@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { useReverseENSLookUp } from '../../../utils/ensLookup';
 import { useShortAddress } from '../../../utils/addressAndENSDisplayUtils';
 import moment from 'moment';
@@ -9,6 +7,7 @@ import { createBreakpoint } from 'react-use';
 import IdeaVoteControls from '../IdeaVoteControls';
 import { getPropLot_propLot_ideas as Idea } from '../../graphql/__generated__/getPropLot';
 import { virtualTagColorMap } from '../../../utils/virtualTagColors';
+import { Button } from 'react-bootstrap';
 
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
@@ -25,10 +24,15 @@ const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => 
 
   const mobileHeading = (
     <>
-      <div className="flex flex-row flex-1 justify-content-between align-items-center">
-        <span className="font-normal lodrina flex text-2xl text-[#8C8D92] overflow-hidden">
-          <span className="mr-4">{id}</span>
-          <span className="truncate">{ens || shortAddress}</span>
+      <div className="font-propLot font-bold text-[18px] flex flex-row flex-1 justify-content-between align-items-start">
+        <span className="flex flex-col sm:flex-row text-[#8C8D92] overflow-hidden">
+          <span className="flex flex-row flex-1 justify-content-start align-items-start">
+            <span className="mr-4">{id}</span>
+            <span className="truncate">{ens || shortAddress}</span>
+          </span>
+          <div className="flex flex-row flex-1 justify-content-start align-items-start pt-[16px]">
+            <span className="font-bold text-[18px] text-[#212529] flex flex-1">{title}</span>
+          </div>
         </span>
         <div className="flex justify-self-end">
           <IdeaVoteControls
@@ -39,52 +43,61 @@ const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => 
           />
         </div>
       </div>
-      <div className="flex flex-row flex-1 justify-content-start align-items-center">
-        <span className="text-[#212529] font-normal text-2xl flex flex-1 lodrina">{title}</span>
-      </div>
       {tags && tags.length > 0 && (
-        <div className="flex flex-row space-x-2 mt-4">
+        <div className="flex flex-row flex-wrap gap-[8px] mt-[16px]">
           {tags.map(tag => {
             return (
               <span
                 className={`${
                   virtualTagColorMap[tag.type] || 'text-blue-500 bg-blue-200'
-                } text-xs font-bold rounded-full px-2 py-0.5 inline`}
+                } text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex`}
               >
                 {tag.label}
               </span>
             );
           })}
+          <span className="flex text-[#8c8d92] font-propLot font-semibold text-[14px]">
+            {`${
+              ideaStats?.comments === 1
+                ? `${ideaStats?.comments} comment`
+                : `${ideaStats?.comments || 0} comments`
+            }`}
+          </span>
         </div>
       )}
     </>
   );
 
   const desktopHeading = (
-    <div className="flex flex-row flex-1 justify-content-start align-items-center">
+    <div className="font-propLot font-bold text-[18px] flex flex-row flex-1 justify-content-start align-items-start">
       <div className="flex flex-1 flex-col">
         <div className="flex flex-1">
-          <span className="font-normal lodrina flex text-2xl text-[#8C8D92] overflow-hidden">
+          <span className="flex text-[#8C8D92] overflow-hidden">
             <span className="mr-4">{id}</span>
             <span className="truncate">{ens || shortAddress}</span>
           </span>
-          <span className="text-[#212529] font-normal text-2xl flex flex-1 lodrina ml-6">
-            {title}
-          </span>
+          <span className="text-[#212529] flex flex-1 ml-6">{title}</span>
         </div>
         {tags && tags.length > 0 && (
-          <div className="flex flex-row space-x-2 mt-2">
+          <div className="flex flex-row flex-wrap gap-[8px] mt-[16px]">
             {tags.map(tag => {
               return (
                 <span
                   className={`${
                     virtualTagColorMap[tag.type] || 'text-blue-500 bg-blue-200'
-                  } text-xs font-bold rounded-full px-2 py-0.5 inline`}
+                  } text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex`}
                 >
                   {tag.label}
                 </span>
               );
             })}
+            <span className="flex text-[#8c8d92] font-propLot font-semibold text-[14px]">
+              {`${
+                ideaStats?.comments === 1
+                  ? `${ideaStats?.comments} comment`
+                  : `${ideaStats?.comments || 0} comments`
+              }`}
+            </span>
           </div>
         )}
       </div>
@@ -101,40 +114,35 @@ const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => 
 
   return (
     <div
-      className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer p-3"
+      className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-[24px] pb-[24px] px-3"
       onClick={() => setIsOpen(!isOpen)}
     >
       {isMobile ? mobileHeading : desktopHeading}
       {isOpen && (
         <>
-          <div className="mt-2 flex flex-row flex-1 justify-content-start align-items-center pt-2 pb-2">
+          <div className="flex flex-row flex-1 justify-content-start align-items-center pt-[12px] pt-[12px]">
             <span
-              className="border border-[#e2e3e8] bg-[#f4f4f8] p-4 rounded-lg flex-1"
+              className="font-propLot text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1"
               dangerouslySetInnerHTML={{ __html: tldr }}
             />
           </div>
-          <div className="flex flex-row flex-1 justify-content-start align-items-center pt-2 pb-2">
-            <span className="flex flex-1 font-bold text-sm text-[#8c8d92]">
+          <div className="font-propLot font-semibold text-[14px] flex-col sm:flex-row flex flex-1 justify-content-start align-items-start pt-[12px] pt-[12px]">
+            <span className="flex flex-1 text-[#8c8d92]">
               {`${ens || shortAddress} | ${
                 creatorLilNoun === 1 ? `${creatorLilNoun} lil noun` : `${creatorLilNoun} lil nouns`
-              } | ${moment(createdAt, 'x').format('MMM Do YYYY')} | ${
-                ideaStats?.comments === 1
-                  ? `${ideaStats?.comments} comment`
-                  : `${ideaStats?.comments || 0} comments`
-              }`}
+              } | ${moment(createdAt, 'x').format('MMM Do YYYY')}`}
             </span>
-            <span className="justify-self-end text-[#2b83f6] text-sm font-bold flex justify-end">
-              <span
+            <span className="flex mt-[16px] sm:mt-[0px] w-full sm:w-auto justify-self-end text-[#2b83f6] flex justify-end">
+              <Button
+                className="font-propLot font-semibold text-[16px] flex flex-1 btn !rounded-[10px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#2B83F6]"
                 onClick={() => {
                   history.push(`/ideas/${id}`);
                 }}
               >
-                <span className={`${isMobile ? 'hidden' : ''}`}>See Full Details</span>
-                <FontAwesomeIcon
-                  className={`${isMobile ? 'text-2xl ml-2' : 'ml-1'}`}
-                  icon={faArrowAltCircleRight}
-                />
-              </span>
+                <span className="flex items-center justify-center font-semibold text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
+                  Details
+                </span>
+              </Button>
             </span>
           </div>
         </>
