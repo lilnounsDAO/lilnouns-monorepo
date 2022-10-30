@@ -1,0 +1,89 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes[]",
+            "name": "parts",
+            "type": "bytes[]"
+          },
+          {
+            "internalType": "string",
+            "name": "background",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct NFTDescriptorProperties.TokenURIParams",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "internalType": "address",
+        "name": "lastDescriptor",
+        "type": "address"
+      }
+    ],
+    "name": "constructTokenURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes[]",
+            "name": "parts",
+            "type": "bytes[]"
+          },
+          {
+            "internalType": "string",
+            "name": "background",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct MultiPartRLEToSVGProperties.SVGParams",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "paramsCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "lastDescriptor",
+        "type": "address"
+      }
+    ],
+    "name": "generateSVGImage",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "svg",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
