@@ -22,6 +22,11 @@ task(
       gasLimit: 1_000_000,
     });
 
+  const lilVRGDDA = await run('upgrade-to-vrgda', {
+    nounsTokenAddress: contracts.NounsToken.instance.address,
+    wethAddress: contracts.WETH.instance.address
+  });
+
   await run('create-proposal', {
     nounsDaoProxy: contracts.NounsDAOProxy.instance.address,
   });
@@ -47,6 +52,7 @@ task(
   console.log(`Nouns ERC721 address: ${contracts.NounsToken.instance.address}`);
   console.log(`Nouns DAO Executor address: ${contracts.NounsDAOExecutor.instance.address}`);
   console.log(`Nouns DAO Proxy address: ${contracts.NounsDAOProxy.instance.address}`);
+  console.log(`LilVRGDA address: ${lilVRGDDA.address}`);
 
   await ethers.provider.send('evm_setIntervalMining', [12_000]);
 

@@ -1,17 +1,78 @@
 import chai from 'chai';
 import { solidity } from 'ethereum-waffle';
+import hardhat from 'hardhat';
+
+const { ethers } = hardhat;
 
 import { BigNumber as EthersBN } from 'ethers';
 
-import { getSigners, TestSigners, setTotalSupply, deployGovAndToken } from '../../utils';
+import {
+  deployNounsToken,
+  getSigners,
+  TestSigners,
+  setTotalSupply,
+  populateDescriptor,
+} from '../../utils';
 
 import { mineBlock, address, encodeParameters, advanceBlocks } from '../../utils';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { NounsToken, NounsDAOLogicV1 } from '../../../typechain';
+import {
+  NounsToken,
+  NounsDescriptor__factory as NounsDescriptorFactory,
+  NounsDaoProxy__factory as NounsDaoProxyFactory,
+  NounsDaoLogicV1,
+  NounsDaoLogicV1__factory as NounsDaoLogicV1Factory,
+  NounsDaoExecutor__factory as NounsDaoExecutorFactory,
+} from '../../../typechain';
 
 chai.use(solidity);
 const { expect } = chai;
+
+async function reset(): Promise<void> {
+  // nonce 0: Deploy NounsDAOExecutor
+  // nonce 1: Deploy NounsDAOLogicV1
+  // nonce 2: Deploy nftDescriptorLibraryFactory
+  // nonce 3: Deploy NounsDescriptor
+  // nonce 4: Deploy NounsSeeder
+  // nonce 5: Deploy NounsToken
+  // nonce 6: Deploy NounsDAOProxy
+  // nonce 7+: populate Descriptor
+
+  const govDelegatorAddress = ethers.utils.getContractAddress({
+    from: deployer.address,
+    nonce: (await deployer.getTransactionCount()) + 6,
+  });
+
+  // Deploy NounsDAOExecutor with pre-computed Delegator address
+  const { address: timelockAddress } = await new NounsDaoExecutorFactory(deployer).deploy(
+    govDelegatorAddress,
+    timelockDelay,
+  );
+
+  // Deploy Delegate
+  const { address: govDelegateAddress } = await new NounsDaoLogicV1Factory(deployer).deploy();
+  // Deploy Nouns token
+  token = await deployNounsToken(deployer);
+
+  // Deploy Delegator
+  await new NounsDaoProxyFactory(deployer).deploy(
+    timelockAddress,
+    token.address,
+    address(0),
+    timelockAddress,
+    govDelegateAddress,
+    5760,
+    1,
+    proposalThresholdBPS,
+    quorumVotesBPS,
+  );
+
+  // Cast Delegator as Delegate
+  gov = NounsDaoLogicV1Factory.connect(govDelegatorAddress, deployer);
+
+  await populateDescriptor(NounsDescriptorFactory.connect(await token.descriptor(), deployer));
+}
 
 async function propose(proposer: SignerWithAddress) {
   targets = [account0.address];
@@ -30,7 +91,7 @@ let account1: SignerWithAddress;
 let account2: SignerWithAddress;
 let signers: TestSigners;
 
-let gov: NounsDAOLogicV1;
+let gov: NounsDaoLogicV1;
 const timelockDelay = 172800; // 2 days
 
 const proposalThresholdBPS = 678; // 6.78%
@@ -55,12 +116,7 @@ describe('NounsDAO#inflationHandling', () => {
     signatures = ['getBalanceOf(address)'];
     callDatas = [encodeParameters(['address'], [account0.address])];
 
-    ({ token, gov } = await deployGovAndToken(
-      deployer,
-      timelockDelay,
-      proposalThresholdBPS,
-      quorumVotesBPS,
-    ));
+    await reset();
   });
 
   it('set parameters correctly', async () => {

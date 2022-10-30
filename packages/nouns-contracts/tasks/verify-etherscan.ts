@@ -1,26 +1,26 @@
 import { Interface } from 'ethers/lib/utils';
 import { task } from 'hardhat/config';
-import { default as NounsAuctionHouseABI } from '../abi/contracts/NounsAuctionHouse.sol/NounsAuctionHouse.json';
+import { default as NounsAuctionHouseABI } from '../abi/contracts//NounsAuctionHouse.sol/NounsAuctionHouse.json';
 
 type ContractName =
   // | 'NFTDescriptor'
   // | 'NounsDescriptor'
   // | 'NounsSeeder'
-   'NounsToken'
-  | 'NounsAuctionHouse'
+  // | 'NounsToken';
+  // | 'NounsAuctionHouse'
   | 'NounsAuctionHouseProxyAdmin'
-  | 'NounsAuctionHouseProxy'
-  | 'NounsDAOExecutor'
-  | 'NounsDAOLogicV1'
-  | 'NounsDAOProxy';
+  // | 'NounsAuctionHouseProxy'
+  // | 'NounsDAOExecutor'
+  // | 'NounsDAOLogicV1'
+  // | 'NounsDAOProxy';
 
 
   const bytes = new Interface(NounsAuctionHouseABI).encodeFunctionData('initialize', [
-    "0xbd9bd9722FDE1ec321F590993F7f5961F1Bd0d06", // nouns token
-    "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6", // weth (mainnet)
+    "0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B", // nouns token
+    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // weth (mainnet)
     "90", // auctionTimeBuffer,
     "1", // auctionReservePrice,
-    "2", // auctionMinIncrementBidPercentage,
+    "5", // auctionMinIncrementBidPercentage,
     "900", // auctionDuration,
    ])
   
@@ -32,8 +32,8 @@ interface VerifyArgs {
 }
 
 
-const expectedAuctionHouseProxyAddress = '0x2E10335d2EE34715453936399301B42D2ea8c55c'
-const expectedNounsDAOProxyAddress = '0x4F49457D0Ddd610B451686AeB17dE9562094cD00'
+const expectedAuctionHouseProxyAddress = '0x55790b9183638981cEfbD5627C5C47C1f0f2Af29'
+const expectedNounsDAOProxyAddress = '0x2c61E1eED8a2da827899341cc2ffEBFf556f17c3'
 
 const contracts: Record<ContractName, VerifyArgs> = {
   // NFTDescriptor: {
@@ -49,57 +49,57 @@ const contracts: Record<ContractName, VerifyArgs> = {
   //   address: '0x4451D889B6B8c9b0f11E3C9C2d5d27ddF4057a00',
   // },
 
-  NounsToken: {
-    address: '0xbd9bd9722FDE1ec321F590993F7f5961F1Bd0d06',
-    constructorArguments: [
-      '0xd301FBaffd9b81f4Ed47B90360f2137E642111a8', // lilnounders dao multisig
-      '0xd301FBaffd9b81f4Ed47B90360f2137E642111a8', // nouns dao treasury
-      '0x2E10335d2EE34715453936399301B42D2ea8c55c', // nounsAuctionHouseProxy //expectedAuctionHouseProxyAddress = '0x55790b9183638981cEfbD5627C5C47C1f0f2Af29'
-      '0xB6D0AF8C27930E13005Bf447d54be8235724a102', // nounsDescriptor
-      '0xF6a38E8235916334268da317EC84F5dfcfB9e023', // nounsSeeder
-      '0xf57b2c51ded3a29e6891aba85459d600256cf317', // mainnet opensea registry
-    ],
-  },
-  NounsAuctionHouse: {
-    address: '0xe6A9B92c074520de8912EaA4591db1966E2e2B92',
-  },
+  // NounsToken: {
+  //   address: '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B',
+  //   constructorArguments: [
+  //     '0x3cf6a7f06015aCad49F76044d3c63D7fE477D945', // lilnounders dao multisig
+  //     '0x0BC3807Ec262cB779b38D65b38158acC3bfedE10', // nouns dao treasury
+  //     '0x55e0F7A3bB39a28Bd7Bcc458e04b3cF00Ad3219E', // nounsAuctionHouseProxy //expectedAuctionHouseProxyAddress = '0x55790b9183638981cEfbD5627C5C47C1f0f2Af29'
+  //     '0x11fb55d9580cdbfb83de3510ff5ba74309800ad1', // nounsDescriptor
+  //     '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515', // nounsSeeder
+  //     '0xa5409ec958c83c3f309868babaca7c86dcb077c1', // mainnet opensea registry
+  //   ],
+  // },
+  // NounsAuctionHouse: {
+  //   address: '0x5B2003cA8FE9FfB93684cE377f52B415C7dC0216',
+  // },
 
   //*this one
   NounsAuctionHouseProxyAdmin: {
-    address: '0x4bEfF263853C4e30d02505A19Cd34F7c9cDFC6BB',
+    address: '0xA4BebeC5bf3670Bb47a55ff705c91956C703237B',
   },
 
-  NounsAuctionHouseProxy: {
-    address: '0x2E10335d2EE34715453936399301B42D2ea8c55c', //expectedAuctionHouseProxyAddress = '0x55790b9183638981cEfbD5627C5C47C1f0f2Af29'
-    constructorArguments: [
-      '0xe6A9B92c074520de8912EaA4591db1966E2e2B92', // NounAuctionHouse
-      '0x4bEfF263853C4e30d02505A19Cd34F7c9cDFC6BB', // nounsAuctionHouseProxyAdmin
-      bytes,
-    ],
-  },
+  // NounsAuctionHouseProxy: {
+  //   address: '0x55e0F7A3bB39a28Bd7Bcc458e04b3cF00Ad3219E', //expectedAuctionHouseProxyAddress = '0x55790b9183638981cEfbD5627C5C47C1f0f2Af29'
+  //   constructorArguments: [
+  //     '0x5B2003cA8FE9FfB93684cE377f52B415C7dC0216', // NounAuctionHouse
+  //     '0xA4BebeC5bf3670Bb47a55ff705c91956C703237B', // nounsAuctionHouseProxyAdmin
+  //     bytes,
+  //   ],
+  // },
 
 
-  NounsDAOExecutor: {
-    address: '0xd82c7DC502cbF88cFc5F0821BC514BBA88d70513',
-    constructorArguments: ['0x4F49457D0Ddd610B451686AeB17dE9562094cD00', 172800], // nounsDAOProxy, timelock-delay
-  },
-  NounsDAOLogicV1: {
-    address: '0x63DdFBc1cAfC58a957f391a158c98636d9e225E9', // nounsDAOLogicV1
-  },
-  NounsDAOProxy: {
-    address: '0x4F49457D0Ddd610B451686AeB17dE9562094cD00', // nounsDAOProxy
-    constructorArguments: [
-      '0xd82c7DC502cbF88cFc5F0821BC514BBA88d70513', // nounsDaoExecutor
-      '0xbd9bd9722FDE1ec321F590993F7f5961F1Bd0d06', // nounsToken
-      '0xd301FBaffd9b81f4Ed47B90360f2137E642111a8', // lilnounders dao multisig
-      '0xd82c7DC502cbF88cFc5F0821BC514BBA88d70513', // nounsDaoExecutor
-      '0x63DdFBc1cAfC58a957f391a158c98636d9e225E9', // nounsDAOLogicV1
-      33230, // voting-period 
-      26585, // voting-delay
-      100, // proposal-threshold-bps
-      1_000, // quorum-votes-bps
-    ],
-  },
+  // NounsDAOExecutor: {
+  //   address: '0xd5f279ff9EB21c6D40C8f345a66f2751C4eeA1fB',
+  //   constructorArguments: ['0x5d2C31ce16924C2a71D317e5BbFd5ce387854039', 172800], // nounsDAOProxy, timelock-delay
+  // },
+  // NounsDAOLogicV1: {
+  //   address: '0x8b20b261BDF0f97cfc6D3bD4903beb9D17794Ed8', // nounsDAOLogicV1
+  // },
+  // NounsDAOProxy: {
+  //   address: '0x5d2C31ce16924C2a71D317e5BbFd5ce387854039', // nounsDAOProxy
+  //   constructorArguments: [
+  //     '0xd5f279ff9EB21c6D40C8f345a66f2751C4eeA1fB', // nounsDaoExecutor
+  //     '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B', // nounsToken
+  //     '0x3cf6a7f06015aCad49F76044d3c63D7fE477D945', // lilnounders dao multisig
+  //     '0xd5f279ff9EB21c6D40C8f345a66f2751C4eeA1fB', // nounsDaoExecutor
+  //     '0x8b20b261BDF0f97cfc6D3bD4903beb9D17794Ed8', // nounsDAOLogicV1
+  //     33230, // voting-period 
+  //     26585, // voting-delay
+  //     100, // proposal-threshold-bps
+  //     1_000, // quorum-votes-bps
+  //   ],
+  // },
 };
 
 task('verify-etherscan', 'Verify the Solidity contracts on Etherscan').setAction(async (_, hre) => {

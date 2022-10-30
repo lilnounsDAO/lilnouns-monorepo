@@ -8,7 +8,7 @@ import {
   NounsAuctionHouse,
   NounsDescriptor__factory as NounsDescriptorFactory,
   NounsToken,
-  WETH,
+  Weth,
 } from '../typechain';
 import { deployNounsToken, deployWeth, populateDescriptor } from './utils';
 
@@ -18,7 +18,7 @@ const { expect } = chai;
 describe('NounsAuctionHouse', () => {
   let nounsAuctionHouse: NounsAuctionHouse;
   let nounsToken: NounsToken;
-  let weth: WETH;
+  let weth: Weth;
   let deployer: SignerWithAddress;
   let nounsDAO: SignerWithAddress;
   let bidderA: SignerWithAddress;

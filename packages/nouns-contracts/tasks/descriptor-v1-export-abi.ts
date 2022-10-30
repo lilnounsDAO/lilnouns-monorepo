@@ -1,7 +1,8 @@
+// This code is taken from https://github.com/nounsDAO/nouns-monorepo/blob/0c15de7071e1b95b6a542396d345a53b19f86e22/packages/nouns-contracts/tasks/descriptor-v1-export-abi.ts
 import { writeFileSync } from 'fs';
 import { task, types } from 'hardhat/config';
 import path from 'path';
-import ImageData from '../files/image-data-v1.json';
+import ImageData from '../files/image-data.json';
 
 task(
   'descriptor-v1-export-abi',

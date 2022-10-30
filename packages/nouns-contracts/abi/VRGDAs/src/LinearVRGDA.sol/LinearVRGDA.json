@@ -1,0 +1,58 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "int256",
+        "name": "sold",
+        "type": "int256"
+      }
+    ],
+    "name": "getTargetSaleTime",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "int256",
+        "name": "timeSinceStart",
+        "type": "int256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "sold",
+        "type": "uint256"
+      }
+    ],
+    "name": "getVRGDAPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "targetPrice",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

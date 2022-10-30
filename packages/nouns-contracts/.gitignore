@@ -24,13 +24,7 @@ coverage.json
 abi/@openzeppelin
 abi/contracts/base
 abi/contracts/external
-# abi/contracts/governance
+abi/contracts/governance
 abi/contracts/interfaces
 abi/contracts/proxies
 abi/contracts/test
-
-.npmrc
-
-# Foundry
-foundry-out
-foundry-cache
