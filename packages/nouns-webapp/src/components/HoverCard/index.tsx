@@ -1,9 +1,9 @@
 import React from 'react';
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip, { GetContentFunc } from 'react-tooltip';
 import classes from './HoverCard.module.css';
 
 interface HoverCardProps {
-  hoverCardContent: (dataTip: string) => React.ReactNode;
+  hoverCardContent: GetContentFunc;
   tip: string;
   id: string;
 }

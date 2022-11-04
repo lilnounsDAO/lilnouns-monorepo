@@ -24,6 +24,7 @@ async function seed() {
         description: chance.sentence({ words: 10 }),
         creatorId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9${i}`,
         votecount: 0,
+        tokenSupplyOnCreate: 7 * i,
       },
     });
 

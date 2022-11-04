@@ -25,14 +25,31 @@ export type Comment = {
   replies?: Maybe<Array<Comment>>;
 };
 
+export type FilterOption = {
+  __typename?: 'FilterOption';
+  icon?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  label?: Maybe<Scalars['String']>;
+  selected: Scalars['Boolean'];
+  value: Scalars['String'];
+};
+
+export enum FilterType {
+  MultiSelect = 'MULTI_SELECT',
+  SingleSelect = 'SINGLE_SELECT'
+}
+
 export type Idea = {
   __typename?: 'Idea';
+  closed: Scalars['Boolean'];
   comments?: Maybe<Array<Comment>>;
+  consensus?: Maybe<Scalars['Float']>;
   createdAt: Scalars['String'];
   creatorId: Scalars['String'];
   description: Scalars['String'];
   id: Scalars['Int'];
   ideaStats?: Maybe<IdeaStats>;
+  tags?: Maybe<Array<IdeaTags>>;
   title: Scalars['String'];
   tldr: Scalars['String'];
   votecount: Scalars['Int'];
@@ -40,6 +57,7 @@ export type Idea = {
 };
 
 export type IdeaInputOptions = {
+  ideaId?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<Sort_Type>;
 };
 
@@ -48,16 +66,72 @@ export type IdeaStats = {
   comments?: Maybe<Scalars['Int']>;
 };
 
+export type IdeaTags = {
+  __typename?: 'IdeaTags';
+  label: Scalars['String'];
+  type: TagType;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  submitIdeaVote: Vote;
+};
+
+
+export type MutationSubmitIdeaVoteArgs = {
+  options: SubmitVoteInputOptions;
+};
+
+export type PropLotFilter = {
+  __typename?: 'PropLotFilter';
+  id: Scalars['String'];
+  label?: Maybe<Scalars['String']>;
+  options: Array<FilterOption>;
+  type: FilterType;
+};
+
+export type PropLotInputOptions = {
+  filters?: InputMaybe<Array<Scalars['String']>>;
+  requestUUID: Scalars['String'];
+};
+
+export type PropLotResponse = {
+  __typename?: 'PropLotResponse';
+  dateFilter?: Maybe<PropLotFilter>;
+  ideas?: Maybe<Array<Idea>>;
+  metadata: PropLotResponseMetadata;
+  sortFilter?: Maybe<PropLotFilter>;
+  tagFilter?: Maybe<PropLotFilter>;
+};
+
+export type PropLotResponseMetadata = {
+  __typename?: 'PropLotResponseMetadata';
+  appliedFilters?: Maybe<Array<Scalars['String']>>;
+  requestUUID: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   getAllUsers?: Maybe<Array<User>>;
+  getIdea?: Maybe<Idea>;
   getIdeas?: Maybe<Array<Idea>>;
+  getPropLot: PropLotResponse;
   getUser?: Maybe<User>;
+};
+
+
+export type QueryGetIdeaArgs = {
+  options: IdeaInputOptions;
 };
 
 
 export type QueryGetIdeasArgs = {
   options: IdeaInputOptions;
+};
+
+
+export type QueryGetPropLotArgs = {
+  options: PropLotInputOptions;
 };
 
 
@@ -72,8 +146,29 @@ export enum Sort_Type {
   VotesDesc = 'VOTES_DESC'
 }
 
+export type SubmitVoteInputOptions = {
+  direction: Scalars['Int'];
+  ideaId: Scalars['Int'];
+};
+
+export enum TagType {
+  Archived = 'ARCHIVED',
+  Closed = 'CLOSED',
+  Community = 'COMMUNITY',
+  Consensus = 'CONSENSUS',
+  Discussion = 'DISCUSSION',
+  Governance = 'GOVERNANCE',
+  Info = 'INFO',
+  New = 'NEW',
+  Other = 'OTHER',
+  Quorum = 'QUORUM',
+  Request = 'REQUEST',
+  Suggestion = 'SUGGESTION'
+}
+
 export type User = {
   __typename?: 'User';
+  lilnounCount: Scalars['Int'];
   userStats?: Maybe<UserStats>;
   wallet: Scalars['String'];
 };
@@ -169,13 +264,24 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Comment: ResolverTypeWrapper<Comment>;
+  FilterOption: ResolverTypeWrapper<FilterOption>;
+  FilterType: FilterType;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   Idea: ResolverTypeWrapper<Idea>;
   IdeaInputOptions: IdeaInputOptions;
   IdeaStats: ResolverTypeWrapper<IdeaStats>;
+  IdeaTags: ResolverTypeWrapper<IdeaTags>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Mutation: ResolverTypeWrapper<{}>;
+  PropLotFilter: ResolverTypeWrapper<PropLotFilter>;
+  PropLotInputOptions: PropLotInputOptions;
+  PropLotResponse: ResolverTypeWrapper<PropLotResponse>;
+  PropLotResponseMetadata: ResolverTypeWrapper<PropLotResponseMetadata>;
   Query: ResolverTypeWrapper<{}>;
   SORT_TYPE: Sort_Type;
   String: ResolverTypeWrapper<Scalars['String']>;
+  SubmitVoteInputOptions: SubmitVoteInputOptions;
+  TagType: TagType;
   User: ResolverTypeWrapper<User>;
   UserInputOptions: UserInputOptions;
   UserStats: ResolverTypeWrapper<UserStats>;
@@ -186,12 +292,21 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   Comment: Comment;
+  FilterOption: FilterOption;
+  Float: Scalars['Float'];
   Idea: Idea;
   IdeaInputOptions: IdeaInputOptions;
   IdeaStats: IdeaStats;
+  IdeaTags: IdeaTags;
   Int: Scalars['Int'];
+  Mutation: {};
+  PropLotFilter: PropLotFilter;
+  PropLotInputOptions: PropLotInputOptions;
+  PropLotResponse: PropLotResponse;
+  PropLotResponseMetadata: PropLotResponseMetadata;
   Query: {};
   String: Scalars['String'];
+  SubmitVoteInputOptions: SubmitVoteInputOptions;
   User: User;
   UserInputOptions: UserInputOptions;
   UserStats: UserStats;
@@ -209,13 +324,25 @@ export type CommentResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type FilterOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['FilterOption'] = ResolversParentTypes['FilterOption']> = {
+  icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  selected?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type IdeaResolvers<ContextType = any, ParentType extends ResolversParentTypes['Idea'] = ResolversParentTypes['Idea']> = {
+  closed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   comments?: Resolver<Maybe<Array<ResolversTypes['Comment']>>, ParentType, ContextType>;
+  consensus?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   ideaStats?: Resolver<Maybe<ResolversTypes['IdeaStats']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['IdeaTags']>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tldr?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   votecount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -228,13 +355,49 @@ export type IdeaStatsResolvers<ContextType = any, ParentType extends ResolversPa
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type IdeaTagsResolvers<ContextType = any, ParentType extends ResolversParentTypes['IdeaTags'] = ResolversParentTypes['IdeaTags']> = {
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['TagType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  submitIdeaVote?: Resolver<ResolversTypes['Vote'], ParentType, ContextType, RequireFields<MutationSubmitIdeaVoteArgs, 'options'>>;
+};
+
+export type PropLotFilterResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotFilter'] = ResolversParentTypes['PropLotFilter']> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  options?: Resolver<Array<ResolversTypes['FilterOption']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['FilterType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PropLotResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotResponse'] = ResolversParentTypes['PropLotResponse']> = {
+  dateFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
+  ideas?: Resolver<Maybe<Array<ResolversTypes['Idea']>>, ParentType, ContextType>;
+  metadata?: Resolver<ResolversTypes['PropLotResponseMetadata'], ParentType, ContextType>;
+  sortFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
+  tagFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PropLotResponseMetadataResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotResponseMetadata'] = ResolversParentTypes['PropLotResponseMetadata']> = {
+  appliedFilters?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  requestUUID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getAllUsers?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
+  getIdea?: Resolver<Maybe<ResolversTypes['Idea']>, ParentType, ContextType, RequireFields<QueryGetIdeaArgs, 'options'>>;
   getIdeas?: Resolver<Maybe<Array<ResolversTypes['Idea']>>, ParentType, ContextType, RequireFields<QueryGetIdeasArgs, 'options'>>;
+  getPropLot?: Resolver<ResolversTypes['PropLotResponse'], ParentType, ContextType, RequireFields<QueryGetPropLotArgs, 'options'>>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'options'>>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  lilnounCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   userStats?: Resolver<Maybe<ResolversTypes['UserStats']>, ParentType, ContextType>;
   wallet?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -258,8 +421,14 @@ export type VoteResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type Resolvers<ContextType = any> = {
   Comment?: CommentResolvers<ContextType>;
+  FilterOption?: FilterOptionResolvers<ContextType>;
   Idea?: IdeaResolvers<ContextType>;
   IdeaStats?: IdeaStatsResolvers<ContextType>;
+  IdeaTags?: IdeaTagsResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
+  PropLotFilter?: PropLotFilterResolvers<ContextType>;
+  PropLotResponse?: PropLotResponseResolvers<ContextType>;
+  PropLotResponseMetadata?: PropLotResponseMetadataResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserStats?: UserStatsResolvers<ContextType>;
