@@ -10,7 +10,7 @@ If you're interested in contributing to Nouns DAO repos we're excited to have yo
 
 ### nouns-api
 
-The [nouns api](packages/nouns-api) is an HTTP webserver that hosts token metadata. This is currently unused because on-chain, data URIs are enabled.
+The [nouns api](packages/nouns-api) is an Node app that hosts the PropLot GraphQL and REST servers using express.js. The API uses Postgres for data storage and Prisma as an ORM.
 
 ### nouns-assets
 
@@ -30,11 +30,11 @@ The [nouns sdk](packages/nouns-sdk) exposes the Nouns contract addresses, ABIs, 
 
 ### nouns-subgraph
 
-In order to make retrieving more complex data from the auction history, [nouns subgraph](packages/nouns-subgraph) contains subgraph manifests that are deployed onto [The Graph](https://thegraph.com).
+In order to make retrieving more complex data from the auction history, [lilnouns subgraph](packages/nouns-subgraph) contains subgraph manifests that are deployed onto [The Graph](https://thegraph.com).
 
 ### nouns-webapp
 
-The [nouns webapp](packages/nouns-webapp) is the frontend for interacting with Noun auctions as hosted at [nouns.wtf](https://nouns.wtf).
+The [nouns webapp](packages/nouns-webapp) is the frontend for interacting with Noun auctions as hosted at [lilnouns.wtf](https://lilnouns.wtf).
 
 ## Quickstart
 
@@ -43,6 +43,8 @@ The [nouns webapp](packages/nouns-webapp) is the frontend for interacting with N
 ```sh
 yarn
 ```
+
+If you are using a M1 Macbook and are having installation issues then see the **M1 Macbook issues** section below.
 
 ### Build all packages
 
@@ -61,3 +63,20 @@ yarn lint
 ```sh
 yarn format
 ```
+
+## M1 Macbook issues
+
+If you are on a M1 Macbook and have used homebrew to configure your machine you may have issues when running `yarn install` due to the `sharp` module. Look out for this in your cli logs:
+
+```
+lilnouns-monorepo/node_modules/sharp: Command failed.
+Exit code: 1
+```
+
+You should be able to fix this and get past the install step by ensuring you are using Node version >=16 and running `brew uninstall vips`. After uninstalling the brew installation of vips the above error should disappear when running `yarn install` and you should now be able to run the applications.
+
+## Adding a dependency
+
+From the root of the monorepo run `yarn workspace @nouns/<PACKAGE> add <NPM_PACKAGE>`. e.g. to add the `uuid` npm package to the webapp you would run `yarn workspace @nouns/webapp add uuid`.
+
+You can also cd into the package where you want to add the npm package and run `yarn add <NPM_PACKAGE>`

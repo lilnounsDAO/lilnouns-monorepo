@@ -28,6 +28,10 @@ interface CacheBucket {
 }
 
 export const cache: Record<string, CacheBucket> = {
+  seedExpriy: {
+    name: 'seedExpriy',
+    version: 'v1',
+  },
   bigNounSeed: {
     name: 'bigNounSeed',
     version: 'v1',
@@ -144,6 +148,7 @@ const config = {
   app: app[CHAIN_ID],
   isPreLaunch: process.env.REACT_APP_IS_PRELAUNCH || 'false',
   addresses: getAddresses(),
+  isPropLotBetaEnabled: process.env.REACT_APP_PROP_LOT_BETA_ENABLED === 'true',
 };
 
 export default config;

@@ -9,3 +9,12 @@ export const nounTokenCount = async (account: string) => {
   }
   return data?.toNumber();
 };
+
+export const nounsTotalSupply = async () => {
+  const data = await tryF(() => nounsTokenContract.totalSupply());
+  if (isError(data)) {
+    console.error(`Error fetching total supply`);
+    return;
+  }
+  return data?.toNumber();
+};

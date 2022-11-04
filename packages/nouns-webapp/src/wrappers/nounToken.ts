@@ -5,7 +5,6 @@ import config, { cache, cacheKey, CHAIN_ID } from '../config';
 import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
 import { seedsQuery, lilnounsSeedsQuery } from './subgraph';
-
 interface NounToken {
   name: string;
   description: string;
@@ -26,6 +25,7 @@ export enum NounsTokenContractFunction {
 
 const abi = new utils.Interface(NounsTokenABI);
 const seedCacheKey = cacheKey(cache.seed, CHAIN_ID, config.addresses.nounsToken);
+const seedExpriyCacheKey = cacheKey(cache.seedExpriy, CHAIN_ID, config.addresses.nounsToken);
 const bigNounSeedCacheKey = cacheKey(
   cache.bigNounSeed,
   CHAIN_ID,
@@ -77,23 +77,37 @@ const useNounSeeds = (nounId: EthersBN) => {
     .map(x => x + 1)
     .sort((a, b) => b - a);
 
-  const newArray = res
-    .slice(0, 1000)
-    .sort((a, b) => b - a)
+  const newArray = res.slice(0, 1000).sort((a, b) => b - a);
 
   const cache = localStorage.getItem(seedCacheKey);
   const cachedSeeds = cache ? JSON.parse(cache) : undefined;
-  
-  const { data } = useQuery(
-    lilnounsSeedsQuery(newArray.map(String)),
-    {
-      skip: !!cachedSeeds,
-    },
-  );
+
+  const seedExpiryCache = localStorage.getItem(seedExpriyCacheKey);
+  const cachedTTL = seedExpiryCache ? JSON.parse(seedExpiryCache) : undefined;
+
+  const { data } = useQuery(lilnounsSeedsQuery(newArray.map(String)), {
+    skip: !!cachedSeeds,
+  });
 
   useEffect(() => {
     if (!cachedSeeds && data?.seeds?.length) {
+      const newTTL = new Date().getTime() + 1000 * 60 * 60 * 2; //2 hours
+
       localStorage.setItem(seedCacheKey, JSON.stringify(seedArrayToObject(data.seeds)));
+      // set seed cache ttl
+      localStorage.setItem(seedExpriyCacheKey, JSON.stringify({ ttl: newTTL }));
+    }
+
+    // check if ttl has expired and reset stale cache accordingly
+    if (cachedTTL) {
+      const ttl = JSON.stringify(cachedTTL.ttl);
+      const ttlTimestamp = Number(ttl);
+      const now = new Date().getTime();
+
+      if (now > ttlTimestamp) {
+        localStorage.removeItem(seedCacheKey);
+        localStorage.removeItem(seedExpriyCacheKey);
+      }
     }
   }, [data, cachedSeeds]);
 
@@ -143,9 +157,6 @@ export const useNounSeed = (nounId: EthersBN) => {
         },
       });
       localStorage.setItem(seedCacheKey, updatedSeedCache);
-
-      //TODO: find way to cache all lils as query is set for first 1k
-      console.log(`cached seed = ${JSON.stringify(cache.seed)}`);
     }
     return response;
   }
@@ -246,30 +257,3 @@ export const useNounTokenBalance = (address: string | undefined): number | undef
 
   return tokenBalance?.toNumber();
 };
-
-
-/**
- * 
- *       // console.log(`arrstring 3: data length == ${data?.seeds?.length}`);
-
-      // const oldItems: Array<string> = JSON.parse(localStorage.getItem(seedCacheKey) || "") || [];
-      // //JSON.parse(localStorage.getItem(seedCacheKey) || '');
-      // console.log(`arrstring 3: oldItems lenght==${oldItems.length} == ${JSON.stringify(oldItems)}`);
-      // // console.log(`arrstring 4: newItems lenght==${data.seeds.length} == ${JSON.stringify(data.seeds)}`);
-      // // const mkmnfer = {"4793":{"background":0,"body":23,"accessory":125,"head":27,"glasses":11}}
-      // oldItems.push("3");
-
-      // localStorage.setItem(seedCacheKey, JSON.stringify(seedArrayToObject(data.seeds)))
-
-     
-
-      // const stored = JSON.parse(localStorage.getItem(seedCacheKey) || "");
-      // const student2 = JSON.stringify(seedArrayToObject(data.seeds))
-      // stored.push(student2);
-
-      //localStorage.setItem(localStorage.getItem(seedCacheKey) || "", JSON.stringify(stored));
-
-      // var result = JSON.parse(localStorage.getItem('students'));
-      // console.log(result);
-
- */
