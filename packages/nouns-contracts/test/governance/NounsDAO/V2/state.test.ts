@@ -11,17 +11,18 @@ import {
   getSigners,
   TestSigners,
   setTotalSupply,
+  deployGovernorV2WithV2Proxy,
+  propStateToString,
   populateDescriptorV2,
-} from '../../utils';
+} from '../../../utils';
 
 import {
   mineBlock,
-  address,
   encodeParameters,
   freezeTime,
   advanceBlocks,
   setNextBlockTimestamp,
-} from '../../utils';
+} from '../../../utils';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
@@ -30,23 +31,13 @@ import {
   NounsDescriptorV2__factory as NounsDescriptorV2Factory,
   NounsDAOExecutorHarness,
   NounsDAOExecutorHarness__factory as NounsDaoExecutorHarnessFactory,
-  NounsDAOImmutable,
-  NounsDAOImmutable__factory as NounsDaoImmutableFactory,
-} from '../../../typechain';
+  NounsDAOLogicV2,
+} from '../../../../typechain';
 
 chai.use(solidity);
 const { expect } = chai;
 
-const states: string[] = [
-  'Pending',
-  'Active',
-  'Canceled',
-  'Defeated',
-  'Succeeded',
-  'Queued',
-  'Expired',
-  'Executed',
-];
+const BLOCK_TO_PROP_END = 5762;
 
 let token: NounsToken;
 let deployer: SignerWithAddress;
@@ -54,7 +45,7 @@ let account0: SignerWithAddress;
 let account1: SignerWithAddress;
 let signers: TestSigners;
 
-let gov: NounsDAOImmutable;
+let gov: NounsDAOLogicV2;
 let timelock: NounsDAOExecutorHarness;
 let delay: number;
 
@@ -67,7 +58,7 @@ let proposalId: EthersBN;
 let snapshotId: number;
 
 async function expectState(proposalId: number | EthersBN, expectedState: string) {
-  const actualState = states[await gov.state(proposalId)];
+  const actualState = propStateToString(await gov.state(proposalId));
   expect(actualState).to.equal(expectedState);
 }
 
@@ -84,15 +75,14 @@ async function makeProposal(
 
   timelock = await new NounsDaoExecutorHarnessFactory(deployer).deploy(deployer.address, delay);
 
-  gov = await new NounsDaoImmutableFactory(deployer).deploy(
-    timelock.address,
+  gov = await deployGovernorV2WithV2Proxy(
+    deployer,
     token.address,
-    address(0),
+    timelock.address,
     deployer.address,
-    1728,
+    5760,
     1,
     proposalThresholdBPS,
-    1,
   );
 
   await timelock.harnessSetAdmin(gov.address);
@@ -111,7 +101,7 @@ async function makeProposal(
   proposalId = await gov.latestProposalIds(proposer.address);
 }
 
-describe('NounsDAO#state/1', () => {
+describe('NounsDAOV2#state/1', () => {
   before(async () => {
     await freezeTime(100);
     signers = await getSigners();
@@ -174,7 +164,7 @@ describe('NounsDAO#state/1', () => {
   it('Defeated by running out of time', async () => {
     await makeProposal();
     // travel to end block
-    await advanceBlocks(2000);
+    await advanceBlocks(BLOCK_TO_PROP_END);
 
     await expectState(proposalId, 'Defeated');
   });
@@ -192,7 +182,7 @@ describe('NounsDAO#state/1', () => {
     await gov.connect(account0).castVote(proposalId, 0);
 
     // travel to end block
-    await advanceBlocks(2000);
+    await advanceBlocks(BLOCK_TO_PROP_END);
     await expectState(proposalId, 'Defeated');
   });
 
@@ -207,14 +197,14 @@ describe('NounsDAO#state/1', () => {
     // cast 2 votes against
     await gov.connect(account0).castVote(proposalId, 0);
 
-    await advanceBlocks(2000);
+    await advanceBlocks(BLOCK_TO_PROP_END);
 
     await expectState(proposalId, 'Succeeded');
   });
 
   it('Cannot queue if defeated', async () => {
     await makeProposal();
-    await advanceBlocks(2000);
+    await advanceBlocks(BLOCK_TO_PROP_END);
 
     await expectState(proposalId, 'Defeated');
 
@@ -244,7 +234,7 @@ describe('NounsDAO#state/1', () => {
       'queue: proposal can only be queued if it is succeeded',
     );
 
-    await advanceBlocks(2000);
+    await advanceBlocks(BLOCK_TO_PROP_END);
 
     // anyone can queue
     await gov.connect(account0).queue(proposalId);
@@ -258,7 +248,7 @@ describe('NounsDAO#state/1', () => {
 
     await gov.connect(deployer).castVote(proposalId, 1);
 
-    await advanceBlocks(2000);
+    await advanceBlocks(BLOCK_TO_PROP_END);
 
     await gov.connect(account0).queue(proposalId);
     const gracePeriod = await timelock.GRACE_PERIOD();
@@ -285,7 +275,7 @@ describe('NounsDAO#state/1', () => {
       'execute: proposal can only be executed if it is queued',
     );
 
-    await advanceBlocks(2000);
+    await advanceBlocks(BLOCK_TO_PROP_END);
 
     await expect(gov.execute(proposalId)).revertedWith(
       'execute: proposal can only be executed if it is queued',

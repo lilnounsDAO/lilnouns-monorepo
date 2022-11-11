@@ -1,4 +1,4 @@
-import { default as NounsAuctionHouseABI } from '../abi/contracts/NounsAuctionHouse.sol/NounsAuctionHouse.json';
+import { default as NounsAuctionHouseABI } from "../abi/contracts/NounsAuctionHouse.sol/NounsAuctionHouse.json";
 import {
   ChainId,
   ContractDeployment,
@@ -6,78 +6,102 @@ import {
   ContractNameDescriptorV1,
   ContractNamesDAOV2,
   DeployedContract,
-} from './types';
-import { Interface, parseUnits } from 'ethers/lib/utils';
-import { task, types } from 'hardhat/config';
-import promptjs from 'prompt';
+} from "./types";
+import { Interface, parseUnits } from "ethers/lib/utils";
+import { task, types } from "hardhat/config";
+import promptjs from "prompt";
 
 promptjs.colors = false;
-promptjs.message = '> ';
-promptjs.delimiter = '';
+promptjs.message = "> ";
+promptjs.delimiter = "";
 
 const proxyRegistries: Record<number, string> = {
-  [ChainId.Mainnet]: '0xa5409ec958c83c3f309868babaca7c86dcb077c1',
-  [ChainId.Rinkeby]: '0xf57b2c51ded3a29e6891aba85459d600256cf317',
+  [ChainId.Mainnet]: "0xa5409ec958c83c3f309868babaca7c86dcb077c1",
+  [ChainId.Rinkeby]: "0xf57b2c51ded3a29e6891aba85459d600256cf317",
 };
 const wethContracts: Record<number, string> = {
-  [ChainId.Mainnet]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-  [ChainId.Ropsten]: '0xc778417e063141139fce010982780140aa0cd5ab',
-  [ChainId.Rinkeby]: '0xc778417e063141139fce010982780140aa0cd5ab',
-  [ChainId.Kovan]: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
-  [ChainId.Goerli]: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+  [ChainId.Mainnet]: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  [ChainId.Ropsten]: "0xc778417e063141139fce010982780140aa0cd5ab",
+  [ChainId.Rinkeby]: "0xc778417e063141139fce010982780140aa0cd5ab",
+  [ChainId.Kovan]: "0xd0a1e359811322d97991e03f863a0c30c2cf029c",
+  [ChainId.Goerli]: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
 };
 
 const NOUNS_ART_NONCE_OFFSET = 4;
 const AUCTION_HOUSE_PROXY_NONCE_OFFSET = 9;
 const GOVERNOR_N_DELEGATOR_NONCE_OFFSET = 12;
 
-task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov times for testing')
-  .addFlag('autoDeploy', 'Deploy all contracts without user interaction')
-  .addOptionalParam('weth', 'The WETH contract address', undefined, types.string)
-  .addOptionalParam('noundersdao', 'The nounders DAO contract address', undefined, types.string)
+task(
+  "deploy-short-times-daov1",
+  "Deploy all Nouns contracts with short gov times for testing"
+)
+  .addFlag("autoDeploy", "Deploy all contracts without user interaction")
   .addOptionalParam(
-    'auctionTimeBuffer',
-    'The auction time buffer (seconds)',
+    "weth",
+    "The WETH contract address",
+    undefined,
+    types.string
+  )
+  .addOptionalParam(
+    "lilnoundersdao",
+    "The nounders DAO contract address",
+    undefined,
+    types.string
+  )
+  .addOptionalParam(
+    "nounsdao",
+    "The nounsDAO contract address",
+    undefined,
+    types.string
+  )
+  .addOptionalParam(
+    "auctionTimeBuffer",
+    "The auction time buffer (seconds)",
     30 /* 30 seconds */,
-    types.int,
+    types.int
   )
   .addOptionalParam(
-    'auctionReservePrice',
-    'The auction reserve price (wei)',
+    "auctionReservePrice",
+    "The auction reserve price (wei)",
     1 /* 1 wei */,
-    types.int,
+    types.int
   )
   .addOptionalParam(
-    'auctionMinIncrementBidPercentage',
-    'The auction min increment bid percentage (out of 100)',
+    "auctionMinIncrementBidPercentage",
+    "The auction min increment bid percentage (out of 100)",
     2 /* 2% */,
-    types.int,
+    types.int
   )
   .addOptionalParam(
-    'auctionDuration',
-    'The auction duration (seconds)',
+    "auctionDuration",
+    "The auction duration (seconds)",
     60 * 2 /* 2 minutes */,
-    types.int,
+    types.int
   )
-  .addOptionalParam('timelockDelay', 'The timelock delay (seconds)', 60 /* 1 min */, types.int)
   .addOptionalParam(
-    'votingPeriod',
-    'The voting period (blocks)',
+    "timelockDelay",
+    "The timelock delay (seconds)",
+    60 /* 1 min */,
+    types.int
+  )
+  .addOptionalParam(
+    "votingPeriod",
+    "The voting period (blocks)",
     80 /* 20 min (15s blocks) */,
-    types.int,
+    types.int
   )
-  .addOptionalParam('votingDelay', 'The voting delay (blocks)', 1, types.int)
+  .addOptionalParam("votingDelay", "The voting delay (blocks)", 1, types.int)
   .addOptionalParam(
-    'proposalThresholdBps',
-    'The proposal threshold (basis points)',
+    "proposalThresholdBps",
+    "The proposal threshold (basis points)",
     100 /* 1% */,
-    types.int,
+    types.int
   )
   .addOptionalParam(
-    'quorumVotesBps',
-    'Votes required for quorum (basis points)',
+    "quorumVotesBps",
+    "Votes required for quorum (basis points)",
     1_000 /* 10% */,
-    types.int,
+    types.int
   )
   .setAction(async (args, { ethers }) => {
     const network = await ethers.provider.getNetwork();
@@ -86,17 +110,23 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
     // prettier-ignore
     const proxyRegistryAddress = proxyRegistries[network.chainId] ?? proxyRegistries[ChainId.Rinkeby];
 
-    if (!args.noundersdao) {
+    if (!args.lilnoundersdao) {
       console.log(
-        `Nounders DAO address not provided. Setting to deployer (${deployer.address})...`,
+        `Lil Nounders DAO address not provided. Setting to deployer (${deployer.address})...`
       );
-      args.noundersdao = deployer.address;
+      args.lilnoundersdao = deployer.address;
+    }
+    if (!args.nounsdao) {
+      console.log(
+        `Nouns DAO address not provided. Setting to deployer (${deployer.address})...`
+      );
+      args.nounsdao = deployer.address;
     }
     if (!args.weth) {
       const deployedWETHContract = wethContracts[network.chainId];
       if (!deployedWETHContract) {
         throw new Error(
-          `Can not auto-detect WETH contract on chain ${network.name}. Provide it with the --weth arg.`,
+          `Can not auto-detect WETH contract on chain ${network.name}. Provide it with the --weth arg.`
         );
       }
       args.weth = deployedWETHContract;
@@ -130,12 +160,16 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
       },
       Inflator: {},
       NounsArt: {
-        args: [() => deployment.NounsDescriptorV2.address, () => deployment.Inflator.address],
+        args: [
+          () => deployment.NounsDescriptorV2.address,
+          () => deployment.Inflator.address,
+        ],
       },
       NounsSeeder: {},
       NounsToken: {
         args: [
-          args.noundersdao,
+          args.lilnoundersdao,
+          args.nounsDAO,
           expectedAuctionHouseProxyAddress,
           () => deployment.NounsDescriptorV2.address,
           () => deployment.NounsSeeder.address,
@@ -151,22 +185,26 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
           () => deployment.NounsAuctionHouse.address,
           () => deployment.NounsAuctionHouseProxyAdmin.address,
           () =>
-            new Interface(NounsAuctionHouseABI).encodeFunctionData('initialize', [
-              deployment.NounsToken.address,
-              args.weth,
-              args.auctionTimeBuffer,
-              args.auctionReservePrice,
-              args.auctionMinIncrementBidPercentage,
-              args.auctionDuration,
-            ]),
+            new Interface(NounsAuctionHouseABI).encodeFunctionData(
+              "initialize",
+              [
+                deployment.NounsToken.address,
+                args.weth,
+                args.auctionTimeBuffer,
+                args.auctionReservePrice,
+                args.auctionMinIncrementBidPercentage,
+                args.auctionDuration,
+              ]
+            ),
         ],
         waitForConfirmation: true,
         validateDeployment: () => {
           const expected = expectedAuctionHouseProxyAddress.toLowerCase();
-          const actual = deployment.NounsAuctionHouseProxy.address.toLowerCase();
+          const actual =
+            deployment.NounsAuctionHouseProxy.address.toLowerCase();
           if (expected !== actual) {
             throw new Error(
-              `Unexpected auction house proxy address. Expected: ${expected}. Actual: ${actual}.`,
+              `Unexpected auction house proxy address. Expected: ${expected}. Actual: ${actual}.`
             );
           }
         },
@@ -181,7 +219,7 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
         args: [
           () => deployment.NounsDAOExecutor.address,
           () => deployment.NounsToken.address,
-          args.noundersdao,
+          args.lilnoundersdao,
           () => deployment.NounsDAOExecutor.address,
           () => deployment.NounsDAOLogicV1.address,
           args.votingPeriod,
@@ -195,7 +233,7 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
           const actual = deployment.NounsDAOProxy.address.toLowerCase();
           if (expected !== actual) {
             throw new Error(
-              `Unexpected Nouns DAO proxy address. Expected: ${expected}. Actual: ${actual}.`,
+              `Unexpected Nouns DAO proxy address. Expected: ${expected}. Actual: ${actual}.`
             );
           }
         },
@@ -205,7 +243,9 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
     for (const [name, contract] of Object.entries(contracts)) {
       let gasPrice = await ethers.provider.getGasPrice();
       if (!args.autoDeploy) {
-        const gasInGwei = Math.round(Number(ethers.utils.formatUnits(gasPrice, 'gwei')));
+        const gasInGwei = Math.round(
+          Number(ethers.utils.formatUnits(gasPrice, "gwei"))
+        );
 
         promptjs.start();
 
@@ -213,24 +253,24 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
           {
             properties: {
               gasPrice: {
-                type: 'integer',
+                type: "integer",
                 required: true,
-                description: 'Enter a gas price (gwei)',
+                description: "Enter a gas price (gwei)",
                 default: gasInGwei,
               },
             },
           },
         ]);
-        gasPrice = ethers.utils.parseUnits(result.gasPrice.toString(), 'gwei');
+        gasPrice = ethers.utils.parseUnits(result.gasPrice.toString(), "gwei");
       }
 
       let nameForFactory: string;
       switch (name) {
-        case 'NounsDAOExecutor':
-          nameForFactory = 'NounsDAOExecutorTest';
+        case "NounsDAOExecutor":
+          nameForFactory = "NounsDAOExecutorTest";
           break;
-        case 'NounsDAOLogicV1':
-          nameForFactory = 'NounsDAOLogicV1Harness';
+        case "NounsDAOLogicV1":
+          nameForFactory = "NounsDAOLogicV1Harness";
           break;
         default:
           nameForFactory = name;
@@ -243,19 +283,20 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
 
       const deploymentGas = await factory.signer.estimateGas(
         factory.getDeployTransaction(
-          ...(contract.args?.map(a => (typeof a === 'function' ? a() : a)) ?? []),
+          ...(contract.args?.map((a) => (typeof a === "function" ? a() : a)) ??
+            []),
           {
             gasPrice,
-          },
-        ),
+          }
+        )
       );
       const deploymentCost = deploymentGas.mul(gasPrice);
 
       console.log(
         `Estimated cost to deploy ${name}: ${ethers.utils.formatUnits(
           deploymentCost,
-          'ether',
-        )} ETH`,
+          "ether"
+        )} ETH`
       );
 
       if (!args.autoDeploy) {
@@ -270,22 +311,23 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
             },
           },
         ]);
-        if (result.operation === 'SKIP') {
+        if (result.operation === "SKIP") {
           console.log(`Skipping ${name} deployment...`);
           continue;
         }
-        if (result.operation === 'EXIT') {
-          console.log('Exiting...');
+        if (result.operation === "EXIT") {
+          console.log("Exiting...");
           return;
         }
       }
       console.log(`Deploying ${name}...`);
 
       const deployedContract = await factory.deploy(
-        ...(contract.args?.map(a => (typeof a === 'function' ? a() : a)) ?? []),
+        ...(contract.args?.map((a) => (typeof a === "function" ? a() : a)) ??
+          []),
         {
           gasPrice,
-        },
+        }
       );
 
       if (contract.waitForConfirmation) {
@@ -296,7 +338,8 @@ task('deploy-short-times-daov1', 'Deploy all Nouns contracts with short gov time
         name: nameForFactory,
         instance: deployedContract,
         address: deployedContract.address,
-        constructorArguments: contract.args?.map(a => (typeof a === 'function' ? a() : a)) ?? [],
+        constructorArguments:
+          contract.args?.map((a) => (typeof a === "function" ? a() : a)) ?? [],
         libraries: contract?.libraries?.() ?? {},
       };
 
