@@ -5539,6 +5539,14 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@lilnounsdao/sdk@^0.3.8":
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/@lilnounsdao/sdk/-/sdk-0.3.8.tgz#851a23aa973c9bb2add5b524a83f2b64408a7094"
+  integrity sha512-4VrYInFwVlKziwYqp2la19gHXc7Gp5qhU0vPoPfkfeKFnmcOA02+O6DFINgwhOj9OUscGJmj3KhltzBkr/wd1w==
+  dependencies:
+    "@lilnounsdao/contracts" "^0.2.8"
+    ethers "^5.6.8"
+
 "@lingui/babel-plugin-extract-messages@^3.14.0":
   version "3.14.0"
   resolved "https://registry.yarnpkg.com/@lingui/babel-plugin-extract-messages/-/babel-plugin-extract-messages-3.14.0.tgz#c3b2cbeaf3f3318fa165bd8db598ca74600a04bb"
