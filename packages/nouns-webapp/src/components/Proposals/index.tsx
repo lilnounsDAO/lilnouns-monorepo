@@ -243,7 +243,7 @@ const Proposals = ({
                 );
 
                 return (
-                  <div
+                  <a
                     className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
                     onClick={() => history.push(`/vote/${p.id}`)}
                     key={i}
@@ -264,7 +264,7 @@ const Proposals = ({
                     {isPropInStateToHaveCountDown && (
                       <div className={classes.mobileCountdownWrapper}>{countdownPill}</div>
                     )}
-                  </div>
+                  </a>
                 );
               })
           ) : (
@@ -368,7 +368,7 @@ const Proposals = ({
                 );
 
                 return (
-                  <div
+                  <a
                     className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
                     onClick={() => history.push(`/vote/nounsdao/${p.id}`)}
                     key={i}
@@ -389,7 +389,7 @@ const Proposals = ({
                     {isPropInStateToHaveCountDown && (
                       <div className={classes.mobileCountdownWrapper}>{countdownPill}</div>
                     )}
-                  </div>
+                  </a>
                 );
               })
           ) : (

@@ -7,10 +7,18 @@ promptjs.colors = false;
 promptjs.message = '> ';
 promptjs.delimiter = '';
 
+//* Deploying to GOERLI
+/** TODO:
+ * Deploy with reduced times
+ * Check nounder/nounsdao addresses
+ * Link to existing nounsDAO NFTDescriptor, Descriptor, and Seeder contracts
+ * Cange nonce offset in accordance to contract deployments
+ */
+
 type ContractName =
-  | 'NFTDescriptor'
-  | 'NounsDescriptor'
-  | 'NounsSeeder'
+  // | 'NFTDescriptor'
+  // | 'NounsDescriptor'
+  // | 'NounsSeeder'
   | 'NounsToken'
   | 'NounsAuctionHouse'
   | 'NounsAuctionHouseProxyAdmin'
@@ -36,11 +44,10 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
   .addOptionalParam('auctionMinIncrementBidPercentage', 'The auction min increment bid percentage (out of 100)', 5, types.int,)
   .addOptionalParam('auctionDuration', 'The auction duration (seconds)', 60 * 60 * 0.25, types.int) // Default: 1 day Revised: 15 minutes
 
-  .addOptionalParam('timelockDelay', 'The timelock delay (seconds)', 60 * 60 * 24 * 2, types.int) // Default: 2 days
+  .addOptionalParam('timelockDelay', 'The timelock delay (seconds)', 60 * 5, types.int) // DONE: 5 minutes
 
-  //  .addOptionalParam('votingPeriod', 'The voting period (blocks)', 4 * 60 * 24 * 3, types.int) // Default: 3 days
-  .addOptionalParam('votingPeriod', 'The voting period (blocks)', 33230, types.int) // Default: 3 days Revised 5 days
-  .addOptionalParam('votingDelay', 'The voting delay (blocks)', 26585, types.int) // Default: (2 days) Revised: 4 days 26585 blocks
+  .addOptionalParam('votingPeriod', 'The voting period (blocks)', 33230, types.int) // TODO: 15 MINUTES
+  .addOptionalParam('votingDelay', 'The voting delay (blocks)', 26585, types.int) // TODO: 0 DAYS
   .addOptionalParam('proposalThresholdBps', 'The proposal threshold (basis points)', 100, types.int) // Default: 5% Revised 1%
   .addOptionalParam('quorumVotesBps', 'Votes required for quorum (basis points)', 1_000, types.int) // Default: 10%
   .setAction(async (args, { ethers }) => {
@@ -68,22 +75,28 @@ task('deploy', 'Deploys NFTDescriptor, NounsDescriptor, NounsSeeder, and NounsTo
 
     console.log(`expectedAuctionHouseProxyAddress = ${expectedAuctionHouseProxyAddress}`)
     console.log(`expectedNounsDAOProxyAddress = ${expectedNounsDAOProxyAddress}`)
+    
+    const nounsDAO_seederAddress = '0xF6a38E8235916334268da317EC84F5dfcfB9e023';
+    const nounsDAO_descriptorAddress = '0xB6D0AF8C27930E13005Bf447d54be8235724a102';
+    // const nounsDAO_NFTDescriptorAddress = '0x9417e5d955e6e1deA90499Baa527C9d6360b737f';
 
     const contracts: Record<ContractName, Contract> = {
-      NFTDescriptor: {},
-      NounsDescriptor: {
-        libraries: () => ({
-          NFTDescriptor: contracts['NFTDescriptor'].address as string,
-        }),
-      },
-      NounsSeeder: {},
+      // NFTDescriptor: {},
+      // NounsDescriptor: {
+      //   libraries: () => ({
+      //     NFTDescriptor: contracts['NFTDescriptor'].address as string,
+      //   }),
+      // },
+      // NounsSeeder: {},
       NounsToken: {
         args: [
           args.lilnoundersDAO,
           args.nounsDAO,
           expectedAuctionHouseProxyAddress,
-          () => contracts['NounsDescriptor'].address,
-          () => contracts['NounsSeeder'].address,
+          nounsDAO_descriptorAddress,
+          nounsDAO_seederAddress,
+          // () => contracts['NounsDescriptor'].address,
+          // () => contracts['NounsSeeder'].address,
           proxyRegistryAddress,
         ],
       },

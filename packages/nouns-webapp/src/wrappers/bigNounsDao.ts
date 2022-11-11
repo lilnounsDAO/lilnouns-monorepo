@@ -1,4 +1,4 @@
-import { NounsDAOABI, NounsDaoLogicV1Factory } from '@nouns/sdk';
+import { NounsDAOABI, NounsDaoLogicV1Factory } from '@lilnounsdao/sdk';
 import {
   ChainId,
   useBlockMeta,

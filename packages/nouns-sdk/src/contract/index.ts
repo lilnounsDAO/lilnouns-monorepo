@@ -7,9 +7,10 @@ export {
   NounsDescriptorABI,
   NounsSeederABI,
   NounsDAOABI,
+  NounsDAOV2ABI,
   NounsTokenFactory,
   NounsAuctionHouseFactory,
   NounsDescriptorFactory,
   NounsSeederFactory,
   NounsDaoLogicV1Factory,
-} from '@nouns/contracts';
+} from '@lilnounsdao/contracts';

@@ -1,6 +1,6 @@
 import { config } from './config';
 import { Contract, providers, getDefaultProvider } from 'ethers';
-import { NounsTokenABI } from '@nouns/contracts';
+import { NounsTokenABI } from '@lilnounsdao/contracts';
 
 /**
  * Ethers JSON RPC Provider

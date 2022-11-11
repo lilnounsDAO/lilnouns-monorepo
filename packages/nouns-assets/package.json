@@ -1,12 +1,16 @@
 {
-  "name": "@nouns/assets",
-  "version": "0.4.0",
-  "description": "Nouns run-length encoded image data",
+  "name": "@lilnounsdao/assets",
+  "version": "0.5.1",
+  "description": "Lil Nouns run-length encoded image data",
   "author": "Nounders",
-  "homepage": "https://nouns.wtf",
+  "homepage": "https://lilnouns.wtf",
   "license": "GPL-3.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "encode": "ts-node scripts/encode.ts",
     "encode-more": "ts-node scripts/encode-more.ts",
@@ -17,7 +21,7 @@
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\""
   },
   "devDependencies": {
-    "@nouns/sdk": "^0.2.0",
+    "@lilnounsdao/sdk": "^0.3.1",
     "@types/pngjs": "^6.0.1",
     "chai": "^4.2.0",
     "mocha": "^8.4.0",
