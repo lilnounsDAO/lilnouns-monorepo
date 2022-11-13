@@ -6,11 +6,11 @@ import { ethers, upgrades } from 'hardhat';
 import {
   MaliciousBidder__factory as MaliciousBidderFactory,
   NounsAuctionHouse,
-  NounsDescriptor__factory as NounsDescriptorFactory,
+  NounsDescriptorV2__factory as NounsDescriptorV2Factory,
   NounsToken,
-  Weth,
+  WETH,
 } from '../typechain';
-import { deployNounsToken, deployWeth, populateDescriptor } from './utils';
+import { deployNounsToken, deployWeth, populateDescriptorV2 } from './utils';
 
 chai.use(solidity);
 const { expect } = chai;
@@ -18,9 +18,9 @@ const { expect } = chai;
 describe('NounsAuctionHouse', () => {
   let nounsAuctionHouse: NounsAuctionHouse;
   let nounsToken: NounsToken;
-  let weth: Weth;
+  let weth: WETH;
   let deployer: SignerWithAddress;
-  let nounsDAO: SignerWithAddress;
+  let noundersDAO: SignerWithAddress;
   let bidderA: SignerWithAddress;
   let bidderB: SignerWithAddress;
   let snapshotId: number;
@@ -43,15 +43,15 @@ describe('NounsAuctionHouse', () => {
   }
 
   before(async () => {
-    [deployer, nounsDAO, bidderA, bidderB] = await ethers.getSigners();
+    [deployer, noundersDAO, bidderA, bidderB] = await ethers.getSigners();
 
-    nounsToken = await deployNounsToken(deployer, deployer.address, nounsDAO.address, deployer.address);
+    nounsToken = await deployNounsToken(deployer, noundersDAO.address, deployer.address);
     weth = await deployWeth(deployer);
     nounsAuctionHouse = await deploy(deployer);
 
     const descriptor = await nounsToken.descriptor();
 
-    await populateDescriptor(NounsDescriptorFactory.connect(descriptor, deployer));
+    await populateDescriptorV2(NounsDescriptorV2Factory.connect(descriptor, deployer));
 
     await nounsToken.setMinter(nounsAuctionHouse.address);
   });
@@ -76,7 +76,7 @@ describe('NounsAuctionHouse', () => {
     await expect(tx).to.be.revertedWith('Initializable: contract is already initialized');
   });
 
-  it('should allow the lilNoundersDAO to unpause the contract and create the first auction', async () => {
+  it('should allow the noundersDAO to unpause the contract and create the first auction', async () => {
     const tx = await nounsAuctionHouse.unpause();
     await tx.wait();
 
@@ -255,8 +255,7 @@ describe('NounsAuctionHouse', () => {
 
     const { nounId } = await nounsAuctionHouse.auction();
 
-    // index is not 1 because first nft is minted to lilnounders and 2nd nouns dao
-    expect(nounId).to.equal(2);
+    expect(nounId).to.equal(1);
   });
 
   it('should create a new auction if the auction house is paused and unpaused after an auction is settled', async () => {
@@ -320,12 +319,10 @@ describe('NounsAuctionHouse', () => {
 
     await ethers.provider.send('evm_increaseTime', [60 * 60 * 25]); // Add 25 hours
 
-    const owner = await nounsAuctionHouse.owner()
-
     const tx = nounsAuctionHouse.connect(bidderA).settleCurrentAndCreateNewAuction();
 
     await expect(tx)
       .to.emit(nounsAuctionHouse, 'AuctionSettled')
-      .withArgs(nounId, constants.AddressZero, 0);
+      .withArgs(nounId, '0x0000000000000000000000000000000000000000', 0);
   });
 });

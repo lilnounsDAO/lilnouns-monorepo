@@ -40,7 +40,7 @@ import LogsUpdater from './state/updaters/logs';
 import config, { CHAIN_ID, createNetworkHttpUrl } from './config';
 import { WebSocketProvider } from '@ethersproject/providers';
 import { BigNumber, BigNumberish, providers } from 'ethers';
-import { NounsAuctionHouseFactory } from '@nouns/sdk';
+import { NounsAuctionHouseFactory } from '@lilnounsdao/sdk';
 import dotenv from 'dotenv';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { appendBid } from './state/slices/auction';
@@ -52,7 +52,6 @@ import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
-import { createClient, WagmiConfig } from 'wagmi';
 import { AuthProvider } from './hooks/useAuth';
 import { ErrorModalProvider } from './hooks/useApiError';
 
@@ -101,16 +100,9 @@ const useDappConfig = {
     [ChainId.Rinkeby]: createNetworkHttpUrl('rinkeby'),
     [ChainId.Mainnet]: createNetworkHttpUrl('mainnet'),
     [ChainId.Hardhat]: 'http://localhost:8545',
+    [ChainId.Goerli]: createNetworkHttpUrl('goerli'),
   },
 };
-
-const alchemyId = 'tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0';
-
-const wagmiClient = createClient({
-  provider(config) {
-    return new providers.AlchemyProvider(config.chainId, alchemyId);
-  },
-});
 
 const defaultLink = new HttpLink({
   uri: config.app.subgraphApiUri,
@@ -296,7 +288,6 @@ const rollbarConfig = {
 
 ReactDOM.render(
   <RollbarProvider config={rollbarConfig}>
-    <WagmiConfig client={wagmiClient}>
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <ChainSubscriber />
@@ -321,7 +312,6 @@ ReactDOM.render(
           </React.StrictMode>
         </ConnectedRouter>
       </Provider>
-    </WagmiConfig>
     ,
   </RollbarProvider>,
   document.getElementById('root'),

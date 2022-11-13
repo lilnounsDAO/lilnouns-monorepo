@@ -1,5 +1,5 @@
-import { ImageData as data, getNounData, getBigNounData, BigNounImageData as bigNounData } from '@nouns/assets';
-import { buildSVG } from '@nouns/sdk';
+import { ImageData as data, getNounData, getBigNounData, BigNounImageData as bigNounData } from '@lilnounsdao/assets';
+import { buildSVG } from '@lilnounsdao/sdk';
 import { BigNumber, BigNumber as EthersBN } from 'ethers';
 import { INounSeed, useBigNounSeed, useNounSeed } from '../../wrappers/nounToken';
 import Noun from '../Noun';

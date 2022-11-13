@@ -1,7 +1,7 @@
 import {
   ContractAddresses as NounsContractAddresses,
   getContractAddressesForChainOrThrow,
-} from '@nouns/sdk';
+} from '@lilnounsdao/sdk';
 import { ChainId } from '@usedapp/core';
 
 interface ExternalContractAddresses {
@@ -21,7 +21,7 @@ interface AppConfig {
   zoraKey: string;
 }
 
-type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat;
+type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat | ChainId.Goerli;
 interface CacheBucket {
   name: string;
   version: string;
@@ -68,7 +68,7 @@ const isLocalhost = Boolean(
 export const createNetworkHttpUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_JSONRPC`];
 
-  if (network === 'rinkeby') {
+  if (network === 'rinkeby' || network === 'goerli') {
     return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
@@ -80,7 +80,7 @@ export const createNetworkHttpUrl = (network: string): string => {
 export const createNetworkWsUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_WSRPC`];
 
-  if (network === 'rinkeby') {
+  if (network === 'rinkeby' || network === 'goerli') {
     return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
@@ -97,6 +97,16 @@ const app: Record<SupportedChains, AppConfig> = {
       'https://api.thegraph.com/subgraphs/name/lilnounsdao/lil-nouns-subgraph-rinkeby',
     nounsDAOSubgraphApiUri:
       'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph-rinkeby',
+    enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
+    nounsApiUri: process.env[`REACT_APP_RINKEBY_NOUNSAPI`] || '',
+    enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
+    zoraKey: process.env.ZORA_API_KEY || '',
+  },
+  [ChainId.Goerli]: {
+    jsonRpcUri: createNetworkHttpUrl('goerli'),
+    wsRpcUri: createNetworkWsUrl('goerli'),
+    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/lilnounsdao/lil-nouns-subgraph-goerli',
+    nounsDAOSubgraphApiUri: 'https://api.thegraph.com/subgraphs/name/bcjgit/dao-v2-test',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_RINKEBY_NOUNSAPI`] || '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
@@ -127,6 +137,9 @@ const app: Record<SupportedChains, AppConfig> = {
 const externalAddresses: Record<SupportedChains, ExternalContractAddresses> = {
   [ChainId.Rinkeby]: {
     lidoToken: '0xF4242f9d78DB7218Ad72Ee3aE14469DBDE8731eD',
+  },
+  [ChainId.Goerli]: {
+    lidoToken: '0x2DD6530F136D2B56330792D46aF959D9EA62E276',
   },
   [ChainId.Mainnet]: {
     lidoToken: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',

@@ -6,9 +6,9 @@
     "build": "lerna run build",
     "test": "lerna run --parallel test",
     "clean": "lerna run --parallel clean",
-    "prepare": "lerna run prepare --scope=@nouns/{assets,contracts,sdk}",
+    "prepare": "lerna run prepare --scope=@lilnounsdao/{assets,contracts,sdk}",
     "lint": "eslint 'packages/**/*.ts' --fix",
-    "format": "prettier --write 'packages/**/*.{ts(x)?,sol,md,css}' '!**/typechain/**'"
+    "format": "prettier --write 'packages/**/*.{ts(x)?,sol,md,css,json}' '!**/typechain/**'"
   },
   "devDependencies": {
     "@types/chai": "^4.2.15",
