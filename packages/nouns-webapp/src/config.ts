@@ -1,6 +1,7 @@
 import {
   ContractAddresses as NounsContractAddresses,
   getContractAddressesForChainOrThrow,
+  getBigNounsContractAddressesForChainOrThrow
 } from '@lilnounsdao/sdk';
 import { ChainId } from '@usedapp/core';
 
@@ -157,10 +158,19 @@ const getAddresses = (): ContractAddresses => {
   return { ...nounsAddresses, ...externalAddresses[CHAIN_ID] };
 };
 
+const getBigNounsAddresses = (): ContractAddresses => {
+  let bigNounsNounsAddresses = {} as NounsContractAddresses;
+  try {
+    bigNounsNounsAddresses = getBigNounsContractAddressesForChainOrThrow(CHAIN_ID);
+  } catch {}
+  return { ...bigNounsNounsAddresses, ...externalAddresses[CHAIN_ID] };
+};
+
 const config = {
   app: app[CHAIN_ID],
   isPreLaunch: process.env.REACT_APP_IS_PRELAUNCH || 'false',
   addresses: getAddresses(),
+  bigNounsAddresses: getBigNounsAddresses()
 };
 
 export default config;

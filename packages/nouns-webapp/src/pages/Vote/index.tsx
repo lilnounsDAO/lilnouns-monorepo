@@ -37,7 +37,6 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(advanced);
 
-
 const VotePage = ({
   match: {
     params: { id },

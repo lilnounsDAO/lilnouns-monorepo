@@ -99,7 +99,7 @@ export const proposalsQuery = (first = 1_000) => gql`
 
 export const bigNounsProposalsQuery = (first = 1_000) => gql`
 {
-  proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
+daa: proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
     id
     description
     status
@@ -336,6 +336,17 @@ export const createTimestampAllProposals = () => gql`
 export const proposalVotesQuery = (proposalId: string) => gql`
   {
     votes(where: { proposal: "${proposalId}", votesRaw_gt: 0 }) {
+      supportDetailed
+      voter {
+        id
+      }
+    }	
+  }
+`;
+
+export const proposalVotesQuerya = (proposalId: string) => gql`
+  {
+    aa:votes(where: { proposal: "${proposalId}", votesRaw_gt: 0 }) {
       supportDetailed
       voter {
         id
