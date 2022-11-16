@@ -2,6 +2,7 @@ import { Row, Col, Button, Card, Spinner } from 'react-bootstrap';
 import Section from '../../layout/Section';
 import { ProposalState } from '../../wrappers/nounsDao';
 import {
+  useCurrentQuorum,
   useExecuteBigNounProposal,
   useBigNounProposal,
   useQueueBigNounProposal,
@@ -9,14 +10,14 @@ import {
 import { useUserVotesAsOfBlock } from '../../wrappers/nounToken';
 import classes from './NounsVote.module.css';
 import { RouteComponentProps } from 'react-router-dom';
-import { TransactionStatus, useBlockNumber, useEthers } from '@usedapp/core';
+import { TransactionStatus, useBlockNumber } from '@usedapp/core';
 import { AlertModal, setAlertModal } from '../../state/slices/application';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import advanced from 'dayjs/plugin/advancedFormat';
 import SnapshotVoteModalModal from '../../components/SnapshotVoteModal';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import clsx from 'clsx';
 import ProposalHeader from '../../components/ProposalHeader';
@@ -32,6 +33,7 @@ import {
   delegateLilNounsAtBlockQuery,
   ProposalVotes,
   Delegates,
+  propUsingDynamicQuorum,
   snapshotSingularProposalVotesQuery,
   snapshotProposalsQuery,
   lilNounsHeldByVoterQuery,
@@ -41,11 +43,14 @@ import { useQuery } from '@apollo/client';
 import { SnapshotProposal } from '../../components/Proposals';
 // import { isMobileScreen } from '../../utils/isMobile';
 import { AVERAGE_BLOCK_TIME_IN_SECS } from '../../utils/constants';
+import { SearchIcon } from '@heroicons/react/solid';
+import ReactTooltip from 'react-tooltip';
+import DynamicQuorumInfoModal from '../../components/DynamicQuorumInfoModal';
+import config from '../../config';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(advanced);
-
 
 export interface SnapshotVoters {
   voter: string;
@@ -67,14 +72,6 @@ interface SnapshotProp {
   snapshotAbstainCountAmt: number;
   snapshotVoters: SnapshotVoters[];
 }
-
-// export const useUserSnapshotVotesAsOfBlock = (lilnounsDelegatedVotesData: Delegates | undefined): number | undefined => {
-//   if(!lilnounsDelegatedVotesData) return 0;
-
-//   const { account } = useEthers();
-//   const userVotes = lilnounsDelegatedVotesData?.delegates.filter((d: any) => d.id === account?.toLowerCase()).flatMap((d: any) => d.nounsRepresented).map((d: any) => d.id).length ?? 0
-//   return userVotes;
-// };
 
 const NounsVotePage = ({
   match: {
@@ -166,6 +163,7 @@ const NounsVotePage = ({
   // const isMobile = isMobileScreen();
 
   const [showVoteModal, setShowVoteModal] = useState<boolean>(false);
+  const [showDynamicQuorumInfoModal, setShowDynamicQuorumInfoModal] = useState<boolean>(false);
   const [isDelegateView, setIsDelegateView] = useState(false);
   const [isSnapshotView, setIsSnapshotView] = useState(true);
 
@@ -174,6 +172,14 @@ const NounsVotePage = ({
 
   const dispatch = useAppDispatch();
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
+  const {
+    data: dqInfo,
+    loading: loadingDQInfo,
+    error: dqError,
+  } = useQuery(propUsingDynamicQuorum(id ?? '0'), {
+    context: { clientName: 'NounsDAO' },
+    skip: !proposal,
+  });
 
   const { queueProposal, queueProposalState } = useQueueBigNounProposal();
   const { executeProposal, executeProposalState } = useExecuteBigNounProposal();
@@ -209,6 +215,12 @@ const NounsVotePage = ({
   const availableVotes = !isSnapshotView
     ? useUserVotesAsOfBlock(proposal?.createdBlock ?? undefined)
     : useUserVotesAsOfBlock(snapProp?.snapshot ?? undefined);
+
+  const currentQuorum = useCurrentQuorum(
+    config.bigNounsAddresses.nounsDAOProxy,
+    proposal && proposal.id ? parseInt(proposal.id) : 0,
+    dqInfo && dqInfo.proposal ? dqInfo.proposal.quorumCoefficient === '0' : true,
+  );
 
   const hasSucceeded = proposal?.status === ProposalState.SUCCEEDED;
   const isAwaitingStateChange = () => {
@@ -326,7 +338,9 @@ const NounsVotePage = ({
     !data ||
     snapshotProposalLoading ||
     snapshotVoteLoading ||
-    lilnounsDelegatedVotesLoading
+    lilnounsDelegatedVotesLoading ||
+    loadingDQInfo ||
+    !dqInfo
   ) {
     return (
       <div className={classes.spinner}>
@@ -338,8 +352,9 @@ const NounsVotePage = ({
   const forNouns = getNounVotes(data, 1);
   const againstNouns = getNounVotes(data, 0);
   const abstainNouns = getNounVotes(data, 2);
+  const isV2Prop = dqInfo.proposal.quorumCoefficient > 0;
 
-  if (error || snapshotProposalError || snapshotVoteError) {
+  if (error || snapshotProposalError || snapshotVoteError || dqError) {
     return <>{'Failed to fetch'}</>;
   }
 
@@ -386,7 +401,7 @@ const NounsVotePage = ({
 
     switch (snapProp.state) {
       case 'active':
-        if(proposal.status == ProposalState.PENDING || proposal.status == ProposalState.ACTIVE ){
+        if (proposal.status == ProposalState.PENDING || proposal.status == ProposalState.ACTIVE) {
           propStatus = ProposalState.METAGOV_ACTIVE;
         } else {
           propStatus = proposal.status;
@@ -467,6 +482,14 @@ const NounsVotePage = ({
 
   return (
     <Section fullWidth={false} className={classes.votePage}>
+      {showDynamicQuorumInfoModal && (
+        <DynamicQuorumInfoModal
+          proposal={proposal}
+          isNounsDAOProp={true}
+          againstVotesAbsolute={againstNouns.length}
+          onDismiss={() => setShowDynamicQuorumInfoModal(false)}
+        />
+      )}
       <SnapshotVoteModalModal
         show={showVoteModal}
         onHide={() => setShowVoteModal(false)}
@@ -593,15 +616,38 @@ const NounsVotePage = ({
           <Col xl={4} lg={12}>
             <Card className={classes.voteInfoCard}>
               <Card.Body className="p-2">
-                <Row className={classes.voteMetadataRow}>
-                  <Col className={classes.voteMetadataRowTitle}>
+                <div className={classes.voteMetadataRow}>
+                  <div className={classes.voteMetadataRowTitle}>
                     <h1>Threshold</h1>
-                  </Col>
-                  <Col className={classes.thresholdInfo}>
-                    <span>Quorum</span>
-                    {isSnapshotView ? <h3>N/A</h3> : <h3>{proposal.quorumVotes} votes</h3>}
-                  </Col>
-                </Row>
+                  </div>
+                  {!isSnapshotView && isV2Prop && (
+                    <ReactTooltip
+                      id={'view-dq-info'}
+                      className={classes.delegateHover}
+                      getContent={dataTip => {
+                        return <a>View Dynamic Quorum Info</a>;
+                      }}
+                    />
+                  )}
+                  <div
+                    data-for="view-dq-info"
+                    data-tip="View Dynamic Quorum Info"
+                    onClick={() => setShowDynamicQuorumInfoModal(true && isV2Prop && !isSnapshotView)}
+                    className={clsx(classes.thresholdInfo, isV2Prop ? classes.cursorPointer : '')}
+                  >
+                    <span>
+                      {isSnapshotView ? 'Quorum' : isV2Prop ? 'Current Quorum' : 'Quorum'}
+                    </span>
+                    {isSnapshotView ? (
+                      <h3>N/A</h3>
+                    ) : (
+                      <h3>
+                        {isV2Prop ? currentQuorum ?? 0 : proposal.quorumVotes} votes
+                        {isV2Prop && <SearchIcon className={classes.dqIcon} />}
+                      </h3>
+                    )}
+                  </div>
+                </div>
               </Card.Body>
             </Card>
           </Col>

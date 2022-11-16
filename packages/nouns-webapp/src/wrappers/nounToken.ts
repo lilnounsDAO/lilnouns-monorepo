@@ -29,7 +29,7 @@ const seedExpriyCacheKey = cacheKey(cache.seedExpriy, CHAIN_ID, config.addresses
 const bigNounSeedCacheKey = cacheKey(
   cache.bigNounSeed,
   CHAIN_ID,
-  '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
+  config.bigNounsAddresses.nounsToken,
 );
 
 const isSeedValid = (seed: Record<string, any> | undefined) => {
@@ -169,7 +169,7 @@ export const useBigNounSeed = (nounId: EthersBN) => {
   // prettier-ignore
   const request = seed ? false : {
       abi,
-      address: "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
+      address: config.bigNounsAddresses.nounsToken,
       method: 'seeds',
       args: [nounId],
     };

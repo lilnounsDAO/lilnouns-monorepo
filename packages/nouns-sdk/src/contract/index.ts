@@ -1,4 +1,4 @@
-export { getContractAddressesForChainOrThrow } from './addresses';
+export { getContractAddressesForChainOrThrow, getBigNounsContractAddressesForChainOrThrow } from './addresses';
 export { getContractsForChainOrThrow } from './contracts';
 export { ChainId, ContractAddresses } from './types';
 export {

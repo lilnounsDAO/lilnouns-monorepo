@@ -1,9 +1,9 @@
 import React from 'react';
-import ReactTooltip, { GetContentFunc } from 'react-tooltip';
+import ReactTooltip from 'react-tooltip';
 import classes from './Tooltip.module.css';
 
 interface TooltipProps {
-  tooltipContent: GetContentFunc;
+  tooltipContent: (dataTip: string) => React.ReactNode;
   tip: string;
   id: string;
 }
