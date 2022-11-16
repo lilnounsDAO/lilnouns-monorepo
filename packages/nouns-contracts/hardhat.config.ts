@@ -3,8 +3,8 @@ import { HardhatUserConfig } from 'hardhat/config';
 import dotenv from 'dotenv';
 import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-etherscan';
-import '@float-capital/solidity-coverage';
-import 'hardhat-typechain';
+import 'solidity-coverage';
+import '@typechain/hardhat';
 import 'hardhat-abi-exporter';
 import '@openzeppelin/hardhat-upgrades';
 import 'hardhat-gas-reporter';
@@ -14,7 +14,7 @@ dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: '0.8.6',
+    version: '0.8.15',
     settings: {
       optimizer: {
         enabled: true,
@@ -33,12 +33,14 @@ const config: HardhatUserConfig = {
         ? { mnemonic: process.env.MNEMONIC }
         : [process.env.WALLET_PRIVATE_KEY!].filter(Boolean),
     },
+    goerli: {
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      accounts: process.env.MNEMONIC
+        ? { mnemonic: process.env.MNEMONIC }
+        : [process.env.WALLET_PRIVATE_KEY!].filter(Boolean),
+    },
     hardhat: {
       initialBaseFeePerGas: 0,
-      // chainId: 1,
-      // forking: {
-      //   url: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-      // },
     },
   },
   etherscan: {
@@ -47,6 +49,9 @@ const config: HardhatUserConfig = {
   abiExporter: {
     path: './abi',
     clear: true,
+  },
+  typechain: {
+    outDir: './typechain',
   },
   gasReporter: {
     enabled: !process.env.CI,

@@ -1,5 +1,5 @@
-import { ImageData as data, getNounData, getBigNounData, BigNounImageData as bigNounData } from '@nouns/assets';
-import { buildSVG } from '@nouns/sdk';
+import { ImageData as data, getNounData, getBigNounData, BigNounImageData as bigNounData } from '@lilnounsdao/assets';
+import { buildSVG } from '@lilnounsdao/sdk';
 import { BigNumber, BigNumber as EthersBN } from 'ethers';
 import { INounSeed, useBigNounSeed, useNounSeed } from '../../wrappers/nounToken';
 import Noun from '../Noun';
@@ -31,8 +31,6 @@ export const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => 
   const { parts, background } = getNounData(seed);
   const svg = buildSVG(parts, data.palette, background);
   const image = `data:image/svg+xml;base64,${btoa(svg)}`;
-
-  console.log(`🟢-- ${image}`)
 
   return {
     name,

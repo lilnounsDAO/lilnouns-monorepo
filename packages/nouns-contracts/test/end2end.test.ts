@@ -1,34 +1,34 @@
-import chai from 'chai';
-import { ethers, upgrades } from 'hardhat';
-import { BigNumber as EthersBN } from 'ethers';
-import { solidity } from 'ethereum-waffle';
+import chai from "chai";
+import { ethers, upgrades } from "hardhat";
+import { BigNumber as EthersBN } from "ethers";
+import { solidity } from "ethereum-waffle";
 
 import {
   Weth,
   NounsToken,
   NounsAuctionHouse,
   NounsAuctionHouse__factory as NounsAuctionHouseFactory,
-  NounsDescriptor,
-  NounsDescriptor__factory as NounsDescriptorFactory,
+  NounsDescriptorV2,
+  NounsDescriptorV2__factory as NounsDescriptorV2Factory,
   NounsDaoProxy__factory as NounsDaoProxyFactory,
   NounsDaoLogicV1,
   NounsDaoLogicV1__factory as NounsDaoLogicV1Factory,
   NounsDaoExecutor,
   NounsDaoExecutor__factory as NounsDaoExecutorFactory,
-} from '../typechain';
+} from "../typechain";
 
 import {
   deployNounsToken,
   deployWeth,
-  populateDescriptor,
+  populateDescriptorV2,
   address,
   encodeParameters,
   advanceBlocks,
   blockTimestamp,
   setNextBlockTimestamp,
-} from './utils';
+} from "./utils";
 
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 chai.use(solidity);
 const { expect } = chai;
@@ -68,7 +68,8 @@ const MIN_INCREMENT_BID_PERCENTAGE = 5;
 const DURATION = 60 * 60 * 24;
 
 async function deploy() {
-  [deployer, bidderA, wethDeployer, nounsDAO, lilNoundersDAO] = await ethers.getSigners();
+  [deployer, bidderA, wethDeployer, nounsDAO, lilNoundersDAO] =
+    await ethers.getSigners();
 
   // Deployed by another account to simulate real network
 
@@ -90,30 +91,42 @@ async function deploy() {
     deployer,
     lilNoundersDAO.address,
     nounsDAO.address,
-    deployer.address, // do not know minter/auction house yet
+    deployer.address // do not know minter/auction house yet
   );
 
   // 2a. DEPLOY AuctionHouse
-  const auctionHouseFactory = await ethers.getContractFactory('NounsAuctionHouse', deployer);
-  const nounsAuctionHouseProxy = await upgrades.deployProxy(auctionHouseFactory, [
-    nounsToken.address,
-    weth.address,
-    TIME_BUFFER,
-    RESERVE_PRICE,
-    MIN_INCREMENT_BID_PERCENTAGE,
-    DURATION,
-  ]);
+  const auctionHouseFactory = await ethers.getContractFactory(
+    "NounsAuctionHouse",
+    deployer
+  );
+  const nounsAuctionHouseProxy = await upgrades.deployProxy(
+    auctionHouseFactory,
+    [
+      nounsToken.address,
+      weth.address,
+      TIME_BUFFER,
+      RESERVE_PRICE,
+      MIN_INCREMENT_BID_PERCENTAGE,
+      DURATION,
+    ]
+  );
 
   // 2b. CAST proxy as AuctionHouse
-  nounsAuctionHouse = NounsAuctionHouseFactory.connect(nounsAuctionHouseProxy.address, deployer);
+  nounsAuctionHouse = NounsAuctionHouseFactory.connect(
+    nounsAuctionHouseProxy.address,
+    deployer
+  );
 
   // 3. SET MINTER
   await nounsToken.setMinter(nounsAuctionHouse.address);
 
   // 4. POPULATE body parts
-  descriptor = NounsDescriptorFactory.connect(await nounsToken.descriptor(), deployer);
+  descriptor = NounsDescriptorV2Factory.connect(
+    await nounsToken.descriptor(),
+    deployer
+  );
 
-  await populateDescriptor(descriptor);
+  await populateDescriptorV2(descriptor);
 
   // 5a. CALCULATE Gov Delegate, takes place after 2 transactions
   const calculatedGovDelegatorAddress = ethers.utils.getContractAddress({
@@ -124,7 +137,7 @@ async function deploy() {
   // 5b. DEPLOY NounsDAOExecutor with pre-computed Delegator address
   timelock = await new NounsDaoExecutorFactory(deployer).deploy(
     calculatedGovDelegatorAddress,
-    TIME_LOCK_DELAY,
+    TIME_LOCK_DELAY
   );
 
   // 6. DEPLOY Delegate
@@ -140,7 +153,7 @@ async function deploy() {
     VOTING_PERIOD,
     VOTING_DELAY,
     PROPOSAL_THRESHOLD_BPS,
-    QUORUM_VOTES_BPS,
+    QUORUM_VOTES_BPS
   );
 
   expect(calculatedGovDelegatorAddress).to.equal(nounsDAOProxy.address);
@@ -160,10 +173,10 @@ async function deploy() {
   await nounsAuctionHouse.transferOwnership(timelock.address);
 }
 
-describe('End to End test with deployment, auction, proposing, voting, executing', async () => {
+describe("End to End test with deployment, auction, proposing, voting, executing", async () => {
   before(deploy);
 
-  it('sets all starting params correctly', async () => {
+  it("sets all starting params correctly", async () => {
     expect(await nounsToken.owner()).to.equal(timelock.address);
     expect(await descriptor.owner()).to.equal(timelock.address);
     expect(await nounsAuctionHouse.owner()).to.equal(timelock.address);
@@ -179,40 +192,51 @@ describe('End to End test with deployment, auction, proposing, voting, executing
     expect(await gov.vetoer()).to.equal(lilNoundersDAO.address);
 
     // minted to lilnounders and nounsdao
-    expect(await nounsToken.totalSupply()).to.equal(EthersBN.from('3'));
+    expect(await nounsToken.totalSupply()).to.equal(EthersBN.from("3"));
 
     expect(await nounsToken.ownerOf(0)).to.equal(lilNoundersDAO.address);
     expect(await nounsToken.ownerOf(1)).to.equal(nounsDAO.address);
     expect(await nounsToken.ownerOf(2)).to.equal(nounsAuctionHouse.address);
 
-    expect((await nounsAuctionHouse.auction()).nounId).to.equal(EthersBN.from('2'));
+    expect((await nounsAuctionHouse.auction()).nounId).to.equal(
+      EthersBN.from("2")
+    );
   });
 
-  it('allows bidding, settling, and transferring ETH correctly', async () => {
-    await nounsAuctionHouse.connect(bidderA).createBid(2, { value: RESERVE_PRICE });
-    await setNextBlockTimestamp(Number(await blockTimestamp('latest')) + DURATION);
+  it("allows bidding, settling, and transferring ETH correctly", async () => {
+    await nounsAuctionHouse
+      .connect(bidderA)
+      .createBid(2, { value: RESERVE_PRICE });
+    await setNextBlockTimestamp(
+      Number(await blockTimestamp("latest")) + DURATION
+    );
     await nounsAuctionHouse.settleCurrentAndCreateNewAuction();
 
     expect(await nounsToken.ownerOf(2)).to.equal(bidderA.address);
-    expect(await ethers.provider.getBalance(timelock.address)).to.equal(RESERVE_PRICE);
+    expect(await ethers.provider.getBalance(timelock.address)).to.equal(
+      RESERVE_PRICE
+    );
   });
 
-  it('allows proposing, voting, queuing', async () => {
-    const description = 'Set nounsToken minter to address(1) and transfer treasury to address(2)';
+  it("allows proposing, voting, queuing", async () => {
+    const description =
+      "Set nounsToken minter to address(1) and transfer treasury to address(2)";
 
     // Action 1. Execute nounsToken.setMinter(address(1))
     targets.push(nounsToken.address);
-    values.push('0');
-    signatures.push('setMinter(address)');
-    callDatas.push(encodeParameters(['address'], [address(1)]));
+    values.push("0");
+    signatures.push("setMinter(address)");
+    callDatas.push(encodeParameters(["address"], [address(1)]));
 
     // Action 2. Execute transfer RESERVE_PRICE to address(2)
     targets.push(address(2));
     values.push(String(RESERVE_PRICE));
-    signatures.push('');
-    callDatas.push('0x');
+    signatures.push("");
+    callDatas.push("0x");
 
-    await gov.connect(bidderA).propose(targets, values, signatures, callDatas, description);
+    await gov
+      .connect(bidderA)
+      .propose(targets, values, signatures, callDatas, description);
 
     proposalId = await gov.latestProposalIds(bidderA.address);
 
@@ -230,7 +254,7 @@ describe('End to End test with deployment, auction, proposing, voting, executing
     expect(await gov.state(proposalId)).to.equal(5);
   });
 
-  it('executes proposal transactions correctly', async () => {
+  it("executes proposal transactions correctly", async () => {
     const { eta } = await gov.proposals(proposalId);
     await setNextBlockTimestamp(eta.toNumber(), false);
     await gov.execute(proposalId);
@@ -239,10 +263,12 @@ describe('End to End test with deployment, auction, proposing, voting, executing
     expect(await nounsToken.minter()).to.equal(address(1));
 
     // Successfully executed Action 2
-    expect(await ethers.provider.getBalance(address(2))).to.equal(RESERVE_PRICE);
+    expect(await ethers.provider.getBalance(address(2))).to.equal(
+      RESERVE_PRICE
+    );
   });
 
-  it('does not allow NounsDAO to accept funds', async () => {
+  it("does not allow NounsDAO to accept funds", async () => {
     let error1;
 
     // NounsDAO does not accept value without calldata
@@ -262,7 +288,7 @@ describe('End to End test with deployment, auction, proposing, voting, executing
     // NounsDAO does not accept value with calldata
     try {
       await bidderA.sendTransaction({
-        data: '0xb6b55f250000000000000000000000000000000000000000000000000000000000000001',
+        data: "0xb6b55f250000000000000000000000000000000000000000000000000000000000000001",
         to: gov.address,
         value: 10,
       });
@@ -273,7 +299,7 @@ describe('End to End test with deployment, auction, proposing, voting, executing
     expect(error2);
   });
 
-  it('allows NounsDAOExecutor to receive funds', async () => {
+  it("allows NounsDAOExecutor to receive funds", async () => {
     // test receive()
     await bidderA.sendTransaction({
       to: timelock.address,
@@ -284,7 +310,7 @@ describe('End to End test with deployment, auction, proposing, voting, executing
 
     // test fallback() calls deposit(uint) which is not implemented
     await bidderA.sendTransaction({
-      data: '0xb6b55f250000000000000000000000000000000000000000000000000000000000000001',
+      data: "0xb6b55f250000000000000000000000000000000000000000000000000000000000000001",
       to: timelock.address,
       value: 10,
     });

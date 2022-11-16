@@ -12,8 +12,8 @@ import {
 import classes from './Playground.module.css';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Link from '../../components/Link';
-import { ImageData, getNounData, getRandomNounSeed } from '@nouns/assets';
-import { buildSVG, EncodedImage, PNGCollectionEncoder } from '@nouns/sdk';
+import { ImageData, getNounData, getRandomNounSeed } from '@lilnounsdao/assets';
+import { buildSVG, EncodedImage, PNGCollectionEncoder } from '@lilnounsdao/sdk';
 import InfoIcon from '../../assets/icons/Info.svg';
 import Noun from '../../components/Noun';
 import NounModal from './NounModal';
