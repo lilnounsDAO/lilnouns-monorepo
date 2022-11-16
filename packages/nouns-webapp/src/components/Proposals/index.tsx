@@ -245,7 +245,7 @@ const Proposals = ({
                 return (
                   <a
                     className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
-                    onClick={() => history.push(`/vote/${p.id}`)}
+                    href={`/vote/${p.id}`}
                     key={i}
                   >
                     <div className={classes.proposalInfoWrapper}>
@@ -309,12 +309,12 @@ const Proposals = ({
                   switch (snapshotVoteObject.state) {
                     case 'active':
                       p.snapshotEnd = snapshotVoteObject.end;
-                      if(p.status == ProposalState.PENDING || p.status == ProposalState.ACTIVE){
+                      if (p.status == ProposalState.PENDING || p.status == ProposalState.ACTIVE) {
                         propStatus = ProposalState.METAGOV_ACTIVE;
                       } else {
                         propStatus = p.status;
                       }
-                      
+
                       break;
 
                     case 'closed':
@@ -370,7 +370,7 @@ const Proposals = ({
                 return (
                   <a
                     className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
-                    onClick={() => history.push(`/vote/nounsdao/${p.id}`)}
+                    href={`/vote/nounsdao/${p.id}`}
                     key={i}
                   >
                     <div className={classes.proposalInfoWrapper}>
