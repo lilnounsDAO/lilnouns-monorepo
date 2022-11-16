@@ -1,4 +1,4 @@
-# @nouns/sdk
+# @lilnounsdao/sdk
 
 ## Development
 
@@ -16,14 +16,14 @@ yarn test
 
 ## Usage
 
-The Nouns SDK contains useful tooling for interacting with the Nouns protocol.
+The Lil Nouns SDK contains useful tooling for interacting with the Lil Nouns and Nouns protocol.
 
 ### Contracts
 
 **Get Contract Addresses**
 
 ```ts
-import { ChainId, getContractAddressesForChainOrThrow } from '@nouns/sdk';
+import { ChainId, getContractAddressesForChainOrThrow } from '@lilnounsdao/sdk';
 
 const { nounsToken } = getContractAddressesForChainOrThrow(ChainId.Mainnet);
 ```
@@ -31,7 +31,7 @@ const { nounsToken } = getContractAddressesForChainOrThrow(ChainId.Mainnet);
 **Get Contract Instances**
 
 ```ts
-import { ChainId, getContractsForChainOrThrow } from '@nouns/sdk';
+import { ChainId, getContractsForChainOrThrow } from '@lilnounsdao/sdk';
 
 const provider = new providers.JsonRpcProvider(RPC_URL);
 
@@ -41,7 +41,7 @@ const { nounsTokenContract } = getContractsForChainOrThrow(ChainId.Mainnet, prov
 **Get Contract ABIs**
 
 ```ts
-import { NounsTokenABI } from '@nouns/sdk';
+import { NounsTokenABI } from '@lilnounsdao/sdk';
 ```
 
 ### Images
@@ -49,7 +49,7 @@ import { NounsTokenABI } from '@nouns/sdk';
 **Run-length Encode Images**
 
 ```ts
-import { PNGCollectionEncoder } from '@nouns/sdk';
+import { PNGCollectionEncoder } from '@lilnounsdao/sdk';
 import { readPngFile } from 'node-libpng';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -77,7 +77,7 @@ encode();
 **Create SVGs from Run-length Encoded Data**
 
 ```ts
-import { buildSVG } from '@nouns/sdk';
+import { buildSVG } from '@lilnounsdao/sdk';
 
 const svg = buildSVG(RLE_PARTS, PALETTE_COLORS, BACKGROUND_COLOR);
 ```

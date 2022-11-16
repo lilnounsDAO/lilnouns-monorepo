@@ -23,14 +23,12 @@ import NounersPage from './pages/Nouners';
 import NotFoundPage from './pages/NotFound';
 import Playground from './pages/Playground';
 import Nouniverse from './pages/Nouniverse';
+import BadgesPage from './pages/Badges';
 import config, { CHAIN_ID } from './config';
 import { Col, Row } from 'react-bootstrap';
 
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
-
-// import emojiPage from './pages/Emojis';
-import EmojiBubble from './components/EmojiShower/EmojiBubble';
 
 import { AvatarProvider } from '@davatar/react';
 import IdeasPage from './pages/Ideas';
@@ -46,7 +44,6 @@ function App() {
 
   const alertModal = useAppSelector(state => state.application.alertModal);
 
-  const [emojiQueue, setEmojiQueue] = useState(['']);
   // const [isFirst, setIsFirst] = useState(false);
 
   // const randomSize = (min: number, max: number) =>
@@ -64,10 +61,6 @@ function App() {
     // Local account array updated
     dispatch(setActiveAccount(account));
   }, [account, dispatch]);
-
-  const emojiBubbleMarkup = emojiQueue.map((emojiVals, i) => (
-    <EmojiBubble key={i} {...emojiVals} />
-  ));
 
   return (
     <div className={`${classes.wrapper}`}>
@@ -105,8 +98,6 @@ function App() {
             }
             onDismiss={() => dispatch(setAlertModal({ ...alertModal, show: false }))}
           />
-
-          {alertModal.isMilestone && <>{emojiBubbleMarkup}</>}
         </>
       )}
 
@@ -146,6 +137,7 @@ function App() {
               <Route exact path="/delegate" component={DelegatePage} />
               <Route exact path="/nouniverse/:id" component={Nouniverse} />
               <Route exact path="/nouniverse" component={Nouniverse} />
+              <Route exact path="/badges" component={BadgesPage} />
               <Route component={NotFoundPage} />
             </Switch>
           )}

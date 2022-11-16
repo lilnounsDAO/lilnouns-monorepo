@@ -163,7 +163,7 @@ const NavBar = () => {
               <>
                 <Nav.Link as={Link} to="/ideas" className={classes.nounsNavLink}>
                   <NavBarButton
-                    buttonText={'Ideas'}
+                    buttonText={'Prop Lot'}
                     buttonIcon={<FontAwesomeIcon icon={faLightbulb} />}
                     buttonStyle={nonWalletButtonStyle}
                   />

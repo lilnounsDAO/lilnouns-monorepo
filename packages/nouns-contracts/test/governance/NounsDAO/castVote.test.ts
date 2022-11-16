@@ -11,17 +11,19 @@ import {
   getSigners,
   TestSigners,
   setTotalSupply,
-  populateDescriptor,
+  populateDescriptorV2,
+  propose,
 } from '../../utils';
 
-import { mineBlock, address, encodeParameters } from '../../utils';
+import { mineBlock, address } from '../../utils';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   NounsToken,
-  NounsDescriptor__factory as NounsDescriptorFactory,
-  NounsDaoLogicV1Harness,
-  NounsDaoLogicV1Harness__factory as NounsDaoLogicV1HarnessFactory,
+  NounsDescriptorV2__factory as NounsDescriptorV2Factory,
+  NounsDAOLogicV1Harness,
+  NounsDAOLogicV1Harness__factory as NounsDaoLogicV1HarnessFactory,
+  NounsDAOProxy__factory as NounsDaoProxyFactory,
 } from '../../../typechain';
 
 chai.use(solidity);
@@ -30,11 +32,11 @@ const { expect } = chai;
 async function deployGovernor(
   deployer: SignerWithAddress,
   tokenAddress: string,
-): Promise<NounsDaoLogicV1Harness> {
+): Promise<NounsDAOLogicV1Harness> {
   const { address: govDelegateAddress } = await new NounsDaoLogicV1HarnessFactory(
     deployer,
   ).deploy();
-  const params = [
+  const params: Parameters<NounsDaoProxyFactory['deploy']> = [
     address(0),
     tokenAddress,
     deployer.address,
@@ -62,7 +64,7 @@ let account1: SignerWithAddress;
 let account2: SignerWithAddress;
 let signers: TestSigners;
 
-let gov: NounsDaoLogicV1Harness;
+let gov: NounsDAOLogicV1Harness;
 let targets: string[];
 let values: string[];
 let signatures: string[];
@@ -77,24 +79,14 @@ async function reset() {
   }
   token = await deployNounsToken(signers.deployer);
 
-  await populateDescriptor(
-    NounsDescriptorFactory.connect(await token.descriptor(), signers.deployer),
+  await populateDescriptorV2(
+    NounsDescriptorV2Factory.connect(await token.descriptor(), signers.deployer),
   );
 
   await setTotalSupply(token, 10);
 
   gov = await deployGovernor(deployer, token.address);
   snapshotId = await ethers.provider.send('evm_snapshot', []);
-}
-
-async function propose(proposer: SignerWithAddress) {
-  targets = [account0.address];
-  values = ['0'];
-  signatures = ['getBalanceOf(address)'];
-  callDatas = [encodeParameters(['address'], [account0.address])];
-
-  await gov.connect(proposer).propose(targets, values, signatures, callDatas, 'do nothing');
-  proposalId = await gov.latestProposalIds(proposer.address);
 }
 
 describe('NounsDAO#castVote/2', () => {
@@ -109,7 +101,7 @@ describe('NounsDAO#castVote/2', () => {
   describe('We must revert if:', () => {
     before(async () => {
       await reset();
-      await propose(deployer);
+      proposalId = await propose(gov, deployer);
     });
 
     it("There does not exist a proposal with matching proposal id where the current block number is between the proposal's start block (exclusive) and end block (inclusive)", async () => {
@@ -155,7 +147,7 @@ describe('NounsDAO#castVote/2', () => {
 
         await token.transferFrom(deployer.address, actor.address, 0);
         await token.transferFrom(deployer.address, actor.address, 1);
-        await propose(actor);
+        proposalId = await propose(gov, actor);
 
         const beforeFors = (await gov.proposals(proposalId)).forVotes;
         await mineBlock();
@@ -173,7 +165,7 @@ describe('NounsDAO#castVote/2', () => {
         await token.transferFrom(deployer.address, actor.address, 2);
         await token.transferFrom(deployer.address, actor.address, 3);
 
-        await propose(actor);
+        proposalId = await propose(gov, actor);
 
         const beforeAgainst = (await gov.proposals(proposalId)).againstVotes;
 

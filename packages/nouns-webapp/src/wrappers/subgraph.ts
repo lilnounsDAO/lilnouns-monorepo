@@ -99,7 +99,7 @@ export const proposalsQuery = (first = 1_000) => gql`
 
 export const bigNounsProposalsQuery = (first = 1_000) => gql`
 {
-  proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
+daa: proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
     id
     description
     status
@@ -344,6 +344,17 @@ export const proposalVotesQuery = (proposalId: string) => gql`
   }
 `;
 
+export const proposalVotesQuerya = (proposalId: string) => gql`
+  {
+    aa:votes(where: { proposal: "${proposalId}", votesRaw_gt: 0 }) {
+      supportDetailed
+      voter {
+        id
+      }
+    }	
+  }
+`;
+
 export const delegateNounsAtBlockQuery = (delegates: string[], block: number) => gql`
 {
   delegates(where: { id_in: ${JSON.stringify(delegates)} }, block: { number: ${block} }) {
@@ -462,6 +473,22 @@ export const delegatedLilNounsHeldByVoterQuery = (voterId: string) => gql`
       }
     }
   }
+`;
+
+export const totalNounSupplyAtPropSnapshot = (proposalId: string) => gql`
+{
+  proposals(where: {id: ${proposalId}}) {
+    totalSupply
+  }
+}
+`;
+
+export const propUsingDynamicQuorum = (propoaslId: string) => gql`
+{
+  proposal(id: "${propoaslId}") {
+    quorumCoefficient 
+  }
+}
 `;
 
 export const clientFactory = (uri: string) =>
