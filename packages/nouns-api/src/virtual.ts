@@ -8,7 +8,7 @@ export const VirtualTags: { [key: string]: any } = {
     label: 'New',
     color: 'orange',
     filterFn: (idea: UIIdea) => {
-      if (idea.closed || (idea._count.comments > 0 && idea.consensus < 1)) {
+      if (idea.closed || idea._count.comments > 0 || idea.consensus >= 1) {
         return false;
       }
       const today = new Date();
