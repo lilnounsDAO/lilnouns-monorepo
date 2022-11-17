@@ -7,15 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { useReverseENSLookUp } from '../../../utils/ensLookup';
 import { useShortAddress } from '../../../utils/addressAndENSDisplayUtils';
-import {
-  useIdeas,
-  CommentFormData,
-  Comment as CommentType,
-  VoteFormData,
-} from '../../../hooks/useIdeas';
+import { useIdeas, CommentFormData, Comment as CommentType } from '../../../hooks/useIdeas';
 import { useAuth } from '../../../hooks/useAuth';
 import { useAccountVotes } from '../../../wrappers/nounToken';
-import IdeaVoteControls from '../../../components/IdeaVoteControls';
 import moment from 'moment';
 import Davatar from '@davatar/react';
 import { marked } from 'marked';
@@ -26,6 +20,8 @@ import { useLazyQuery } from '@apollo/client';
 import propLotClient from '../../../propLot/graphql/config';
 import { GET_IDEA_QUERY } from '../../../propLot/graphql/ideaQuery';
 import { virtualTagColorMap } from '../../../utils/virtualTagColors';
+
+import IdeaVoteControls from '../../../propLot/components/IdeaVoteControls';
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -201,7 +197,7 @@ const IdeaPage = () => {
   const { id } = useParams() as { id: string };
   const history = useHistory();
   const { account } = useEthers();
-  const { getComments, commentOnIdea, voteOnIdea } = useIdeas();
+  const { getComments, commentOnIdea } = useIdeas();
   const { comments, error } = getComments(id);
   const { getAuthHeader } = useAuth();
 
@@ -225,10 +221,6 @@ const IdeaPage = () => {
   useEffect(() => {
     getIdeaQuery({ variables: { ideaId: parseInt(id) } });
   }, []);
-
-  const castVote = async (formData: VoteFormData) => {
-    await voteOnIdea(formData);
-  };
 
   const submitComment = async () => {
     await commentOnIdea({
@@ -268,12 +260,7 @@ const IdeaPage = () => {
             <div className="flex flex-row justify-between items-center">
               <h1 className="mb-0 lodrina">{data.getIdea.title}</h1>
               <div className="flex flex-row justify-end">
-                <IdeaVoteControls
-                  idea={data.getIdea}
-                  voteOnIdea={castVote}
-                  nounBalance={nounBalance}
-                  withAvatars
-                />
+                <IdeaVoteControls idea={data.getIdea} nounBalance={nounBalance} withAvatars />
               </div>
             </div>
             {data.getIdea.tags && data.getIdea.tags.length > 0 && (
