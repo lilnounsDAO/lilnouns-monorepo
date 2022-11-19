@@ -20,6 +20,7 @@ import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import NounInfoCard from '../NounInfoCard';
 import { useAppSelector } from '../../hooks';
 import BidHistoryModal from '../BidHistoryModal';
+import BlockTimer from '../BlockTimer';
 
 const openEtherscanBidHistory = () => {
   const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
@@ -120,6 +121,9 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
               ) : (
                 <AuctionTimer auction={auction} auctionEnded={auctionEnded} />
               )}
+            </Col>
+            <Col lg={6} className={classes.auctionTimerCol}>
+              {!auctionEnded && <BlockTimer auction={auction} auctionEnded={auctionEnded} />}
             </Col>
           </Row>
         </div>
