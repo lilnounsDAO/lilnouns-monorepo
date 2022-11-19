@@ -22,7 +22,7 @@ const CurrentPrice: React.FC<{
 }> = props => {
   const { currentPrice, auctionEnded } = props;
   const isCool = useAppSelector(state => state.application.isCoolBackground);
-  const titleContent = auctionEnded ? 'Price' : 'Current price';
+  const titleContent = auctionEnded ? 'Price' : 'Price';
 
   return (
     <Row className={clsx(classes.wrapper, classes.container, classes.section)}>

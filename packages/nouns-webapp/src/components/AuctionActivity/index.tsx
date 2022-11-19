@@ -109,20 +109,20 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
             </Col>
           </Row>
           <Row className={classes.activityRow}>
-            <Col lg={4} className={classes.currentBidCol}>
+            <Col lg={3} className={classes.currentBidCol}>
               <CurrentPrice
                 currentPrice={new BigNumber(auction.amount.toString())}
                 auctionEnded={auctionEnded}
               />
             </Col>
-            <Col lg={6} className={classes.auctionTimerCol}>
+            <Col lg={5} className={classes.auctionTimerCol}>
               {auctionEnded ? (
                 <Winner winner={auction.bidder} />
               ) : (
                 <AuctionTimer auction={auction} auctionEnded={auctionEnded} />
               )}
             </Col>
-            <Col lg={6} className={classes.auctionTimerCol}>
+            <Col lg={4} className={classes.auctionTimerCol}>
               {!auctionEnded && <BlockTimer auction={auction} auctionEnded={auctionEnded} />}
             </Col>
           </Row>
