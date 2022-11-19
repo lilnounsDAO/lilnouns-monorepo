@@ -14,7 +14,13 @@ import { ExternalURL, externalURL } from '../../utils/externalURL';
 import useLidoBalance from '../../hooks/useLidoBalance';
 import NavBarButton, { NavBarButtonStyle } from '../NavBarButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpen, faUsers, faPlay, faComments, faLightbulb } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBookOpen,
+  faUsers,
+  faPlay,
+  faComments,
+  faLightbulb,
+} from '@fortawesome/free-solid-svg-icons';
 import NavBarTreasury from '../NavBarTreasury';
 import NavWallet from '../NavWallet';
 import { useEffect, useState } from 'react';
@@ -30,14 +36,10 @@ const NavBar = () => {
   const treasuryBalance = ethBalance && lidoBalanceAsETH && ethBalance.add(lidoBalanceAsETH);
   const daoEtherscanLink = buildEtherscanHoldingsLink(config.addresses.nounsDaoExecutor);
 
-  const isPreLaunch = config.isPreLaunch === 'true';
-
-  const useStateBg = isPreLaunch
-    ? history.location.pathname.includes('/lilnoun/') ||
-      history.location.pathname.includes('/auction/')
-    : history.location.pathname === '/' ||
-      history.location.pathname.includes('/lilnoun/') ||
-      history.location.pathname.includes('/auction/');
+  const useStateBg =
+    history.location.pathname === '/' ||
+    history.location.pathname.includes('/lilnoun/') ||
+    history.location.pathname.includes('/auction/');
 
   const navLogo = useStateBg ? logo : logoAlternate;
 
@@ -47,9 +49,9 @@ const NavBar = () => {
     ? NavBarButtonStyle.COOL_INFO
     : NavBarButtonStyle.WARM_INFO;
 
-    const [bigNounBalance, setBigNounBalance] = useState('...');
-  
-    const fetchNounsQuery = `
+  const [bigNounBalance, setBigNounBalance] = useState('...');
+
+  const fetchNounsQuery = `
     query {
         accounts(where: {id: "0xd5f279ff9eb21c6d40c8f345a66f2751c4eea1fb" }) {
         id
@@ -60,28 +62,28 @@ const NavBar = () => {
       }
     }
       `;
-  
-    async function fetchData() {
-      const repsonse = await createClient({ url: config.app.nounsDAOSubgraphApiUri })
-        .query(fetchNounsQuery)
-        .toPromise();
-      return repsonse.data.accounts[0];
-    }
-  
-    useEffect(() => {
-      fetchData()
-        .then(async repsonse => {
-          const tokenBalance = repsonse.tokenBalance;
-          const nounIds = repsonse.nouns.flatMap((obj: { id: any }) => obj.id);
-  
-          setBigNounBalance(tokenBalance);
-          return;
-        })
-        .catch(error => {
-          console.log(`Nouns Owned Error ${error}`);
-          return;
-        });
-    }, []);
+
+  async function fetchData() {
+    const repsonse = await createClient({ url: config.app.nounsDAOSubgraphApiUri })
+      .query(fetchNounsQuery)
+      .toPromise();
+    return repsonse.data.accounts[0];
+  }
+
+  useEffect(() => {
+    fetchData()
+      .then(async repsonse => {
+        const tokenBalance = repsonse.tokenBalance;
+        const nounIds = repsonse.nouns.flatMap((obj: { id: any }) => obj.id);
+
+        setBigNounBalance(tokenBalance);
+        return;
+      })
+      .catch(error => {
+        console.log(`Nouns Owned Error ${error}`);
+        return;
+      });
+  }, []);
 
   return (
     <>
@@ -102,113 +104,41 @@ const NavBar = () => {
               </Nav.Item>
             )}
 
-            {isPreLaunch ? (
-              <></>
-            ) : (
-              <Nav.Item>
-                {treasuryBalance && (
-                  <Nav.Link
-                    href={daoEtherscanLink}
-                    className={classes.nounsNavLink}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <NavBarTreasury
-                      treasuryBalance={Number(utils.formatEther(treasuryBalance)).toFixed(0)}
-                      treasuryStyle={nonWalletButtonStyle}
-                      treasuryBigNounBalance={bigNounBalance}
-                    />
-                  </Nav.Link>
-                )}
-              </Nav.Item>
-            )}
+            <Nav.Item>
+              {treasuryBalance && (
+                <Nav.Link
+                  href={daoEtherscanLink}
+                  className={classes.nounsNavLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <NavBarTreasury
+                    treasuryBalance={Number(utils.formatEther(treasuryBalance)).toFixed(0)}
+                    treasuryStyle={nonWalletButtonStyle}
+                    treasuryBigNounBalance={bigNounBalance}
+                  />
+                </Nav.Link>
+              )}
+            </Nav.Item>
           </div>
           <Navbar.Toggle className={classes.navBarToggle} aria-controls="basic-navbar-nav" />
           <Navbar.Collapse className="justify-content-end">
-            {isPreLaunch ? (
-              <>
-                <Nav.Link
-                  href={externalURL(ExternalURL.notion)}
-                  className={classes.nounsNavLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <NavBarButton
-                    buttonText={'Docs'}
-                    buttonIcon={<FontAwesomeIcon icon={faBookOpen} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link
-              href={externalURL(ExternalURL.discourse)}
-              className={classes.nounsNavLink}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <NavBarButton
-                buttonText={'Discourse'}
-                buttonIcon={<FontAwesomeIcon icon={faComments} />}
-                buttonStyle={nonWalletButtonStyle}
-              />
-            </Nav.Link>
-                <Nav.Link as={Link} to="/playground" className={classes.nounsNavLink}>
-                  <NavBarButton
-                    buttonText={'Playground'}
-                    buttonIcon={<FontAwesomeIcon icon={faPlay} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-              </>
-            ) : (
-              <>
-                <Nav.Link as={Link} to="/ideas" className={classes.nounsNavLink}>
-                  <NavBarButton
-                    buttonText={'Ideas'}
-                    buttonIcon={<FontAwesomeIcon icon={faLightbulb} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link as={Link} to="/vote" className={classes.nounsNavLink}>
-                  <NavBarButton
-                    buttonText={'DAO'}
-                    buttonIcon={<FontAwesomeIcon icon={faUsers} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link
-                  href={externalURL(ExternalURL.notion)}
-                  className={classes.nounsNavLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <NavBarButton
-                    buttonText={'Docs'}
-                    buttonIcon={<FontAwesomeIcon icon={faBookOpen} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link
-              href={externalURL(ExternalURL.discourse)}
-              className={classes.nounsNavLink}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <NavBarButton
-                buttonText={'Discourse'}
-                buttonIcon={<FontAwesomeIcon icon={faComments} />}
-                buttonStyle={nonWalletButtonStyle}
-              />
-            </Nav.Link>
-                <Nav.Link as={Link} to="/playground" className={classes.nounsNavLink}>
-                  <NavBarButton
-                    buttonText={'Playground'}
-                    buttonIcon={<FontAwesomeIcon icon={faPlay} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <NavWallet address={activeAccount || '0'} buttonStyle={nonWalletButtonStyle} />{' '}
-              </>
-            )}
+            <>
+              <div className="md:mx-4 my-4 font-bold">
+                This is a test environment. Not real Lil Noun tokens.
+              </div>
+              <a
+                className="no-underline"
+                href="https://lumbar-drive-346.notion.site/lilsandbox-wtf-c660feaf344743359d084406cbcbb3cb"
+              >
+                <NavBarButton
+                  buttonText={'Spec'}
+                  buttonIcon={<FontAwesomeIcon icon={faLightbulb} />}
+                  buttonStyle={nonWalletButtonStyle}
+                />
+              </a>
+              <NavWallet address={activeAccount || '0'} buttonStyle={nonWalletButtonStyle} />{' '}
+            </>
           </Navbar.Collapse>
         </Container>
       </Navbar>

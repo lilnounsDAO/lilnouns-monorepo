@@ -72,7 +72,7 @@ const Bid: React.FC<{
   const [bidInput, setBidInput] = useState('');
   const [bidButtonContent, setBidButtonContent] = useState({
     loading: false,
-    content: auctionEnded ? 'Settle' : 'Place bid',
+    content: auctionEnded ? 'Settle' : 'Buy Now',
   });
 
   const [showConnectModal, setShowConnectModal] = useState(false);
@@ -147,7 +147,7 @@ const Bid: React.FC<{
 
     //TODO: fat finger check here 900% increase
     //Operator '>' cannot be applied to types 'BigNumber' and 'number'.
-    
+
     //0.15 = 150000000000000000
     //1.5 = 1500000000000000000
     if (
@@ -174,7 +174,7 @@ const Bid: React.FC<{
   };
 
   const settleAuctionHandlerFunc = () => {
-    settleAuction()
+    settleAuction();
   };
 
   const settleAuctionHandler = () => {
@@ -187,7 +187,6 @@ const Bid: React.FC<{
       actionMessage: 'Settle Auction',
       action: settleAuctionHandlerFunc,
     });
-
   };
 
   const clearBidInput = () => {
@@ -223,7 +222,7 @@ const Bid: React.FC<{
       case 'None':
         setBidButtonContent({
           loading: false,
-          content: 'Place bid',
+          content: 'Buy Now',
         });
         break;
       case 'Mining':
@@ -305,8 +304,6 @@ const Bid: React.FC<{
   const isDisabled =
     placeBidState.status === 'Mining' || settleAuctionState.status === 'Mining' || !activeAccount;
 
-  const minBidCopy = `Ξ ${minBidEth(minBid)} or more`;
-
   const isWalletConnected = activeAccount !== undefined;
 
   return (
@@ -317,22 +314,6 @@ const Bid: React.FC<{
         <WalletConnectModal onDismiss={hideModalHandler} />
       )}
       <InputGroup>
-        {!auctionEnded && (
-          <>
-            <span className={classes.customPlaceholderBidAmt}>
-              {!auctionEnded && !bidInput ? minBidCopy : ''}
-            </span>
-            <FormControl
-              className={classes.bidInput}
-              onWheel={event => event.currentTarget.blur()}
-              type="number"
-              min="0"
-              onChange={bidInputHandler}
-              ref={bidInputRef}
-              value={bidInput}
-            />
-          </>
-        )}
         {!auctionEnded ? (
           <>
             <Button
@@ -346,38 +327,14 @@ const Bid: React.FC<{
         ) : (
           <>
             {/* Only show force settle button if wallet connected */}
-            {isWalletConnected ? (
+            {isWalletConnected && (
               <Col lg={12}>
                 <SettleManuallyBtn settleAuctionHandler={settleAuctionHandler} auction={auction} />
-                <button onClick={showBidModalHandler} className={classes.infoButton}>
-                  <FontAwesomeIcon icon={faInfoCircle} />
-                  {` bidding and settling`}
-                </button>
               </Col>
-            ) : (
-              <>
-                <Col lg={12}>
-                <button onClick={showBidModalHandler} className={classes.infoButton}>
-                  <FontAwesomeIcon icon={faInfoCircle} />
-                  {` bidding and settling`}
-                </button>
-              </Col>
-              </>
             )}
           </>
         )}
       </InputGroup>
-
-      {!auctionEnded ? (
-        <Col lg={11} style={{ paddingTop: '0.5em' }}>
-          <button onClick={showBidModalHandler} className={classes.infoButton}>
-            <FontAwesomeIcon icon={faInfoCircle} />
-            {` bidding and settling`}
-          </button>
-        </Col>
-      ) : (
-        <></>
-      )}
     </>
   );
 };

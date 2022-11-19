@@ -1,20 +1,13 @@
-<svg width="290px" height="90px" viewBox="0 0 290 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
-    <title>logo</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-28.000000, -23.000000)">
-            <g id="logo" transform="translate(28.000000, 23.000000)">
-                <polygon id="Path" fill="#FFFF" points="0 50 40 50 40 70 20 70 20 90 0 90"></polygon>
-                <polygon id="Path" fill="#FFFF" points="60 50 80 50 80 90 40 90 40 70 60 70"></polygon>
-                <polygon id="Path" fill="#FFFF" points="130 90 90 90 90 50 130 50"></polygon>
-                <polygon id="Path" fill="#FFFF" points="180 50 200 50 200 90 140 90 140 50 160 50 160 70 180 70"></polygon>
-                <polygon id="Path" fill="#FFFF" points="210 50 250 50 250 70 230 70 230 90 210 90"></polygon>
-                <path d="M270,50 L290,50 L290,90 C280.033,90 259.967,90 250,90 L250,70 L270,70 L270,50 Z" id="Path" fill="#FFFF"></path>
-                <polygon id="Path" fill="#FF638D" points="20 20 40 20 40 40 0 40 0 0 20 0"></polygon>
-                <polygon id="Path" fill="#FFEF16" points="50 0 70 0 70 40 50 40"></polygon>
-                <polygon id="Path" fill="#2B83F6" points="100 20 120 20 120 40 80 40 80 0 100 0"></polygon>
-            </g>
-        </g>
-    </g>
+<svg width="170" height="55" viewBox="0 0 170 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M70 25H80H90V35H80V45H70V25ZM90 35V45H100V35H90Z" fill="#2A2A29"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M55 45H65V25H35V45H45V35H55V45Z" fill="#2A2A29"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M10 25V35H0V45H20V35H30V25H10Z" fill="#2A2A29"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M10 10H20V20H0V0H10V10Z" fill="#2A2A29"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M25 0H35V20H25V0Z" fill="#2A2A29"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M50 10H60V20H40V0H50V10Z" fill="#2A2A29"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M115 15H125V35H115V15Z" fill="#2A2A29"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M115 35H125V25H105V45H115V35Z" fill="#2A2A29"/>
+<path d="M170 45V25L150 35V55L170 45Z" fill="#2B83F6"/>
+<path d="M130 45L150 55V35L130 25V45Z" fill="#FF638D"/>
+<path d="M170 25L150 15L130 25L150 35L170 25Z" fill="#FFEF16"/>
 </svg>
