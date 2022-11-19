@@ -2,11 +2,11 @@ import config from '../config';
 
 export const resolveNounContractAddress = (address: string) => {
   switch (address.toLowerCase()) {
-    case "0x6f3E6272A167e8AcCb32072d08E0957F9c79223d".toLowerCase():
+    case config.bigNounsAddresses.nounsDAOProxy.toLowerCase():
       return 'Nouns DAO Proxy';
-    case "0x830BD73E4184ceF73443C15111a1DF14e495C706".toLowerCase():
+    case config.bigNounsAddresses.nounsAuctionHouseProxy.toLowerCase():
       return 'Nouns Auction House Proxy';
-    case "0x0BC3807Ec262cB779b38D65b38158acC3bfedE10".toLowerCase():
+    case config.bigNounsAddresses.nounsDaoExecutor.toLowerCase():
       return 'Nouns DAO Treasury';
       
     case config.addresses.nounsDAOProxy.toLowerCase():

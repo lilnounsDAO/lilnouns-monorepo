@@ -30,9 +30,6 @@ import { Col, Row } from 'react-bootstrap';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
 
-// import emojiPage from './pages/Emojis';
-import EmojiBubble from './components/EmojiShower/EmojiBubble';
-
 import { AvatarProvider } from '@davatar/react';
 import IdeasPage from './pages/Ideas';
 import IdeaPage from './pages/Ideas/:id';
@@ -47,7 +44,6 @@ function App() {
 
   const alertModal = useAppSelector(state => state.application.alertModal);
 
-  const [emojiQueue, setEmojiQueue] = useState(['']);
   // const [isFirst, setIsFirst] = useState(false);
 
   // const randomSize = (min: number, max: number) =>
@@ -65,10 +61,6 @@ function App() {
     // Local account array updated
     dispatch(setActiveAccount(account));
   }, [account, dispatch]);
-
-  const emojiBubbleMarkup = emojiQueue.map((emojiVals, i) => (
-    <EmojiBubble key={i} {...emojiVals} />
-  ));
 
   return (
     <div className={`${classes.wrapper}`}>
@@ -106,8 +98,6 @@ function App() {
             }
             onDismiss={() => dispatch(setAlertModal({ ...alertModal, show: false }))}
           />
-
-          {alertModal.isMilestone && <>{emojiBubbleMarkup}</>}
         </>
       )}
 

@@ -7,7 +7,7 @@ import { pseudoRandomPredictableShuffle } from '../../utils/pseudoRandomPredicta
 interface NounImageInlineTableTableProps {
   nounIds: string[];
 }
-const NOUNS_PER_VOTE_CARD_DESKTOP = 7;
+const NOUNS_PER_VOTE_CARD_DESKTOP = 8;
 
 const isXLScreen = window.innerWidth > 1200;
 

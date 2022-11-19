@@ -31,16 +31,23 @@ export interface Vote {
   };
 }
 
+export interface Tag {
+  label: string;
+  type: string;
+}
+
 export interface Idea {
   id: number;
   title: string;
   tldr: string;
   description: string;
-  votes: Vote[];
+  tags?: Tag[];
+  votes?: Vote[];
   creatorId: string;
-  comments: Comment[];
+  comments?: Comment[];
   votecount: number;
   createdAt: string;
+  closed: boolean;
   _count?: {
     comments: number;
   };
@@ -78,15 +85,16 @@ const updateVotesState = (ideas: Idea[], vote: Vote) => {
       let seenVote = false;
       let voteCount = idea.votecount + direction * lilnounCount;
 
-      const newIdeaVotes = idea.votes.map(v => {
-        if (v.voterId === voterId) {
-          seenVote = true;
-          voteCount = idea.votecount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
-          return { ...vote, direction };
-        } else {
-          return vote;
-        }
-      });
+      const newIdeaVotes =
+        idea.votes?.map(v => {
+          if (v.voterId === voterId) {
+            seenVote = true;
+            voteCount = idea.votecount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
+            return { ...vote, direction };
+          } else {
+            return vote;
+          }
+        }) || [];
 
       if (!seenVote) {
         newIdeaVotes.push(vote);
@@ -277,10 +285,12 @@ export const useIdeas = () => {
     title,
     tldr,
     description,
+    tags,
   }: {
     title: string;
     tldr: string;
     description: string;
+    tags?: string[];
   }) => {
     try {
       const res = await fetch(`${HOST}/ideas`, {
@@ -293,6 +303,7 @@ export const useIdeas = () => {
           title,
           tldr,
           description,
+          tags,
         }),
       });
 
@@ -333,7 +344,12 @@ export const useIdeas = () => {
         voteOnIdea(formData);
       }
     },
-    submitIdea: async (data: { title: string; tldr: string; description: string }) => {
+    submitIdea: async (data: {
+      title: string;
+      tldr: string;
+      description: string;
+      tags: string[];
+    }) => {
       if (!isLoggedIn()) {
         try {
           await triggerSignIn();
