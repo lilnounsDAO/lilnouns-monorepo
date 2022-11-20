@@ -21,6 +21,7 @@ import NounInfoCard from '../NounInfoCard';
 import { useAppSelector } from '../../hooks';
 import BidHistoryModal from '../BidHistoryModal';
 import BlockTimer from '../BlockTimer';
+import PriceRange from '../PriceRange';
 
 const openEtherscanBidHistory = () => {
   const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
@@ -116,16 +117,19 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
               />
             </Col>
             <Col lg={5} className={classes.auctionTimerCol}>
-              {auctionEnded ? (
+              {!auctionEnded ? (
                 <Winner winner={auction.bidder} />
               ) : (
                 <AuctionTimer auction={auction} auctionEnded={auctionEnded} />
               )}
             </Col>
-            <Col lg={4} className={classes.auctionTimerCol}>
-              {!auctionEnded && <BlockTimer auction={auction} auctionEnded={auctionEnded} />}
+            <Col lg={4} className={classes.blockTimerCol}>
+              {auctionEnded && <BlockTimer auction={auction} auctionEnded={auctionEnded} />}
             </Col>
           </Row>
+        </div>
+        <div className="my-8">
+          <PriceRange auction={auction} />
         </div>
         {isLastAuction && (
           <>
