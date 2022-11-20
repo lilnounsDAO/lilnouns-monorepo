@@ -74,7 +74,7 @@ export const createNetworkHttpUrl = (network: string): string => {
   } else {
     return custom || isLocalhost
       ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
-      : `https://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0`;
+      : `https://eth-mainnet.alchemyapi.io/v2/Uf_tG0rA4DtQGJii7eN-f_MV3WiC13Q3`;
   }
 };
 
@@ -86,7 +86,7 @@ export const createNetworkWsUrl = (network: string): string => {
   } else {
     return custom || isLocalhost
       ? `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
-      : 'wss://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0';
+      : 'wss://eth-mainnet.alchemyapi.io/v2/Uf_tG0rA4DtQGJii7eN-f_MV3WiC13Q3';
   }
 };
 

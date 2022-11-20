@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { Auction } from '../../wrappers/nounsAuction';
-import classes from './AuctionTimer.module.css';
+import classes from './BlockTimer.module.css';
 import { useState, useEffect, useRef } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
@@ -12,11 +12,11 @@ import PriceDropModal from '../PriceDropModal';
 
 dayjs.extend(duration);
 
-const AuctionTimer: React.FC<{
+const BlockTimer: React.FC<{
   auction: Auction;
   auctionEnded: boolean;
 }> = props => {
-  const { auction, auctionEnded } = props;
+  const { auction } = props;
 
   const [auctionTimer, setAuctionTimer] = useState(0);
   const [timerToggle, setTimerToggle] = useState(true);
@@ -45,8 +45,6 @@ const AuctionTimer: React.FC<{
       };
     }
   }, [auction, auctionTimer]);
-
-  const auctionContentLong = auctionEnded ? 'Auction ended' : 'Price drops in';
 
   const flooredMinutes = Math.floor(timerDuration.minutes());
   const flooredSeconds = Math.floor(timerDuration.seconds());
@@ -81,7 +79,7 @@ const AuctionTimer: React.FC<{
                 color: isCool ? 'var(--brand-cool-light-text)' : 'var(--brand-warm-light-text)',
               }}
             >
-              {timerToggle ? auctionContentLong : `Ends on ${endTime.format('MMM Do')} at`}
+              {timerToggle ? 'New Noun in' : `Ends on ${endTime.format('MMM Do')} at`}
             </h4>
             <button onClick={showPriceDropHandler} className={classes.infoButton}>
               <FontAwesomeIcon icon={faInfoCircle} />
@@ -127,4 +125,4 @@ const AuctionTimer: React.FC<{
   );
 };
 
-export default AuctionTimer;
+export default BlockTimer;

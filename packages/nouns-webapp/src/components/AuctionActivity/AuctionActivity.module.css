@@ -10,6 +10,7 @@
 
 .activityRow {
   margin-bottom: 0rem;
+  width: 100%;
 }
 
 h1 {
@@ -51,12 +52,16 @@ h4 {
 
 .currentBidCol {
   border-right: 1px solid #79809c49;
-  margin-left: 6px;
   margin-top: 6px;
 }
 
 .auctionTimerCol {
   padding-left: 0rem;
+}
+
+.blockTimerCol {
+  padding-left: 0rem;
+  border-left: 1px solid #79809c49;
 }
 
 .section h4 {
@@ -81,9 +86,15 @@ h4 {
   }
 
   .auctionTimerCol {
-    margin-left: 6px;
     margin-top: 6px;
     padding-left: 0rem;
+    border-right: 0px;
+  }
+
+  .blockTimerCol {
+    margin-top: 6px;
+    padding-left: 0rem;
+    border-left: 0px;
   }
 
   .currentBidCol {

@@ -6,7 +6,7 @@ import classes from './AuctionActivity.module.css';
 import bidHistoryClasses from './BidHistory.module.css';
 import Bid from '../Bid';
 import AuctionTimer from '../AuctionTimer';
-import CurrentBid from '../CurrentBid';
+import CurrentPrice from '../CurrentPrice';
 import Winner from '../Winner';
 import BidHistory from '../BidHistory';
 import AuctionNavigation from '../AuctionNavigation';
@@ -20,6 +20,8 @@ import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import NounInfoCard from '../NounInfoCard';
 import { useAppSelector } from '../../hooks';
 import BidHistoryModal from '../BidHistoryModal';
+import BlockTimer from '../BlockTimer';
+import PriceRange from '../PriceRange';
 
 const openEtherscanBidHistory = () => {
   const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
@@ -58,7 +60,6 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
     setShowBidHistoryModal(false);
   };
 
-
   // timer logic - check auction status every 30 seconds, until five minutes remain, then check status every second
   useEffect(() => {
     if (!auction) return;
@@ -87,7 +88,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
   return (
     <>
       {showBidHistoryModal && (
-       <BidHistoryModal onDismiss={dismissBidModalHanlder} auction={auction} />
+        <BidHistoryModal onDismiss={dismissBidModalHanlder} auction={auction} />
       )}
 
       <AuctionActivityWrapper>
@@ -109,20 +110,28 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
             </Col>
           </Row>
           <Row className={classes.activityRow}>
-            <Col lg={4} className={classes.currentBidCol}>
-              <CurrentBid
-                currentBid={new BigNumber(auction.amount.toString())}
+            <Col lg={3} className={classes.currentBidCol}>
+              <CurrentPrice
+                currentPrice={new BigNumber(auction.amount.toString())}
                 auctionEnded={auctionEnded}
               />
             </Col>
-            <Col lg={6} className={classes.auctionTimerCol}>
+            <Col lg={5} className={classes.auctionTimerCol}>
               {auctionEnded ? (
                 <Winner winner={auction.bidder} />
               ) : (
                 <AuctionTimer auction={auction} auctionEnded={auctionEnded} />
               )}
             </Col>
+            {!auctionEnded && (
+              <Col lg={4} className={classes.blockTimerCol}>
+                {<BlockTimer auction={auction} auctionEnded={auctionEnded} />}
+              </Col>
+            )}
           </Row>
+        </div>
+        <div className="my-8">
+          <PriceRange auction={auction} />
         </div>
         {isLastAuction && (
           <>

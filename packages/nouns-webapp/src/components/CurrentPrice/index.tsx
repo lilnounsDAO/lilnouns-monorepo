@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import classes from './CurrentBid.module.css';
+import classes from './CurrentPrice.module.css';
 import TruncatedAmount from '../TruncatedAmount';
 import { Row, Col } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
@@ -16,10 +16,13 @@ export const BID_N_A = 'n/a';
  */
 type BidNa = typeof BID_N_A;
 
-const CurrentBid: React.FC<{ currentBid: BigNumber | BidNa; auctionEnded: boolean }> = props => {
-  const { currentBid, auctionEnded } = props;
+const CurrentPrice: React.FC<{
+  currentPrice: BigNumber | BidNa;
+  auctionEnded: boolean;
+}> = props => {
+  const { currentPrice, auctionEnded } = props;
   const isCool = useAppSelector(state => state.application.isCoolBackground);
-  const titleContent = auctionEnded ? 'Winning bid' : 'Current bid';
+  const titleContent = auctionEnded ? 'Price' : 'Price';
 
   return (
     <Row className={clsx(classes.wrapper, classes.container, classes.section)}>
@@ -37,11 +40,15 @@ const CurrentBid: React.FC<{ currentBid: BigNumber | BidNa; auctionEnded: boolea
           className={classes.currentBid}
           style={{ color: isCool ? 'var(--brand-cool-dark-text)' : 'var(--brand-warm-dark-text)' }}
         >
-          {currentBid === BID_N_A ? BID_N_A : <TruncatedAmount amount={currentBid && currentBid} />}
+          {currentPrice === BID_N_A ? (
+            BID_N_A
+          ) : (
+            <TruncatedAmount amount={currentPrice && currentPrice} />
+          )}
         </h2>
       </Col>
     </Row>
   );
 };
 
-export default CurrentBid;
+export default CurrentPrice;
