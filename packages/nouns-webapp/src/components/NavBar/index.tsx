@@ -47,7 +47,7 @@ const NavBar = () => {
     ? NavBarButtonStyle.COOL_INFO
     : NavBarButtonStyle.WARM_INFO;
 
-    const [bigNounBalance, setBigNounBalance] = useState('...');
+    const [bigNounBalance, setBigNounBalance] = useState('0');
   
     const fetchNounsQuery = `
     query {
