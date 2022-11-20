@@ -10,7 +10,7 @@
 
 .activityRow {
   margin-bottom: 0rem;
-  width:100%;
+  width: 100%;
 }
 
 h1 {
@@ -57,11 +57,11 @@ h4 {
 
 .auctionTimerCol {
   padding-left: 0rem;
-  border-right: 1px solid #79809c49;
 }
 
 .blockTimerCol {
   padding-left: 0rem;
+  border-left: 1px solid #79809c49;
 }
 
 .section h4 {
@@ -94,6 +94,7 @@ h4 {
   .blockTimerCol {
     margin-top: 6px;
     padding-left: 0rem;
+    border-left: 0px;
   }
 
   .currentBidCol {

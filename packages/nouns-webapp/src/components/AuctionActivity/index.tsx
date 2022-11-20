@@ -117,15 +117,17 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
               />
             </Col>
             <Col lg={5} className={classes.auctionTimerCol}>
-              {!auctionEnded ? (
+              {auctionEnded ? (
                 <Winner winner={auction.bidder} />
               ) : (
                 <AuctionTimer auction={auction} auctionEnded={auctionEnded} />
               )}
             </Col>
-            <Col lg={4} className={classes.blockTimerCol}>
-              {auctionEnded && <BlockTimer auction={auction} auctionEnded={auctionEnded} />}
-            </Col>
+            {!auctionEnded && (
+              <Col lg={4} className={classes.blockTimerCol}>
+                {<BlockTimer auction={auction} auctionEnded={auctionEnded} />}
+              </Col>
+            )}
           </Row>
         </div>
         <div className="my-8">
