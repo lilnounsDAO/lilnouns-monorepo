@@ -73,7 +73,7 @@ const IdeaCard = ({
 
   return (
     <div
-      className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-2 px-3 pb-2"
+      className="flex flex-col border border-[#e2e3e8] rounded-2xl cursor-pointer pt-2 px-3 pb-2"
       onClick={() => setIsOpen(!isOpen)}
     >
       {isMobile ? mobileHeading : desktopHeading}
