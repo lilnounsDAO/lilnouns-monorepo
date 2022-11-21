@@ -69,44 +69,22 @@ const isLocalhost = Boolean(
 export const createNetworkHttpUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_JSONRPC`];
 
-  switch (network) {
-    case 'rinkeby':
-      return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
-
-    case 'goerli':
-      return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
-
-    case 'mainnet':
-      return custom || isLocalhost
-        ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
-        : `https://eth-${network}.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
-
-    default:
-      return custom || isLocalhost
-        ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
-        : `https://eth-${network}.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
+  if (network === 'rinkeby' || network === 'goerli') {
+    return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
+  } else {
+    return custom || isLocalhost
+      ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
+      : `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
   }
 };
 
 export const createNetworkWsUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_WSRPC`];
 
-  switch (network) {
-    case 'rinkeby':
-      return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
-
-    case 'goerli':
-      return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
-
-    case 'mainnet':
-      return custom || isLocalhost
-        ? `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
-        : `wss://eth-${network}.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
-
-    default:
-      return custom || isLocalhost
-        ? `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
-        : `wss://eth-${network}.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
+  if (network === 'rinkeby' || network === 'goerli') {
+    return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
+  } else {
+    return custom || `wss://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
   }
 };
 
@@ -194,3 +172,5 @@ const config = {
 };
 
 export default config;
+
+export const multicallOnLocalhost = '0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e';
