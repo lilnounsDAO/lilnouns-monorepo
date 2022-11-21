@@ -19,7 +19,7 @@ pragma solidity ^0.8.6;
 
 import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
 import { ERC721Checkpointable } from './base/ERC721Checkpointable.sol';
-import { INounsDescriptorMinimal } from './interfaces/INounsDescriptorMinimal.sol';
+import { INounsDescriptor } from './interfaces/INounsDescriptor.sol';
 import { INounsSeeder } from './interfaces/INounsSeeder.sol';
 import { INounsToken } from './interfaces/INounsToken.sol';
 import { ERC721 } from './base/ERC721.sol';
@@ -37,7 +37,7 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
     address public minter;
 
     // The Nouns token URI descriptor
-    INounsDescriptorMinimal public descriptor;
+    INounsDescriptor public descriptor;
 
     // The Nouns token seeder
     INounsSeeder public seeder;
@@ -115,7 +115,7 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
         address _lilnoundersDAO,
         address _nounsDAO,
         address _minter,
-        INounsDescriptorMinimal _descriptor,
+        INounsDescriptor _descriptor,
         INounsSeeder _seeder,
         IProxyRegistry _proxyRegistry
     ) ERC721("LilNoun", "LILNOUN") {
@@ -245,7 +245,7 @@ contract NounsToken is INounsToken, Ownable, ERC721Checkpointable {
      * @notice Set the token URI descriptor.
      * @dev Only callable by the owner when not locked.
      */
-    function setDescriptor(INounsDescriptorMinimal _descriptor) external override onlyOwner whenDescriptorNotLocked {
+    function setDescriptor(INounsDescriptor _descriptor) external override onlyOwner whenDescriptorNotLocked {
         descriptor = _descriptor;
 
         emit DescriptorUpdated(_descriptor);
