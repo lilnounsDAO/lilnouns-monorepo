@@ -8,3 +8,6 @@ export { NounsAuctionHouse__factory as NounsAuctionHouseFactory } from '../typec
 export { NounsDescriptor__factory as NounsDescriptorFactory } from '../typechain/factories/NounsDescriptor__factory';
 export { NounsSeeder__factory as NounsSeederFactory } from '../typechain/factories/NounsSeeder__factory';
 export { NounsDaoLogicV1__factory as NounsDaoLogicV1Factory } from '../typechain/factories/NounsDaoLogicV1__factory';
+
+//vrgda
+export { default as NounsVRGDAAuctionHouseABI } from '../abi/contracts/LilVRGDA.sol/LilVRGDA.json';

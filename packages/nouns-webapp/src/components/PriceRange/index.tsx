@@ -43,13 +43,13 @@ const PriceRange: React.FC<{
   const MID_PRICE = MAX_PRICE - (MAX_PRICE - MIN_PRICE) / 2;
 
   // const currentPrice = auction.currentPrice;
-  const currentPrice = 0.75;
+  const currentPrice = auction.amount.toNumber() / 10 ** 18;
 
   const numPriceBlocks = 15;
-  console.log('d', (currentPrice / MAX_PRICE) * numPriceBlocks);
+
   const activeIndex =
     numPriceBlocks - (Math.floor((currentPrice / MAX_PRICE) * numPriceBlocks) - 1);
-  console.log('activeIndex', activeIndex);
+
   const colorsClassNames = [
     'bg-[#FF638D]',
     'bg-[#FF638D]',

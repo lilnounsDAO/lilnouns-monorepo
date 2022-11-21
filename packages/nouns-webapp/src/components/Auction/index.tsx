@@ -4,7 +4,7 @@ import AuctionActivity from '../AuctionActivity';
 import { Row, Container } from 'react-bootstrap';
 import { setStateBackgroundColor } from '../../state/slices/application';
 import { LoadingNoun } from '../Noun';
-import { Auction as IAuction } from '../../wrappers/nounsAuction';
+import { Auction as IAuction, VrgdaAuction } from '../../wrappers/nounsAuction';
 import classes from './Auction.module.css';
 import { INounSeed } from '../../wrappers/nounToken';
 import NounderNounContent from '../NounderNounContent';
@@ -16,18 +16,61 @@ import {
   setPrevOnDisplayAuctionNounId,
 } from '../../state/slices/onDisplayAuction';
 import { beige, grey } from '../../utils/nounBgColors';
+import { useContractReads } from 'wagmi';
+import { NounsVRGDAAuctionHouseABI } from '../../pages/Auction/vrgdaABI';
+import { BigNumber } from 'ethers';
+
+export const vrgdaAuctionHouseContract = {
+  addressOrName: '0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44',
+  contractInterface: NounsVRGDAAuctionHouseABI,
+};
 
 interface AuctionProps {
   auction?: IAuction;
 }
 
 const Auction: React.FC<AuctionProps> = props => {
-  const { auction: currentAuction } = props;
+  const { data } = useContractReads({
+    contracts: [
+      {
+        ...vrgdaAuctionHouseContract,
+        functionName: 'updateInterval',
+      },
+      {
+        ...vrgdaAuctionHouseContract,
+        functionName: 'startTime',
+      },
+      {
+        ...vrgdaAuctionHouseContract,
+        functionName: 'fetchNextNoun',
+      },
+    ],
+  });
+  const updateInterval = data?.[0] as unknown as BigNumber;
+  const startTime = data?.[1] as unknown as BigNumber;
+  const nextNoun = data?.[2] as any;
+  console.log('data', data);
+
+  const currentAuction: VrgdaAuction = {
+    nounId: nextNoun?.nounId,
+    startTime: startTime as unknown as BigNumber,
+    endTime: nextNoun?.endTime || nextNoun?.price,
+    amount: nextNoun?.price,
+    bidder: nextNoun?.bidder || 0x01,
+    settled: nextNoun?.settled || false,
+    updateInterval: updateInterval,
+  };
+
+  console.log('vrgdaAuction', currentAuction);
 
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateBgColor = useAppSelector(state => state.application.stateBackgroundColor);
-  const lastNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
+  const lastNounId = 2;
+  const isLastAuction = currentAuction.nounId.eq(lastNounId);
+
+  console.log('lastNounId', lastNounId);
+  console.log(isLastAuction);
 
   const loadedNounHandler = (seed: INounSeed) => {
     dispatch(setStateBackgroundColor(seed.background === 0 ? grey : beige));
@@ -58,22 +101,22 @@ const Auction: React.FC<AuctionProps> = props => {
     </div>
   );
 
-  const currentAuctionActivityContent = currentAuction && lastNounId && (
+  const currentAuctionActivityContent = currentAuction && (
     <AuctionActivity
       auction={currentAuction}
       isFirstAuction={currentAuction.nounId.eq(0)}
-      isLastAuction={currentAuction.nounId.eq(lastNounId)}
+      isLastAuction={isLastAuction}
       onPrevAuctionClick={prevAuctionHandler}
       onNextAuctionClick={nextAuctionHandler}
       displayGraphDepComps={true}
     />
   );
-  const nounderNounContent = currentAuction && lastNounId && (
+  const nounderNounContent = currentAuction && (
     <NounderNounContent
       mintTimestamp={currentAuction.startTime}
       nounId={currentAuction.nounId}
       isFirstAuction={currentAuction.nounId.eq(0)}
-      isLastAuction={currentAuction.nounId.eq(lastNounId)}
+      isLastAuction={isLastAuction}
       onPrevAuctionClick={prevAuctionHandler}
       onNextAuctionClick={nextAuctionHandler}
     />

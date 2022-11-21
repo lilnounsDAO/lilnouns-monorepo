@@ -26,6 +26,13 @@ export interface Auction {
   settled: boolean;
 }
 
+export interface VrgdaAuction extends Auction {
+  updateInterval: EthersBN;
+  //the time the auction will drop in price
+  dropTime?: EthersBN;
+  blocksRemaining?: EthersBN;
+}
+
 const abi = new utils.Interface(NounsAuctionHouseABI);
 
 export const useAuction = (auctionHouseProxyAddress: string) => {
@@ -61,17 +68,18 @@ export const useAuctionMinBidIncPercentage = () => {
  */
 
 export const useNounCanVoteTimestamp = (nounId: number) => {
-
   const pastAuctions = useAppSelector(state => state.pastAuctions.pastAuctions);
 
-  if(isNounderNoun(EthersBN.from(nounId)) || isNounsDAONoun(EthersBN.from(nounId))) {
+  if (isNounderNoun(EthersBN.from(nounId)) || isNounsDAONoun(EthersBN.from(nounId))) {
     const distanceToAuctionAbove = isNounderNoun(EthersBN.from(nounId)) ? 2 : 1;
-    const auctionAbove = findAuction(EthersBN.from(nounId).add(distanceToAuctionAbove), pastAuctions);
+    const auctionAbove = findAuction(
+      EthersBN.from(nounId).add(distanceToAuctionAbove),
+      pastAuctions,
+    );
 
-   return EthersBN.from(auctionAbove?.startTime || 0);
+    return EthersBN.from(auctionAbove?.startTime || 0);
   }
 
   const auction = findAuction(EthersBN.from(nounId), pastAuctions);
-  return auction?.startTime ? EthersBN.from(auction?.startTime) : EthersBN.from(0);;
-
+  return auction?.startTime ? EthersBN.from(auction?.startTime) : EthersBN.from(0);
 };

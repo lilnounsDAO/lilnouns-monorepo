@@ -28,7 +28,7 @@
     "nounsSeeder": "0xF6a38E8235916334268da317EC84F5dfcfB9e023",
     "nounsDescriptor": "0xB6D0AF8C27930E13005Bf447d54be8235724a102",
     "nftDescriptor": "0x9417e5d955e6e1deA90499Baa527C9d6360b737f",
-    "nounsAuctionHouse": "0xe6A9B92c074520de8912EaA4591db1966E2e2B92",
+    "nounsAuctionHouse": "0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44",
     "nounsAuctionHouseProxy": "0x2E10335d2EE34715453936399301B42D2ea8c55c",
     "nounsAuctionHouseProxyAdmin": "0x4bEfF263853C4e30d02505A19Cd34F7c9cDFC6BB",
     "nounsDaoExecutor": "0xd82c7DC502cbF88cFc5F0821BC514BBA88d70513",

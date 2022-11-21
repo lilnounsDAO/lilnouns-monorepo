@@ -1,10 +1,10 @@
-import { Auction } from '../../wrappers/nounsAuction';
+import { Auction, VrgdaAuction } from '../../wrappers/nounsAuction';
 import { useState, useEffect } from 'react';
 import BigNumber from 'bignumber.js';
 import { Row, Col } from 'react-bootstrap';
 import classes from './AuctionActivity.module.css';
 import bidHistoryClasses from './BidHistory.module.css';
-import Bid from '../Bid';
+import Buy from '../Buy';
 import AuctionTimer from '../AuctionTimer';
 import CurrentPrice from '../CurrentPrice';
 import Winner from '../Winner';
@@ -14,7 +14,6 @@ import AuctionActivityWrapper from '../AuctionActivityWrapper';
 import AuctionTitleAndNavWrapper from '../AuctionTitleAndNavWrapper';
 import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
 import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
-import BidHistoryBtn from '../BidHistoryBtn';
 import config from '../../config';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import NounInfoCard from '../NounInfoCard';
@@ -29,7 +28,7 @@ const openEtherscanBidHistory = () => {
 };
 
 interface AuctionActivityProps {
-  auction: Auction;
+  auction: VrgdaAuction;
   isFirstAuction: boolean;
   isLastAuction: boolean;
   onPrevAuctionClick: () => void;
@@ -85,6 +84,8 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
 
   if (!auction) return null;
 
+  console.log('auction.amount', auction.amount.toString());
+
   return (
     <>
       {showBidHistoryModal && (
@@ -137,7 +138,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
           <>
             <Row className={classes.activityRow}>
               <Col lg={12}>
-                <Bid auction={auction} auctionEnded={auctionEnded} />
+                <Buy auction={auction} auctionEnded={auctionEnded} />
               </Col>
             </Row>
           </>
@@ -158,15 +159,6 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
                 />
               )
             )}
-            {/* If no bids, show nothing. If bids avail:graph is stable? show bid history modal,
-            else show etherscan contract link */}
-            {isLastAuction &&
-              !auction.amount.eq(0) &&
-              (displayGraphDepComps ? (
-                <BidHistoryBtn onClick={showBidModalHandler} />
-              ) : (
-                <BidHistoryBtn onClick={openEtherscanBidHistory} />
-              ))}
           </Col>
         </Row>
       </AuctionActivityWrapper>

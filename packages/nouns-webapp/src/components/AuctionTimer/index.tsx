@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { Auction } from '../../wrappers/nounsAuction';
+import { Auction, VrgdaAuction } from '../../wrappers/nounsAuction';
 import classes from './AuctionTimer.module.css';
 import { useState, useEffect, useRef } from 'react';
 import { Row, Col } from 'react-bootstrap';
@@ -13,7 +13,7 @@ import PriceDropModal from '../PriceDropModal';
 dayjs.extend(duration);
 
 const AuctionTimer: React.FC<{
-  auction: Auction;
+  auction: VrgdaAuction;
   auctionEnded: boolean;
 }> = props => {
   const { auction, auctionEnded } = props;
@@ -25,7 +25,7 @@ const AuctionTimer: React.FC<{
   auctionTimerRef.current = auctionTimer;
 
   const timerDuration = dayjs.duration(auctionTimerRef.current, 's');
-  const endTime = dayjs().add(auctionTimerRef.current, 's').local();
+  const dropTime = dayjs().add(auctionTimerRef.current, 's').local();
 
   // timer logic
   useEffect(() => {
@@ -81,7 +81,7 @@ const AuctionTimer: React.FC<{
                 color: isCool ? 'var(--brand-cool-light-text)' : 'var(--brand-warm-light-text)',
               }}
             >
-              {timerToggle ? auctionContentLong : `Ends on ${endTime.format('MMM Do')} at`}
+              {timerToggle ? auctionContentLong : `Ends on ${dropTime.format('MMM Do')} at`}
             </h4>
             <button onClick={showPriceDropHandler} className={classes.infoButton}>
               <FontAwesomeIcon icon={faInfoCircle} />
@@ -117,7 +117,7 @@ const AuctionTimer: React.FC<{
               }}
             >
               <div className={clsx(classes.timerSection, classes.clockSection)}>
-                <span>{endTime.format('h:mm:ss a')}</span>
+                <span>{dropTime.format('h:mm:ss a')}</span>
               </div>
             </h2>
           )}

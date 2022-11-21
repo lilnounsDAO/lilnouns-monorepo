@@ -1,9 +1,12 @@
 import {
   ContractAddresses as NounsContractAddresses,
   getContractAddressesForChainOrThrow,
-  getBigNounsContractAddressesForChainOrThrow
+  getBigNounsContractAddressesForChainOrThrow,
 } from '@lilnounsdao/sdk';
 import { ChainId } from '@usedapp/core';
+import { configureChains, chain, createClient } from 'wagmi';
+import { infuraProvider } from 'wagmi/providers/infura';
+import { publicProvider } from 'wagmi/providers/public';
 
 interface ExternalContractAddresses {
   lidoToken: string | undefined;
@@ -170,7 +173,21 @@ const config = {
   app: app[CHAIN_ID],
   isPreLaunch: process.env.REACT_APP_IS_PRELAUNCH || 'false',
   addresses: getAddresses(),
-  bigNounsAddresses: getBigNounsAddresses()
+  bigNounsAddresses: getBigNounsAddresses(),
 };
+
+export const { chains, provider, webSocketProvider } = configureChains(
+  [
+    chain.goerli,
+    //  chain.polygon, chain.optimism, chain.arbitrum
+  ],
+  [infuraProvider({ apiKey: process.env.INFURA_PROJECT_ID }), publicProvider()],
+);
+
+export const wagmiClient = createClient({
+  autoConnect: true,
+  provider,
+  webSocketProvider,
+});
 
 export default config;

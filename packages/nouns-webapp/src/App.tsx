@@ -24,7 +24,7 @@ import NotFoundPage from './pages/NotFound';
 import Playground from './pages/Playground';
 import Nouniverse from './pages/Nouniverse';
 import BadgesPage from './pages/Badges';
-import config, { CHAIN_ID } from './config';
+import config, { CHAIN_ID, wagmiClient } from './config';
 import { Col, Row } from 'react-bootstrap';
 
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -35,6 +35,8 @@ import IdeasPage from './pages/Ideas';
 import IdeaPage from './pages/Ideas/:id';
 import CreateIdeaPage from './pages/Ideas/Create';
 import DelegatePage from './pages/DelegatePage';
+
+import { WagmiConfig } from 'wagmi';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function App() {
@@ -63,89 +65,96 @@ function App() {
   }, [account, dispatch]);
 
   return (
-    <div className={`${classes.wrapper}`}>
-      {Number(CHAIN_ID) !== chainId && <NetworkAlert />}
-      {alertModal.show && (
-        <>
-          <AlertModal
-            title={alertModal.title}
-            content={
-              <>
-                <p>{alertModal.message}</p>
+    <WagmiConfig client={wagmiClient}>
+      <div className={`${classes.wrapper}`}>
+        {Number(CHAIN_ID) !== chainId && <NetworkAlert />}
+        {alertModal.show && (
+          <>
+            <AlertModal
+              title={alertModal.title}
+              content={
+                <>
+                  <p>{alertModal.message}</p>
 
-                {alertModal.isActionPrompt && (
-                  <>
-                    {
-                      <Row>
-                        <Col>
-                          <button
-                            className={classes.alertButton}
-                            onClick={() => dispatch(setAlertModal({ ...alertModal, show: false }))}
-                          >
-                            Cancel
-                          </button>
-                        </Col>
-                        <Col>
-                          <button className={classes.alertButton} onClick={alertModal.action}>
-                            {alertModal.actionMessage}
-                          </button>
-                        </Col>
-                      </Row>
-                    }
-                  </>
-                )}
-              </>
-            }
-            onDismiss={() => dispatch(setAlertModal({ ...alertModal, show: false }))}
-          />
-        </>
-      )}
+                  {alertModal.isActionPrompt && (
+                    <>
+                      {
+                        <Row>
+                          <Col>
+                            <button
+                              className={classes.alertButton}
+                              onClick={() =>
+                                dispatch(setAlertModal({ ...alertModal, show: false }))
+                              }
+                            >
+                              Cancel
+                            </button>
+                          </Col>
+                          <Col>
+                            <button className={classes.alertButton} onClick={alertModal.action}>
+                              {alertModal.actionMessage}
+                            </button>
+                          </Col>
+                        </Row>
+                      }
+                    </>
+                  )}
+                </>
+              }
+              onDismiss={() => dispatch(setAlertModal({ ...alertModal, show: false }))}
+            />
+          </>
+        )}
 
-      <BrowserRouter>
-        <AvatarProvider provider={chainId === 1 ? (library as any) : undefined} batchLookups={true}>
-          <NavBar />
+        <BrowserRouter>
+          <AvatarProvider
+            provider={chainId === 1 ? (library as any) : undefined}
+            batchLookups={true}
+          >
+            <NavBar />
 
-          {isPreLaunch ? (
-            <Switch>
-              <Route exact path="/" component={PreLaunch} />
-              <Route exact path="/lilnounders" component={NoundersPage} />
-              <Route exact path="/lilnouners" component={NounersPage} />
-              <Route exact path="/playground" component={Playground} />
-              <Route exact path="/nouniverse/:id" component={Nouniverse} />
-              <Route exact path="/nouniverse" component={Nouniverse} />
-              <Route component={NotFoundPage} />
-            </Switch>
-          ) : (
-            <Switch>
-              <Route exact path="/" component={AuctionPage} />
-              <Route
-                exact
-                path="/lilnoun/:id"
-                render={props => <AuctionPage initialAuctionId={Number(props.match.params.id)} />}
-              />
-              <Route exact path="/lilnounders" component={NoundersPage} />
-              <Route exact path="/lilnouners" component={NounersPage} />
-              <Route exact path="/create-proposal" component={CreateProposalPage} />
-              <Route exact path="/vote" component={GovernancePage} />
-              <Route exact path="/vote/nounsdao" component={GovernancePage} />
-              <Route exact path="/ideas" component={IdeasPage} />
-              <Route exact path="/ideas/create" component={CreateIdeaPage} />
-              <Route exact path="/ideas/:id" component={IdeaPage} />
-              <Route exact path="/vote/:id" component={VotePage} />
-              <Route exact path="/vote/nounsdao/:id" component={NounsVotePage} />
-              <Route exact path="/playground" component={Playground} />
-              <Route exact path="/delegate" component={DelegatePage} />
-              <Route exact path="/nouniverse/:id" component={Nouniverse} />
-              <Route exact path="/nouniverse" component={Nouniverse} />
-              <Route exact path="/badges" component={BadgesPage} />
-              <Route component={NotFoundPage} />
-            </Switch>
-          )}
+            {isPreLaunch ? (
+              <Switch>
+                <Route exact path="/" component={PreLaunch} />
+                <Route exact path="/lilnounders" component={NoundersPage} />
+                <Route exact path="/lilnouners" component={NounersPage} />
+                <Route exact path="/playground" component={Playground} />
+                <Route exact path="/nouniverse/:id" component={Nouniverse} />
+                <Route exact path="/nouniverse" component={Nouniverse} />
+                <Route component={NotFoundPage} />
+              </Switch>
+            ) : (
+              <Switch>
+                <Route exact path="/" component={AuctionPage} />
+                <Route
+                  exact
+                  path="/lilnoun/:id"
+                  render={props => <AuctionPage initialAuctionId={Number(props.match.params.id)} />}
+                />
+                <Route exact path="/lilnounders" component={NoundersPage} />
+                <Route exact path="/lilnouners" component={NounersPage} />
+                <Route exact path="/create-proposal" component={CreateProposalPage} />
+                <Route exact path="/vote" component={GovernancePage} />
+                <Route exact path="/vote/nounsdao" component={GovernancePage} />
+                <Route exact path="/ideas" component={IdeasPage} />
+                <Route exact path="/ideas/create" component={CreateIdeaPage} />
+                <Route exact path="/ideas/:id" component={IdeaPage} />
+                <Route exact path="/vote/:id" component={VotePage} />
+                <Route exact path="/vote/nounsdao/:id" component={NounsVotePage} />
+                <Route exact path="/playground" component={Playground} />
+                <Route exact path="/delegate" component={DelegatePage} />
+                <Route exact path="/nouniverse/:id" component={Nouniverse} />
+                <Route exact path="/nouniverse" component={Nouniverse} />
+                <Route exact path="/badges" component={BadgesPage} />
+                <Route component={NotFoundPage} />
+              </Switch>
+            )}
 
-          <Footer />
-        </AvatarProvider>
-      </BrowserRouter>
-    </div>
+            <Footer />
+          </AvatarProvider>
+        </BrowserRouter>
+      </div>
+    </WagmiConfig>
   );
 }
 

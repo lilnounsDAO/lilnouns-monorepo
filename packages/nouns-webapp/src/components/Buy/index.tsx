@@ -4,7 +4,7 @@ import { useAppSelector } from '../../hooks';
 import React, { useEffect, useState, useRef, ChangeEvent, useCallback } from 'react';
 import { utils, BigNumber as EthersBN } from 'ethers';
 import BigNumber from 'bignumber.js';
-import classes from './Bid.module.css';
+import classes from './Buy.module.css';
 import { Spinner, InputGroup, FormControl, Button, Col } from 'react-bootstrap';
 import { useAuctionMinBidIncPercentage } from '../../wrappers/nounsAuction';
 import { useAppDispatch } from '../../hooks';
@@ -16,6 +16,8 @@ import SettleManuallyBtn from '../SettleManuallyBtn';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import InfoModal from '../InfoModal';
+import { useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { vrgdaAuctionHouseContract } from '../Auction';
 
 const computeMinimumNextBid = (
   currentBid: BigNumber,
@@ -53,7 +55,7 @@ const currentBid = (bidInputRef: React.RefObject<HTMLInputElement>) => {
   return new BigNumber(utils.parseEther(bidInputRef.current.value).toString());
 };
 
-const Bid: React.FC<{
+const Buy: React.FC<{
   auction: Auction;
   auctionEnded: boolean;
 }> = props => {
@@ -85,17 +87,8 @@ const Bid: React.FC<{
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
 
   const minBidIncPercentage = useAuctionMinBidIncPercentage();
-  const minBid = computeMinimumNextBid(
-    auction && new BigNumber(auction.amount.toString()),
-    minBidIncPercentage,
-  );
 
-  const fatFingerBid = computeFatFingerNextBid(
-    auction && new BigNumber(auction.amount.toString()),
-    minBidIncPercentage,
-  );
-
-  const { send: placeBid, state: placeBidState } = useContractFunction(
+  const { state: placeBidState } = useContractFunction(
     nounsAuctionHouseContract,
     AuctionHouseContractFunction.createBid,
   );
@@ -104,91 +97,46 @@ const Bid: React.FC<{
     AuctionHouseContractFunction.settleCurrentAndCreateNewAuction,
   );
 
-  const bidInputHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value;
+  const {
+    config: buyNounConfig,
+    error: configError,
+    isSuccess: isConfigSuccess,
+    isError: isConfigError,
+    data: configData,
+    isFetched,
+  } = usePrepareContractWrite({
+    ...vrgdaAuctionHouseContract,
+    functionName: 'settleAuction',
+    args: [
+      auction.amount,
+      auction.nounId,
+      '0x5b502ad45fd80849d8afcff7853f3323538424465f73dbb0a0ea67416b0e396c',
+    ],
+  });
+  console.log('==========');
 
-    // disable more than 2 digits after decimal point
-    if (input.includes('.') && event.target.value.split('.')[1].length > 2) {
-      return;
-    }
+  console.log('configData', configData);
+  console.log('configError', configError);
+  console.log('isConfigSuccess', isConfigSuccess);
+  console.log('isConfigError', isConfigError);
+  console.log('isFetched', isFetched);
+  console.log('==========');
 
-    setBidInput(event.target.value);
-  };
+  const { data, isLoading, isSuccess, write, isError, error } = useContractWrite(buyNounConfig);
 
-  const placeBidHandler = async () => {
-    if (!auction || !bidInputRef.current || !bidInputRef.current.value) {
-      return;
-    }
+  console.log('data', data);
+  console.log('isLoading', isLoading);
+  console.log('isSuccess', isSuccess);
+  console.log('isError', isError);
+  console.log('error', error);
 
-    if (currentBid(bidInputRef).isLessThan(minBid)) {
-      setModal({
-        show: true,
-        title: 'Insufficient bid amount 🤏',
-        message: `Please place a bid higher than or equal to the minimum bid amount of ${minBidEth(
-          minBid,
-        )} ETH.`,
-      });
-      setBidInput(minBidEth(minBid));
-      return;
-    }
-
-    const value = utils.parseEther(bidInputRef.current.value.toString());
-    const contract = connectContractToSigner(nounsAuctionHouseContract, undefined, library);
-    const gasLimit = await contract.estimateGas.createBid(auction.nounId, {
-      value,
-    });
-
-    const placeBidWarned = () => {
-      placeBid(auction.nounId, {
-        value,
-        gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
-      });
-    };
-
-    //TODO: fat finger check here 900% increase
-    //Operator '>' cannot be applied to types 'BigNumber' and 'number'.
-
-    //0.15 = 150000000000000000
-    //1.5 = 1500000000000000000
-    if (
-      minBid.gt('150000000000000000') &&
-      value.gte('1500000000000000000') &&
-      value.gte(fatFingerBid.toString())
-    ) {
-      setModal({
-        show: true,
-        title: `Woah there!`,
-        message: `The bid you're about to place is ${utils.formatEther(
-          value,
-        )} ETH which is over 10x the bid before. Sure this wasn't fat-fingered?`,
-        isActionPrompt: true,
-        actionMessage: 'Place bid',
-        action: placeBidWarned,
-      });
-    } else {
-      placeBid(auction.nounId, {
-        value,
-        gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
-      });
+  const buyNounHandler = () => {
+    console.log('buying noun');
+    if (write) {
+      console.log('calling write');
+      write();
     }
   };
-
-  const settleAuctionHandlerFunc = () => {
-    settleAuction();
-  };
-
-  const settleAuctionHandler = () => {
-    //settleAuction()
-    setModal({
-      show: true,
-      title: `Reminder`,
-      message: `Settling this auction starts the next auction at a 0.15 eth minimum bid. Only settle if you plan on bidding for the next Lil Noun!`,
-      isActionPrompt: true,
-      actionMessage: 'Settle Auction',
-      action: settleAuctionHandlerFunc,
-    });
-  };
-
   const clearBidInput = () => {
     if (bidInputRef.current) {
       bidInputRef.current.value = '';
@@ -314,28 +262,19 @@ const Bid: React.FC<{
         <WalletConnectModal onDismiss={hideModalHandler} />
       )}
       <InputGroup>
-        {!auctionEnded ? (
+        {!auctionEnded && (
           <>
             <Button
               className={auctionEnded ? classes.bidBtnAuctionEnded : classes.bidBtn}
-              onClick={auctionEnded ? settleAuctionHandler : placeBidHandler}
+              onClick={buyNounHandler}
               disabled={isDisabled}
             >
               {bidButtonContent.loading ? <Spinner animation="border" /> : bidButtonContent.content}
             </Button>
-          </>
-        ) : (
-          <>
-            {/* Only show force settle button if wallet connected */}
-            {isWalletConnected && (
-              <Col lg={12}>
-                <SettleManuallyBtn settleAuctionHandler={settleAuctionHandler} auction={auction} />
-              </Col>
-            )}
           </>
         )}
       </InputGroup>
     </>
   );
 };
-export default Bid;
+export default Buy;
