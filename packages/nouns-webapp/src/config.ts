@@ -84,7 +84,9 @@ export const createNetworkWsUrl = (network: string): string => {
   if (network === 'rinkeby' || network === 'goerli') {
     return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
   } else {
-    return custom || `wss://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
+    return custom || isLocalhost
+    ? `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
+    : `wss://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
   }
 };
 
