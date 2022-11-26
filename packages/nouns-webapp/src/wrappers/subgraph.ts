@@ -491,6 +491,25 @@ export const propUsingDynamicQuorum = (propoaslId: string) => gql`
 }
 `;
 
+// Used for PropLot
+export const NOUNS_BY_OWNER_SUB = gql`
+  query account($id: String!) {
+    account(id: $id) {
+      id
+      nouns {
+        id
+        seed {
+          background
+          body
+          accessory
+          head
+          glasses
+        }
+      }
+    }
+  }
+`;
+
 export const clientFactory = (uri: string) =>
   new ApolloClient({
     uri,

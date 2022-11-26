@@ -4,6 +4,7 @@ export const FILTER_IDS = {
   DATE: 'date',
   SORT: 'sort',
   TAG: 'tag',
+  PROFILE_TAB: 'profile_tab',
 };
 
 export const buildFilterParam = (id: string, value: string) => {
@@ -28,6 +29,10 @@ export const getDateParam = (appliedFilters: string[]) =>
 
 export const getTagParams = (appliedFilters: string[]) =>
   appliedFilters.filter((aF: any) => parseFilterParam(aF)?.id === FILTER_IDS.TAG);
+
+export const getProfileTabParams = (appliedFilters: string[]) =>
+  appliedFilters.find((aF: any) => parseFilterParam(aF)?.id === FILTER_IDS.PROFILE_TAB) ||
+  buildFilterParam(FILTER_IDS.PROFILE_TAB, 'SUBMISSIONS');
 
 export const DATE_FILTERS: { [key: string]: any } = {
   TODAY: {

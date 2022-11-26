@@ -12,6 +12,7 @@ import { GET_PROPLOT_QUERY } from '../graphql/propLotQuery';
 import { getPropLot } from '../graphql/__generated__/getPropLot';
 import UIFilter from '../components/DropdownFilter';
 import IdeaRow from '../components/IdeaRow';
+import useSyncURLParams from '../utils/useSyncUrlParams';
 
 const PropLotHome = () => {
   const { account } = useEthers();
@@ -62,15 +63,7 @@ const PropLotHome = () => {
     page refreshes. metadata.appliedFilters is the source of truth for the state of the current filtered
     list.
   */
-  useEffect(() => {
-    const urlParams = appliedFilters.join('&');
-    const currentURLParams = window.location.search;
-    const currentRoute = window.location.pathname;
-
-    if (urlParams && urlParams !== currentURLParams) {
-      window.history.pushState('', '', `${currentRoute}?${urlParams}`);
-    }
-  }, [appliedFilters]);
+  useSyncURLParams(appliedFilters);
 
   const handleUpdateFilters = (updatedFilters: string[], filterId: string) => {
     /*

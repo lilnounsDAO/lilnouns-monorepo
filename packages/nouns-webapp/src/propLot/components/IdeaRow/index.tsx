@@ -11,7 +11,15 @@ import { Button } from 'react-bootstrap';
 
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
-const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => {
+const IdeaRow = ({
+  idea,
+  nounBalance,
+  disableControls,
+}: {
+  idea: Idea;
+  nounBalance: number;
+  disableControls?: boolean;
+}) => {
   const breakpoint = useBreakpoint();
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -40,6 +48,7 @@ const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => 
             nounBalance={nounBalance}
             withAvatars={!isMobile}
             refetchPropLotOnVote
+            disableControls={disableControls}
           />
         </div>
       </div>
@@ -107,6 +116,7 @@ const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => 
           nounBalance={nounBalance}
           withAvatars={!isMobile}
           refetchPropLotOnVote
+          disableControls={disableControls}
         />
       </div>
     </div>
@@ -127,10 +137,18 @@ const IdeaRow = ({ idea, nounBalance }: { idea: Idea; nounBalance: number }) => 
             />
           </div>
           <div className="font-propLot font-semibold text-[14px] flex-col sm:flex-row flex flex-1 justify-content-start align-items-start pt-[12px] pt-[12px]">
-            <span className="flex flex-1 text-[#8c8d92]">
-              {`${ens || shortAddress} | ${
+            <span className="flex flex-1 text-[#8c8d92] whitespace-pre">
+              <span
+                className="text-[#2B83F6] underline cursor-pointer"
+                onClick={() => {
+                  history.push(`/proplot/profile/${idea.creatorId}`);
+                }}
+              >
+                {ens || shortAddress}
+              </span>{' '}
+              {` | ${
                 creatorLilNoun === 1 ? `${creatorLilNoun} lil noun` : `${creatorLilNoun} lil nouns`
-              } | ${moment(createdAt, 'x').format('MMM Do YYYY')}`}
+              } | ${moment(createdAt).format('MMM Do YYYY')}`}
             </span>
             <span className="flex mt-[16px] sm:mt-[0px] w-full sm:w-auto justify-self-end text-[#2b83f6] flex justify-end">
               <Button

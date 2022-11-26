@@ -18,6 +18,7 @@ import {
 
 import { FilterType as FilterTyeEnum } from '../../graphql/__generated__/globalTypes';
 import { Dropdown, Form } from 'react-bootstrap';
+import { updateSelectedFilters, buildSelectedFilters } from '../../utils/queryFilterHelpers';
 
 type Filter = TagFilter | SortFilter | DateFilter;
 type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
@@ -29,19 +30,6 @@ interface IconMap {
 const SUPPORTED_ICONS: IconMap = {
   ARROW_UP: faArrowUp,
   ARROW_DOWN: faArrowDown,
-};
-
-/*
-  Find and return the preselected filter options from the GraphQL response.
-*/
-export const buildSelectedFilters = (filter: Filter) => {
-  const selectedParams: string[] = [];
-  filter.options.forEach(({ selected, value }) => {
-    if (selected) {
-      selectedParams.push(value);
-    }
-  });
-  return selectedParams;
 };
 
 type CustomToggleProps = {
@@ -83,22 +71,7 @@ const DropdownFilter = ({
   }, [filter]);
 
   const handleUpdateFilters = (opt: FilterOptions, isSelected: boolean) => {
-    let newFilters = [...selectedFilters];
-    if (filter.type === FilterTyeEnum.SINGLE_SELECT) {
-      if (isSelected) {
-        newFilters = selectedFilters.filter(selectedFilter => selectedFilter !== opt.value);
-      } else {
-        newFilters = [opt.value];
-      }
-    }
-
-    if (filter.type === FilterTyeEnum.MULTI_SELECT) {
-      if (isSelected) {
-        newFilters = selectedFilters.filter(selectedFilter => selectedFilter !== opt.value);
-      } else {
-        newFilters = [...selectedFilters, opt.value];
-      }
-    }
+    const newFilters = updateSelectedFilters(filter, selectedFilters, opt, isSelected);
 
     setSelectedFilters(newFilters);
     updateFilters(newFilters, filter.id);
