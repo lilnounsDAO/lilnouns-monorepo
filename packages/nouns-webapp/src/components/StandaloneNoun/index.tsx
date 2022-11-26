@@ -1,4 +1,9 @@
-import { ImageData as data, getNounData, getBigNounData, BigNounImageData as bigNounData } from '@lilnounsdao/assets';
+import {
+  ImageData as data,
+  getNounData,
+  getBigNounData,
+  BigNounImageData as bigNounData,
+} from '@lilnounsdao/assets';
 import { buildSVG } from '@lilnounsdao/sdk';
 import { BigNumber, BigNumber as EthersBN } from 'ethers';
 import { INounSeed, useBigNounSeed, useNounSeed } from '../../wrappers/nounToken';
@@ -85,10 +90,10 @@ const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProp
   );
 };
 
-export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
-  props: StandaloneCircularNounProps,
-) => {
-  const { nounId, border } = props;
+export const StandaloneNounCircular: React.FC<
+  StandaloneCircularNounProps & { styleOverride?: string }
+> = (props: StandaloneCircularNounProps & { styleOverride?: string }) => {
+  const { nounId, border, styleOverride } = props;
   const seed = useNounSeed(nounId);
   const noun = seed && getNoun(nounId, seed);
 
@@ -106,7 +111,7 @@ export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
       <Noun
         imgPath={noun ? noun.image : ''}
         alt={noun ? noun.description : 'Lil Noun'}
-        wrapperClassName={nounClasses.circularNounWrapper}
+        wrapperClassName={`${nounClasses.circularNounWrapper} ${styleOverride || ''}`}
         className={border ? nounClasses.circleWithBorder : nounClasses.circular}
       />
     </Link>

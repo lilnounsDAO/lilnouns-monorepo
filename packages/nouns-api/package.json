@@ -57,15 +57,16 @@
     "express-validator": "^6.12.0",
     "graphql": "^15.5.1",
     "graphql-import-node": "0.0.5",
+    "graphql-scalars": "^1.20.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.4",
     "nft.storage": "^2.1.1",
     "prisma": "^3.15.2",
+    "rimraf": "^3.0.2",
     "rollbar": "^2.25.0",
     "sharp": "^0.30.5",
     "siwe": "^1.1.6",
     "ts-try": "^0.2.0",
-    "typescript": "~4.6.4",
-    "rimraf": "^3.0.2"
+    "typescript": "~4.6.4"
   }
 }

@@ -15,12 +15,15 @@ const resolvers: IResolvers = {
     },
   },
   User: {
-    userStats: (root) => {
+    userStats: root => {
       return {
-        totalVotes: root._count?.votes,
+        totalVotes: root.votes?.length,
         totalComments: root._count?.comments,
         totalIdeas: root._count?.ideas,
-      }
+        netVotesReceived: root.userAggregations?.netVotes,
+        upvotesReceived: root.userAggregations?.netUpvotes,
+        downvotesReceived: root.userAggregations?.netDownvotes,
+      };
     },
   },
 };

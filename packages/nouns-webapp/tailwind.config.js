@@ -4,6 +4,7 @@ module.exports = {
     extend: {},
     fontFamily: {
       propLot: ['Inter', 'sans-serif'],
+      londrina: ['Londrina Solid'],
     },
   },
   corePlugins: {

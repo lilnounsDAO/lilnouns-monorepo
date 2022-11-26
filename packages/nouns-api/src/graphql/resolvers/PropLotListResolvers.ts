@@ -20,6 +20,60 @@ import {
   getTagParams,
 } from '../utils/queryUtils';
 
+export const resolveSortFilters = (root: any, exclude?: string[]): PropLotFilter => {
+  const SORT_FILTER_VALUES = {
+    LATEST: buildFilterParam(FILTER_IDS.SORT, 'LATEST'),
+    OLDEST: buildFilterParam(FILTER_IDS.SORT, 'OLDEST'),
+    VOTES_DESC: buildFilterParam(FILTER_IDS.SORT, 'VOTES_DESC'),
+    VOTES_ASC: buildFilterParam(FILTER_IDS.SORT, 'VOTES_ASC'),
+  };
+  const sortFilter: PropLotFilter = {
+    __typename: 'PropLotFilter',
+    id: FILTER_IDS.SORT,
+    type: FilterType.SingleSelect,
+    label: 'Sort',
+    options: [
+      {
+        id: `${FILTER_IDS.SORT}-LATEST`,
+        selected: root.sortParam === SORT_FILTER_VALUES['LATEST'] || !root.sortParam,
+        value: SORT_FILTER_VALUES['LATEST'],
+        label: 'Created',
+        icon: 'ARROW_UP',
+      },
+      {
+        id: `${FILTER_IDS.SORT}-OLDEST`,
+        selected: root.sortParam === SORT_FILTER_VALUES['OLDEST'],
+        value: SORT_FILTER_VALUES['OLDEST'],
+        label: 'Created',
+        icon: 'ARROW_DOWN',
+      },
+      {
+        id: `${FILTER_IDS.SORT}-VOTES_DESC`,
+        selected: root.sortParam === SORT_FILTER_VALUES['VOTES_DESC'],
+        value: SORT_FILTER_VALUES['VOTES_DESC'],
+        label: 'Votes',
+        icon: 'ARROW_UP',
+      },
+      {
+        id: `${FILTER_IDS.SORT}-VOTES_ASC`,
+        selected: root.sortParam === SORT_FILTER_VALUES['VOTES_ASC'],
+        value: SORT_FILTER_VALUES['VOTES_ASC'],
+        label: 'Votes',
+        icon: 'ARROW_DOWN',
+      },
+    ],
+  };
+
+  if (!!exclude) {
+    const filteredOptions = sortFilter.options.filter(
+      opt => !exclude.includes(opt.id.split('-')[1]),
+    );
+    sortFilter.options = filteredOptions;
+  }
+
+  return sortFilter;
+};
+
 const resolvers: IResolvers = {
   Query: {
     getPropLot: async (_parent: any, args: QueryGetPropLotArgs, context) => {
@@ -48,52 +102,7 @@ const resolvers: IResolvers = {
 
       return ideas;
     },
-    sortFilter: (root): PropLotFilter => {
-      const SORT_FILTER_VALUES = {
-        LATEST: buildFilterParam(FILTER_IDS.SORT, 'LATEST'),
-        OLDEST: buildFilterParam(FILTER_IDS.SORT, 'OLDEST'),
-        VOTES_DESC: buildFilterParam(FILTER_IDS.SORT, 'VOTES_DESC'),
-        VOTES_ASC: buildFilterParam(FILTER_IDS.SORT, 'VOTES_ASC'),
-      };
-      const sortFilter: PropLotFilter = {
-        __typename: 'PropLotFilter',
-        id: FILTER_IDS.SORT,
-        type: FilterType.SingleSelect,
-        label: 'Sort',
-        options: [
-          {
-            id: `${FILTER_IDS.SORT}-LATEST`,
-            selected: root.sortParam === SORT_FILTER_VALUES['LATEST'] || !root.sortParam,
-            value: SORT_FILTER_VALUES['LATEST'],
-            label: 'Created',
-            icon: 'ARROW_UP',
-          },
-          {
-            id: `${FILTER_IDS.SORT}-OLDEST`,
-            selected: root.sortParam === SORT_FILTER_VALUES['OLDEST'],
-            value: SORT_FILTER_VALUES['OLDEST'],
-            label: 'Created',
-            icon: 'ARROW_DOWN',
-          },
-          {
-            id: `${FILTER_IDS.SORT}-VOTES_DESC`,
-            selected: root.sortParam === SORT_FILTER_VALUES['VOTES_DESC'],
-            value: SORT_FILTER_VALUES['VOTES_DESC'],
-            label: 'Votes',
-            icon: 'ARROW_UP',
-          },
-          {
-            id: `${FILTER_IDS.SORT}-VOTES_ASC`,
-            selected: root.sortParam === SORT_FILTER_VALUES['VOTES_ASC'],
-            value: SORT_FILTER_VALUES['VOTES_ASC'],
-            label: 'Votes',
-            icon: 'ARROW_DOWN',
-          },
-        ],
-      };
-
-      return sortFilter;
-    },
+    sortFilter: root => resolveSortFilters(root),
     dateFilter: (root): PropLotFilter => {
       const options = Object.keys(DATE_FILTERS).map((key: string) => {
         return {
