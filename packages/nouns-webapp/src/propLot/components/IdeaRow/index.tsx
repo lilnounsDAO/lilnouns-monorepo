@@ -154,7 +154,7 @@ const IdeaRow = ({
               <Button
                 className="font-propLot font-semibold text-[16px] flex flex-1 btn !rounded-[10px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#2B83F6]"
                 onClick={() => {
-                  history.push(`/ideas/${id}`);
+                  history.push(`/proplot/${id}`);
                 }}
               >
                 <span className="flex items-center justify-center font-semibold text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">

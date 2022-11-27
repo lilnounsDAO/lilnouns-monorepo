@@ -50,7 +50,7 @@ const Ideas = () => {
             </div>
           )}
           {account !== undefined && hasNouns ? (
-            <Button className={classes.generateBtn} onClick={() => history.push('/ideas/create')}>
+            <Button className={classes.generateBtn} onClick={() => history.push('/proplot/create')}>
               Submit Idea
             </Button>
           ) : (

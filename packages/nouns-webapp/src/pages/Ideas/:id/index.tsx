@@ -255,7 +255,7 @@ const IdeaPage = () => {
           <div>
             <span
               className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
-              onClick={() => history.push('/ideas')}
+              onClick={() => history.push('/proplot')}
             >
               <FontAwesomeIcon
                 icon={faArrowAltCircleLeft}
