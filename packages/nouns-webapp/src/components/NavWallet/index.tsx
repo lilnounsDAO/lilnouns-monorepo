@@ -48,7 +48,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
   const { library: provider, deactivate, account } = useEthers();
   const { logout } = useAuth();
   const activeAccount = useAppSelector(state => state.account.activeAccount);
-   //TODO: Add reverse lookup after stable rpc plan
+  //TODO: Add reverse lookup after stable rpc plan
   // const ens = useReverseENSLookUp(address);
   const shortAddress = useShortAddress(address);
 
@@ -60,16 +60,20 @@ const NavWallet: React.FC<NavWalletProps> = props => {
     setShowConnectModal(false);
     setButtonUp(false);
     deactivate();
-    logout()
+    logout();
     setShowConnectModal(false);
     setShowConnectModal(true);
+  };
+
+  const propLotProfileHandler = () => {
+    history.push(`/proplot/profile/${account}`);
   };
 
   const disconectWalletHandler = () => {
     setShowConnectModal(false);
     setButtonUp(false);
     deactivate();
-    logout()
+    logout();
   };
 
   const statePrimaryButtonClass = usePickByState(
@@ -143,10 +147,27 @@ const NavWallet: React.FC<NavWalletProps> = props => {
         aria-labelledby={props.labeledBy}
       >
         <div>
-          <Link style={{textDecoration: 'none'}} to="/badges">
-            <div 
+          <div
+            onClick={propLotProfileHandler}
+            className={clsx(
+              classes.dropDownTop,
+              classes.button,
+              classes.switchWalletText,
+              usePickByState(
+                classes.whiteInfoSelectedTop,
+                classes.coolInfoSelected,
+                classes.warmInfoSelected,
+                history,
+              ),
+            )}
+          >
+            Profile
+            <span className={clsx(classes.badge)}>new</span>
+          </div>
+          <Link style={{ textDecoration: 'none' }} to="/badges">
+            <div
               className={clsx(
-                classes.dropDownTop,
+                classes.dropDownItem,
                 classes.button,
                 classes.switchWalletText,
                 usePickByState(
@@ -157,7 +178,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
                 ),
               )}
             >
-              Badges 
+              Badges
               <span className={clsx(classes.badge)}>new</span>
             </div>
           </Link>
@@ -213,15 +234,15 @@ const NavWallet: React.FC<NavWalletProps> = props => {
       </div>
 
       <div className={`d-flex flex-row ${classes.connectContentMobileRoutes}`}>
-        <Link style={{textDecoration: 'none'}} to="/badges">
-          <div 
-             style={{
+        <Link style={{ textDecoration: 'none' }} to="/badges">
+          <div
+            style={{
               borderRight: `1px solid ${mobileBorderColor}`,
               color: mobileTextColor,
             }}
             className={classes.mobileSwitchWalletText}
           >
-            Badges 
+            Badges
             <span className={clsx(classes.badge)}>new</span>
           </div>
         </Link>

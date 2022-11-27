@@ -19,7 +19,37 @@ const sortFn: { [key: string]: any } = {
   },
 };
 
-const calculateVotes = (votes: any) => {
+const PROFILE_TAB_FILTERS: { [key: string]: any } = {
+  SUBMISSIONS: (wallet: string) => ({ creatorId: wallet }),
+  COMMENTS: (wallet: string) => ({
+    comments: {
+      some: {
+        authorId: wallet,
+      },
+    },
+  }),
+  DOWN_VOTES: (wallet: string) => ({
+    votes: {
+      some: {
+        voterId: wallet,
+        direction: -1,
+      },
+    },
+    creatorId: { not: wallet },
+  }),
+  UP_VOTES: (wallet: string) => ({
+    votes: {
+      some: {
+        voterId: wallet,
+        direction: 1,
+      },
+    },
+    creatorId: { not: wallet },
+  }),
+  DEFAULT: (_: string) => ({}),
+};
+
+export const calculateVotes = (votes: any) => {
   let count = 0;
   votes.forEach((vote: any) => {
     count = count + vote.direction * vote.voter.lilnounCount;
@@ -28,7 +58,7 @@ const calculateVotes = (votes: any) => {
   return count;
 };
 
-const calculateConsensus = (idea: Idea, voteCount: number) => {
+export const calculateConsensus = (idea: Idea, voteCount: number) => {
   if (!idea.tokenSupplyOnCreate) {
     return undefined;
   }
@@ -85,19 +115,25 @@ class IdeasService {
     sortBy,
     tags,
     date,
+    wallet,
+    tab,
   }: {
     sortBy?: string;
     tags?: TagType[];
     date?: string;
+    wallet?: string;
+    tab?: string;
   }) {
     try {
       const dateRange: any = DATE_FILTERS[date || 'ALL_TIME'].filterFn();
+      const profileFilters: any = PROFILE_TAB_FILTERS[tab || 'DEFAULT'](wallet);
       const ideas = await prisma.idea.findMany({
         where: {
           createdAt: {
             gte: dateRange.gte,
             lte: dateRange.lte,
           },
+          ...profileFilters,
         },
         include: {
           tags: true,

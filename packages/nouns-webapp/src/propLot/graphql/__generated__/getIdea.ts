@@ -43,7 +43,7 @@ export interface getIdea_getIdea {
   creatorId: string;
   description: string;
   votecount: number;
-  createdAt: string;
+  createdAt: any;
   ideaStats: getIdea_getIdea_ideaStats | null;
   closed: boolean;
   consensus: number | null;

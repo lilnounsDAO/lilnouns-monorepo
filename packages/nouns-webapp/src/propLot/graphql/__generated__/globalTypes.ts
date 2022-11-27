@@ -14,7 +14,9 @@ export enum FilterType {
 
 export enum TagType {
   ARCHIVED = "ARCHIVED",
+  CLOSED = "CLOSED",
   COMMUNITY = "COMMUNITY",
+  CONSENSUS = "CONSENSUS",
   DISCUSSION = "DISCUSSION",
   GOVERNANCE = "GOVERNANCE",
   INFO = "INFO",
@@ -27,6 +29,12 @@ export enum TagType {
 
 export interface PropLotInputOptions {
   filters?: string[] | null;
+  requestUUID: string;
+}
+
+export interface PropLotProfileInputOptions {
+  filters?: string[] | null;
+  wallet: string;
   requestUUID: string;
 }
 

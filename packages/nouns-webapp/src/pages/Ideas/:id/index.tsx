@@ -112,6 +112,7 @@ const Comment = ({
   isIdeaClosed: boolean;
 }) => {
   const { id } = useParams() as { id: string };
+  const history = useHistory();
   const [isReply, setIsReply] = useState<boolean>(false);
   const [reply, setReply] = useState<string>('');
   const [showReplies, setShowReplies] = useState<boolean>(level > 1);
@@ -136,7 +137,14 @@ const Comment = ({
       <div className="flex flex-row items-center space-x-4">
         <span className="text-2xl text-[#8C8D92] flex align-items-center">
           <Davatar size={28} address={comment.authorId} provider={provider} />
-          <span className="lodrina pl-2">{ens || shortAddress}</span>
+          <span
+            className="lodrina pl-2 text-[#2B83F6] underline cursor-pointer"
+            onClick={() => {
+              history.push(`/proplot/profile/${comment.authorId}`);
+            }}
+          >
+            {ens || shortAddress}
+          </span>
           <span className="text-[#8C8D92] text-base pl-2">
             {moment(comment.createdAt).fromNow()}
           </span>
@@ -247,7 +255,7 @@ const IdeaPage = () => {
           <div>
             <span
               className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
-              onClick={() => history.push('/ideas')}
+              onClick={() => history.push('/proplot')}
             >
               <FontAwesomeIcon
                 icon={faArrowAltCircleLeft}
@@ -297,10 +305,18 @@ const IdeaPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-12">
-          {`${ens || shortAddress} | ${
+        <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-12 whitespace-pre">
+          <span
+            className="text-[#2B83F6] underline cursor-pointer"
+            onClick={() => {
+              data.getIdea?.creatorId && history.push(`/proplot/profile/${data.getIdea.creatorId}`);
+            }}
+          >
+            {ens || shortAddress}
+          </span>
+          {` | ${
             creatorLilNoun === 1 ? `${creatorLilNoun} lil noun` : `${creatorLilNoun} lil nouns`
-          } | ${moment(parseInt(data.getIdea.createdAt)).format('MMM Do YYYY')} ${
+          } | ${moment(data.getIdea.createdAt).format('MMM Do YYYY')} ${
             data.getIdea.closed ? '| closed' : ''
           }`}
         </div>

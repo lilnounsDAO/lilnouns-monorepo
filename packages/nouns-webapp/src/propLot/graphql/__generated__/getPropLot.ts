@@ -43,7 +43,7 @@ export interface getPropLot_propLot_ideas {
   creatorId: string;
   description: string;
   votecount: number;
-  createdAt: string;
+  createdAt: any;
   ideaStats: getPropLot_propLot_ideas_ideaStats | null;
   closed: boolean;
   consensus: number | null;
