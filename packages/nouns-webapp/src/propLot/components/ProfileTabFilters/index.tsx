@@ -9,8 +9,22 @@ import {
   getPropLot_propLot_dateFilter as DateFilter,
   getPropLot_propLot_dateFilter_options as DateFilterOptions,
 } from '../../graphql/__generated__/getPropLot';
+import { FilterType } from '../../graphql/__generated__/globalTypes';
 
-type Filter = TagFilter | SortFilter | DateFilter;
+export type GenericFilter = {
+  id: string;
+  type: FilterType;
+  label: string | null;
+  options: {
+    id: string;
+    label: string | null;
+    selected: boolean;
+    value: string;
+    icon: string | null;
+  }[];
+};
+
+type Filter = TagFilter | SortFilter | DateFilter | GenericFilter;
 type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
 
 const ProfileTabFilters = ({

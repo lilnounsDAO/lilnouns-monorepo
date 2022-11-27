@@ -1,4 +1,4 @@
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row, Button } from 'react-bootstrap';
 import Section from '../../layout/Section';
 import { v4 } from 'uuid';
 import { Alert } from 'react-bootstrap';
@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 
 import Davatar from '@davatar/react';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccountVotes, useNounTokenBalance } from '../../wrappers/nounToken';
 import { useAuth } from '../../hooks/useAuth';
 import { useLazyQuery } from '@apollo/client';
@@ -28,6 +28,7 @@ import { StandaloneNounCircular } from '../../components/StandaloneNoun';
 import { GrayCircle } from '../../components/GrayCircle';
 import { NOUNS_BY_OWNER_SUB } from '../../wrappers/subgraph';
 import ProfileCommentRow from '../components/ProfileCommentRow';
+import ProfileGovernanceList from '../components/ProfileGovernanceList';
 
 const ProfileCard = (props: { title: string; count: number }) => {
   return (
@@ -180,6 +181,17 @@ const PropLotUserProfile = () => {
     refetch({ options: { wallet: id, requestUUID: v4(), filters: selectedfilters } });
   };
 
+  const [listButtonActive, setListButtonActive] = useState('PROP_LOT');
+
+  const lists: { [key: string]: any } = {
+    PROP_LOT: {
+      title: 'Prop Lot',
+    },
+    GOVERNANCE: {
+      title: 'Governance',
+    },
+  };
+
   const nounBalanceWithDelegates = useAccountVotes(id || undefined) ?? 0;
   const nounWalletBalance = useNounTokenBalance(id ?? '') ?? 0;
 
@@ -228,58 +240,120 @@ const PropLotUserProfile = () => {
               buildProfileCards(data?.propLotProfile?.profile.user.userStats)}
           </div>
 
-          <h2 className="font-londrina text-[38px] text-[#212529] font-normal mt-[48px] sm:mt-[81px]">
-            Prop Lot activity
-          </h2>
-
-          <div className="mt-[32px] mb-[24px] flex flex-col-reverse sm:flex-row">
-            <div className="flex mb-[16px] sm:mt-0 mt-[16px] sm:mb-0">
-              {data?.propLotProfile?.tabFilter && (
-                <ProfileTabFilters
-                  filter={data.propLotProfile.tabFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-            </div>
-            <div className="flex flex-1 justify-end">
-              {data?.propLotProfile?.sortFilter && (
-                <DropdownFilter
-                  filter={data.propLotProfile.sortFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-            </div>
-          </div>
-
-          {data?.propLotProfile?.list?.map(listItem => {
-            if (listItem.__typename === 'Idea') {
-              return (
-                <div className="mb-[16px] space-y-4">
-                  <IdeaRow
-                    idea={listItem}
-                    key={`idea-${listItem.id}`}
-                    nounBalance={nounBalanceWithDelegates}
-                    disableControls={isAccountOwner}
-                  />
+          {listButtonActive === 'GOVERNANCE' && (
+            <>
+              <div className="mt-[48px] sm:mt-[81px] flex flex-1 items-center flex-col-reverse gap-[16px] sm:gap-[8px] sm:flex-row">
+                <h2 className="font-londrina text-[38px] text-[#212529] font-normal flex flex-1">
+                  Governance activity
+                </h2>
+                <div
+                  className="flex flex-wrap justify-center !gap-[8px]"
+                  role="btn-toolbar"
+                  aria-label="Basic example"
+                >
+                  {Object.keys(lists).map(list => {
+                    return (
+                      <Button
+                        key={list}
+                        className={`!border-box !flex !flex-row justify-center items-center !py-[8px] !px-[12px] !bg-white !border !rounded-[100px] ${
+                          listButtonActive === list
+                            ? '!text-[#212529] !border-[#2B83F6] !border-[2px]'
+                            : '!text-[#8C8D92] !border-[#E2E3E8] !border-[1px]'
+                        } !text-[16px] !font-semibold`}
+                        id={list}
+                        onClick={e => setListButtonActive(list)}
+                      >
+                        {lists[list].title}
+                      </Button>
+                    );
+                  })}
                 </div>
-              );
-            }
+              </div>
+              <ProfileGovernanceList />
+            </>
+          )}
 
-            if (listItem.__typename === 'Comment') {
-              return (
-                <div className="mb-[16px] space-y-4">
-                  <ProfileCommentRow key={`comment-${listItem.id}`} comment={listItem} />
+          {listButtonActive === 'PROP_LOT' && (
+            <>
+              <div className="mt-[48px] sm:mt-[81px] flex flex-1 items-center flex-col-reverse gap-[16px] sm:gap-[8px] sm:flex-row">
+                <h2 className="font-londrina text-[38px] text-[#212529] font-normal flex flex-1">
+                  Prop Lot activity
+                </h2>
+
+                <div
+                  className="flex flex-wrap justify-center !gap-[8px]"
+                  role="btn-toolbar"
+                  aria-label="Basic example"
+                >
+                  {Object.keys(lists).map(list => {
+                    return (
+                      <Button
+                        key={list}
+                        className={`!border-box !flex !flex-row justify-center items-center !py-[8px] !px-[12px] !bg-white !border !rounded-[100px] ${
+                          listButtonActive === list
+                            ? '!text-[#212529] !border-[#2B83F6] !border-[2px]'
+                            : '!text-[#8C8D92] !border-[#E2E3E8] !border-[1px]'
+                        } !text-[16px] !font-semibold`}
+                        id={list}
+                        onClick={e => setListButtonActive(list)}
+                      >
+                        {lists[list].title}
+                      </Button>
+                    );
+                  })}
                 </div>
-              );
-            }
+              </div>
 
-            return null;
-          })}
-          {!Boolean(data?.propLotProfile?.list?.length) && (
-            <Alert variant="secondary">
-              <Alert.Heading>No data found.</Alert.Heading>
-              <p>We couldn't find any data for this user!</p>
-            </Alert>
+              <div className="mt-[32px] mb-[24px] flex flex-col-reverse sm:flex-row">
+                <div className="flex mb-[16px] sm:mt-0 mt-[16px] sm:mb-0">
+                  {data?.propLotProfile?.tabFilter && (
+                    <ProfileTabFilters
+                      filter={data.propLotProfile.tabFilter}
+                      updateFilters={handleUpdateFilters}
+                    />
+                  )}
+                </div>
+                <div className="flex flex-1 justify-end">
+                  {data?.propLotProfile?.sortFilter && (
+                    <DropdownFilter
+                      filter={data.propLotProfile.sortFilter}
+                      updateFilters={handleUpdateFilters}
+                    />
+                  )}
+                </div>
+              </div>
+
+              {data?.propLotProfile?.list?.map(listItem => {
+                if (listItem.__typename === 'Idea') {
+                  return (
+                    <div className="mb-[16px] space-y-4">
+                      <IdeaRow
+                        idea={listItem}
+                        key={`idea-${listItem.id}`}
+                        nounBalance={nounBalanceWithDelegates}
+                        disableControls={isAccountOwner}
+                      />
+                    </div>
+                  );
+                }
+
+                if (listItem.__typename === 'Comment') {
+                  return (
+                    <div className="mb-[16px] space-y-4">
+                      <ProfileCommentRow key={`comment-${listItem.id}`} comment={listItem} />
+                    </div>
+                  );
+                }
+
+                return null;
+              })}
+              {!Boolean(data?.propLotProfile?.list?.length) && (
+                <Alert variant="secondary">
+                  <Alert.Heading>No data found.</Alert.Heading>
+                  <p>We couldn't find any data for this user!</p>
+                </Alert>
+              )}
+            </>
           )}
         </div>
       </Col>
