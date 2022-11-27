@@ -313,7 +313,7 @@ export const useIdeas = () => {
         throw new Error('Failed to create Idea');
       }
 
-      history.push(`/ideas/${data.id}`);
+      history.push(`/proplot/${data.id}`);
     } catch (e: any) {
       const error = {
         message: e.message || 'Failed to submit your idea!',

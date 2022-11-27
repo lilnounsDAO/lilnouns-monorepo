@@ -14,7 +14,13 @@ import { ExternalURL, externalURL } from '../../utils/externalURL';
 import useLidoBalance from '../../hooks/useLidoBalance';
 import NavBarButton, { NavBarButtonStyle } from '../NavBarButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpen, faUsers, faPlay, faComments, faLightbulb } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBookOpen,
+  faUsers,
+  faPlay,
+  faComments,
+  faLightbulb,
+} from '@fortawesome/free-solid-svg-icons';
 import NavBarTreasury from '../NavBarTreasury';
 import NavWallet from '../NavWallet';
 import { useEffect, useState } from 'react';
@@ -47,9 +53,9 @@ const NavBar = () => {
     ? NavBarButtonStyle.COOL_INFO
     : NavBarButtonStyle.WARM_INFO;
 
-    const [bigNounBalance, setBigNounBalance] = useState('0');
-  
-    const fetchNounsQuery = `
+  const [bigNounBalance, setBigNounBalance] = useState('0');
+
+  const fetchNounsQuery = `
     query {
         accounts(where: {id: "0xd5f279ff9eb21c6d40c8f345a66f2751c4eea1fb" }) {
         id
@@ -60,28 +66,28 @@ const NavBar = () => {
       }
     }
       `;
-  
-    async function fetchData() {
-      const repsonse = await createClient({ url: config.app.nounsDAOSubgraphApiUri })
-        .query(fetchNounsQuery)
-        .toPromise();
-      return repsonse.data.accounts[0];
-    }
-  
-    useEffect(() => {
-      fetchData()
-        .then(async repsonse => {
-          const tokenBalance = repsonse.tokenBalance;
-          const nounIds = repsonse.nouns.flatMap((obj: { id: any }) => obj.id);
-  
-          setBigNounBalance(tokenBalance);
-          return;
-        })
-        .catch(error => {
-          console.log(`Nouns Owned Error ${error}`);
-          return;
-        });
-    }, []);
+
+  async function fetchData() {
+    const repsonse = await createClient({ url: config.app.nounsDAOSubgraphApiUri })
+      .query(fetchNounsQuery)
+      .toPromise();
+    return repsonse.data.accounts[0];
+  }
+
+  useEffect(() => {
+    fetchData()
+      .then(async repsonse => {
+        const tokenBalance = repsonse.tokenBalance;
+        const nounIds = repsonse.nouns.flatMap((obj: { id: any }) => obj.id);
+
+        setBigNounBalance(tokenBalance);
+        return;
+      })
+      .catch(error => {
+        console.log(`Nouns Owned Error ${error}`);
+        return;
+      });
+  }, []);
 
   return (
     <>
@@ -140,17 +146,17 @@ const NavBar = () => {
                   />
                 </Nav.Link>
                 <Nav.Link
-              href={externalURL(ExternalURL.discourse)}
-              className={classes.nounsNavLink}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <NavBarButton
-                buttonText={'Discourse'}
-                buttonIcon={<FontAwesomeIcon icon={faComments} />}
-                buttonStyle={nonWalletButtonStyle}
-              />
-            </Nav.Link>
+                  href={externalURL(ExternalURL.discourse)}
+                  className={classes.nounsNavLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <NavBarButton
+                    buttonText={'Discourse'}
+                    buttonIcon={<FontAwesomeIcon icon={faComments} />}
+                    buttonStyle={nonWalletButtonStyle}
+                  />
+                </Nav.Link>
                 <Nav.Link as={Link} to="/playground" className={classes.nounsNavLink}>
                   <NavBarButton
                     buttonText={'Playground'}
@@ -161,7 +167,7 @@ const NavBar = () => {
               </>
             ) : (
               <>
-                <Nav.Link as={Link} to="/ideas" className={classes.nounsNavLink}>
+                <Nav.Link as={Link} to="/proplot" className={classes.nounsNavLink}>
                   <NavBarButton
                     buttonText={'Prop Lot'}
                     buttonIcon={<FontAwesomeIcon icon={faLightbulb} />}
@@ -188,17 +194,17 @@ const NavBar = () => {
                   />
                 </Nav.Link>
                 <Nav.Link
-              href={externalURL(ExternalURL.discourse)}
-              className={classes.nounsNavLink}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <NavBarButton
-                buttonText={'Discourse'}
-                buttonIcon={<FontAwesomeIcon icon={faComments} />}
-                buttonStyle={nonWalletButtonStyle}
-              />
-            </Nav.Link>
+                  href={externalURL(ExternalURL.discourse)}
+                  className={classes.nounsNavLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <NavBarButton
+                    buttonText={'Discourse'}
+                    buttonIcon={<FontAwesomeIcon icon={faComments} />}
+                    buttonStyle={nonWalletButtonStyle}
+                  />
+                </Nav.Link>
                 <Nav.Link as={Link} to="/playground" className={classes.nounsNavLink}>
                   <NavBarButton
                     buttonText={'Playground'}

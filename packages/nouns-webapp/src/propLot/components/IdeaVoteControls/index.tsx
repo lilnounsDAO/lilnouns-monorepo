@@ -20,11 +20,13 @@ const IdeaVoteControls = ({
   nounBalance,
   withAvatars = false,
   refetchPropLotOnVote = false,
+  disableControls = false,
 }: {
   idea: Idea;
   nounBalance: number;
   withAvatars?: boolean;
   refetchPropLotOnVote?: boolean;
+  disableControls?: boolean;
 }) => {
   const { id, votecount: voteCount, closed, votes } = idea;
   const { account, library: provider } = useEthers();
@@ -122,7 +124,7 @@ const IdeaVoteControls = ({
           calculatedVoteCount
         )}
       </span>
-      {!closed && (
+      {!closed && !disableControls && (
         <div className="flex flex-col ml-4">
           <FontAwesomeIcon
             icon={faCaretUp}
