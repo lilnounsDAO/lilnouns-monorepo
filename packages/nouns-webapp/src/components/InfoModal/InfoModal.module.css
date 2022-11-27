@@ -120,6 +120,12 @@
     margin-top: 1.5rem;
   }
 
+  .subheaderText {
+    font-size: 18px;
+    text-align: left;
+    margin-top: 1.5rem;
+  }
+
   .bodyText {
     font-size: 15px;
     text-align: left;
@@ -156,6 +162,11 @@
     .headerText {
       color: white;
     }
+
+    .subheaderText {
+      color: white;
+    }
+
 
     .bodyText {
       color: white;
