@@ -150,7 +150,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
           <div
             onClick={propLotProfileHandler}
             className={clsx(
-              classes.dropDownItem,
+              classes.dropDownTop,
               classes.button,
               classes.switchWalletText,
               usePickByState(
@@ -167,7 +167,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
           <Link style={{ textDecoration: 'none' }} to="/badges">
             <div
               className={clsx(
-                classes.dropDownTop,
+                classes.dropDownItem,
                 classes.button,
                 classes.switchWalletText,
                 usePickByState(

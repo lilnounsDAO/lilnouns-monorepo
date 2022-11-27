@@ -116,7 +116,7 @@ const PropLotHome = () => {
                 ? '!bg-[#2B83F6] !text-white !text-[16px]'
                 : '!text-[#8C8D92] !bg-[#F4F4F8] !border-[#E2E3E8]'
             } flex-1 sm:flex-none !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`}
-            onClick={() => history.push('/ideas/create')}
+            onClick={() => history.push('/proplot/create')}
           >
             New Submission
           </Button>
