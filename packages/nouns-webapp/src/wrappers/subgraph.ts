@@ -510,6 +510,168 @@ export const NOUNS_BY_OWNER_SUB = gql`
   }
 `;
 
+export const LIL_NOUNS_GOVERNANCE_BY_OWNER_SUB = gql`
+  query governanceProfile($id: String!) {
+    votes(where: { voter: $id }) {
+      proposal {
+        id
+        description
+        status
+        proposalThreshold
+        quorumVotes
+        forVotes
+        againstVotes
+        abstainVotes
+        createdTransactionHash
+        createdBlock
+        startBlock
+        endBlock
+        executionETA
+        targets
+        values
+        signatures
+        calldatas
+        proposer {
+          id
+        }
+      }
+      reason
+      supportDetailed
+    }
+
+    proposals(where: { proposer: $id }) {
+      id
+      description
+      status
+      proposalThreshold
+      quorumVotes
+      forVotes
+      againstVotes
+      abstainVotes
+      createdTransactionHash
+      createdBlock
+      startBlock
+      endBlock
+      executionETA
+      targets
+      values
+      signatures
+      calldatas
+      proposer {
+        id
+      }
+    }
+  }
+`;
+
+export const SNAPSHOT_GOVERNANCE_BY_OWNER_SUB = gql`
+  query governanceProfile($id: String!) {
+    votes(orderBy: "vp", where: { voter: $id, space_in: ["League of Lils", "leagueoflils.eth"] }) {
+      voter
+      vp
+      choice
+      id
+      reason
+      proposal {
+        id
+        title
+        body
+        choices
+        start
+        end
+        snapshot
+        state
+        author
+        scores
+        space {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const BIG_NOUNS_PROPOSALS_SUB = gql`
+  query bigNounsProposalData($ids: [String!]!) {
+    proposals(where: { id_in: $ids }) {
+      id
+      description
+      status
+      proposalThreshold
+      quorumVotes
+      forVotes
+      againstVotes
+      abstainVotes
+      createdTransactionHash
+      createdBlock
+      startBlock
+      endBlock
+      executionETA
+      targets
+      values
+      signatures
+      calldatas
+      proposer {
+        id
+      }
+    }
+  }
+`;
+
+export const BIG_NOUNS_GOVERNANCE_BY_OWNER_SUB = gql`
+  query governanceProfile($id: String!) {
+    votes(where: { voter: $id }) {
+      proposal {
+        id
+        description
+        status
+        proposalThreshold
+        quorumVotes
+        forVotes
+        againstVotes
+        abstainVotes
+        createdTransactionHash
+        createdBlock
+        startBlock
+        endBlock
+        executionETA
+        targets
+        values
+        signatures
+        calldatas
+        proposer {
+          id
+        }
+      }
+      supportDetailed
+    }
+
+    proposals(where: { proposer: $id }) {
+      id
+      description
+      status
+      proposalThreshold
+      quorumVotes
+      forVotes
+      againstVotes
+      abstainVotes
+      createdTransactionHash
+      createdBlock
+      startBlock
+      endBlock
+      executionETA
+      targets
+      values
+      signatures
+      calldatas
+      proposer {
+        id
+      }
+    }
+  }
+`;
+
 export const clientFactory = (uri: string) =>
   new ApolloClient({
     uri,
