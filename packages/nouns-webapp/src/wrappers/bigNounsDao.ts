@@ -36,7 +36,9 @@ const abi = new utils.Interface(NounsDAOV2ABI);
 // const abi_v2 = new utils.Interface(NounsDAOV2ABI);
 // console.log(`NounsDAOV2ABI: ${JSON.stringify(NounsDAOV2ABI)}`);
 
-const nounsDaoContract = new NounsDaoLogicV1Factory().attach(config.bigNounsAddresses.nounsDAOProxy);
+const nounsDaoContract = new NounsDaoLogicV1Factory().attach(
+  config.bigNounsAddresses.nounsDAOProxy,
+);
 
 // Start the log search at the mainnet deployment block to speed up log queries
 const fromBlock = CHAIN_ID === ChainId.Mainnet ? 12985453 : 0;
@@ -298,6 +300,32 @@ const getProposalState = (
   return status;
 };
 
+export const formatBigNounSubgraphProposal = (
+  proposal: ProposalSubgraphEntity,
+  blockNumber?: number,
+  timestamp?: number,
+) => {
+  const description = proposal.description?.replace(/\\n/g, '\n').replace(/(^['"]|['"]$)/g, '');
+  return {
+    id: proposal.id,
+    title: R.pipe(extractTitle, removeMarkdownStyle)(description) ?? 'Untitled',
+    description: description ?? 'No description.',
+    proposer: proposal.proposer.id,
+    status: getProposalState(blockNumber, new Date((timestamp ?? 0) * 1000), proposal),
+    proposalThreshold: parseInt(proposal.proposalThreshold),
+    quorumVotes: parseInt(proposal.quorumVotes),
+    forCount: parseInt(proposal.forVotes),
+    againstCount: parseInt(proposal.againstVotes),
+    abstainCount: parseInt(proposal.abstainVotes),
+    createdBlock: parseInt(proposal.createdBlock),
+    startBlock: parseInt(proposal.startBlock),
+    endBlock: parseInt(proposal.endBlock),
+    eta: proposal.executionETA ? new Date(Number(proposal.executionETA) * 1000) : undefined,
+    details: formatProposalTransactionDetails(proposal),
+    transactionHash: proposal.createdTransactionHash,
+  };
+};
+
 export const useAllBigNounProposalsViaSubgraph = (): ProposalData => {
   const { loading, data, error } = useQuery(bigNounsProposalsQuery(), {
     context: { clientName: 'NounsDAO' },
@@ -308,29 +336,10 @@ export const useAllBigNounProposalsViaSubgraph = (): ProposalData => {
   const timestamp = useBlockTimestamp(blockNumber);
 
   const proposals = data?.daa?.map((proposal: ProposalSubgraphEntity) => {
-    const description = proposal.description?.replace(/\\n/g, '\n').replace(/(^['"]|['"]$)/g, '');
-    return {
-      id: proposal.id,
-      title: R.pipe(extractTitle, removeMarkdownStyle)(description) ?? 'Untitled',
-      description: description ?? 'No description.',
-      proposer: proposal.proposer.id,
-      status: getProposalState(blockNumber, new Date((timestamp ?? 0) * 1000), proposal),
-      proposalThreshold: parseInt(proposal.proposalThreshold),
-      quorumVotes: parseInt(proposal.quorumVotes),
-      forCount: parseInt(proposal.forVotes),
-      againstCount: parseInt(proposal.againstVotes),
-      abstainCount: parseInt(proposal.abstainVotes),
-      createdBlock: parseInt(proposal.createdBlock),
-      startBlock: parseInt(proposal.startBlock),
-      endBlock: parseInt(proposal.endBlock),
-      eta: proposal.executionETA ? new Date(Number(proposal.executionETA) * 1000) : undefined,
-      details: formatProposalTransactionDetails(proposal),
-      transactionHash: proposal.createdTransactionHash,
-    };
+    return formatBigNounSubgraphProposal(proposal, blockNumber, timestamp);
   });
 
   // console.log(`proposals??:  ${JSON.stringify(data.daa)}`);
-  
 
   return {
     loading,
@@ -371,7 +380,9 @@ export const useAllBigNounProposalsViaChain = (skip = false): ProposalData => {
 
     return {
       data: proposals.map((proposal, i) => {
-        const description = logs[i]?.description?.replace(/\\n/g, '\n').replace(/(^['"]|['"]$)/g, '');
+        const description = logs[i]?.description
+          ?.replace(/\\n/g, '\n')
+          .replace(/(^['"]|['"]$)/g, '');
         return {
           id: proposal?.id.toString(),
           title: R.pipe(extractTitle, removeMarkdownStyle)(description) ?? 'Untitled',
@@ -407,7 +418,7 @@ export const useAllBigNounProposals = (): ProposalData => {
 
 export const useBigNounProposal = (id: string | number): Proposal | undefined => {
   const subgraph = useAllBigNounProposalsViaSubgraph();
-  const { data } = subgraph//useAllBigNounProposals();
+  const { data } = subgraph; //useAllBigNounProposals();
 
   // console.log(`useBigNounProposal: ${id.toString()} == ${JSON.stringify(data?.find(p => p.id === "171")?.title)}`);
   return data?.find(p => p.id === id.toString());
