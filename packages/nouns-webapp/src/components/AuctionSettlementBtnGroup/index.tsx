@@ -20,7 +20,7 @@ const AuctionSettlementBtnGroup: React.FC<{
 
   return (
     <>
-      {!isNextAuctionNounderNoun ? (
+      {isNextAuctionNounderNoun ? (
         <Button className={classes.bidBtnAuctionEnded} onClick={settleAuctionHandler}>
           Settle Manually
         </Button>
