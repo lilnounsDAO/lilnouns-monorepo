@@ -16,6 +16,7 @@ import SettleManuallyBtn from '../SettleManuallyBtn';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import InfoModal from '../InfoModal';
+import AuctionSettlementBtnGroup from '../AuctionSettlementBtnGroup';
 
 const computeMinimumNextBid = (
   currentBid: BigNumber,
@@ -305,11 +306,6 @@ const Bid: React.FC<{
   const isDisabled =
     placeBidState.status === 'Mining' || settleAuctionState.status === 'Mining' || !activeAccount;
 
-    const lbpBtnOnClickHandler = () => {
-      // Open Fomo Nouns in a new tab
-      window.open('https://lilblockparty.wtf/', '_blank')?.focus();
-    };
-
   const minBidCopy = `Ξ ${minBidEth(minBid)} or more`;
 
   const isWalletConnected = activeAccount !== undefined;
@@ -353,10 +349,11 @@ const Bid: React.FC<{
             {/* Only show force settle button if wallet connected */}
             {isWalletConnected ? (
               <Col lg={12}>
-                {/* <SettleManuallyBtn settleAuctionHandler={settleAuctionHandler} auction={auction} /> */}
-                <Button className={classes.bidBtnAuctionEnded} onClick={lbpBtnOnClickHandler}>
-                  Pick the next Lil Noun ⌐◧-◧
-                </Button>
+                <AuctionSettlementBtnGroup
+                  settleAuctionHandler={settleAuctionHandler}
+                  auction={auction}
+                />
+
                 <button onClick={showBidModalHandler} className={classes.infoButton}>
                   <FontAwesomeIcon icon={faInfoCircle} />
                   {` bidding and settling`}
