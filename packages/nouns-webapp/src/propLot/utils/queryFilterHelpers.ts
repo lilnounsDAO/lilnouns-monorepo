@@ -7,7 +7,7 @@ import {
   getPropLot_propLot_dateFilter_options as DateFilterOptions,
 } from '../graphql/__generated__/getPropLot';
 
-import { FilterType as FilterTyeEnum } from '../graphql/__generated__/globalTypes';
+import { FilterType as FilterTypeEnum } from '../graphql/__generated__/globalTypes';
 
 type Filter = TagFilter | SortFilter | DateFilter;
 type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
@@ -35,7 +35,7 @@ export const updateSelectedFilters = (
   isSelected: boolean,
 ) => {
   let newFilters = [...selectedFilters];
-  if (filter.type === FilterTyeEnum.SINGLE_SELECT) {
+  if (filter.type === FilterTypeEnum.SINGLE_SELECT) {
     if (isSelected) {
       newFilters = selectedFilters.filter(selectedFilter => selectedFilter !== opt.value);
     } else {
@@ -43,7 +43,7 @@ export const updateSelectedFilters = (
     }
   }
 
-  if (filter.type === FilterTyeEnum.MULTI_SELECT) {
+  if (filter.type === FilterTypeEnum.MULTI_SELECT) {
     if (isSelected) {
       newFilters = selectedFilters.filter(selectedFilter => selectedFilter !== opt.value);
     } else {
