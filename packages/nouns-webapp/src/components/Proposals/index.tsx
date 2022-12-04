@@ -113,6 +113,171 @@ export interface SnapshotProposal {
   [key: string]: any;
 }
 
+export const LilNounProposalRow = ({ proposal }: { proposal: Proposal }) => {
+  const currentBlock = useBlockNumber();
+
+  const isPropInStateToHaveCountDown =
+    proposal.status === ProposalState.PENDING ||
+    proposal.status === ProposalState.ACTIVE ||
+    proposal.status === ProposalState.QUEUED;
+
+  const countdownPill = (
+    <div className={classes.proposalStatusWrapper}>
+      <div className={clsx(proposalStatusClasses.proposalStatus, classes.countdownPill)}>
+        <div className={classes.countdownPillContentWrapper}>
+          <span className={classes.countdownPillClock}>
+            <ClockIcon height={16} width={16} />
+          </span>{' '}
+          <span className={classes.countdownPillText}>
+            {getCountdownCopy(proposal, currentBlock || 0)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <a
+      className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
+      href={`/vote/${proposal.id}`}
+      key={proposal.id}
+    >
+      <div className={classes.proposalInfoWrapper}>
+        <span className={classes.proposalTitle}>
+          <span className={classes.proposalId}>{proposal.id}</span> <span>{proposal.title}</span>
+        </span>
+
+        {isPropInStateToHaveCountDown && (
+          <div className={classes.desktopCountdownWrapper}>{countdownPill}</div>
+        )}
+        <div className={clsx(classes.proposalStatusWrapper, classes.votePillWrapper)}>
+          <ProposalStatus status={proposal.status}></ProposalStatus>
+        </div>
+      </div>
+
+      {isPropInStateToHaveCountDown && (
+        <div className={classes.mobileCountdownWrapper}>{countdownPill}</div>
+      )}
+    </a>
+  );
+};
+
+export const bigNounsPropStatus = (proposal: Proposal, snapshotVoteObject?: SnapshotProposal) => {
+  let propStatus = proposal.status;
+
+  if (snapshotVoteObject && !proposal.snapshotForCount) {
+    proposal.snapshotProposalId = snapshotVoteObject.id;
+
+    if (snapshotVoteObject.scores_total) {
+      const scores = snapshotVoteObject.scores;
+      proposal.snapshotForCount == scores[0];
+      proposal.snapshotAgainstCount == scores[1];
+      proposal.snapshotAbstainCount == scores[2];
+    }
+
+    switch (snapshotVoteObject.state) {
+      case 'active':
+        proposal.snapshotEnd = snapshotVoteObject.end;
+        if (proposal.status == ProposalState.PENDING || proposal.status == ProposalState.ACTIVE) {
+          propStatus = ProposalState.METAGOV_ACTIVE;
+        } else {
+          propStatus = proposal.status;
+        }
+
+        break;
+
+      case 'closed':
+        if (proposal.status == ProposalState.ACTIVE) {
+          propStatus = ProposalState.METAGOV_CLOSED;
+          break;
+        }
+        propStatus = proposal.status;
+        break;
+
+      case 'pending':
+        propStatus = ProposalState.PENDING;
+        break;
+
+      default:
+        propStatus = proposal.status;
+        break;
+    }
+  } else if (!snapshotVoteObject) {
+    if (proposal.status == ProposalState.ACTIVE) {
+      propStatus = ProposalState.METAGOV_PENDING;
+    } else {
+      propStatus = proposal.status;
+    }
+  }
+
+  return propStatus;
+};
+
+export const BigNounProposalRow = ({
+  proposal,
+  snapshotProposals,
+}: {
+  proposal: Proposal;
+  snapshotProposals: SnapshotProposal[];
+}) => {
+  const currentBlock = useBlockNumber();
+
+  const snapshotVoteObject = snapshotProposals.find(spi =>
+    spi.body.includes(proposal.transactionHash),
+  );
+
+  const propStatus = bigNounsPropStatus(proposal, snapshotVoteObject);
+
+  const isPropInStateToHaveCountDown =
+    propStatus === ProposalState.PENDING ||
+    propStatus === ProposalState.METAGOV_ACTIVE ||
+    propStatus === ProposalState.METAGOV_CLOSED ||
+    propStatus === ProposalState.ACTIVE ||
+    propStatus === ProposalState.QUEUED;
+
+  //if lil nouns vote is active, change countdown pill to reflect snapshot voting window
+
+  const countdownPill = (
+    <div className={classes.proposalStatusWrapper}>
+      <div className={clsx(proposalStatusClasses.proposalStatus, classes.countdownPill)}>
+        <div className={classes.countdownPillContentWrapper}>
+          <span className={classes.countdownPillClock}>
+            <ClockIcon height={16} width={16} />
+          </span>{' '}
+          <span className={classes.countdownPillText}>
+            {getCountdownCopy(proposal, currentBlock || 0, propStatus, snapshotVoteObject)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <a
+      className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
+      href={`/vote/nounsdao/${proposal.id}`}
+      key={proposal.id}
+    >
+      <div className={classes.proposalInfoWrapper}>
+        <span className={classes.proposalTitle}>
+          <span className={classes.proposalId}>{proposal.id}</span> <span>{proposal.title}</span>
+        </span>
+
+        {isPropInStateToHaveCountDown && (
+          <div className={classes.desktopCountdownWrapper}>{countdownPill}</div>
+        )}
+        <div className={clsx(classes.proposalStatusWrapper, classes.votePillWrapper)}>
+          <ProposalStatus status={propStatus}></ProposalStatus>
+        </div>
+      </div>
+
+      {isPropInStateToHaveCountDown && (
+        <div className={classes.mobileCountdownWrapper}>{countdownPill}</div>
+      )}
+    </a>
+  );
+};
+
 const Proposals = ({
   proposals,
   nounsDAOProposals,
@@ -219,54 +384,7 @@ const Proposals = ({
             proposals
               .slice(0)
               .reverse()
-              .map((p, i) => {
-                const isPropInStateToHaveCountDown =
-                  p.status === ProposalState.PENDING ||
-                  p.status === ProposalState.ACTIVE ||
-                  p.status === ProposalState.QUEUED;
-
-                const countdownPill = (
-                  <div className={classes.proposalStatusWrapper}>
-                    <div
-                      className={clsx(proposalStatusClasses.proposalStatus, classes.countdownPill)}
-                    >
-                      <div className={classes.countdownPillContentWrapper}>
-                        <span className={classes.countdownPillClock}>
-                          <ClockIcon height={16} width={16} />
-                        </span>{' '}
-                        <span className={classes.countdownPillText}>
-                          {getCountdownCopy(p, currentBlock || 0)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-
-                return (
-                  <a
-                    className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
-                    href={`/vote/${p.id}`}
-                    key={i}
-                  >
-                    <div className={classes.proposalInfoWrapper}>
-                      <span className={classes.proposalTitle}>
-                        <span className={classes.proposalId}>{p.id}</span> <span>{p.title}</span>
-                      </span>
-
-                      {isPropInStateToHaveCountDown && (
-                        <div className={classes.desktopCountdownWrapper}>{countdownPill}</div>
-                      )}
-                      <div className={clsx(classes.proposalStatusWrapper, classes.votePillWrapper)}>
-                        <ProposalStatus status={p.status}></ProposalStatus>
-                      </div>
-                    </div>
-
-                    {isPropInStateToHaveCountDown && (
-                      <div className={classes.mobileCountdownWrapper}>{countdownPill}</div>
-                    )}
-                  </a>
-                );
-              })
+              .map(p => <LilNounProposalRow proposal={p} key={p.id} />)
           ) : (
             <Alert variant="secondary">
               <Alert.Heading>No proposals found</Alert.Heading>
@@ -289,109 +407,9 @@ const Proposals = ({
             nounsDAOProposals
               .slice(0)
               .reverse()
-              .map((p, i) => {
-                const snapshotVoteObject = snapshotProposals.find(spi =>
-                  spi.body.includes(p.transactionHash),
-                );
-
-                let propStatus = p.status;
-
-                if (snapshotVoteObject && !p.snapshotForCount) {
-                  p.snapshotProposalId = snapshotVoteObject.id;
-
-                  if (snapshotVoteObject.scores_total) {
-                    const scores = snapshotVoteObject.scores;
-                    p.snapshotForCount == scores[0];
-                    p.snapshotAgainstCount == scores[1];
-                    p.snapshotAbstainCount == scores[2];
-                  }
-
-                  switch (snapshotVoteObject.state) {
-                    case 'active':
-                      p.snapshotEnd = snapshotVoteObject.end;
-                      if (p.status == ProposalState.PENDING || p.status == ProposalState.ACTIVE) {
-                        propStatus = ProposalState.METAGOV_ACTIVE;
-                      } else {
-                        propStatus = p.status;
-                      }
-
-                      break;
-
-                    case 'closed':
-                      if (p.status == ProposalState.ACTIVE) {
-                        propStatus = ProposalState.METAGOV_CLOSED;
-                        break;
-                      }
-                      propStatus = p.status;
-                      break;
-
-                    case 'pending':
-                      propStatus = ProposalState.PENDING;
-                      break;
-
-                    default:
-                      propStatus = p.status;
-                      break;
-                  }
-                } else if (!snapshotVoteObject) {
-                  if (p.status == ProposalState.ACTIVE) {
-                    propStatus = ProposalState.METAGOV_PENDING;
-                  } else {
-                    propStatus = p.status;
-                  }
-                }
-
-                const isPropInStateToHaveCountDown =
-                  propStatus === ProposalState.PENDING ||
-                  propStatus === ProposalState.METAGOV_ACTIVE ||
-                  propStatus === ProposalState.METAGOV_CLOSED ||
-                  propStatus === ProposalState.ACTIVE ||
-                  propStatus === ProposalState.QUEUED;
-
-                //if lil nouns vote is active, change countdown pill to reflect snapshot voting window
-
-                const countdownPill = (
-                  <div className={classes.proposalStatusWrapper}>
-                    <div
-                      className={clsx(proposalStatusClasses.proposalStatus, classes.countdownPill)}
-                    >
-                      <div className={classes.countdownPillContentWrapper}>
-                        <span className={classes.countdownPillClock}>
-                          <ClockIcon height={16} width={16} />
-                        </span>{' '}
-                        <span className={classes.countdownPillText}>
-                          {getCountdownCopy(p, currentBlock || 0, propStatus, snapshotVoteObject)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-
-                return (
-                  <a
-                    className={clsx(classes.proposalLink, classes.proposalLinkWithCountdown)}
-                    href={`/vote/nounsdao/${p.id}`}
-                    key={i}
-                  >
-                    <div className={classes.proposalInfoWrapper}>
-                      <span className={classes.proposalTitle}>
-                        <span className={classes.proposalId}>{p.id}</span> <span>{p.title}</span>
-                      </span>
-
-                      {isPropInStateToHaveCountDown && (
-                        <div className={classes.desktopCountdownWrapper}>{countdownPill}</div>
-                      )}
-                      <div className={clsx(classes.proposalStatusWrapper, classes.votePillWrapper)}>
-                        <ProposalStatus status={propStatus}></ProposalStatus>
-                      </div>
-                    </div>
-
-                    {isPropInStateToHaveCountDown && (
-                      <div className={classes.mobileCountdownWrapper}>{countdownPill}</div>
-                    )}
-                  </a>
-                );
-              })
+              .map(p => (
+                <BigNounProposalRow proposal={p} snapshotProposals={snapshotProposals} key={p.id} />
+              ))
           ) : (
             <Alert variant="secondary">
               <Alert.Heading>No proposals found</Alert.Heading>
