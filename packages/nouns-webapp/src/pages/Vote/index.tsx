@@ -322,7 +322,7 @@ const VotePage = ({
                   onClick={desctructiveStateAction}
                   disabled={isCancelPending}
                   variant="danger"
-                  className={classes.desturctiveTransitionStateButton}
+                  className={classes.destructiveTransitionStateButton}
                 >
                   {isCancelPending ? (
                     <Spinner animation="border" />

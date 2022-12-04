@@ -14,12 +14,16 @@ export enum NavBarButtonStyle {
   DELEGATE_PRIMARY,
   DELEGATE_SECONDARY,
   DELEGATE_DISABLED,
+  FOR_VOTE_SUBMIT,
+  AGAINST_VOTE_SUBMIT,
+  ABSTAIN_VOTE_SUBMIT,
 }
 
 interface NavBarButtonProps {
   buttonText: React.ReactNode;
   buttonIcon?: React.ReactNode;
   buttonStyle?: NavBarButtonStyle;
+  className?: string;
   onClick?: (e?: any) => void;
   disabled?: boolean;
 }
@@ -62,6 +66,15 @@ export const getNavBarButtonVariant = (buttonStyle?: NavBarButtonStyle) => {
     case NavBarButtonStyle.DELEGATE_DISABLED: {
       return classes.delegateDisabled;
     }
+    case NavBarButtonStyle.FOR_VOTE_SUBMIT: {
+      return classes.forVoteSubmit;
+    }
+    case NavBarButtonStyle.AGAINST_VOTE_SUBMIT: {
+      return classes.againstVoteSubmit;
+    }
+    case NavBarButtonStyle.ABSTAIN_VOTE_SUBMIT: {
+      return classes.abstainVoteSubmit;
+    }
     default: {
       return classes.info;
     }
@@ -69,14 +82,14 @@ export const getNavBarButtonVariant = (buttonStyle?: NavBarButtonStyle) => {
 };
 
 const NavBarButton: React.FC<NavBarButtonProps> = props => {
-  const { buttonText, buttonIcon, buttonStyle, onClick, disabled } = props;
+  const { buttonText, buttonIcon, buttonStyle, onClick, disabled, className = '' } = props;
 
   const isDisabled = disabled ?? false;
 
   return (
     <>
       <div
-        className={`${classes.wrapper} ${getNavBarButtonVariant(buttonStyle)}`}
+        className={`${classes.wrapper} ${getNavBarButtonVariant(buttonStyle)} ${className}`}
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         onClick={isDisabled ? () => {} : onClick}
       >
