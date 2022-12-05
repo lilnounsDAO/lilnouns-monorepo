@@ -94,13 +94,13 @@ const VoteModal = ({ show, onHide, proposalId, availableVotes }: VoteModalProps)
       </div>
       <div className={classes.voteModalSubtitle}>
         {availableVotes === 1 ? (
-          <s>
+          <a>
             Voting with <span className={classes.bold}>{availableVotes}</span> Lil Noun
-          </s>
+          </a>
         ) : (
-          <s>
+          <a>
             Voting with <span className={classes.bold}>{availableVotes}</span> Lil Nouns
-          </s>
+          </a>
         )}
       </div>
       {isVoteSucessful && (
