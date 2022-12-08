@@ -78,6 +78,10 @@ const CreateIdeaPage = () => {
       label: 'Other',
       value: 'OTHER',
     },
+    {
+      label: 'Nouns DAO Prop',
+      value: 'NOUNS',
+    },
   ];
 
   return (

@@ -182,4 +182,5 @@ enum TagType {
   OTHER
   CONSENSUS
   CLOSED
+  NOUNS
 }
