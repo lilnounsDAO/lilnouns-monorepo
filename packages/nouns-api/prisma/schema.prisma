@@ -79,5 +79,6 @@ enum TagType {
   GOVERNANCE
   COMMUNITY
   REQUEST
+  NOUNS
   OTHER
 }
