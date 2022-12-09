@@ -384,7 +384,7 @@ export const snapshotProposalsQuery = () => gql`
     proposals(
       first: 1000
       skip: 0
-      where: { space_in: ["League of Lils", "leagueoflils.eth"] }
+      where: { space_in: ["leagueoflils.eth"] }
       orderBy: "created"
       orderDirection: desc
     ) {
@@ -566,7 +566,7 @@ export const LIL_NOUNS_GOVERNANCE_BY_OWNER_SUB = gql`
 
 export const SNAPSHOT_GOVERNANCE_BY_OWNER_SUB = gql`
   query governanceProfile($id: String!) {
-    votes(orderBy: "vp", where: { voter: $id, space_in: ["League of Lils", "leagueoflils.eth"] }) {
+    votes(orderBy: "vp", where: { voter: $id, space_in: ["leagueoflils.eth"] }) {
       voter
       vp
       choice
