@@ -11,8 +11,10 @@ import { nounPath } from '../../utils/history';
 import useOnDisplayAuction from '../../wrappers/onDisplayAuction';
 import { useEffect } from 'react';
 import ProfileActivityFeed from '../../components/ProfileActivityFeed';
+import AUCTION_ABI from '../../libs/abi/vrgda.json';
 
 import useAuctionGetBlockchainDetails from '../../libs/vrgda';
+import { useContractRead } from 'wagmi';
 
 interface AuctionPageProps {
   initialAuctionId?: number;
@@ -27,10 +29,23 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
 
   const dispatch = useAppDispatch();
 
-  const { data: auctionBlockchainData, isLoading: isLoadingContract } =
-    useAuctionGetBlockchainDetails();
+  // const { data: auctionBlockchainData, isLoading: isLoadingContract } =
+  //   useAuctionGetBlockchainDetails();
 
-  console.log('data', auctionBlockchainData);
+  const { refetch, ...rest } = useContractRead({
+    address: '0xe6A9B92c074520de8912EaA4591db1966E2e2B92',
+    abi: AUCTION_ABI,
+    functionName: 'fetchNextNoun',
+    chainId: 5,
+    // args: [],
+  });
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+  console.log('data', rest);
+
+  // console.log('data', auctionBlockchainData);
 
   useEffect(() => {
     if (!lastAuctionNounId) return;

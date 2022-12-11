@@ -7,6 +7,7 @@ import { BigNumber as bNum } from '@ethersproject/bignumber';
 import { findAuction, isNounderNoun, isNounsDAONoun } from '../utils/nounderNoun';
 import { useAppSelector } from '../hooks';
 import { AuctionState } from '../state/slices/auction';
+import AUCTION_ABI from '../libs/abi/vrgda.json';
 
 export enum AuctionHouseContractFunction {
   auction = 'auction',
@@ -34,7 +35,7 @@ export interface Auction {
   settled: boolean;
 }
 
-const abi = new utils.Interface(NounsAuctionHouseABI);
+const abi = new utils.Interface(AUCTION_ABI);
 
 export const useAuction = (auctionHouseProxyAddress: string) => {
   const auction = useContractCall<Auction>({
@@ -49,8 +50,8 @@ export const useAuction = (auctionHouseProxyAddress: string) => {
 export const useAuctionMinBidIncPercentage = () => {
   const minBidIncrement = useContractCall({
     abi,
-    address: config.addresses.nounsAuctionHouseProxy,
-    method: 'minBidIncrementPercentage',
+    address: '0xe6A9B92c074520de8912EaA4591db1966E2e2B92',
+    method: 'fetchNextNoun',
     args: [],
   });
 

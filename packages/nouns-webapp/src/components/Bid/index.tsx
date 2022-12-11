@@ -86,6 +86,7 @@ const Bid: React.FC<{
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
 
   const minBidIncPercentage = useAuctionMinBidIncPercentage();
+  console.log('minBidIncPercentage', minBidIncPercentage);
   const minBid = computeMinimumNextBid(
     auction && new BigNumber(auction.amount.toString()),
     minBidIncPercentage,
@@ -148,7 +149,7 @@ const Bid: React.FC<{
 
     //TODO: fat finger check here 900% increase
     //Operator '>' cannot be applied to types 'BigNumber' and 'number'.
-    
+
     //0.15 = 150000000000000000
     //1.5 = 1500000000000000000
     if (
@@ -175,7 +176,7 @@ const Bid: React.FC<{
   };
 
   const settleAuctionHandlerFunc = () => {
-    settleAuction()
+    settleAuction();
   };
 
   const settleAuctionHandler = () => {
@@ -188,7 +189,6 @@ const Bid: React.FC<{
       actionMessage: 'Settle Auction',
       action: settleAuctionHandlerFunc,
     });
-
   };
 
   const clearBidInput = () => {
