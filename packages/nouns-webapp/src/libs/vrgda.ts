@@ -1,4 +1,4 @@
-import { useContractCall } from '@usedapp/core';
+import { useContractRead } from 'wagmi';
 import { useState } from 'react';
 import { VrgdaAuction } from '../wrappers/nounsAuction';
 import VRGDA_ABI from './abi/vrgda.json';
@@ -24,14 +24,20 @@ const contracts = [
 ];
 
 export default function useAuctionGetBlockchainDetails() {
-  const d = useContractCall({
+  const d = useContractRead({
     address: '0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44',
     abi: VRGDA_ABI,
-    method: 'fetchNextNoun',
-    args: [],
+    functionName: 'fetchNextNoun',
+    chainId: 5,
   });
 
   console.log('d', d);
 
-  return d;
+  const { data, error, isLoading } = d;
+
+  return {
+    data,
+    error,
+    isLoading,
+  };
 }

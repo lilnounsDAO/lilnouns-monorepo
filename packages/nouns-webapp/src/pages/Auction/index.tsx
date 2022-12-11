@@ -11,10 +11,8 @@ import { nounPath } from '../../utils/history';
 import useOnDisplayAuction from '../../wrappers/onDisplayAuction';
 import { useEffect } from 'react';
 import ProfileActivityFeed from '../../components/ProfileActivityFeed';
-import VRGDA_ABI from '../../libs/abi/vrgda.json';
 
 import useAuctionGetBlockchainDetails from '../../libs/vrgda';
-import { useContractCall } from '@usedapp/core';
 
 interface AuctionPageProps {
   initialAuctionId?: number;
@@ -29,14 +27,10 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
 
   const dispatch = useAppDispatch();
 
-  const d = useContractCall({
-    address: '0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44',
-    abi: VRGDA_ABI,
-    method: 'fetchNextNoun',
-    args: [],
-  });
+  const { data: auctionBlockchainData, isLoading: isLoadingContract } =
+    useAuctionGetBlockchainDetails();
 
-  console.log('data', d);
+  console.log('data', auctionBlockchainData);
 
   useEffect(() => {
     if (!lastAuctionNounId) return;
