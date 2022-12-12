@@ -26,7 +26,7 @@ const AuctionTimer: React.FC<{
   auctionTimerRef.current = auctionTimer;
 
   const timerDuration = dayjs.duration(auctionTimerRef.current, 's');
-  const endTime = dayjs().add(auctionTimerRef.current, 's').local();
+  const dropTime = dayjs().add(auctionTimerRef.current, 's').local();
 
   // timer logic
   useEffect(() => {
@@ -87,7 +87,7 @@ const AuctionTimer: React.FC<{
                 ? window.innerWidth < 992
                   ? auctionContentShort
                   : auctionContentLong
-                : `Ends on ${endTime.format('MMM Do')} at`}
+                : `Ends on ${dropTime.format('MMM Do')} at`}
             </h4>
             <button onClick={showPriceDropHandler} className={classes.infoButton}>
               <FontAwesomeIcon icon={faInfoCircle} />
@@ -123,7 +123,7 @@ const AuctionTimer: React.FC<{
               }}
             >
               <div className={clsx(classes.timerSection, classes.clockSection)}>
-                <span>{endTime.format('h:mm:ss a')}</span>
+                <span>{dropTime.format('h:mm:ss a')}</span>
               </div>
             </h2>
           )}
