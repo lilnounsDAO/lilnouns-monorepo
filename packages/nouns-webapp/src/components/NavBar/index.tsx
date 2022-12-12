@@ -1,7 +1,6 @@
 import { useAppSelector } from '../../hooks';
 import classes from './NavBar.module.css';
-import logo from '../../assets/logo.svg';
-import logoAlternate from '../../assets/logo_alternate.svg';
+import sandboxLogo from '../../assets/logo.svg';
 import { useEtherBalance } from '@usedapp/core';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -36,16 +35,12 @@ const NavBar = () => {
   const treasuryBalance = ethBalance && lidoBalanceAsETH && ethBalance.add(lidoBalanceAsETH);
   const daoEtherscanLink = buildEtherscanHoldingsLink(config.addresses.nounsDaoExecutor);
 
-  const isPreLaunch = config.isPreLaunch === 'true';
+  const useStateBg =
+    history.location.pathname === '/' ||
+    history.location.pathname.includes('/lilnoun/') ||
+    history.location.pathname.includes('/auction/');
 
-  const useStateBg = isPreLaunch
-    ? history.location.pathname.includes('/lilnoun/') ||
-      history.location.pathname.includes('/auction/')
-    : history.location.pathname === '/' ||
-      history.location.pathname.includes('/lilnoun/') ||
-      history.location.pathname.includes('/auction/');
-
-  const navLogo = useStateBg ? logo : logoAlternate;
+  const navLogo = sandboxLogo;
 
   const nonWalletButtonStyle = !useStateBg
     ? NavBarButtonStyle.WHITE_INFO
@@ -53,7 +48,7 @@ const NavBar = () => {
     ? NavBarButtonStyle.COOL_INFO
     : NavBarButtonStyle.WARM_INFO;
 
-  const [bigNounBalance, setBigNounBalance] = useState('0');
+  const [bigNounBalance, setBigNounBalance] = useState('...');
 
   const fetchNounsQuery = `
     query {
@@ -108,113 +103,41 @@ const NavBar = () => {
               </Nav.Item>
             )}
 
-            {isPreLaunch ? (
-              <></>
-            ) : (
-              <Nav.Item>
-                {treasuryBalance && (
-                  <Nav.Link
-                    href={daoEtherscanLink}
-                    className={classes.nounsNavLink}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <NavBarTreasury
-                      treasuryBalance={Number(utils.formatEther(treasuryBalance)).toFixed(0)}
-                      treasuryStyle={nonWalletButtonStyle}
-                      treasuryBigNounBalance={bigNounBalance}
-                    />
-                  </Nav.Link>
-                )}
-              </Nav.Item>
-            )}
+            <Nav.Item>
+              {treasuryBalance && (
+                <Nav.Link
+                  href={daoEtherscanLink}
+                  className={classes.nounsNavLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <NavBarTreasury
+                    treasuryBalance={Number(utils.formatEther(treasuryBalance)).toFixed(0)}
+                    treasuryStyle={nonWalletButtonStyle}
+                    treasuryBigNounBalance={bigNounBalance}
+                  />
+                </Nav.Link>
+              )}
+            </Nav.Item>
           </div>
           <Navbar.Toggle className={classes.navBarToggle} aria-controls="basic-navbar-nav" />
           <Navbar.Collapse className="justify-content-end">
-            {isPreLaunch ? (
-              <>
-                <Nav.Link
-                  href={externalURL(ExternalURL.notion)}
-                  className={classes.nounsNavLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <NavBarButton
-                    buttonText={'Docs'}
-                    buttonIcon={<FontAwesomeIcon icon={faBookOpen} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link
-                  href={externalURL(ExternalURL.discourse)}
-                  className={classes.nounsNavLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <NavBarButton
-                    buttonText={'Discourse'}
-                    buttonIcon={<FontAwesomeIcon icon={faComments} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link as={Link} to="/playground" className={classes.nounsNavLink}>
-                  <NavBarButton
-                    buttonText={'Playground'}
-                    buttonIcon={<FontAwesomeIcon icon={faPlay} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-              </>
-            ) : (
-              <>
-                <Nav.Link as={Link} to="/proplot" className={classes.nounsNavLink}>
-                  <NavBarButton
-                    buttonText={'Prop Lot'}
-                    buttonIcon={<FontAwesomeIcon icon={faLightbulb} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link as={Link} to="/vote" className={classes.nounsNavLink}>
-                  <NavBarButton
-                    buttonText={'DAO'}
-                    buttonIcon={<FontAwesomeIcon icon={faUsers} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link
-                  href={externalURL(ExternalURL.notion)}
-                  className={classes.nounsNavLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <NavBarButton
-                    buttonText={'Docs'}
-                    buttonIcon={<FontAwesomeIcon icon={faBookOpen} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link
-                  href={externalURL(ExternalURL.discourse)}
-                  className={classes.nounsNavLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <NavBarButton
-                    buttonText={'Discourse'}
-                    buttonIcon={<FontAwesomeIcon icon={faComments} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link as={Link} to="/playground" className={classes.nounsNavLink}>
-                  <NavBarButton
-                    buttonText={'Playground'}
-                    buttonIcon={<FontAwesomeIcon icon={faPlay} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <NavWallet address={activeAccount || '0'} buttonStyle={nonWalletButtonStyle} />{' '}
-              </>
-            )}
+            <>
+              <div className="md:mx-4 my-4 font-bold">
+                This is a test environment. Not real Lil Noun tokens.
+              </div>
+              <a
+                className="no-underline"
+                href="https://lumbar-drive-346.notion.site/lilsandbox-wtf-c660feaf344743359d084406cbcbb3cb"
+              >
+                <NavBarButton
+                  buttonText={'Spec'}
+                  buttonIcon={<FontAwesomeIcon icon={faLightbulb} />}
+                  buttonStyle={nonWalletButtonStyle}
+                />
+              </a>
+              <NavWallet address={activeAccount || '0'} buttonStyle={nonWalletButtonStyle} />{' '}
+            </>
           </Navbar.Collapse>
         </Container>
       </Navbar>
