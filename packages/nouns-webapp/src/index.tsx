@@ -170,6 +170,33 @@ const vrgdaContract = new ethers.Contract(
 const ChainSubscriber: React.FC = () => {
   const dispatch = useAppDispatch();
 
+  const loadVrgdaState = async () => {
+    // Fetch the current vrgda auction
+    const nextNoun: NextNoun = await vrgdaContract.fetchNextNoun();
+    const startTime: BigNumber = await vrgdaContract.startTime();
+    const updateInterval: BigNumber = await vrgdaContract.updateInterval();
+
+    const auction = {
+      nounId: nextNoun.nounId,
+      startTime: startTime,
+      updateInterval,
+      amount: nextNoun.price,
+      parentBlockHash: nextNoun.hash,
+      settled: false,
+      seed: nextNoun.seed,
+      svg: nextNoun.svg,
+    };
+
+    console.log('new auction', auction);
+
+    dispatch(setFullAuction(reduxSafeAuction(auction)));
+    dispatch(setOnDisplayAuctionNounId(nextNoun.nounId.toNumber()));
+
+    // dispatch(setLastAuctionNounId(2));
+
+    dispatch(setLastAuctionStartTime(startTime.toNumber()));
+  };
+
   const loadState = async () => {
     const wsProvider = new WebSocketProvider(config.app.wsRpcUri);
     const nounsAuctionHouseContract = NounsAuctionHouseFactory.connect(
@@ -218,31 +245,6 @@ const ChainSubscriber: React.FC = () => {
       dispatch(setAuctionSettled({ nounId, amount, winner }));
     };
 
-    // Fetch the current vrgda auction
-    const nextNoun: NextNoun = await vrgdaContract.fetchNextNoun();
-    const startTime: BigNumber = await vrgdaContract.startTime();
-    const updateInterval: BigNumber = await vrgdaContract.updateInterval();
-
-    const auction = {
-      nounId: nextNoun.nounId,
-      startTime: startTime,
-      updateInterval,
-      amount: nextNoun.price,
-      parentBlockHash: nextNoun.hash,
-      settled: false,
-      seed: nextNoun.seed,
-      svg: nextNoun.svg,
-    };
-
-    console.log('new auction', auction);
-
-    dispatch(setFullAuction(reduxSafeAuction(auction)));
-    dispatch(setOnDisplayAuctionNounId(nextNoun.nounId.toNumber()));
-
-    // dispatch(setLastAuctionNounId(2));
-
-    dispatch(setLastAuctionStartTime(startTime.toNumber()));
-
     // Fetch the previous 24hours of  bids
     const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
     for (const event of previousBids) {
@@ -264,6 +266,19 @@ const ChainSubscriber: React.FC = () => {
     );
   };
   loadState();
+  loadVrgdaState();
+
+  useEffect(() => {
+    // Call the loadVrgdaState function every 5 seconds
+    const interval = setInterval(() => {
+      loadVrgdaState();
+    }, 2500);
+
+    // Clear the interval when the component unmounts
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return <></>;
 };
