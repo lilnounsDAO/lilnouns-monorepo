@@ -31,7 +31,6 @@ const AuctionTimer: React.FC<{
   // Get the start time and update interval in seconds
   const updateIntervalSeconds = auction.updateInterval.toNumber();
   const startTime = new Date(auction.startTime.toNumber() * 1000);
-  console.log('startTime, updateInterval', startTime, updateIntervalSeconds);
 
   // Get the current time
   const currentTime = new Date();
@@ -53,7 +52,6 @@ const AuctionTimer: React.FC<{
 
   // timer logic
   useEffect(() => {
-    console.log('priceDropsIn', priceDropsIn);
     const timeLeft = (auction && Number(priceDropsIn)) - dayjs().unix();
 
     setAuctionTimer(auction && timeLeft);

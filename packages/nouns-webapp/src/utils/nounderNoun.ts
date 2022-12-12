@@ -19,6 +19,7 @@ const emptyNounderAuction = (onDisplayAuctionId: number): Auction => {
     endTime: BigNumber.from(0).toJSON(),
     nounId: BigNumber.from(onDisplayAuctionId).toJSON(),
     settled: false,
+    svg: '',
     //vrgda
     updateInterval: BigNumber.from(0).toJSON(),
     priceDropTime: new Date(),

@@ -5,8 +5,6 @@ import { Bid, BidEvent } from '../utils/types';
 import { Auction } from './nounsAuction';
 
 const deserializeAuction = (reduxSafeAuction: Auction): Auction => {
-  console.log('reduxSafeAuction', reduxSafeAuction);
-
   return {
     amount: BigNumber.from(reduxSafeAuction.amount),
     bidder: reduxSafeAuction.bidder,
@@ -22,6 +20,7 @@ const deserializeAuction = (reduxSafeAuction: Auction): Auction => {
     ],
     //update interval
     updateInterval: BigNumber.from(reduxSafeAuction.updateInterval),
+    parentBlockHash: reduxSafeAuction.parentBlockHash,
     svg: reduxSafeAuction.svg,
   };
 };
@@ -52,14 +51,6 @@ const useOnDisplayAuction = (): Auction | undefined => {
   const currentAuction = useAppSelector(state => state.auction.activeAuction);
   const pastAuctions = useAppSelector(state => state.pastAuctions.pastAuctions);
 
-  //log all the above data
-  console.log('====================');
-  console.log('lastAuctionNounId', lastAuctionNounId);
-  console.log('onDisplayAuctionNounId', onDisplayAuctionNounId);
-  console.log('currentAuction', currentAuction);
-  console.log('pastAuctions', pastAuctions);
-  console.log('====================');
-
   if (
     onDisplayAuctionNounId === undefined ||
     lastAuctionNounId === undefined ||
@@ -67,7 +58,7 @@ const useOnDisplayAuction = (): Auction | undefined => {
     !pastAuctions
   )
     return undefined;
-  console.log('about to deserialize', currentAuction);
+
   //TODO figure out last auction noun id
   return deserializeAuction(currentAuction);
 

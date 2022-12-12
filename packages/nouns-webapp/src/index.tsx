@@ -154,7 +154,10 @@ const Updaters = () => {
 
 const BLOCKS_PER_DAY = 6_500;
 
-const provider = new ethers.providers.InfuraProvider('goerli', `819b435e5ebc4e8386b89e79c4d5d7ec`);
+const INFURA_PROVIDER = new ethers.providers.InfuraProvider(
+  'goerli',
+  `819b435e5ebc4e8386b89e79c4d5d7ec`,
+);
 
 const ChainSubscriber: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -169,7 +172,7 @@ const ChainSubscriber: React.FC = () => {
     const vrgdaContract = new ethers.Contract(
       '0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44',
       AUCTION_ABI,
-      provider,
+      INFURA_PROVIDER,
     );
 
     const bidFilter = nounsAuctionHouseContract.filters.AuctionBid(null, null, null, null);

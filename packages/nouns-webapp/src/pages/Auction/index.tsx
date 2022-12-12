@@ -25,15 +25,6 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
 
   const dispatch = useAppDispatch();
 
-  //log all the above shit
-  console.log('initialAuctionId', initialAuctionId);
-  console.log('onDisplayAuction', onDisplayAuction);
-  console.log('lastAuctionNounId', lastAuctionNounId);
-  console.log('lastAuctionStartTime', lastAuctionStartTime);
-  console.log('onDisplayAuctionNounId', onDisplayAuctionNounId);
-
-  // console.log('data', auctionBlockchainData);
-
   useEffect(() => {
     if (!lastAuctionNounId) return;
     if (!lastAuctionStartTime) return;

@@ -49,7 +49,7 @@ export const reduxSafeAuction = (auction: IAuction): IAuction => ({
   updateInterval: BigNumber.from(auction.updateInterval).toJSON(),
   // priceDropTime: auction.priceDropTime,
   // blocksRemaining: BigNumber.from(auction.blocksRemaining).toJSON(),
-  // parentBlockHash: BigNumber.from(auction.parentBlockHash).toJSON(),
+  parentBlockHash: auction.parentBlockHash,
   //add seed
   seed: [
     BigNumber.from(auction.seed[0]).toJSON(),
