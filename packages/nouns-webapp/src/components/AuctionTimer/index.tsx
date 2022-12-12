@@ -28,9 +28,33 @@ const AuctionTimer: React.FC<{
   const timerDuration = dayjs.duration(auctionTimerRef.current, 's');
   const dropTime = dayjs().add(auctionTimerRef.current, 's').local();
 
+  // Get the start time and update interval in seconds
+  const updateIntervalSeconds = auction.updateInterval.toNumber();
+  const startTime = new Date(auction.startTime.toNumber() * 1000);
+  console.log('startTime, updateInterval', startTime, updateIntervalSeconds);
+
+  // Get the current time
+  const currentTime = new Date();
+
+  // Calculate the elapsed time since the start of the auction
+  const elapsedTime = currentTime.getTime() - startTime.getTime();
+
+  // Calculate the number of times the price has dropped
+  const numPriceDrops = elapsedTime / (updateIntervalSeconds * 1000);
+
+  // Calculate the time since the last price drop
+  const timeSinceLastPriceDrop = numPriceDrops * (updateIntervalSeconds * 1000);
+
+  // Calculate the time until the next price drop
+  const timeUntilNextPriceDrop = updateIntervalSeconds * 1000 - timeSinceLastPriceDrop;
+
+  // Calculate the "price drops in" date by adding the time until the next price drop to the current time
+  const priceDropsIn = new Date(currentTime.getTime() + timeUntilNextPriceDrop);
+
   // timer logic
   useEffect(() => {
-    const timeLeft = (auction && Number(auction.endTime)) - dayjs().unix();
+    console.log('priceDropsIn', priceDropsIn);
+    const timeLeft = (auction && Number(priceDropsIn)) - dayjs().unix();
 
     setAuctionTimer(auction && timeLeft);
 
