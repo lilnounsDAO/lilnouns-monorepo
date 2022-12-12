@@ -1,6 +1,4 @@
 import { useContractRead } from 'wagmi';
-import { useState } from 'react';
-import { VrgdaAuction } from '../wrappers/nounsAuction';
 import VRGDA_ABI from './abi/vrgda.json';
 
 export const vrgdaAuctionHouseContract = {

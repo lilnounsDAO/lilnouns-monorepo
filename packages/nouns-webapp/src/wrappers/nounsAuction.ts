@@ -1,5 +1,5 @@
 import { useContractCall } from '@usedapp/core';
-import { BigNumber as EthersBN, utils } from 'ethers';
+import { BigNumber as EthersBN, BigNumberish, utils } from 'ethers';
 import { NounsAuctionHouseABI } from '@lilnounsdao/sdk';
 import config from '../config';
 import BigNumber from 'bignumber.js';
@@ -18,21 +18,22 @@ export enum AuctionHouseContractFunction {
   settleCurrentAndCreateNewAuction = 'settleCurrentAndCreateNewAuction',
 }
 
-export interface VrgdaAuction extends Auction {
-  updateInterval: EthersBN;
-  //the time the auction will drop in price
-  priceDropTime: Date;
-  blocksRemaining?: EthersBN;
-  parentBlockHash: string;
-}
-
 export interface Auction {
   amount: EthersBN;
-  bidder: string;
-  endTime: EthersBN;
+  bidder?: string;
+  endTime?: EthersBN;
   startTime: EthersBN;
   nounId: EthersBN;
   settled: boolean;
+
+  //vrgda
+  seed: [EthersBN, EthersBN, EthersBN, EthersBN, EthersBN];
+  svg: string;
+  updateInterval: EthersBN;
+  //the time the auction will drop in price
+  priceDropTime?: Date;
+  blocksRemaining?: EthersBN;
+  parentBlockHash?: BigNumberish;
 }
 
 const abi = new utils.Interface(AUCTION_ABI);

@@ -29,10 +29,6 @@ const Auction: React.FC<AuctionProps> = props => {
   const stateBgColor = useAppSelector(state => state.application.stateBackgroundColor);
   const lastNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
 
-  const loadedNounHandler = (seed: INounSeed) => {
-    dispatch(setStateBackgroundColor(seed.background === 0 ? grey : beige));
-  };
-
   const prevAuctionHandler = () => {
     dispatch(setPrevOnDisplayAuctionNounId());
     currentAuction && history.push(`/lilnoun/${currentAuction.nounId.toNumber() - 1}`);
@@ -46,8 +42,9 @@ const Auction: React.FC<AuctionProps> = props => {
     <div className={classes.nounWrapper}>
       <StandaloneNounWithSeed
         nounId={currentAuction.nounId}
-        onLoadSeed={loadedNounHandler}
+        seed={currentAuction.seed}
         shouldLinkToProfile={false}
+        svg={currentAuction.svg}
       />
     </div>
   );

@@ -39,7 +39,7 @@ import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
 import config, { CHAIN_ID, createNetworkHttpUrl, multicallOnLocalhost } from './config';
 import { WebSocketProvider } from '@ethersproject/providers';
-import { BigNumber, BigNumberish, providers } from 'ethers';
+import { BigNumber, BigNumberish, ethers, providers } from 'ethers';
 import { NounsAuctionHouseFactory } from '@lilnounsdao/sdk';
 import dotenv from 'dotenv';
 import { useAppDispatch, useAppSelector } from './hooks';
@@ -57,6 +57,9 @@ import { ErrorModalProvider } from './hooks/useApiError';
 
 import { Provider as RollbarProvider } from '@rollbar/react';
 import { isNounderNoun } from './utils/nounderNoun';
+
+import AUCTION_ABI from './libs/abi/vrgda.json';
+import { NextNoun } from './utils/types';
 
 dotenv.config();
 
@@ -151,6 +154,8 @@ const Updaters = () => {
 
 const BLOCKS_PER_DAY = 6_500;
 
+const provider = new ethers.providers.InfuraProvider('goerli', `819b435e5ebc4e8386b89e79c4d5d7ec`);
+
 const ChainSubscriber: React.FC = () => {
   const dispatch = useAppDispatch();
 
@@ -159,6 +164,12 @@ const ChainSubscriber: React.FC = () => {
     const nounsAuctionHouseContract = NounsAuctionHouseFactory.connect(
       config.addresses.nounsAuctionHouseProxy,
       wsProvider,
+    );
+
+    const vrgdaContract = new ethers.Contract(
+      '0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44',
+      AUCTION_ABI,
+      provider,
     );
 
     const bidFilter = nounsAuctionHouseContract.filters.AuctionBid(null, null, null, null);
@@ -178,23 +189,23 @@ const ChainSubscriber: React.FC = () => {
         appendBid(reduxSafeBid({ nounId, sender, value, extended, transactionHash, timestamp })),
       );
     };
-    const processAuctionCreated = (
-      nounId: BigNumberish,
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-    ) => {
-      dispatch(
-        setActiveAuction(reduxSafeNewAuction({ nounId, startTime, endTime, settled: false })),
-      );
-      const nounIdNumber = BigNumber.from(nounId).toNumber();
-      const startTimeNumber = BigNumber.from(startTime).toNumber();
-      dispatch(push(nounPath(nounIdNumber)));
-      dispatch(setOnDisplayAuctionNounId(nounIdNumber));
-      dispatch(setOnDisplayAuctionStartTime(startTimeNumber));
+    // const processAuctionCreated = (
+    //   nounId: BigNumberish,
+    //   startTime: BigNumberish,
+    //   endTime: BigNumberish,
+    // ) => {
+    //   dispatch(
+    //     setActiveAuction(reduxSafeNewAuction({ nounId, startTime, endTime, settled: false })),
+    //   );
+    //   const nounIdNumber = BigNumber.from(nounId).toNumber();
+    //   const startTimeNumber = BigNumber.from(startTime).toNumber();
+    //   dispatch(push(nounPath(nounIdNumber)));
+    //   dispatch(setOnDisplayAuctionNounId(nounIdNumber));
+    //   dispatch(setOnDisplayAuctionStartTime(startTimeNumber));
 
-      dispatch(setLastAuctionNounId(nounIdNumber));
-      dispatch(setLastAuctionStartTime(startTimeNumber));
-    };
+    //   dispatch(setLastAuctionNounId(nounIdNumber));
+    //   dispatch(setLastAuctionStartTime(startTimeNumber));
+    // };
     const processAuctionExtended = (nounId: BigNumberish, endTime: BigNumberish) => {
       dispatch(setAuctionExtended({ nounId, endTime }));
     };
@@ -204,10 +215,27 @@ const ChainSubscriber: React.FC = () => {
 
     // Fetch the current auction
     const currentAuction = await nounsAuctionHouseContract.auction();
-    dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
-    dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
 
-    dispatch(setLastAuctionStartTime(currentAuction.startTime.toNumber()));
+    const nextNoun: NextNoun = await vrgdaContract.fetchNextNoun();
+    const startTime: BigNumber = await vrgdaContract.startTime();
+    const updateInterval: BigNumber = await vrgdaContract.updateInterval();
+
+    const auction = {
+      nounId: currentAuction.nounId,
+      startTime: startTime,
+      updateInterval,
+      amount: nextNoun.price,
+      parentBlockHash: nextNoun.hash,
+      settled: false,
+      seed: nextNoun.seed,
+    };
+
+    dispatch(setFullAuction(reduxSafeAuction(auction)));
+    dispatch(setOnDisplayAuctionNounId(nextNoun.nounId.toNumber()));
+
+    dispatch(setLastAuctionNounId(2));
+
+    dispatch(setLastAuctionStartTime(startTime.toNumber()));
 
     // Fetch the previous 24hours of  bids
     const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
@@ -219,9 +247,9 @@ const ChainSubscriber: React.FC = () => {
     nounsAuctionHouseContract.on(bidFilter, (nounId, sender, value, extended, event) =>
       processBidFilter(nounId, sender, value, extended, event),
     );
-    nounsAuctionHouseContract.on(createdFilter, (nounId, startTime, endTime) =>
-      processAuctionCreated(nounId, startTime, endTime),
-    );
+    // nounsAuctionHouseContract.on(createdFilter, (nounId, startTime, endTime) =>
+    //   processAuctionCreated(nounId, startTime, endTime),
+    // );
     nounsAuctionHouseContract.on(extendedFilter, (nounId, endTime) =>
       processAuctionExtended(nounId, endTime),
     );

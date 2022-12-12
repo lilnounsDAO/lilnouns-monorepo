@@ -6,7 +6,7 @@ import {
 } from '@lilnounsdao/assets';
 import { buildSVG } from '@lilnounsdao/sdk';
 import { BigNumber, BigNumber as EthersBN } from 'ethers';
-import { INounSeed, useBigNounSeed, useNounSeed } from '../../wrappers/nounToken';
+import { INounSeed, useBigNounSeed, useNounSeed, useNounSeedVrgda } from '../../wrappers/nounToken';
 import Noun from '../Noun';
 import { Link } from 'react-router-dom';
 import classes from './StandaloneNoun.module.css';
@@ -14,9 +14,11 @@ import { useDispatch } from 'react-redux';
 import { setOnDisplayAuctionNounId } from '../../state/slices/onDisplayAuction';
 import nounClasses from '../Noun/Noun.module.css';
 import { useMemo } from 'react';
+import { NounVrgdaSeed } from '../../utils/types';
 
 interface StandaloneNounProps {
   nounId: EthersBN;
+  svg: string;
 }
 interface StandaloneCircularNounProps {
   nounId: EthersBN;
@@ -25,7 +27,8 @@ interface StandaloneCircularNounProps {
 
 interface StandaloneNounWithSeedProps {
   nounId: EthersBN;
-  onLoadSeed?: (seed: INounSeed) => void;
+  seed: NounVrgdaSeed;
+  svg: string;
   shouldLinkToProfile: boolean;
 }
 
@@ -35,6 +38,23 @@ export const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => 
   const description = `Lil Noun ${id} is a member of the Lil Nouns DAO`;
   const { parts, background } = getNounData(seed);
   const svg = buildSVG(parts, data.palette, background);
+  const image = `data:image/svg+xml;base64,${btoa(svg)}`;
+
+  return {
+    name,
+    svg,
+    description,
+    image,
+    parts,
+  };
+};
+
+export const getVrgdaNoun = (nounId: string | EthersBN | number, seed: INounSeed, svg: string) => {
+  const id = nounId.toString();
+  const name = `Noun ${id}`;
+  const description = `Lil Noun ${id} is a member of the Lil Nouns DAO`;
+  const { parts, background } = getNounData(seed);
+
   const image = `data:image/svg+xml;base64,${btoa(svg)}`;
 
   return {
@@ -69,9 +89,9 @@ export const useNounData = (nounId: string | EthersBN | number) => {
 };
 
 const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProps) => {
-  const { nounId } = props;
+  const { nounId, svg } = props;
   const seed = useNounSeed(nounId);
-  const noun = seed && getNoun(nounId, seed);
+  const noun = seed && getVrgdaNoun(nounId, seed, svg);
 
   const dispatch = useDispatch();
 
@@ -148,14 +168,13 @@ export const StandaloneNounRoundedCorners: React.FC<StandaloneNounProps> = (
 export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
   props: StandaloneNounWithSeedProps,
 ) => {
-  const { nounId, onLoadSeed, shouldLinkToProfile } = props;
+  const { nounId, seed: vrgdaSeed, shouldLinkToProfile } = props;
 
   const dispatch = useDispatch();
-  const seed = useNounSeed(nounId);
 
-  if (!seed || !nounId || !onLoadSeed) return <Noun imgPath="" alt="Lil Noun" />;
+  const seed = useNounSeedVrgda(nounId, vrgdaSeed);
 
-  onLoadSeed(seed);
+  if (!seed || !nounId) return <Noun imgPath="" alt="Lil Noun" />;
 
   const onClickHandler = () => {
     dispatch(setOnDisplayAuctionNounId(nounId.toNumber()));

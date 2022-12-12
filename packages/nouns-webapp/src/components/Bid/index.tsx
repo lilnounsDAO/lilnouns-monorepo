@@ -86,7 +86,6 @@ const Bid: React.FC<{
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
 
   const minBidIncPercentage = useAuctionMinBidIncPercentage();
-  console.log('minBidIncPercentage', minBidIncPercentage);
   const minBid = computeMinimumNextBid(
     auction && new BigNumber(auction.amount.toString()),
     minBidIncPercentage,
