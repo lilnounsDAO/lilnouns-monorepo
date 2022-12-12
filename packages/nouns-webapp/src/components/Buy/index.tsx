@@ -1,4 +1,3 @@
-import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import React, { useState, useRef } from 'react';
 
@@ -20,13 +19,11 @@ const Buy: React.FC<{
   auctionEnded: boolean;
 }> = props => {
   const activeAccount = useAppSelector(state => state.account.activeAccount);
-  const { library } = useEthers();
+
   const { auction, auctionEnded } = props;
-  console.log('auction', auction);
-  const { address, isConnecting, isDisconnected } = useAccount();
-  console.log('address', address);
-  console.log('isConnecting', isConnecting);
-  console.log('isDisconnected', isDisconnected);
+
+  const { address } = useAccount();
+
   const { connectAsync } = useConnect({
     connector: new InjectedConnector(),
   });
