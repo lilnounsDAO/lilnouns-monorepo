@@ -1,13 +1,12 @@
-import { useEthers, useContractFunction } from '@usedapp/core';
+import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { utils, BigNumber as EthersBN, ethers } from 'ethers';
-import BigNumber from 'bignumber.js';
+import React, { useState, useRef } from 'react';
+
 import classes from './Buy.module.css';
 import { Spinner, InputGroup, Button } from 'react-bootstrap';
-import { Auction, useAuctionMinBidIncPercentage } from '../../wrappers/nounsAuction';
+import { Auction } from '../../wrappers/nounsAuction';
 import { useAppDispatch } from '../../hooks';
-import { AlertModal, setAlertModal } from '../../state/slices/application';
+
 import { NounsAuctionHouseFactory } from '@lilnounsdao/sdk';
 import config from '../../config';
 import WalletConnectModal from '../WalletConnectModal';
@@ -15,17 +14,6 @@ import InfoModal from '../InfoModal';
 import AUCTION_ABI from '../../libs/abi/vrgda.json';
 import { useAccount, useConnect, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { InjectedConnector } from '@wagmi/core';
-
-const INFURA_PROVIDER = new ethers.providers.InfuraProvider(
-  'goerli',
-  `819b435e5ebc4e8386b89e79c4d5d7ec`,
-);
-
-const vrgdaContract = new ethers.Contract(
-  '0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44',
-  AUCTION_ABI,
-  INFURA_PROVIDER,
-);
 
 const Buy: React.FC<{
   auction: Auction;
@@ -79,25 +67,12 @@ const Buy: React.FC<{
   });
 
   const dispatch = useAppDispatch();
-  const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
 
   const buyNounHandler = async () => {
     if (!address) {
       await connectAsync();
     }
     if (write) {
-      console.log('buying noun');
-      // if (write) {
-      console.log('calling write');
-      // write();
-      // }
-      console.log(vrgdaContract);
-
-      // const nounId = 2;
-
-      // const tx = await vrgdaContract.settleAuction(auction.amount, nounId, auction.parentBlockHash);
-      // console.log(tx);
-
       write?.();
     }
   };

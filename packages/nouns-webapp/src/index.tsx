@@ -61,6 +61,9 @@ import { isNounderNoun } from './utils/nounderNoun';
 import AUCTION_ABI from './libs/abi/vrgda.json';
 import { NextNoun } from './utils/types';
 
+import { WagmiConfig } from 'wagmi';
+import { wagmiClient } from './libs/wagmi';
+
 dotenv.config();
 
 export const history = createBrowserHistory();
@@ -323,31 +326,32 @@ const rollbarConfig = {
 
 ReactDOM.render(
   <RollbarProvider config={rollbarConfig}>
-    <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <ChainSubscriber />
-        <React.StrictMode>
-          <Web3ReactProvider
-            getLibrary={
-              provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
-            }
-          >
-            <ApolloProvider client={client}>
-              <PastAuctions />
-              <DAppProvider config={useDappConfig}>
-                <ErrorModalProvider>
-                  <AuthProvider>
-                    <App />
-                    <Updaters />
-                  </AuthProvider>
-                </ErrorModalProvider>
-              </DAppProvider>
-            </ApolloProvider>
-          </Web3ReactProvider>
-        </React.StrictMode>
-      </ConnectedRouter>
-    </Provider>
-    ,
+    <WagmiConfig client={wagmiClient}>
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <ChainSubscriber />
+          <React.StrictMode>
+            <Web3ReactProvider
+              getLibrary={
+                provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
+              }
+            >
+              <ApolloProvider client={client}>
+                <PastAuctions />
+                <DAppProvider config={useDappConfig}>
+                  <ErrorModalProvider>
+                    <AuthProvider>
+                      <App />
+                      <Updaters />
+                    </AuthProvider>
+                  </ErrorModalProvider>
+                </DAppProvider>
+              </ApolloProvider>
+            </Web3ReactProvider>
+          </React.StrictMode>
+        </ConnectedRouter>
+      </Provider>
+    </WagmiConfig>
   </RollbarProvider>,
   document.getElementById('root'),
 );
