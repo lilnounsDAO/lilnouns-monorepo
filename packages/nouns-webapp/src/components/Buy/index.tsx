@@ -13,6 +13,7 @@ import InfoModal from '../InfoModal';
 import AUCTION_ABI from '../../libs/abi/vrgda.json';
 import { useAccount, useConnect, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { InjectedConnector } from '@wagmi/core';
+import { ethers } from 'ethers';
 
 const Buy: React.FC<{
   auction: Auction;
@@ -60,6 +61,8 @@ const Buy: React.FC<{
     overrides: {
       gasLimit: 5000000 as any,
       maxFeePerGas: 2000000000 as any,
+      from: address,
+      value: auction.amount,
     },
   });
 

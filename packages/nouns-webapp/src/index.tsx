@@ -272,7 +272,7 @@ const ChainSubscriber: React.FC = () => {
     // Call the loadVrgdaState function every 5 seconds
     const interval = setInterval(() => {
       loadVrgdaState();
-    }, 2500);
+    }, 2100);
 
     // Clear the interval when the component unmounts
     return () => {
