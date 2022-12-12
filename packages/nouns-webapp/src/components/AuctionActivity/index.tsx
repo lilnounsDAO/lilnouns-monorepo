@@ -4,22 +4,21 @@ import BigNumber from 'bignumber.js';
 import { Row, Col } from 'react-bootstrap';
 import classes from './AuctionActivity.module.css';
 import bidHistoryClasses from './BidHistory.module.css';
-import Bid from '../Bid';
+import Buy from '../Buy';
 import AuctionTimer from '../AuctionTimer';
 import CurrentPrice from '../CurrentPrice';
 import Winner from '../Winner';
-import BidHistory from '../BidHistory';
+
 import AuctionNavigation from '../AuctionNavigation';
 import AuctionActivityWrapper from '../AuctionActivityWrapper';
 import AuctionTitleAndNavWrapper from '../AuctionTitleAndNavWrapper';
 import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
 import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
-import BidHistoryBtn from '../BidHistoryBtn';
+
 import config from '../../config';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import NounInfoCard from '../NounInfoCard';
 import { useAppSelector } from '../../hooks';
-import BidHistoryModal from '../BidHistoryModal';
 
 const openEtherscanBidHistory = () => {
   const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
@@ -85,10 +84,6 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
 
   return (
     <>
-      {showBidHistoryModal && (
-        <BidHistoryModal onDismiss={dismissBidModalHanlder} auction={auction} />
-      )}
-
       <AuctionActivityWrapper>
         <div className={classes.informationRow}>
           <Row className={classes.activityRow}>
@@ -127,28 +122,20 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
           <>
             <Row className={classes.activityRow}>
               <Col lg={12}>
-                <Bid auction={auction} auctionEnded={auctionEnded} />
+                <Buy auction={auction} auctionEnded={auctionEnded} />
               </Col>
             </Row>
           </>
         )}
         <Row className={classes.activityRow}>
           <Col lg={12}>
-            {!isLastAuction ? (
+            {!isLastAuction && (
               <NounInfoCard
                 seed={auction.seed}
                 svg={auction.svg}
                 nounId={auction.nounId.toNumber()}
                 bidHistoryOnClickHandler={showBidModalHandler}
               />
-            ) : (
-              displayGraphDepComps && (
-                <BidHistory
-                  auctionId={auction.nounId.toString()}
-                  max={3}
-                  classes={bidHistoryClasses}
-                />
-              )
             )}
           </Col>
         </Row>
