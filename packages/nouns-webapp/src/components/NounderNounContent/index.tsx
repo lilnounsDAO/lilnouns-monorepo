@@ -12,7 +12,7 @@ import nounContentClasses from './NounderNounContent.module.css';
 import auctionBidClasses from '../AuctionActivity/BidHistory.module.css';
 import bidBtnClasses from '../BidHistoryBtn/BidHistoryBtn.module.css';
 import auctionActivityClasses from '../AuctionActivity/AuctionActivity.module.css';
-import CurrentBid, { BID_N_A } from '../CurrentBid';
+import CurrentPrice, { BID_N_A } from '../CurrentPrice';
 import Winner from '../Winner';
 
 import { useAppSelector } from '../../hooks';
@@ -133,7 +133,7 @@ const NounderNounContent: React.FC<{
         </Row>
         <Row className={auctionActivityClasses.activityRow}>
           <Col lg={4} className={auctionActivityClasses.currentBidCol}>
-            <CurrentBid currentBid={BID_N_A} auctionEnded={true} />
+            <CurrentPrice currentPrice={BID_N_A} auctionEnded={true} />
           </Col>
           <Col
             lg={5}

@@ -6,7 +6,7 @@ import classes from './AuctionActivity.module.css';
 import bidHistoryClasses from './BidHistory.module.css';
 import Bid from '../Bid';
 import AuctionTimer from '../AuctionTimer';
-import CurrentBid from '../CurrentBid';
+import CurrentPrice from '../CurrentPrice';
 import Winner from '../Winner';
 import BidHistory from '../BidHistory';
 import AuctionNavigation from '../AuctionNavigation';
@@ -109,8 +109,8 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
           </Row>
           <Row className={classes.activityRow}>
             <Col lg={4} className={classes.currentBidCol}>
-              <CurrentBid
-                currentBid={new BigNumber(auction.amount.toString())}
+              <CurrentPrice
+                currentPrice={new BigNumber(auction.amount.toString())}
                 auctionEnded={auctionEnded}
               />
             </Col>
@@ -150,15 +150,6 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
                 />
               )
             )}
-            {/* If no bids, show nothing. If bids avail:graph is stable? show bid history modal,
-            else show etherscan contract link */}
-            {isLastAuction &&
-              !auction.amount.eq(0) &&
-              (displayGraphDepComps ? (
-                <BidHistoryBtn onClick={showBidModalHandler} />
-              ) : (
-                <BidHistoryBtn onClick={openEtherscanBidHistory} />
-              ))}
           </Col>
         </Row>
       </AuctionActivityWrapper>

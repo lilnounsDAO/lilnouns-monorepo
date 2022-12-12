@@ -163,7 +163,7 @@ const Bid: React.FC<{
           value,
         )} ETH which is over 10x the bid before. Sure this wasn't fat-fingered?`,
         isActionPrompt: true,
-        actionMessage: 'Place bid',
+        actionMessage: 'Buy now',
         action: placeBidWarned,
       });
     } else {
@@ -212,7 +212,7 @@ const Bid: React.FC<{
         isMilestone: auction.amount.toString().includes('69'),
         show: true,
       });
-      setBidButtonContent({ loading: false, content: 'Place bid' });
+      setBidButtonContent({ loading: false, content: 'Buy now' });
       clearBidInput();
     }
   }, [auction, placeBidState, account, setModal]);
@@ -223,7 +223,7 @@ const Bid: React.FC<{
       case 'None':
         setBidButtonContent({
           loading: false,
-          content: 'Place bid',
+          content: 'Buy now',
         });
         break;
       case 'Mining':
@@ -317,22 +317,6 @@ const Bid: React.FC<{
         <WalletConnectModal onDismiss={hideModalHandler} />
       )}
       <InputGroup>
-        {!auctionEnded && (
-          <>
-            <span className={classes.customPlaceholderBidAmt}>
-              {!auctionEnded && !bidInput ? minBidCopy : ''}
-            </span>
-            <FormControl
-              className={classes.bidInput}
-              onWheel={event => event.currentTarget.blur()}
-              type="number"
-              min="0"
-              onChange={bidInputHandler}
-              ref={bidInputRef}
-              value={bidInput}
-            />
-          </>
-        )}
         {!auctionEnded ? (
           <>
             <Button
@@ -346,42 +330,17 @@ const Bid: React.FC<{
         ) : (
           <>
             {/* Only show force settle button if wallet connected */}
-            {isWalletConnected ? (
+            {isWalletConnected && (
               <Col lg={12}>
                 <AuctionSettlementBtnGroup
                   settleAuctionHandler={settleAuctionHandler}
                   auction={auction}
                 />
-
-                <button onClick={showBidModalHandler} className={classes.infoButton}>
-                  <FontAwesomeIcon icon={faInfoCircle} />
-                  {` bidding and settling`}
-                </button>
               </Col>
-            ) : (
-              <>
-                <Col lg={12}>
-                  <button onClick={showBidModalHandler} className={classes.infoButton}>
-                    <FontAwesomeIcon icon={faInfoCircle} />
-                    {` bidding and settling`}
-                  </button>
-                </Col>
-              </>
             )}
           </>
         )}
       </InputGroup>
-
-      {!auctionEnded ? (
-        <Col lg={11} style={{ paddingTop: '0.5em' }}>
-          <button onClick={showBidModalHandler} className={classes.infoButton}>
-            <FontAwesomeIcon icon={faInfoCircle} />
-            {` bidding and settling`}
-          </button>
-        </Col>
-      ) : (
-        <></>
-      )}
     </>
   );
 };
