@@ -38,23 +38,23 @@ const AuctionTimer: React.FC<{
   // Calculate the elapsed time since the start of the auction
   const elapsedTime = currentTime.getTime() - startTime.getTime();
 
-  // Calculate the number of times the price has dropped
-  const numPriceDrops = elapsedTime / (updateIntervalSeconds * 1000);
+  // Calculate the number of times the price has dropped (rounded down to the nearest integer)
+  const numPriceDrops = Math.floor(elapsedTime / (updateIntervalSeconds * 1000));
 
-  // Calculate the time since the last price drop
-  const timeSinceLastPriceDrop = numPriceDrops * (updateIntervalSeconds * 1000);
+  console.log('updateIntervalSeconds', updateIntervalSeconds);
 
-  // Calculate the time until the next price drop
-  const timeUntilNextPriceDrop = updateIntervalSeconds * 1000 - timeSinceLastPriceDrop;
-
-  // Calculate the "price drops in" date by adding the time until the next price drop to the current time
-  const priceDropsIn = new Date(currentTime.getTime() + timeUntilNextPriceDrop);
+  const priceDropsIn = new Date(
+    startTime.getTime() + (numPriceDrops + 1) * (updateIntervalSeconds * 1000),
+  );
 
   // timer logic
   useEffect(() => {
-    const timeLeft = (auction && Number(priceDropsIn)) - dayjs().unix();
+    const timeLeft = priceDropsIn.getTime() - new Date().getTime();
 
-    setAuctionTimer(auction && timeLeft);
+    console.log('timeLeft', timeLeft);
+    console.log('priceDropsIn', priceDropsIn);
+
+    setAuctionTimer(timeLeft / 1000);
 
     if (auction && timeLeft <= 0) {
       setAuctionTimer(0);
@@ -67,7 +67,7 @@ const AuctionTimer: React.FC<{
         clearTimeout(timer);
       };
     }
-  }, [auction, auctionTimer]);
+  }, [priceDropsIn]);
 
   const auctionContentLong = auctionEnded ? 'Auction ended' : 'Price drops in';
   const auctionContentShort = auctionEnded ? 'Auction ended' : 'Price drops in';
