@@ -43,13 +43,25 @@ const Buy: React.FC<{
     content: auctionEnded ? 'Settle' : 'Buy Now',
   });
 
+  const [parentHash, setParentHash] = useState('');
+
   const [showConnectModal, setShowConnectModal] = useState(false);
 
   const hideModalHandler = () => {
     setShowConnectModal(false);
   };
 
-  const args = [2, auction.parentBlockHash];
+  const provider = new ethers.providers.AlchemyProvider(
+    'goerli',
+    `wUfyWSOTH6JHCAlZykmSDjnTBV7MP12H`,
+  );
+
+  const getParentHash = async () => {
+    const block = await provider.getBlock('pending');
+    return block.parentHash;
+  };
+
+  const args = [2, parentHash];
 
   const { write } = useContractWrite({
     address: '0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44',
@@ -60,7 +72,7 @@ const Buy: React.FC<{
     mode: 'recklesslyUnprepared',
     overrides: {
       gasLimit: 5000000 as any,
-      maxFeePerGas: 2000000000 as any,
+      maxFeePerGas: 10000000000 as any,
       from: address,
       value: auction.amount,
     },
@@ -73,6 +85,10 @@ const Buy: React.FC<{
       await connectAsync();
     }
     if (write) {
+      getParentHash().then(response => {
+        setParentHash(response);
+      });
+      console.log(parentHash);
       write?.();
     }
   };
