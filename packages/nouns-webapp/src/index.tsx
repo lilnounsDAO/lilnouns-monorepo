@@ -219,15 +219,13 @@ const ChainSubscriber: React.FC = () => {
       dispatch(setAuctionSettled({ nounId, amount, winner }));
     };
 
-    // Fetch the current auction
-    const currentAuction = await nounsAuctionHouseContract.auction();
-
+    // Fetch the current vrgda auction
     const nextNoun: NextNoun = await vrgdaContract.fetchNextNoun();
     const startTime: BigNumber = await vrgdaContract.startTime();
     const updateInterval: BigNumber = await vrgdaContract.updateInterval();
 
     const auction = {
-      nounId: currentAuction.nounId,
+      nounId: nextNoun.nounId,
       startTime: startTime,
       updateInterval,
       amount: nextNoun.price,
