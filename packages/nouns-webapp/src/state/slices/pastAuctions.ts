@@ -34,7 +34,7 @@ const reduxSafePastAuctions = (data: any): AuctionState[] => {
         };
       }),
     };
-  });
+  }) as any;
   return pastAuctions;
 };
 
