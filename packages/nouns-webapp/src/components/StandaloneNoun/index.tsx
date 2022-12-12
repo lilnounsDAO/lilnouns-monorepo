@@ -168,7 +168,7 @@ export const StandaloneNounRoundedCorners: React.FC<StandaloneNounProps> = (
 export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
   props: StandaloneNounWithSeedProps,
 ) => {
-  const { nounId, seed: vrgdaSeed, shouldLinkToProfile } = props;
+  const { nounId, seed: vrgdaSeed, shouldLinkToProfile, svg } = props;
 
   const dispatch = useDispatch();
 
@@ -180,7 +180,7 @@ export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
     dispatch(setOnDisplayAuctionNounId(nounId.toNumber()));
   };
 
-  const { image, description, parts } = getNoun(nounId, seed);
+  const { image, description, parts } = getVrgdaNoun(nounId, seed, svg);
 
   const noun = <Noun imgPath={image} alt={description} parts={parts} />;
   const nounWithLink = (
