@@ -228,12 +228,13 @@ const ChainSubscriber: React.FC = () => {
       parentBlockHash: nextNoun.hash,
       settled: false,
       seed: nextNoun.seed,
+      svg: nextNoun.svg,
     };
 
     dispatch(setFullAuction(reduxSafeAuction(auction)));
     dispatch(setOnDisplayAuctionNounId(nextNoun.nounId.toNumber()));
 
-    dispatch(setLastAuctionNounId(2));
+    // dispatch(setLastAuctionNounId(2));
 
     dispatch(setLastAuctionStartTime(startTime.toNumber()));
 

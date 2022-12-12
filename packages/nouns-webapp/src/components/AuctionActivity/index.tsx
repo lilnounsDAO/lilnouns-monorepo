@@ -136,6 +136,8 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
           <Col lg={12}>
             {!isLastAuction ? (
               <NounInfoCard
+                seed={auction.seed}
+                svg={auction.svg}
                 nounId={auction.nounId.toNumber()}
                 bidHistoryOnClickHandler={showBidModalHandler}
               />

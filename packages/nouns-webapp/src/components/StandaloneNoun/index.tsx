@@ -19,6 +19,7 @@ import { NounVrgdaSeed } from '../../utils/types';
 interface StandaloneNounProps {
   nounId: EthersBN;
   svg: string;
+  seed: NounVrgdaSeed;
 }
 interface StandaloneCircularNounProps {
   nounId: EthersBN;
@@ -55,7 +56,7 @@ export const getVrgdaNoun = (nounId: string | EthersBN | number, seed: INounSeed
   const description = `Lil Noun ${id} is a member of the Lil Nouns DAO`;
   const { parts, background } = getNounData(seed);
 
-  const image = `data:image/svg+xml;base64,${btoa(svg)}`;
+  const image = `data:image/svg+xml;base64,${svg}`;
 
   return {
     name,
@@ -83,15 +84,20 @@ export const getBigNoun = (nounId: string | EthersBN | number, seed: INounSeed) 
   };
 };
 
-export const useNounData = (nounId: string | EthersBN | number) => {
-  const seed = useNounSeed(BigNumber.from(nounId));
-  return useMemo(() => seed && getNoun(nounId, seed), [nounId, seed]);
+export const useNounData = (
+  nounId: string | EthersBN | number,
+  seed: NounVrgdaSeed,
+  svg: string,
+) => {
+  const nounSeed = useNounSeedVrgda(BigNumber.from(nounId), seed);
+  return useMemo(() => seed && getVrgdaNoun(nounId, nounSeed, svg), [nounId, seed]);
 };
 
 const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProps) => {
-  const { nounId, svg } = props;
-  const seed = useNounSeed(nounId);
-  const noun = seed && getVrgdaNoun(nounId, seed, svg);
+  const { nounId, svg, seed } = props;
+  const nounSeed = useNounSeedVrgda(BigNumber.from(nounId), seed);
+
+  const noun = seed && getVrgdaNoun(nounId, nounSeed, svg);
 
   const dispatch = useDispatch();
 

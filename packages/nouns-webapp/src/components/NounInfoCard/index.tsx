@@ -17,19 +17,22 @@ import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import { useNounData } from '../StandaloneNoun';
 import { svg2png } from '../../utils/svg2png';
 import { buildEtherscanTokenLink } from '../../utils/etherscan';
+import { NounVrgdaSeed } from '../../utils/types';
 
 interface NounInfoCardProps {
   nounId: number;
+  seed: NounVrgdaSeed;
+  svg: string;
   bidHistoryOnClickHandler: () => void;
 }
 
 const NounInfoCard: React.FC<NounInfoCardProps> = props => {
-  const { nounId, bidHistoryOnClickHandler } = props;
+  const { nounId, bidHistoryOnClickHandler, seed, svg } = props;
 
   const etherscanButtonClickHandler = () =>
-  window.open(buildEtherscanTokenLink(config.addresses.nounsToken, nounId));
+    window.open(buildEtherscanTokenLink(config.addresses.nounsToken, nounId));
 
-  const noun = useNounData(nounId);
+  const noun = useNounData(nounId, seed, svg);
 
   const etherscanBaseURL = useMemo(
     () => buildEtherscanAddressLink(config.addresses.nounsToken),
@@ -42,7 +45,7 @@ const NounInfoCard: React.FC<NounInfoCardProps> = props => {
     }
 
     // console.log(noun);
-    const png = await svg2png(noun.svg, 500, 500)
+    const png = await svg2png(noun.svg, 500, 500);
     if (!png) {
       return;
     }
@@ -74,7 +77,7 @@ const NounInfoCard: React.FC<NounInfoCardProps> = props => {
           btnText={'Etherscan'}
           onClickHandler={etherscanButtonClickHandler}
         />
-        <div style={{opacity: noun ? '1' : '0.4'}}>
+        <div style={{ opacity: noun ? '1' : '0.4' }}>
           <NounInfoRowButton
             iconImgSource={_DownloadIcon}
             btnText="Download PNG"

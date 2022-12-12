@@ -55,11 +55,13 @@ const Auction: React.FC<AuctionProps> = props => {
     </div>
   );
 
-  const currentAuctionActivityContent = currentAuction && lastNounId && (
+  console.log('currentAuction, lastNounId', currentAuction, lastNounId);
+
+  const currentAuctionActivityContent = currentAuction && (
     <AuctionActivity
       auction={currentAuction}
       isFirstAuction={currentAuction.nounId.eq(0)}
-      isLastAuction={currentAuction.nounId.eq(lastNounId)}
+      isLastAuction={true}
       onPrevAuctionClick={prevAuctionHandler}
       onNextAuctionClick={nextAuctionHandler}
       displayGraphDepComps={true}
@@ -76,6 +78,7 @@ const Auction: React.FC<AuctionProps> = props => {
     />
   );
   //TODO:: come back to this
+  console.log('currentAuction', currentAuction);
 
   return (
     <div style={{ backgroundColor: stateBgColor }} className={classes.wrapper}>

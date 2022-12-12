@@ -22,6 +22,7 @@ const deserializeAuction = (reduxSafeAuction: Auction): Auction => {
     ],
     //update interval
     updateInterval: BigNumber.from(reduxSafeAuction.updateInterval),
+    svg: reduxSafeAuction.svg,
   };
 };
 
@@ -66,7 +67,7 @@ const useOnDisplayAuction = (): Auction | undefined => {
     !pastAuctions
   )
     return undefined;
-
+  console.log('about to deserialize', currentAuction);
   //TODO figure out last auction noun id
   return deserializeAuction(currentAuction);
 

@@ -32,7 +32,11 @@ const BidHistoryModalOverlay: React.FC<{
         <div className={classes.content}>
           <div className={classes.header}>
             <div className={classes.nounWrapper}>
-              <StandaloneNounRoundedCorners nounId={auction && auction.nounId} />
+              <StandaloneNounRoundedCorners
+                seed={auction && auction.seed}
+                svg={auction && auction.svg}
+                nounId={auction && auction.nounId}
+              />
             </div>
 
             <div className={classes.title}>
@@ -41,7 +45,7 @@ const BidHistoryModalOverlay: React.FC<{
             </div>
           </div>
           <div className={classes.bidWrapper}>
-          {bids && bids.length > 0 ? (
+            {bids && bids.length > 0 ? (
               <ul>
                 {bids?.map((bid: Bid, i: number) => {
                   return <BidHistoryModalRow index={i} bid={bid} />;

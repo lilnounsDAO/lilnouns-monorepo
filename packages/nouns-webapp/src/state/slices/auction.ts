@@ -37,6 +37,7 @@ export const reduxSafeNewAuction = (auction: AuctionCreateEvent): IAuction => ({
     BigNumber.from(0).toJSON(),
     BigNumber.from(0).toJSON(),
   ],
+  svg: '',
 });
 
 export const reduxSafeAuction = (auction: IAuction): IAuction => ({
@@ -57,6 +58,7 @@ export const reduxSafeAuction = (auction: IAuction): IAuction => ({
     BigNumber.from(auction.seed[3]).toJSON(),
     BigNumber.from(auction.seed[4]).toJSON(),
   ],
+  svg: auction.svg,
 });
 
 export const reduxSafeBid = (bid: BidEvent): BidEvent => ({
