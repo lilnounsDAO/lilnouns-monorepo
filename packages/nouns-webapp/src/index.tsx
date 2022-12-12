@@ -237,6 +237,8 @@ const ChainSubscriber: React.FC = () => {
       svg: nextNoun.svg,
     };
 
+    console.log('new auction', auction);
+
     dispatch(setFullAuction(reduxSafeAuction(auction)));
     dispatch(setOnDisplayAuctionNounId(nextNoun.nounId.toNumber()));
 

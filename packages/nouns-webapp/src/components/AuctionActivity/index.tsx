@@ -19,6 +19,7 @@ import config from '../../config';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import NounInfoCard from '../NounInfoCard';
 import { useAppSelector } from '../../hooks';
+import PriceRange from '../PriceRange';
 
 const openEtherscanBidHistory = () => {
   const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
@@ -122,7 +123,11 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
           <>
             <Row className={classes.activityRow}>
               <Col lg={12}>
-                <Buy auction={auction} auctionEnded={auctionEnded} />
+                <div className="flex flex-col space-y-4">
+                  <PriceRange auction={auction} />
+
+                  <Buy auction={auction} auctionEnded={auctionEnded} />
+                </div>
               </Col>
             </Row>
           </>

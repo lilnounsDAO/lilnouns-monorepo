@@ -55,8 +55,6 @@ const Auction: React.FC<AuctionProps> = props => {
     </div>
   );
 
-  console.log('currentAuction, lastNounId', currentAuction, lastNounId);
-
   const currentAuctionActivityContent = currentAuction && (
     <AuctionActivity
       auction={currentAuction}
@@ -77,8 +75,6 @@ const Auction: React.FC<AuctionProps> = props => {
       onNextAuctionClick={nextAuctionHandler}
     />
   );
-  //TODO:: come back to this
-  console.log('currentAuction', currentAuction);
 
   return (
     <div style={{ backgroundColor: stateBgColor }} className={classes.wrapper}>
