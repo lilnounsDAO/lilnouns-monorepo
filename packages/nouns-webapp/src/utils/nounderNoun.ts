@@ -19,6 +19,19 @@ const emptyNounderAuction = (onDisplayAuctionId: number): Auction => {
     endTime: BigNumber.from(0).toJSON(),
     nounId: BigNumber.from(onDisplayAuctionId).toJSON(),
     settled: false,
+    svg: '',
+    //vrgda
+    updateInterval: BigNumber.from(0).toJSON(),
+    priceDropTime: new Date(),
+    blocksRemaining: BigNumber.from(0).toJSON(),
+    parentBlockHash: BigNumber.from(0).toJSON(),
+    seed: [
+      BigNumber.from(0).toJSON(),
+      BigNumber.from(0).toJSON(),
+      BigNumber.from(0).toJSON(),
+      BigNumber.from(0).toJSON(),
+      BigNumber.from(0).toJSON(),
+    ],
   };
 };
 
@@ -27,8 +40,6 @@ export const findAuction = (id: BigNumber, auctions: AuctionState[]): Auction | 
     return BigNumber.from(auction.activeAuction?.nounId).eq(id);
   })?.activeAuction;
 };
-
-
 
 //TODO: checkout
 /**

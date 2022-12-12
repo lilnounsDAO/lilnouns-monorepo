@@ -10,9 +10,8 @@ import { Link as DocLink } from 'react-router-dom';
 import Link from '../Link';
 import nounContentClasses from './NounderNounContent.module.css';
 import auctionBidClasses from '../AuctionActivity/BidHistory.module.css';
-import bidBtnClasses from '../BidHistoryBtn/BidHistoryBtn.module.css';
 import auctionActivityClasses from '../AuctionActivity/AuctionActivity.module.css';
-import CurrentBid, { BID_N_A } from '../CurrentBid';
+import CurrentPrice, { BID_N_A } from '../CurrentPrice';
 import Winner from '../Winner';
 
 import { useAppSelector } from '../../hooks';
@@ -133,7 +132,7 @@ const NounderNounContent: React.FC<{
         </Row>
         <Row className={auctionActivityClasses.activityRow}>
           <Col lg={4} className={auctionActivityClasses.currentBidCol}>
-            <CurrentBid currentBid={BID_N_A} auctionEnded={true} />
+            <CurrentPrice currentPrice={BID_N_A} auctionEnded={true} />
           </Col>
           <Col
             lg={5}
@@ -145,28 +144,6 @@ const NounderNounContent: React.FC<{
           </Col>
         </Row>
       </div>
-      <Row className={auctionActivityClasses.activityRow}>
-        <Col lg={12}>
-          {block}
-
-          <div
-            className={
-              isCool ? bidBtnClasses.bidHistoryWrapperCool : bidBtnClasses.bidHistoryWrapperWarm
-            }
-          >
-            {nounIdNumber % 10 === 0 ? (
-              <DocLink
-                to="/lilnounders"
-                className={isCool ? bidBtnClasses.bidHistoryCool : bidBtnClasses.bidHistoryWarm}
-              >
-                Learn more →
-              </DocLink>
-            ) : (
-              <></>
-            )}
-          </div>
-        </Col>
-      </Row>
     </AuctionActivityWrapper>
   );
 };

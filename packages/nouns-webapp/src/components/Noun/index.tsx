@@ -30,7 +30,7 @@ const Noun: React.FC<{
         alt={alt}
         fluid
       />
-      {Boolean(parts?.length) && <NounTraitsOverlay parts={parts!} />}
+      {/* {Boolean(parts?.length) && <NounTraitsOverlay parts={parts!} />} */}
     </div>
   );
 };

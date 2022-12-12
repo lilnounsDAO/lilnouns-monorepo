@@ -39,7 +39,7 @@ import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
 import config, { CHAIN_ID, createNetworkHttpUrl, multicallOnLocalhost } from './config';
 import { WebSocketProvider } from '@ethersproject/providers';
-import { BigNumber, BigNumberish, providers } from 'ethers';
+import { BigNumber, BigNumberish, ethers, providers } from 'ethers';
 import { NounsAuctionHouseFactory } from '@lilnounsdao/sdk';
 import dotenv from 'dotenv';
 import { useAppDispatch, useAppSelector } from './hooks';
@@ -57,6 +57,12 @@ import { ErrorModalProvider } from './hooks/useApiError';
 
 import { Provider as RollbarProvider } from '@rollbar/react';
 import { isNounderNoun } from './utils/nounderNoun';
+
+import AUCTION_ABI from './libs/abi/vrgda.json';
+import { NextNoun } from './utils/types';
+
+import { WagmiConfig } from 'wagmi';
+import { wagmiClient } from './libs/wagmi';
 
 dotenv.config();
 
@@ -151,8 +157,45 @@ const Updaters = () => {
 
 const BLOCKS_PER_DAY = 6_500;
 
+const INFURA_PROVIDER = new ethers.providers.InfuraProvider(
+  'goerli',
+  `819b435e5ebc4e8386b89e79c4d5d7ec`,
+);
+const vrgdaContract = new ethers.Contract(
+  '0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44',
+  AUCTION_ABI,
+  INFURA_PROVIDER,
+);
+
 const ChainSubscriber: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const loadVrgdaState = async () => {
+    // Fetch the current vrgda auction
+    const nextNoun: NextNoun = await vrgdaContract.fetchNextNoun();
+    const startTime: BigNumber = await vrgdaContract.startTime();
+    const updateInterval: BigNumber = await vrgdaContract.updateInterval();
+
+    const auction = {
+      nounId: nextNoun.nounId,
+      startTime: startTime,
+      updateInterval,
+      amount: nextNoun.price,
+      parentBlockHash: nextNoun.hash,
+      settled: false,
+      seed: nextNoun.seed,
+      svg: nextNoun.svg,
+    };
+
+    console.log('new auction', auction);
+
+    dispatch(setFullAuction(reduxSafeAuction(auction)));
+    dispatch(setOnDisplayAuctionNounId(nextNoun.nounId.toNumber()));
+
+    // dispatch(setLastAuctionNounId(2));
+
+    dispatch(setLastAuctionStartTime(startTime.toNumber()));
+  };
 
   const loadState = async () => {
     const wsProvider = new WebSocketProvider(config.app.wsRpcUri);
@@ -163,7 +206,7 @@ const ChainSubscriber: React.FC = () => {
 
     const bidFilter = nounsAuctionHouseContract.filters.AuctionBid(null, null, null, null);
     const extendedFilter = nounsAuctionHouseContract.filters.AuctionExtended(null, null);
-    const createdFilter = nounsAuctionHouseContract.filters.AuctionCreated(null, null, null);
+
     const settledFilter = nounsAuctionHouseContract.filters.AuctionSettled(null, null, null);
     const processBidFilter = async (
       nounId: BigNumberish,
@@ -178,36 +221,29 @@ const ChainSubscriber: React.FC = () => {
         appendBid(reduxSafeBid({ nounId, sender, value, extended, transactionHash, timestamp })),
       );
     };
-    const processAuctionCreated = (
-      nounId: BigNumberish,
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-    ) => {
-      dispatch(
-        setActiveAuction(reduxSafeNewAuction({ nounId, startTime, endTime, settled: false })),
-      );
-      const nounIdNumber = BigNumber.from(nounId).toNumber();
-      const startTimeNumber = BigNumber.from(startTime).toNumber();
-      dispatch(push(nounPath(nounIdNumber)));
-      dispatch(setOnDisplayAuctionNounId(nounIdNumber));
-      dispatch(setOnDisplayAuctionStartTime(startTimeNumber));
+    // const processAuctionCreated = (
+    //   nounId: BigNumberish,
+    //   startTime: BigNumberish,
+    //   endTime: BigNumberish,
+    // ) => {
+    //   dispatch(
+    //     setActiveAuction(reduxSafeNewAuction({ nounId, startTime, endTime, settled: false })),
+    //   );
+    //   const nounIdNumber = BigNumber.from(nounId).toNumber();
+    //   const startTimeNumber = BigNumber.from(startTime).toNumber();
+    //   dispatch(push(nounPath(nounIdNumber)));
+    //   dispatch(setOnDisplayAuctionNounId(nounIdNumber));
+    //   dispatch(setOnDisplayAuctionStartTime(startTimeNumber));
 
-      dispatch(setLastAuctionNounId(nounIdNumber));
-      dispatch(setLastAuctionStartTime(startTimeNumber));
-    };
+    //   dispatch(setLastAuctionNounId(nounIdNumber));
+    //   dispatch(setLastAuctionStartTime(startTimeNumber));
+    // };
     const processAuctionExtended = (nounId: BigNumberish, endTime: BigNumberish) => {
       dispatch(setAuctionExtended({ nounId, endTime }));
     };
     const processAuctionSettled = (nounId: BigNumberish, winner: string, amount: BigNumberish) => {
       dispatch(setAuctionSettled({ nounId, amount, winner }));
     };
-
-    // Fetch the current auction
-    const currentAuction = await nounsAuctionHouseContract.auction();
-    dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
-    dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
-
-    dispatch(setLastAuctionStartTime(currentAuction.startTime.toNumber()));
 
     // Fetch the previous 24hours of  bids
     const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
@@ -219,9 +255,9 @@ const ChainSubscriber: React.FC = () => {
     nounsAuctionHouseContract.on(bidFilter, (nounId, sender, value, extended, event) =>
       processBidFilter(nounId, sender, value, extended, event),
     );
-    nounsAuctionHouseContract.on(createdFilter, (nounId, startTime, endTime) =>
-      processAuctionCreated(nounId, startTime, endTime),
-    );
+    // nounsAuctionHouseContract.on(createdFilter, (nounId, startTime, endTime) =>
+    //   processAuctionCreated(nounId, startTime, endTime),
+    // );
     nounsAuctionHouseContract.on(extendedFilter, (nounId, endTime) =>
       processAuctionExtended(nounId, endTime),
     );
@@ -230,6 +266,19 @@ const ChainSubscriber: React.FC = () => {
     );
   };
   loadState();
+  loadVrgdaState();
+
+  useEffect(() => {
+    // Call the loadVrgdaState function every 5 seconds
+    const interval = setInterval(() => {
+      loadVrgdaState();
+    }, 2500);
+
+    // Clear the interval when the component unmounts
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return <></>;
 };
@@ -291,31 +340,32 @@ const rollbarConfig = {
 
 ReactDOM.render(
   <RollbarProvider config={rollbarConfig}>
-    <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <ChainSubscriber />
-        <React.StrictMode>
-          <Web3ReactProvider
-            getLibrary={
-              provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
-            }
-          >
-            <ApolloProvider client={client}>
-              <PastAuctions />
-              <DAppProvider config={useDappConfig}>
-                <ErrorModalProvider>
-                  <AuthProvider>
-                    <App />
-                    <Updaters />
-                  </AuthProvider>
-                </ErrorModalProvider>
-              </DAppProvider>
-            </ApolloProvider>
-          </Web3ReactProvider>
-        </React.StrictMode>
-      </ConnectedRouter>
-    </Provider>
-    ,
+    <WagmiConfig client={wagmiClient}>
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <ChainSubscriber />
+          <React.StrictMode>
+            <Web3ReactProvider
+              getLibrary={
+                provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
+              }
+            >
+              <ApolloProvider client={client}>
+                <PastAuctions />
+                <DAppProvider config={useDappConfig}>
+                  <ErrorModalProvider>
+                    <AuthProvider>
+                      <App />
+                      <Updaters />
+                    </AuthProvider>
+                  </ErrorModalProvider>
+                </DAppProvider>
+              </ApolloProvider>
+            </Web3ReactProvider>
+          </React.StrictMode>
+        </ConnectedRouter>
+      </Provider>
+    </WagmiConfig>
   </RollbarProvider>,
   document.getElementById('root'),
 );

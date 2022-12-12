@@ -25,15 +25,40 @@ export const reduxSafeNewAuction = (auction: AuctionCreateEvent): IAuction => ({
   endTime: BigNumber.from(auction.endTime).toJSON(),
   nounId: BigNumber.from(auction.nounId).toJSON(),
   settled: false,
+  //vrgda
+  updateInterval: BigNumber.from(0).toJSON(),
+  priceDropTime: new Date(),
+  blocksRemaining: BigNumber.from(0).toJSON(),
+  parentBlockHash: BigNumber.from(0).toJSON(),
+  seed: [
+    BigNumber.from(0).toJSON(),
+    BigNumber.from(0).toJSON(),
+    BigNumber.from(0).toJSON(),
+    BigNumber.from(0).toJSON(),
+    BigNumber.from(0).toJSON(),
+  ],
+  svg: '',
 });
 
 export const reduxSafeAuction = (auction: IAuction): IAuction => ({
   amount: BigNumber.from(auction.amount).toJSON(),
-  bidder: auction.bidder,
   startTime: BigNumber.from(auction.startTime).toJSON(),
-  endTime: BigNumber.from(auction.endTime).toJSON(),
   nounId: BigNumber.from(auction.nounId).toJSON(),
   settled: auction.settled,
+  //vrgda
+  updateInterval: BigNumber.from(auction.updateInterval).toJSON(),
+  // priceDropTime: auction.priceDropTime,
+  // blocksRemaining: BigNumber.from(auction.blocksRemaining).toJSON(),
+  parentBlockHash: auction.parentBlockHash,
+  //add seed
+  seed: [
+    BigNumber.from(auction.seed[0]).toJSON(),
+    BigNumber.from(auction.seed[1]).toJSON(),
+    BigNumber.from(auction.seed[2]).toJSON(),
+    BigNumber.from(auction.seed[3]).toJSON(),
+    BigNumber.from(auction.seed[4]).toJSON(),
+  ],
+  svg: auction.svg,
 });
 
 export const reduxSafeBid = (bid: BidEvent): BidEvent => ({

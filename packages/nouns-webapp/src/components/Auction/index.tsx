@@ -29,10 +29,6 @@ const Auction: React.FC<AuctionProps> = props => {
   const stateBgColor = useAppSelector(state => state.application.stateBackgroundColor);
   const lastNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
 
-  const loadedNounHandler = (seed: INounSeed) => {
-    dispatch(setStateBackgroundColor(seed.background === 0 ? grey : beige));
-  };
-
   const prevAuctionHandler = () => {
     dispatch(setPrevOnDisplayAuctionNounId());
     currentAuction && history.push(`/lilnoun/${currentAuction.nounId.toNumber() - 1}`);
@@ -46,8 +42,9 @@ const Auction: React.FC<AuctionProps> = props => {
     <div className={classes.nounWrapper}>
       <StandaloneNounWithSeed
         nounId={currentAuction.nounId}
-        onLoadSeed={loadedNounHandler}
+        seed={currentAuction.seed}
         shouldLinkToProfile={false}
+        svg={currentAuction.svg}
       />
     </div>
   );
@@ -58,11 +55,11 @@ const Auction: React.FC<AuctionProps> = props => {
     </div>
   );
 
-  const currentAuctionActivityContent = currentAuction && lastNounId && (
+  const currentAuctionActivityContent = currentAuction && (
     <AuctionActivity
       auction={currentAuction}
       isFirstAuction={currentAuction.nounId.eq(0)}
-      isLastAuction={currentAuction.nounId.eq(lastNounId)}
+      isLastAuction={true}
       onPrevAuctionClick={prevAuctionHandler}
       onNextAuctionClick={nextAuctionHandler}
       displayGraphDepComps={true}
@@ -78,7 +75,6 @@ const Auction: React.FC<AuctionProps> = props => {
       onNextAuctionClick={nextAuctionHandler}
     />
   );
-  //TODO:: come back to this
 
   return (
     <div style={{ backgroundColor: stateBgColor }} className={classes.wrapper}>

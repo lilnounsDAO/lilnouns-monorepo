@@ -35,3 +35,13 @@ export interface Bid {
   transactionHash: string;
   timestamp: BigNumber;
 }
+
+export type NounVrgdaSeed = [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+
+export type NextNoun = [BigNumber, BigNumber, BigNumber, BigNumber, string, boolean] & {
+  nounId: BigNumber;
+  seed: NounVrgdaSeed;
+  svg: string;
+  price: BigNumber;
+  hash: BigNumberish;
+};

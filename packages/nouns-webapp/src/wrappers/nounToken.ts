@@ -5,6 +5,7 @@ import config, { cache, cacheKey, CHAIN_ID } from '../config';
 import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
 import { seedsQuery, lilnounsSeedsQuery } from './subgraph';
+import { NounVrgdaSeed } from '../utils/types';
 interface NounToken {
   name: string;
   description: string;
@@ -163,6 +164,32 @@ export const useNounSeed = (nounId: EthersBN) => {
   return seed;
 };
 
+export const useNounSeedVrgda = (nounId: EthersBN, seeds: NounVrgdaSeed) => {
+  const seedsNormalized: INounSeed = {
+    body: Number(seeds[0]),
+    accessory: Number(seeds[1]),
+    head: Number(seeds[2]),
+    glasses: Number(seeds[3]),
+    background: Number(seeds[4]),
+  };
+
+  const seedCache = localStorage.getItem(seedCacheKey);
+  if (seedCache) {
+    const updatedSeedCache = JSON.stringify({
+      ...JSON.parse(seedCache),
+      [nounId.toString()]: {
+        accessory: seedsNormalized.accessory,
+        background: seedsNormalized.background,
+        body: seedsNormalized.body,
+        glasses: seedsNormalized.glasses,
+        head: seedsNormalized.head,
+      },
+    });
+    localStorage.setItem(seedCacheKey, updatedSeedCache);
+  }
+  return seedsNormalized;
+};
+
 export const useBigNounSeed = (nounId: EthersBN) => {
   const seeds = useBigNounSeeds();
   const seed = seeds?.[nounId.toString()];
@@ -239,7 +266,7 @@ export const useUserVotesAsOfBlock = (block: number | undefined): number | undef
 export const useDelegateVotes = () => {
   const nounsToken = new NounsTokenFactory().attach(config.addresses.nounsToken);
 
-  const { send, state } = useContractFunction(nounsToken, 'delegate');
+  const { send, state } = useContractFunction(nounsToken as any, 'delegate');
 
   return { send, state };
 };

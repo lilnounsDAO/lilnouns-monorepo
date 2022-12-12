@@ -47,17 +47,6 @@ function App() {
 
   const alertModal = useAppSelector(state => state.application.alertModal);
 
-  // const [isFirst, setIsFirst] = useState(false);
-
-  // const randomSize = (min: number, max: number) =>
-  //   (Math.random() * (max - min + 1) + min).toFixed(2);
-
-  // const randomLeft = () => {
-  //   const maths = Math.floor(Math.random() * 97 + 1);
-  //   console.log(`RANDOMLEFT: ${maths}`);
-  //   return maths;
-  // };
-
   const isPreLaunch = config.isPreLaunch === 'true';
   const activeAccount = useAppSelector(state => state.account.activeAccount);
 
@@ -108,7 +97,6 @@ function App() {
           />
         </>
       )}
-
       <BrowserRouter>
         <AvatarProvider provider={chainId === 1 ? (library as any) : undefined} batchLookups={true}>
           <NavBar />
@@ -150,7 +138,6 @@ function App() {
               <Route component={NotFoundPage} />
             </Switch>
           )}
-
           <Footer />
         </AvatarProvider>
       </BrowserRouter>

@@ -9,9 +9,19 @@ const deserializeAuction = (reduxSafeAuction: Auction): Auction => {
     amount: BigNumber.from(reduxSafeAuction.amount),
     bidder: reduxSafeAuction.bidder,
     startTime: BigNumber.from(reduxSafeAuction.startTime),
-    endTime: BigNumber.from(reduxSafeAuction.endTime),
     nounId: BigNumber.from(reduxSafeAuction.nounId),
     settled: false,
+    seed: [
+      BigNumber.from(reduxSafeAuction.seed[0]),
+      BigNumber.from(reduxSafeAuction.seed[1]),
+      BigNumber.from(reduxSafeAuction.seed[2]),
+      BigNumber.from(reduxSafeAuction.seed[3]),
+      BigNumber.from(reduxSafeAuction.seed[4]),
+    ],
+    //update interval
+    updateInterval: BigNumber.from(reduxSafeAuction.updateInterval),
+    parentBlockHash: reduxSafeAuction.parentBlockHash,
+    svg: reduxSafeAuction.svg,
   };
 };
 
@@ -49,29 +59,37 @@ const useOnDisplayAuction = (): Auction | undefined => {
   )
     return undefined;
 
+  //TODO figure out last auction noun id
+  return deserializeAuction(currentAuction);
+
   // current auction
-  if (BigNumber.from(onDisplayAuctionNounId).eq(lastAuctionNounId)) {
-    return deserializeAuction(currentAuction);
-  } else {
-    // nounder auction
-    if (isNounderNoun(BigNumber.from(onDisplayAuctionNounId)) || isNounsDAONoun(BigNumber.from(onDisplayAuctionNounId))) {
-      const emptyNounderAuction = generateEmptyNounderAuction(
-        BigNumber.from(onDisplayAuctionNounId),
-        pastAuctions,
-      );
+  // if (BigNumber.from(onDisplayAuctionNounId).eq(lastAuctionNounId)) {
+  //   return deserializeAuction(currentAuction);
+  // } else {
+  //   // nounder auction
+  //   if (
+  //     isNounderNoun(BigNumber.from(onDisplayAuctionNounId)) ||
+  //     isNounsDAONoun(BigNumber.from(onDisplayAuctionNounId))
+  //   ) {
+  //     const emptyNounderAuction = generateEmptyNounderAuction(
+  //       BigNumber.from(onDisplayAuctionNounId),
+  //       pastAuctions,
+  //     );
 
-      return deserializeAuction(emptyNounderAuction);
-    } else {
+  //     return deserializeAuction(emptyNounderAuction);
+  //   } else {
+  //     // past auction
+  //     const reduxSafeAuction: Auction | undefined = pastAuctions.find(auction => {
+  //       const nounId = auction.activeAuction && BigNumber.from(auction.activeAuction.nounId);
+  //       return nounId && nounId.toNumber() === onDisplayAuctionNounId;
+  //     })?.activeAuction;
 
-  // past auction
-  const reduxSafeAuction: Auction | undefined = pastAuctions.find(auction => {
-    const nounId = auction.activeAuction && BigNumber.from(auction.activeAuction.nounId);
-    return nounId && nounId.toNumber() === onDisplayAuctionNounId;
-  })?.activeAuction;
+  //     console.log('dor', 'd');
+  //     console.log('reduxSafeAuction', reduxSafeAuction);
 
-  return reduxSafeAuction ? deserializeAuction(reduxSafeAuction) : undefined;
-}
-}
+  //     return reduxSafeAuction ? deserializeAuction(reduxSafeAuction) : undefined;
+  //   }
+  // }
 };
 
 export const useAuctionBids = (auctionNounId: BigNumber): Bid[] | undefined => {

@@ -426,7 +426,7 @@ export const useBigNounProposal = (id: string | number): Proposal | undefined =>
 
 export const useCastBigNounVote = () => {
   const { send: castVote, state: castVoteState } = useContractFunction(
-    nounsDaoContract,
+    nounsDaoContract as any,
     'castVote',
   );
   return { castVote, castVoteState };
@@ -434,20 +434,23 @@ export const useCastBigNounVote = () => {
 
 export const useCastBigNounVoteWithReason = () => {
   const { send: castVoteWithReason, state: castVoteWithReasonState } = useContractFunction(
-    nounsDaoContract,
+    nounsDaoContract as any,
     'castVoteWithReason',
   );
   return { castVoteWithReason, castVoteWithReasonState };
 };
 
 export const useBigNounPropose = () => {
-  const { send: propose, state: proposeState } = useContractFunction(nounsDaoContract, 'propose');
+  const { send: propose, state: proposeState } = useContractFunction(
+    nounsDaoContract as any,
+    'propose',
+  );
   return { propose, proposeState };
 };
 
 export const useQueueBigNounProposal = () => {
   const { send: queueProposal, state: queueProposalState } = useContractFunction(
-    nounsDaoContract,
+    nounsDaoContract as any,
     'queue',
   );
   return { queueProposal, queueProposalState };
@@ -455,7 +458,7 @@ export const useQueueBigNounProposal = () => {
 
 export const useExecuteBigNounProposal = () => {
   const { send: executeProposal, state: executeProposalState } = useContractFunction(
-    nounsDaoContract,
+    nounsDaoContract as any,
     'execute',
   );
   return { executeProposal, executeProposalState };
