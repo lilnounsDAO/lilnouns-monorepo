@@ -102,23 +102,6 @@ const NavBar = () => {
                 TESTNET
               </Nav.Item>
             )}
-
-            <Nav.Item>
-              {treasuryBalance && (
-                <Nav.Link
-                  href={daoEtherscanLink}
-                  className={classes.nounsNavLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <NavBarTreasury
-                    treasuryBalance={Number(utils.formatEther(treasuryBalance)).toFixed(0)}
-                    treasuryStyle={nonWalletButtonStyle}
-                    treasuryBigNounBalance={bigNounBalance}
-                  />
-                </Nav.Link>
-              )}
-            </Nav.Item>
           </div>
           <Navbar.Toggle className={classes.navBarToggle} aria-controls="basic-navbar-nav" />
           <Navbar.Collapse className="justify-content-end">
