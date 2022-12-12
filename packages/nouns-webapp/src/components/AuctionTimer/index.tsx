@@ -41,8 +41,6 @@ const AuctionTimer: React.FC<{
   // Calculate the number of times the price has dropped (rounded down to the nearest integer)
   const numPriceDrops = Math.floor(elapsedTime / (updateIntervalSeconds * 1000));
 
-  console.log('updateIntervalSeconds', updateIntervalSeconds);
-
   const priceDropsIn = new Date(
     startTime.getTime() + (numPriceDrops + 1) * (updateIntervalSeconds * 1000),
   );
@@ -50,9 +48,6 @@ const AuctionTimer: React.FC<{
   // timer logic
   useEffect(() => {
     const timeLeft = priceDropsIn.getTime() - new Date().getTime();
-
-    console.log('timeLeft', timeLeft);
-    console.log('priceDropsIn', priceDropsIn);
 
     setAuctionTimer(timeLeft / 1000);
 
