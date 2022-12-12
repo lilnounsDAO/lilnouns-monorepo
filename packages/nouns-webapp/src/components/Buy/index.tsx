@@ -39,7 +39,7 @@ const Buy: React.FC<{
   console.log('address', address);
   console.log('isConnecting', isConnecting);
   console.log('isDisconnected', isDisconnected);
-  const { connect } = useConnect({
+  const { connectAsync } = useConnect({
     connector: new InjectedConnector(),
   });
 
@@ -65,7 +65,7 @@ const Buy: React.FC<{
 
   const args = [2, auction.parentBlockHash];
 
-  const contractWrite = useContractWrite({
+  const { write } = useContractWrite({
     address: '0x9A283c74A05Cdb60482B6EFf7a7CCCb301fD8B44',
     abi: AUCTION_ABI,
     functionName: 'settleAuction',
@@ -77,14 +77,13 @@ const Buy: React.FC<{
       maxFeePerGas: 2000000000 as any,
     },
   });
-  const { write } = contractWrite;
 
   const dispatch = useAppDispatch();
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
 
   const buyNounHandler = async () => {
     if (!address) {
-      await connect();
+      await connectAsync();
     }
     if (write) {
       console.log('buying noun');
