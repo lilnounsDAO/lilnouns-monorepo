@@ -45,8 +45,6 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
     displayGraphDepComps,
   } = props;
 
-  console.log('auctionactivity', auction);
-
   const isCool = useAppSelector(state => state.application.isCoolBackground);
 
   const [auctionEnded, setAuctionEnded] = useState(false);
@@ -91,14 +89,14 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
         <div className={classes.informationRow}>
           <Row className={classes.activityRow}>
             <AuctionTitleAndNavWrapper>
-              {displayGraphDepComps && (
+              {/* {displayGraphDepComps && (
                 <AuctionNavigation
                   isFirstAuction={isFirstAuction}
                   isLastAuction={isLastAuction}
                   onNextAuctionClick={onNextAuctionClick}
                   onPrevAuctionClick={onPrevAuctionClick}
                 />
-              )}
+              )} */}
               <AuctionActivityDateHeadline startTime={auction.startTime} />
             </AuctionTitleAndNavWrapper>
             <Col lg={12}>
