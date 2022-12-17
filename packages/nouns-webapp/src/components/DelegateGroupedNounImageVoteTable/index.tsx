@@ -13,6 +13,7 @@ interface DelegateGruopedNounImageVoteTableProps {
     | undefined;
   propId: number;
   proposalCreationBlock: number;
+  isNounsDAOProp?: boolean
 }
 
 const NOUNS_PER_VOTE_CARD_DESKTOP = 12;
@@ -20,12 +21,15 @@ const NOUNS_PER_VOTE_CARD_DESKTOP = 12;
 const DelegateGruopedNounImageVoteTable: React.FC<
   DelegateGruopedNounImageVoteTableProps
 > = props => {
-  const { filteredDelegateGroupedVoteData, propId, proposalCreationBlock } = props;
+  const { filteredDelegateGroupedVoteData, propId, proposalCreationBlock, isNounsDAOProp } = props;
 
   const shuffledDelegatedGroupedNouns = pseudoRandomPredictableShuffle(
     filteredDelegateGroupedVoteData,
     propId,
   );
+
+  console.log(`shuffledDelegatedGroupedNouns: ${JSON.stringify(shuffledDelegatedGroupedNouns)}`);
+  
   const [page, setPage] = useState<number>(0);
 
   const content = (page: number) => {
@@ -37,7 +41,7 @@ const DelegateGruopedNounImageVoteTable: React.FC<
         return (
           <HoverCard
             hoverCardContent={(tip: string) => (
-              <DelegateHoverCard delegateId={tip} proposalCreationBlock={proposalCreationBlock} />
+              <DelegateHoverCard delegateId={tip} proposalCreationBlock={proposalCreationBlock} isNounsDAOProp={isNounsDAOProp}/>
             )}
             // We add this prefix to prevent collisions with the Noun info cards
             tip={`delegate-${data.delegate}`}
@@ -45,6 +49,7 @@ const DelegateGruopedNounImageVoteTable: React.FC<
           >
             <TightStackedCircleNouns
               nounIds={data.nounsRepresented.map((nounId: string) => parseInt(nounId))}
+              isNounsDAOProp={isNounsDAOProp}
             />
           </HoverCard>
         );

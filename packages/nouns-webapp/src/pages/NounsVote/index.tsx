@@ -47,6 +47,7 @@ import { SearchIcon } from '@heroicons/react/solid';
 import ReactTooltip from 'react-tooltip';
 import DynamicQuorumInfoModal from '../../components/DynamicQuorumInfoModal';
 import config from '../../config';
+import { isMobileScreen } from '../../utils/isMobile';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -479,6 +480,8 @@ const NounsVotePage = ({
   const snapshotAbstainCountAmt = fetchedValues.snapshotAbstainCountAmt;
 
   proposal.status = fetchedValues.propStatus;
+  
+  const isMobile = isMobileScreen();
 
   return (
     <Section fullWidth={false} className={classes.votePage}>
@@ -529,47 +532,45 @@ const NounsVotePage = ({
           </Row>
         )}
 
-        <p
+<p
           onClick={() => {
             //TODO: implement delegate view
-            // if (isDelegateView) {
-            //   setIsDelegateView(false);
-            //   if(snapProp) {
-            //     setIsSnapshotView(true);
-            //   }
 
-            // }
+            if (isDelegateView) {
+              setIsDelegateView(false);
+              if (snapProp) {
+                setIsSnapshotView(true);
+              }
+            }
+
+            if (!isDelegateView && !isSnapshotView) {
+              !isMobile ? setIsDelegateView(true) : setIsSnapshotView(true);
+            }
 
             if (isSnapshotView) {
-              // setIsDelegateView(false);
               setIsSnapshotView(false);
             }
 
-            // if (!isDelegateView && !isSnapshotView) {
-            //   !isMobile ? setIsDelegateView(true) : setIsSnapshotView(true);
-            // }
 
-            if (!isSnapshotView) {
-              setIsSnapshotView(true);
-            }
           }}
           className={classes.toggleVoteView}
         >
-          {/* {!snapProp
+          {!snapProp
             ? isDelegateView
               ? 'Switch to Noun view'
-              : 'Switch to delegate view'
+              : 'Switch to Noun delegate view'
+
             : !isMobile
             ? isDelegateView
               ? 'Switch to Lil Noun view'
               : isSnapshotView
               ? 'Switch to Noun view'
-              : 'Switch to delegate view'
+              : 'Switch to Noun delegate view'
             : isSnapshotView
             ? 'Switch to Noun view'
-            : 'Switch to Lil Noun view'} */}
+            : 'Switch to Lil Noun view'}
 
-          {isSnapshotView ? 'Switch to Noun view' : 'Switch to Lil Noun view'}
+          {/* {isLilNounView ? 'Switch to Noun view' : 'Switch to Lil Noun view'} */}
         </p>
 
         <Row>

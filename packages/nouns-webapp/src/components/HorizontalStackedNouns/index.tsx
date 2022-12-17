@@ -1,14 +1,15 @@
 import { BigNumber } from 'ethers';
 import React from 'react';
-import { StandaloneNounCircular } from '../StandaloneNoun';
+import { StandaloneBigNounCircular, StandaloneNounCircular } from '../StandaloneNoun';
 import classes from './HorizontalStackedNouns.module.css';
 
 interface HorizontalStackedNounsProps {
   nounIds: string[];
+  isNounsDAOProp?: boolean;
 }
 
 const HorizontalStackedNouns: React.FC<HorizontalStackedNounsProps> = props => {
-  const { nounIds } = props;
+  const { nounIds, isNounsDAOProp } = props;
   return (
     <div className={classes.wrapper}>
       {nounIds
@@ -23,7 +24,11 @@ const HorizontalStackedNouns: React.FC<HorizontalStackedNounsProps> = props => {
               }}
               className={classes.nounWrapper}
             >
-              <StandaloneNounCircular nounId={BigNumber.from(nounId)} border={true} />
+              {isNounsDAOProp ? (
+                <StandaloneBigNounCircular nounId={BigNumber.from(nounId)} border={true} />
+              ) : (
+                <StandaloneNounCircular nounId={BigNumber.from(nounId)} border={true} />
+              )}
             </div>
           );
         })
