@@ -1,6 +1,6 @@
-import { useNounSeed } from '../../wrappers/nounToken';
+import { useBigNounSeed, useNounSeed } from '../../wrappers/nounToken';
 import { BigNumber } from 'ethers';
-import { getNoun } from '../StandaloneNoun';
+import { getBigNoun, getNoun } from '../StandaloneNoun';
 import { LoadingNoun } from '../Noun';
 
 interface TightStackedCircleNounProps {
@@ -8,17 +8,20 @@ interface TightStackedCircleNounProps {
   index: number;
   square: number;
   shift: number;
+  isNounsDAOProp?: boolean;
 }
 
 const TightStackedCircleNoun: React.FC<TightStackedCircleNounProps> = props => {
-  const { nounId, index, square, shift } = props;
-  const seed = useNounSeed(BigNumber.from(nounId));
+  const { nounId, index, square, shift, isNounsDAOProp } = props;
+
+  const mm = true
+  const seed = mm ? useBigNounSeed(BigNumber.from(nounId)) : useNounSeed(BigNumber.from(nounId));
 
   if (!seed) {
     return <LoadingNoun />;
   }
 
-  const nounData = getNoun(BigNumber.from(nounId), seed);
+  const nounData = mm ? getBigNoun(BigNumber.from(nounId), seed): getNoun(BigNumber.from(nounId), seed);
   const image = nounData.image;
 
   return (
