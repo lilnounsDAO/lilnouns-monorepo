@@ -63,7 +63,7 @@ const DelegateHoverCard: React.FC<DelegateHoverCardProps> = props => {
       <div className={classes.nounInfoWrapper}>
         <ScaleIcon height={20} width={20} className={classes.icon} />
         {/* //TODO: fix text wrapping */}
-        {numVotesForProp === 1 ? (
+        {numVotesForProp == 1 ? (
           <>
             Voted with<span className={classes.bold}>{numVotesForProp}</span>{tokenType}
           </>
