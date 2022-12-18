@@ -132,8 +132,8 @@ const NounsVotePage = ({
         spi.body.includes(proposal?.transactionHash ?? ''),
       ) !== undefined
         ? snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
-            spi.body.includes(proposal?.transactionHash ?? ''),
-          ).id
+          spi.body.includes(proposal?.transactionHash ?? ''),
+        ).id
         : '',
     ),
     {
@@ -166,7 +166,7 @@ const NounsVotePage = ({
   const [showVoteModal, setShowVoteModal] = useState<boolean>(false);
   const [showDynamicQuorumInfoModal, setShowDynamicQuorumInfoModal] = useState<boolean>(false);
   const [isDelegateView, setIsDelegateView] = useState(false);
-  const [isSnapshotView, setIsSnapshotView] = useState(true);
+  const [isLilNounView, setIsLilNounView] = useState(true);
 
   const [isQueuePending, setQueuePending] = useState<boolean>(false);
   const [isExecutePending, setExecutePending] = useState<boolean>(false);
@@ -190,17 +190,17 @@ const NounsVotePage = ({
   const startDate =
     proposal && timestamp && currentBlock
       ? dayjs(timestamp).add(
-          AVERAGE_BLOCK_TIME_IN_SECS * (proposal.startBlock - currentBlock),
-          'seconds',
-        )
+        AVERAGE_BLOCK_TIME_IN_SECS * (proposal.startBlock - currentBlock),
+        'seconds',
+      )
       : undefined;
 
   const endDate =
     proposal && timestamp && currentBlock
       ? dayjs(timestamp).add(
-          AVERAGE_BLOCK_TIME_IN_SECS * (proposal.endBlock - currentBlock),
-          'seconds',
-        )
+        AVERAGE_BLOCK_TIME_IN_SECS * (proposal.endBlock - currentBlock),
+        'seconds',
+      )
       : undefined;
   const now = dayjs();
 
@@ -213,7 +213,7 @@ const NounsVotePage = ({
   const abstainPercentage = proposal && totalVotes ? (proposal.abstainCount * 100) / totalVotes : 0;
 
   // Only count available votes as of the proposal created block
-  const availableVotes = !isSnapshotView
+  const availableVotes = !isLilNounView
     ? useUserVotesAsOfBlock(proposal?.createdBlock ?? undefined)
     : useUserVotesAsOfBlock(snapProp?.snapshot ?? undefined);
 
@@ -480,7 +480,7 @@ const NounsVotePage = ({
   const snapshotAbstainCountAmt = fetchedValues.snapshotAbstainCountAmt;
 
   proposal.status = fetchedValues.propStatus;
-  
+
   const isMobile = isMobileScreen();
 
   return (
@@ -532,23 +532,23 @@ const NounsVotePage = ({
           </Row>
         )}
 
-<p
+        <p
           onClick={() => {
             //TODO: implement delegate view
 
             if (isDelegateView) {
               setIsDelegateView(false);
               if (snapProp) {
-                setIsSnapshotView(true);
+                setIsLilNounView(true);
               }
             }
 
-            if (!isDelegateView && !isSnapshotView) {
-              !isMobile ? setIsDelegateView(true) : setIsSnapshotView(true);
+            if (!isDelegateView && !isLilNounView) {
+              !isMobile ? setIsDelegateView(true) : setIsLilNounView(true);
             }
 
-            if (isSnapshotView) {
-              setIsSnapshotView(false);
+            if (isLilNounView) {
+              setIsLilNounView(false);
             }
 
 
@@ -561,14 +561,14 @@ const NounsVotePage = ({
               : 'Switch to Noun delegate view'
 
             : !isMobile
-            ? isDelegateView
-              ? 'Switch to Lil Noun view'
-              : isSnapshotView
-              ? 'Switch to Noun view'
-              : 'Switch to Noun delegate view'
-            : isSnapshotView
-            ? 'Switch to Noun view'
-            : 'Switch to Lil Noun view'}
+              ? isDelegateView
+                ? 'Switch to Lil Noun view'
+                : isLilNounView
+                  ? 'Switch to Noun view'
+                  : 'Switch to Noun delegate view'
+              : isLilNounView
+                ? 'Switch to Noun view'
+                : 'Switch to Lil Noun view'}
 
           {/* {isLilNounView ? 'Switch to Noun view' : 'Switch to Lil Noun view'} */}
         </p>
@@ -581,7 +581,7 @@ const NounsVotePage = ({
             lilnounIds={forSnapshotNounIds}
             variant={VoteCardVariant.FOR}
             delegateView={isDelegateView}
-            snapshotView={isSnapshotView}
+            snapshotView={isLilNounView}
             delegateGroupedVoteData={data}
             isNounsDAOProp={true}
             snapshotVoteCount={snapshotForCountAmt}
@@ -593,7 +593,7 @@ const NounsVotePage = ({
             lilnounIds={againstSnapshotNounIds}
             variant={VoteCardVariant.AGAINST}
             delegateView={isDelegateView}
-            snapshotView={isSnapshotView}
+            snapshotView={isLilNounView}
             delegateGroupedVoteData={data}
             isNounsDAOProp={true}
             snapshotVoteCount={snapshotAgainstCountAmt}
@@ -605,7 +605,7 @@ const NounsVotePage = ({
             lilnounIds={abstainSnapshotNounIds}
             variant={VoteCardVariant.ABSTAIN}
             delegateView={isDelegateView}
-            snapshotView={isSnapshotView}
+            snapshotView={isLilNounView}
             delegateGroupedVoteData={data}
             isNounsDAOProp={true}
             snapshotVoteCount={snapshotAbstainCountAmt}
@@ -621,7 +621,7 @@ const NounsVotePage = ({
                   <div className={classes.voteMetadataRowTitle}>
                     <h1>Threshold</h1>
                   </div>
-                  {!isSnapshotView && isV2Prop && (
+                  {!isLilNounView && isV2Prop && (
                     <ReactTooltip
                       id={'view-dq-info'}
                       className={classes.delegateHover}
@@ -633,13 +633,13 @@ const NounsVotePage = ({
                   <div
                     data-for="view-dq-info"
                     data-tip="View Dynamic Quorum Info"
-                    onClick={() => setShowDynamicQuorumInfoModal(true && isV2Prop && !isSnapshotView)}
+                    onClick={() => setShowDynamicQuorumInfoModal(true && isV2Prop && !isLilNounView)}
                     className={clsx(classes.thresholdInfo, isV2Prop ? classes.cursorPointer : '')}
                   >
                     <span>
-                      {isSnapshotView ? 'Quorum' : isV2Prop ? 'Current Quorum' : 'Quorum'}
+                      {isLilNounView ? 'Quorum' : isV2Prop ? 'Current Quorum' : 'Quorum'}
                     </span>
-                    {isSnapshotView ? (
+                    {isLilNounView ? (
                       <h3>N/A</h3>
                     ) : (
                       <h3>
@@ -657,28 +657,28 @@ const NounsVotePage = ({
               <Card.Body className="p-2">
                 <Row className={classes.voteMetadataRow}>
                   <Col className={classes.voteMetadataRowTitle}>
-                    <h1>{!isSnapshotView ? startOrEndTimeCopy() : snapshotStartOrEndTimeCopy()}</h1>
+                    <h1>{!isLilNounView ? startOrEndTimeCopy() : snapshotStartOrEndTimeCopy()}</h1>
                   </Col>
                   <Col className={classes.voteMetadataTime}>
                     <span>
                       {snapshotStartOrEndTimeTime() !== undefined
-                        ? !isSnapshotView
+                        ? !isLilNounView
                           ? startOrEndTimeTime() && startOrEndTimeTime()?.format('h:mm A z')
                           : snapshotStartOrEndTimeTime() &&
-                            snapshotStartOrEndTimeTime()?.format('h:mm A z')
-                        : !isSnapshotView
-                        ? startOrEndTimeTime() && startOrEndTimeTime()?.format('h:mm A z')
-                        : 'Time'}
+                          snapshotStartOrEndTimeTime()?.format('h:mm A z')
+                        : !isLilNounView
+                          ? startOrEndTimeTime() && startOrEndTimeTime()?.format('h:mm A z')
+                          : 'Time'}
                     </span>
                     <h3>
                       {snapshotStartOrEndTimeTime() !== undefined
-                        ? !isSnapshotView
+                        ? !isLilNounView
                           ? startOrEndTimeTime() && startOrEndTimeTime()?.format('MMM D, YYYY')
                           : snapshotStartOrEndTimeTime() &&
-                            snapshotStartOrEndTimeTime()?.format('MMM D, YYYY')
-                        : !isSnapshotView
-                        ? startOrEndTimeTime() && startOrEndTimeTime()?.format('MMM D, YYYY')
-                        : 'N/A'}
+                          snapshotStartOrEndTimeTime()?.format('MMM D, YYYY')
+                        : !isLilNounView
+                          ? startOrEndTimeTime() && startOrEndTimeTime()?.format('MMM D, YYYY')
+                          : 'N/A'}
                     </h3>
                   </Col>
                 </Row>
