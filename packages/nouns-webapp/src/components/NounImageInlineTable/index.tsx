@@ -1,26 +1,29 @@
 import { StandaloneBigNounCircular } from '../StandaloneNoun';
 import { BigNumber as EthersBN } from 'ethers';
 import classes from './NounImageInlineTable.module.css';
-import { GrayCircle } from '../GrayCircle';
 import { pseudoRandomPredictableShuffle } from '../../utils/pseudoRandomPredictableShuffle';
+import { motion } from "framer-motion"
+import { useEffect, useRef, useState } from 'react';
 
 interface NounImageInlineTableTableProps {
   nounIds: string[];
 }
-const NOUNS_PER_VOTE_CARD_DESKTOP = 8;
 
 const isXLScreen = window.innerWidth > 1200;
 
 const NounImageInlineTable: React.FC<NounImageInlineTableTableProps> = props => {
   const { nounIds } = props;
 
+  const [width, setWidth] = useState(0);
+  const carousel = useRef(null);;
+
   const shuffledNounIds = pseudoRandomPredictableShuffle(nounIds);
   const paddedNounIds = shuffledNounIds
     .map((nounId: string) => {
-      return <StandaloneBigNounCircular nounId={EthersBN.from(nounId)} />;
+      return <motion.div className={classes.item}>
+        <StandaloneBigNounCircular nounId={EthersBN.from(nounId)} />
+      </motion.div>
     })
-    .concat(Array(NOUNS_PER_VOTE_CARD_DESKTOP).fill(<GrayCircle />))
-    .slice(0, NOUNS_PER_VOTE_CARD_DESKTOP);
 
   const content = () => {
     const rows = 1;
@@ -39,7 +42,23 @@ const NounImageInlineTable: React.FC<NounImageInlineTableTableProps> = props => 
       ));
   };
 
-  return <table className={classes.wrapper}>{content()}</table>;
+
+  useEffect(() => {
+    const node = carousel.current as any
+    setWidth(node.scrollWidth - node.offsetWidth)
+  }, [])
+
+  return (
+    <motion.div ref={carousel} className={classes.carousel}>
+      <motion.div
+        drag="x"
+        dragConstraints={{ right: 0, left: -width }}
+        className={classes.innerCarousel}>
+        {content()}
+      </motion.div>
+    </motion.div>
+  )
+
 };
 
 export default NounImageInlineTable;

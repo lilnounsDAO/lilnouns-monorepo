@@ -1,4 +1,18 @@
-.wrapper {
-  margin-left: 10px;
-  margin-right: auto;
+.carousel {
+  cursor: grab;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent 0%, black 5% 95%, transparent 100%);
+  width: 400px;
+}
+
+.innerCarousel {
+  display: flex;
+}
+
+.item {
+  width: fit-content;
+  height: fit-content;
+  pointer-events: none;
+  margin-left: auto;
+  margin-right: 5px;
 }
