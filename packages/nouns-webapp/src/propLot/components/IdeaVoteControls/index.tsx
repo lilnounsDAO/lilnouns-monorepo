@@ -1,10 +1,7 @@
 import { useEthers } from '@usedapp/core';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretUp, faCaretDown, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import Davatar from '@davatar/react';
 import { useApiError } from '../../../hooks/useApiError';
 import { useMutation } from '@apollo/client';
-
 import { useAuth } from '../../../hooks/useAuth';
 
 import propLotClient from '../../graphql/config';
@@ -106,54 +103,69 @@ const IdeaVoteControls = ({
   return (
     <>
       {withAvatars && (
-        <span className="flex self-center justify-end pl-2">
+        <span className="flex self-center justify-end pl-2 mr-2">
           {avatarVotes.map((vote, i) => (
             <span className={i < avatarVotes.length - 1 ? '-mr-2' : ''}>
-              <Davatar size={32} address={vote.voterId} provider={provider} />
+              <Davatar
+                size={40}
+                address={vote.voterId}
+                provider={provider}
+                style={{
+                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                }}
+              />
             </span>
           ))}
         </span>
       )}
-      <span className="text-[#212529] font-propLot font-bold text-[18px] sm:text-[26px] self-center justify-end pl-2">
-        {loading ? (
-          <FontAwesomeIcon
-            icon={faCircleNotch}
-            className={`fa-spinner fa-spin text-md text-blue-500`}
-          />
-        ) : (
-          calculatedVoteCount
-        )}
+      <span className="font-bold text-lg sm:text-2xl mr-4 min-w-[75px] text-right hidden sm:block">
+        {calculatedVoteCount}
       </span>
-      {!closed && !disableControls && (
-        <div className="flex flex-col ml-4">
-          <FontAwesomeIcon
-            icon={faCaretUp}
+      <div className="flex flex-[row] sm:flex-col items-center sm:items-end justify-center sm:justify-between space-x-3 sm:space-x-0 sm:space-y-1 sm:h-[65px]">
+        {!closed && !disableControls && (
+          <svg
             onClick={e => {
-              // this prevents the click from bubbling up and opening / closing the hidden section
               e.stopPropagation();
               if (hasVotes && !userHasUpVote && !loading && !closed) {
                 vote(1);
               }
             }}
-            className={`${loading ? 'fa-beat-fade' : ''} text-3xl cursor-pointer ${
-              hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'
-            }`}
-          />
-
-          <FontAwesomeIcon
-            icon={faCaretDown}
+            width="20"
+            height="12"
+            viewBox="0 0 20 12"
+            fill={hasVotes && userHasUpVote ? 'rgb(59 130 246)' : '#8c8d92'}
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18.6523 11.6711H1.34765C0.149416 11.6711 -0.450643 10.2224 0.396621 9.37512L9.04896 0.722781C9.57417 0.19757 10.4258 0.19757 10.951 0.722781L19.6033 9.37512C20.4507 10.2224 19.8506 11.6711 18.6523 11.6711Z"
+              fill={hasVotes && userHasUpVote ? 'text-blue-500' : 'text-[#8c8d92]'}
+            />
+          </svg>
+        )}
+        <span className="font-bold text-lg sm:text-2xl mr-4 sm:min-w-[75px] text-right block sm:hidden">
+          {calculatedVoteCount}
+        </span>
+        {!closed && !disableControls && (
+          <svg
+            width="20"
+            height="12"
+            viewBox="0 0 20 12"
+            fill={hasVotes && userHasDownVote ? 'rgb(239 68 68)' : '#8c8d92'}
+            xmlns="http://www.w3.org/2000/svg"
             onClick={e => {
               e.stopPropagation();
               if (hasVotes && !userHasDownVote && !loading && !closed) {
                 vote(-1);
               }
             }}
-            className={`${loading ? 'fa-beat-fade' : ''} text-3xl cursor-pointer ${
-              hasVotes && userHasDownVote ? 'text-red-500' : 'text-[#8c8d92]'
-            }`}
-          />
-        </div>
-      )}
+          >
+            <path
+              d="M1.34572 0.327469H18.6543C19.8517 0.327469 20.4504 1.77377 19.6028 2.62137L10.9519 11.279C10.4272 11.8037 9.57283 11.8037 9.04813 11.279L0.397216 2.62137C-0.450385 1.77377 0.148317 0.327469 1.34572 0.327469Z"
+              fill={hasVotes && userHasDownVote ? 'rgb(239 68 68)' : '#8c8d92'}
+            />
+          </svg>
+        )}
+      </div>
     </>
   );
 };
