@@ -55,6 +55,7 @@ const NounImageInlineTable: React.FC<NounImageInlineTableTableProps> = props => 
         dragConstraints={{ right: 0, left: -width }}
         className={classes.innerCarousel}>
         {content()}
+        {content()}
       </motion.div>
     </motion.div>
   )
