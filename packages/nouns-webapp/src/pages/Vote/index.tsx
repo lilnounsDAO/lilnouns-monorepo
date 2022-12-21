@@ -339,7 +339,7 @@ const VotePage = ({
           onClick={() => setIsDelegateView(!isDelegateView)}
           className={classes.toggleDelegateVoteView}
         >
-          {isDelegateView ? 'Switch to Noun view' : 'Switch to delegate view'}
+          {isDelegateView ? 'Switch to Lil Noun view' : 'Switch to delegate view'}
         </p>
         <Row>
           <VoteCard
@@ -350,6 +350,7 @@ const VotePage = ({
             delegateView={isDelegateView}
             delegateGroupedVoteData={data}
             lilnounIds={[]}
+            isNounsDAOProp={false}
           />
           <VoteCard
             proposal={proposal}
@@ -359,6 +360,7 @@ const VotePage = ({
             delegateView={isDelegateView}
             delegateGroupedVoteData={data}
             lilnounIds={[]}
+            isNounsDAOProp={false}
           />
           <VoteCard
             proposal={proposal}
@@ -368,6 +370,7 @@ const VotePage = ({
             delegateView={isDelegateView}
             delegateGroupedVoteData={data}
             lilnounIds={[]}
+            isNounsDAOProp={false}
           />
         </Row>
 

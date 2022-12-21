@@ -75,6 +75,7 @@
     "react-stepz": "^1.0.2",
     "react-tooltip": "^4.2.21",
     "react-transition-group": "^4.4.5",
+    "react-number-format": "^5.1.2",
     "react-use": "^17.4.0",
     "redux": "^4.1.0",
     "redux-devtools-extension": "^2.13.9",
