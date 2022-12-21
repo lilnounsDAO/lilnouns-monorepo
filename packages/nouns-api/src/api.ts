@@ -129,6 +129,8 @@ export const createAPI = (): Express => {
   app.get('/ideas', IdeasController.getAllIdeas);
   app.post('/ideas', authMiddleware, IdeasController.createIdea);
   app.post('/token-transfer', authMiddleware, AuthController.syncUserTokenCounts);
+  app.delete('/idea/:id', authMiddleware, IdeasController.deleteIdea);
+  app.delete('/comment/:id', authMiddleware, IdeasController.deleteComment);
 
   app.use(rollbar.errorHandler());
   app.use((err: any, req: Request, res: Response, next: any) => {

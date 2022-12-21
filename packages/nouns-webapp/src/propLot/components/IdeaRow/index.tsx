@@ -8,6 +8,8 @@ import IdeaVoteControls from '../IdeaVoteControls';
 import { getPropLot_propLot_ideas as Idea } from '../../graphql/__generated__/getPropLot';
 import { virtualTagColorMap } from '../../../utils/virtualTagColors';
 import { Button } from 'react-bootstrap';
+import { useEthers } from '@usedapp/core';
+import { useIdeas } from '../../../hooks/useIdeas';
 
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
@@ -15,20 +17,24 @@ const IdeaRow = ({
   idea,
   nounBalance,
   disableControls,
+  refetch,
 }: {
   idea: Idea;
   nounBalance: number;
   disableControls?: boolean;
+  refetch: () => void;
 }) => {
+  const { account } = useEthers();
   const breakpoint = useBreakpoint();
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { id, tldr, title, creatorId, votes, createdAt, ideaStats, tags } = idea;
+  const { id, tldr, title, creatorId, votes, createdAt, ideaStats, tags, deleted } = idea;
   const isMobile = breakpoint === 'S';
 
   const ens = useReverseENSLookUp(creatorId);
   const shortAddress = useShortAddress(creatorId);
   const creatorLilNoun = votes?.find(vote => vote.voterId === creatorId)?.voter?.lilnounCount;
+  const { deleteIdea } = useIdeas();
 
   const mobileHeading = (
     <>
@@ -123,49 +129,71 @@ const IdeaRow = ({
   );
 
   return (
-    <div
-      className="flex flex-col border border-[#e2e3e8] rounded-2xl cursor-pointer p-[16px]"
-      onClick={() => setIsOpen(!isOpen)}
-    >
-      {isMobile ? mobileHeading : desktopHeading}
-      {isOpen && (
-        <>
-          <div className="flex flex-row flex-1 justify-content-start align-items-center pt-[24px] sm:pt-[16px]">
-            <span
-              className="font-propLot text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1"
-              dangerouslySetInnerHTML={{ __html: tldr }}
-            />
-          </div>
-          <div className="font-propLot font-semibold text-[14px] flex-col sm:flex-row flex flex-1 justify-content-start align-items-start pt-[24px] sm:pt-[16px]">
-            <span className="flex flex-1 text-[#8c8d92] whitespace-pre sm:self-end">
-              <span
-                className="text-[#2B83F6] underline cursor-pointer"
-                onClick={() => {
-                  history.push(`/proplot/profile/${idea.creatorId}`);
-                }}
-              >
-                {ens || shortAddress}
-              </span>
-              {` | ${
-                creatorLilNoun === 1 ? `${creatorLilNoun} lil noun` : `${creatorLilNoun} lil nouns`
-              } | ${moment(createdAt).format('MMM Do YYYY')}`}
-            </span>
-            <span className="mt-[16px] sm:mt-[0px] w-full sm:w-auto justify-self-end text-[#2b83f6] flex justify-end">
-              <Button
-                className="font-propLot font-semibold text-[16px] flex flex-1 btn !rounded-[10px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#2B83F6]"
-                onClick={() => {
-                  history.push(`/proplot/${id}`);
-                }}
-              >
-                <span className="flex items-center justify-center font-semibold text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
-                  Details
+    <>
+      {deleted ? (
+        <div className="bg-gray-100 p-4 rounded">This idea cannot be found.</div>
+      ) : (
+        <div
+          className="flex flex-col border border-[#e2e3e8] rounded-2xl cursor-pointer p-[16px]"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isMobile ? mobileHeading : desktopHeading}
+          {isOpen && (
+            <>
+              <div className="flex flex-row flex-1 justify-content-start align-items-center pt-[24px] sm:pt-[16px]">
+                <span
+                  className="font-propLot text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1"
+                  dangerouslySetInnerHTML={{ __html: tldr }}
+                />
+              </div>
+              <div className="font-propLot font-semibold text-[14px] flex-col sm:flex-row flex flex-1 justify-content-start align-items-start pt-[24px] sm:pt-[16px]">
+                <span className="flex flex-1 text-[#8c8d92] whitespace-pre sm:self-end">
+                  <span
+                    className="text-[#2B83F6] underline cursor-pointer"
+                    onClick={() => {
+                      history.push(`/proplot/profile/${idea.creatorId}`);
+                    }}
+                  >
+                    {ens || shortAddress}
+                  </span>{' '}
+                  {` | ${
+                    creatorLilNoun === 1
+                      ? `${creatorLilNoun} lil noun`
+                      : `${creatorLilNoun} lil nouns`
+                  } | ${moment(createdAt).format('MMM Do YYYY')}`}
+                  {account && account.toLowerCase() === idea.creatorId.toLowerCase() && (
+                    <span
+                      onClick={async event => {
+                        // stop propagation to prevent the card from closing
+                        event.stopPropagation();
+                        await deleteIdea(idea.id);
+                        refetch();
+                      }}
+                      className="text-red-500 self-end font-bold ml-2"
+                    >
+                      Delete submission
+                    </span>
+                  )}
                 </span>
-              </Button>
-            </span>
-          </div>
-        </>
+
+                <span className="mt-[16px] sm:mt-[0px] w-full sm:w-auto justify-self-end text-[#2b83f6] flex justify-end">
+                  <Button
+                    className="font-propLot font-semibold text-[16px] flex flex-1 btn !rounded-[10px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#2B83F6]"
+                    onClick={() => {
+                      history.push(`/proplot/${id}`);
+                    }}
+                  >
+                    <span className="flex items-center justify-center font-semibold text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
+                      Details
+                    </span>
+                  </Button>
+                </span>
+              </div>
+            </>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

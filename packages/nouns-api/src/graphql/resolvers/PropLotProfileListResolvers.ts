@@ -96,7 +96,9 @@ const resolvers: IResolvers = {
           sortBy: parseFilterParam(root.sortParam)?.value,
           wallet: root.wallet,
           tab,
+          hideDeleted: false,
         });
+
         listItems = [...ideas];
       }
 

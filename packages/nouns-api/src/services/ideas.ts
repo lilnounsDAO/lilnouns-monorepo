@@ -84,6 +84,9 @@ class IdeasService {
       // });
 
       const ideas = await prisma.idea.findMany({
+        where: {
+          deleted: false,
+        },
         include: {
           votes: {
             include: {
@@ -91,7 +94,9 @@ class IdeasService {
             },
           },
           _count: {
-            select: { comments: true },
+            select: {
+              comments: { where: { deleted: false } },
+            },
           },
         },
       });
@@ -117,18 +122,21 @@ class IdeasService {
     date,
     wallet,
     tab,
+    hideDeleted = true,
   }: {
     sortBy?: string;
     tags?: TagType[];
     date?: string;
     wallet?: string;
     tab?: string;
+    hideDeleted?: boolean;
   }) {
     try {
       const dateRange: any = DATE_FILTERS[date || 'ALL_TIME'].filterFn();
       const profileFilters: any = PROFILE_TAB_FILTERS[tab || 'DEFAULT'](wallet);
       const ideas = await prisma.idea.findMany({
         where: {
+          ...(hideDeleted && { deleted: false }),
           createdAt: {
             gte: dateRange.gte,
             lte: dateRange.lte,
@@ -143,7 +151,9 @@ class IdeasService {
             },
           },
           _count: {
-            select: { comments: true },
+            select: {
+              comments: { where: { deleted: false } },
+            },
           },
         },
       });
@@ -190,13 +200,19 @@ class IdeasService {
             },
           },
           _count: {
-            select: { comments: true },
+            select: {
+              comments: { where: { deleted: false } },
+            },
           },
         },
       });
 
       if (!idea) {
         throw new Error('Idea not found');
+      }
+
+      if (idea.deleted) {
+        throw new Error('Idea has been deleted!');
       }
 
       const votecount = calculateVotes(idea.votes);
@@ -274,6 +290,16 @@ class IdeasService {
         throw new Error('Idea has been closed');
       }
 
+      const idea = await prisma.idea.findUnique({
+        where: {
+          id: data.ideaId,
+        },
+      });
+
+      if (idea?.deleted) {
+        throw new Error('Idea has been deleted');
+      }
+
       const vote = prisma.vote.upsert({
         where: {
           ideaId_voterId: {
@@ -332,6 +358,21 @@ class IdeasService {
             },
           },
         },
+        // include: {
+        //   replies: {
+        //     where: { deleted: false },
+        //     include: {
+        //       replies: {
+        //         where: { deleted: false },
+        //         include: {
+        //           replies: {
+        //             where: { deleted: false },
+        //           },
+        //         },
+        //       },
+        //     },
+        //   },
+        // },
       });
 
       return comment;
@@ -352,6 +393,12 @@ class IdeasService {
         throw new Error('Idea has been closed');
       }
 
+      const isDeleted = await this.isIdeaDeleted(data.ideaId);
+
+      if (isDeleted) {
+        throw new Error('Idea has been deleted');
+      }
+
       const comment = prisma.comment.create({
         data: {
           body: data.body,
@@ -367,6 +414,16 @@ class IdeasService {
     }
   }
 
+  static async isIdeaDeleted(id: number) {
+    const idea = await prisma.idea.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    return idea?.deleted;
+  }
+
   static async isIdeaClosed(id: number) {
     // Load idea first to check if it's been closed before allowing updates.
     const idea = await prisma.idea.findUnique({
@@ -380,6 +437,40 @@ class IdeasService {
     }
 
     return getIsClosed(idea);
+  }
+
+  static async deleteIdea(id: number) {
+    try {
+      const idea = await prisma.idea.update({
+        where: {
+          id,
+        },
+        data: {
+          deleted: true,
+        },
+      });
+
+      return idea;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static async deleteComment(id: number) {
+    try {
+      const comment = await prisma.comment.update({
+        where: {
+          id,
+        },
+        data: {
+          deleted: true,
+        },
+      });
+
+      return comment;
+    } catch (e) {
+      throw e;
+    }
   }
 }
 
