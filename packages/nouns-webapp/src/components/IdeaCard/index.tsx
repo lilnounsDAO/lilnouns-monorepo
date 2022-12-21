@@ -60,7 +60,7 @@ const IdeaCard = ({
         <span className="truncate">{ens || shortAddress}</span>
       </span>
       <span className="text-[#212529] font-normal text-2xl flex flex-1 lodrina ml-6">{title}</span>
-      <div className="flex justify-self-end">
+      <div className="flex justify-self-end items-center">
         <IdeaVoteControls
           idea={idea}
           voteOnIdea={voteOnIdea}
@@ -73,7 +73,7 @@ const IdeaCard = ({
 
   return (
     <div
-      className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-2 px-3 pb-2"
+      className="flex flex-col border border-[#e2e3e8] rounded-2xl cursor-pointer pt-2 px-3 pb-2"
       onClick={() => setIsOpen(!isOpen)}
     >
       {isMobile ? mobileHeading : desktopHeading}

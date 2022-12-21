@@ -53,7 +53,7 @@ const IdeaRow = ({
         </div>
       </div>
       {tags && tags.length > 0 && (
-        <div className="flex flex-row flex-wrap gap-[8px] mt-[16px]">
+        <div className="flex flex-row items-center flex-wrap gap-[8px] mt-[16px]">
           {tags.map(tag => {
             return (
               <span
@@ -82,19 +82,19 @@ const IdeaRow = ({
       <div className="flex flex-1 flex-col">
         <div className="flex flex-1">
           <span className="flex text-[#8C8D92] overflow-hidden">
-            <span className="mr-4">{id}</span>
-            <span className="truncate">{ens || shortAddress}</span>
+            <span className="mr-[8px] w-[48px]">{id}</span>
+            <span className="truncate mr-[8px] w-[134px]">{ens || shortAddress}</span>
           </span>
-          <span className="text-[#212529] flex flex-1 ml-6">{title}</span>
+          <span className="text-[#212529] flex flex-1">{title}</span>
         </div>
         {tags && tags.length > 0 && (
-          <div className="flex flex-row flex-wrap gap-[8px] mt-[16px]">
+          <div className="flex flex-row items-center flex-wrap gap-[8px] mt-[16px]">
             {tags.map(tag => {
               return (
                 <span
                   className={`${
-                    virtualTagColorMap[tag.type] || 'text-blue-500 bg-blue-200'
-                  } text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex`}
+                    virtualTagColorMap[tag.type] || 'text-[#2B83F6] bg-[#2B83F6] bg-opacity-10'
+                  } text-xs font-semibold rounded-[8px] px-[8px] py-[4px] flex`}
                 >
                   {tag.label}
                 </span>
@@ -110,7 +110,7 @@ const IdeaRow = ({
           </div>
         )}
       </div>
-      <div className="flex justify-self-end">
+      <div className="flex justify-self-end items-center">
         <IdeaVoteControls
           idea={idea}
           nounBalance={nounBalance}
@@ -124,20 +124,20 @@ const IdeaRow = ({
 
   return (
     <div
-      className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-[24px] pb-[24px] px-3"
+      className="flex flex-col border border-[#e2e3e8] rounded-2xl cursor-pointer p-[16px]"
       onClick={() => setIsOpen(!isOpen)}
     >
       {isMobile ? mobileHeading : desktopHeading}
       {isOpen && (
         <>
-          <div className="flex flex-row flex-1 justify-content-start align-items-center pt-[12px] pt-[12px]">
+          <div className="flex flex-row flex-1 justify-content-start align-items-center pt-[24px] sm:pt-[16px]">
             <span
               className="font-propLot text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1"
               dangerouslySetInnerHTML={{ __html: tldr }}
             />
           </div>
-          <div className="font-propLot font-semibold text-[14px] flex-col sm:flex-row flex flex-1 justify-content-start align-items-start pt-[12px] pt-[12px]">
-            <span className="flex flex-1 text-[#8c8d92] whitespace-pre">
+          <div className="font-propLot font-semibold text-[14px] flex-col sm:flex-row flex flex-1 justify-content-start align-items-start pt-[24px] sm:pt-[16px]">
+            <span className="flex flex-1 text-[#8c8d92] whitespace-pre sm:self-end">
               <span
                 className="text-[#2B83F6] underline cursor-pointer"
                 onClick={() => {
@@ -145,12 +145,12 @@ const IdeaRow = ({
                 }}
               >
                 {ens || shortAddress}
-              </span>{' '}
+              </span>
               {` | ${
                 creatorLilNoun === 1 ? `${creatorLilNoun} lil noun` : `${creatorLilNoun} lil nouns`
               } | ${moment(createdAt).format('MMM Do YYYY')}`}
             </span>
-            <span className="flex mt-[16px] sm:mt-[0px] w-full sm:w-auto justify-self-end text-[#2b83f6] flex justify-end">
+            <span className="mt-[16px] sm:mt-[0px] w-full sm:w-auto justify-self-end text-[#2b83f6] flex justify-end">
               <Button
                 className="font-propLot font-semibold text-[16px] flex flex-1 btn !rounded-[10px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#2B83F6]"
                 onClick={() => {
