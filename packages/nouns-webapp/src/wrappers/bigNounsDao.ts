@@ -366,7 +366,7 @@ export const useAllBigNounProposalsViaChain = (skip = false): ProposalData => {
     }));
   };
 
-  const proposals = useContractCalls<ProposalCallResult>(requests('proposals'));
+  const proposals = useContractCalls<[ProposalCallResult]>(requests('proposals'));
   const proposalStates = useContractCalls<[ProposalState]>(requests('state'));
 
   const formattedLogs = useFormattedProposalCreatedLogs(skip);
@@ -379,7 +379,8 @@ export const useAllBigNounProposalsViaChain = (skip = false): ProposalData => {
     }
 
     return {
-      data: proposals.map((proposal, i) => {
+      data: proposals.map((p, i) => {
+        const proposal = p?.[0];
         const description = logs[i]?.description
           ?.replace(/\\n/g, '\n')
           .replace(/(^['"]|['"]$)/g, '');
