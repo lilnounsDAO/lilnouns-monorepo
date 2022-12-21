@@ -19,8 +19,9 @@
   },
   "scripts": {
     "dev": "npm run generate:prisma && nodemon src/index.ts",
-    "start": "npm run migrate:prisma && node dist/src/index.js",
+    "start": "npm run migrate:prisma-deploy && node dist/src/index.js",
     "prestart": "npm run build",
+    "migrate:prisma-deploy": "prisma migrate deploy",
     "migrate:prisma": "prisma migrate dev",
     "generate:prisma": "prisma generate",
     "build": "npm run clean && tsc -p . && npm run copy-files",
