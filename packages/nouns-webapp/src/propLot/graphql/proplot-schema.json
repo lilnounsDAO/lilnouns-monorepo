@@ -11,8 +11,8 @@
     "types": [
       {
         "kind": "SCALAR",
-        "name": "DateTime",
-        "description": "A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.",
+        "name": "Date",
+        "description": "A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.",
         "specifiedByUrl": null,
         "fields": null,
         "inputFields": null,
@@ -1336,7 +1336,23 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "DateTime",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "deleted",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
                 "ofType": null
               }
             },
@@ -1428,7 +1444,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "DateTime",
+                "name": "Date",
                 "ofType": null
               }
             },
@@ -1660,7 +1676,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "DateTime",
+                "name": "Date",
                 "ofType": null
               }
             },
@@ -1723,6 +1739,22 @@
               "kind": "SCALAR",
               "name": "Float",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "deleted",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -1881,6 +1913,12 @@
           },
           {
             "name": "CLOSED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "NOUNS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null

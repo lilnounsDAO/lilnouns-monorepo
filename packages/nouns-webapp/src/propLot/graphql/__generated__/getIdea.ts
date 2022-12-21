@@ -44,6 +44,7 @@ export interface getIdea_getIdea {
   description: string;
   votecount: number;
   createdAt: any;
+  deleted: boolean;
   ideaStats: getIdea_getIdea_ideaStats | null;
   closed: boolean;
   consensus: number | null;
