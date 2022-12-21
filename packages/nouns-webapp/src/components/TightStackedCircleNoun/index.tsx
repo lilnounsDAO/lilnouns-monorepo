@@ -14,14 +14,13 @@ interface TightStackedCircleNounProps {
 const TightStackedCircleNoun: React.FC<TightStackedCircleNounProps> = props => {
   const { nounId, index, square, shift, isNounsDAOProp } = props;
 
-  const mm = true
-  const seed = mm ? useBigNounSeed(BigNumber.from(nounId)) : useNounSeed(BigNumber.from(nounId));
+  const seed = isNounsDAOProp ? useBigNounSeed(BigNumber.from(nounId)) : useNounSeed(BigNumber.from(nounId));
 
   if (!seed) {
     return <LoadingNoun />;
   }
 
-  const nounData = mm ? getBigNoun(BigNumber.from(nounId), seed): getNoun(BigNumber.from(nounId), seed);
+  const nounData = isNounsDAOProp ? getBigNoun(BigNumber.from(nounId), seed): getNoun(BigNumber.from(nounId), seed);
   const image = nounData.image;
 
   return (
