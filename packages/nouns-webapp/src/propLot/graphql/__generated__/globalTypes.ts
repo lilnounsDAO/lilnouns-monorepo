@@ -21,6 +21,7 @@ export enum TagType {
   GOVERNANCE = "GOVERNANCE",
   INFO = "INFO",
   NEW = "NEW",
+  NOUNS = "NOUNS",
   OTHER = "OTHER",
   QUORUM = "QUORUM",
   REQUEST = "REQUEST",

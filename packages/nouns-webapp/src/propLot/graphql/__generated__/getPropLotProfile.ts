@@ -59,6 +59,7 @@ export interface getPropLotProfile_propLotProfile_list_Comment {
   parentId: number | null;
   authorId: string;
   createdAt: any;
+  deleted: boolean;
   parent: getPropLotProfile_propLotProfile_list_Comment_parent | null;
   idea: getPropLotProfile_propLotProfile_list_Comment_idea | null;
 }
@@ -98,6 +99,7 @@ export interface getPropLotProfile_propLotProfile_list_Idea {
   description: string;
   votecount: number;
   createdAt: any;
+  deleted: boolean;
   ideaStats: getPropLotProfile_propLotProfile_list_Idea_ideaStats | null;
   closed: boolean;
   consensus: number | null;

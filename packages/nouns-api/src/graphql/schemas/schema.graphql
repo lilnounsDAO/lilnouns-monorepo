@@ -120,6 +120,7 @@ type Comment {
   authorId: String!
   replies: [Comment!]
   createdAt: Date!
+  deleted: Boolean!
 }
 
 type CommentParent {
@@ -153,6 +154,7 @@ type Idea {
   tags: [IdeaTags!]
   closed: Boolean!
   consensus: Float
+  deleted: Boolean!
 }
 
 # Enums
