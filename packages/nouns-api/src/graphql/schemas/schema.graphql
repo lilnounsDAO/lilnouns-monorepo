@@ -86,13 +86,21 @@ type PropLotResponseMetadata {
 # Raw Data Types
 
 type UserStats {
+  # Number of votes in total applied
   totalVotes: Int
+  # Number of upvotes a user has applied
   totalUpvotes: Int
+  # Number of downvotes a user has applied
   totalDownvotes: Int
+  # Number of comments left in total
   totalComments: Int
+  # Number of idea submissions in total
   totalIdeas: Int
+  # Net votes received on own users ideas
   netVotesReceived: Int
+  # Net downvotes received on own users ideas
   downvotesReceived: Int
+  # Net upvotes received on own users ideas
   upvotesReceived: Int
 }
 
