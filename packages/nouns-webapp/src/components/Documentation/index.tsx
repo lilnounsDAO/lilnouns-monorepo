@@ -255,9 +255,6 @@ const Documentation = () => {
                   />
                 </li>
                 <li>
-                  <Link text="@js_horne" url="https://twitter.com/js_horne" leavesPage={true} />
-                </li>
-                <li>
                   <Link text="@dg_goens" url="https://twitter.com/dg_goens" leavesPage={true} />
                 </li>
               </ul>
