@@ -1,8 +1,7 @@
 import Davatar from '@davatar/react';
 import { useEthers } from '@usedapp/core';
 import React, { useState } from 'react';
-// import { useReverseENSLookUp } from '../../utils/ensLookup';
-import { Nav } from 'react-bootstrap';
+
 import { Link } from 'react-router-dom';
 import { getNavBarButtonVariant, NavBarButtonStyle } from '../NavBarButton';
 import classes from './NavWallet.module.css';
@@ -48,8 +47,6 @@ const NavWallet: React.FC<NavWalletProps> = props => {
   const { library: provider, deactivate, account } = useEthers();
   const { logout } = useAuth();
   const activeAccount = useAppSelector(state => state.account.activeAccount);
-  //TODO: Add reverse lookup after stable rpc plan
-  // const ens = useReverseENSLookUp(address);
   const shortAddress = useShortAddress(address);
 
   const setModalStateHandler = (state: boolean) => {
@@ -128,7 +125,6 @@ const NavWallet: React.FC<NavWalletProps> = props => {
             {' '}
             <Davatar size={21} address={address} provider={provider} />
           </div>
-          {/* <div className={classes.address}>{ens ? ens : shortAddress}</div> */}
           <div className={classes.address}>{shortAddress}</div>
           <div className={buttonUp ? classes.arrowUp : classes.arrowDown}>
             <FontAwesomeIcon icon={buttonUp ? faSortUp : faSortDown} />{' '}
