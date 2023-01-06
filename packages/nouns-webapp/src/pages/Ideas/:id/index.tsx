@@ -119,7 +119,7 @@ const Comment = ({
   const { account, library: provider } = useEthers();
   const ens = useReverseENSLookUp(comment.authorId);
   const shortAddress = useShortAddress(comment.authorId);
-  const { commentOnIdea } = useIdeas();
+  const { deleteComment, commentOnIdea } = useIdeas();
 
   const submitReply = async () => {
     await commentOnIdea({
@@ -134,37 +134,53 @@ const Comment = ({
 
   return (
     <div key={comment.id}>
-      <div className="flex flex-row items-center space-x-4">
-        <span className="text-2xl text-[#8C8D92] flex align-items-center">
-          <Davatar size={28} address={comment.authorId} provider={provider} />
-          <span
-            className="lodrina pl-2 text-[#2B83F6] underline cursor-pointer"
-            onClick={() => {
-              history.push(`/proplot/profile/${comment.authorId}`);
-            }}
-          >
-            {ens || shortAddress}
-          </span>
-          <span className="text-[#8C8D92] text-base pl-2">
-            {moment(comment.createdAt).fromNow()}
-          </span>
-        </span>
-        {level < 4 && (
-          <span
-            className="text-[#2B83F6] text-base cursor-pointer"
-            onClick={() => setIsReply(true)}
-          >
-            Reply
-          </span>
-        )}
-        {/* Future addition: Add view more button to move deeper into the thread? */}
-      </div>
+      {!comment.deleted ? (
+        <>
+          <div className="flex flex-row items-center space-x-4">
+            <span className="text-2xl text-[#8C8D92] flex align-items-center">
+              <Davatar size={28} address={comment.authorId} provider={provider} />
+              <span
+                className="lodrina pl-2 text-[#2B83F6] underline cursor-pointer"
+                onClick={() => {
+                  history.push(`/proplot/profile/${comment.authorId}`);
+                }}
+              >
+                {ens || shortAddress}
+              </span>
+              <span className="text-[#8C8D92] text-base pl-2">
+                {moment(comment.createdAt).fromNow()}
+              </span>
+            </span>
+            {level < 4 && (
+              <span
+                className="text-[#2B83F6] text-base cursor-pointer"
+                onClick={() => setIsReply(true)}
+              >
+                Reply
+              </span>
+            )}
+            {comment.authorId === account && (
+              <span
+                className="text-red-500 cursor-pointer"
+                onClick={async () => {
+                  await deleteComment(Number(id), comment.id);
+                }}
+              >
+                Delete
+              </span>
+            )}
 
-      <p className="text-[#212529] text-lg whitespace-pre-wrap">{comment.body}</p>
+            {/* Future addition: Add view more button to move deeper into the thread? */}
+          </div>
+          <p className="text-[#212529] text-lg whitespace-pre-wrap">{comment.body}</p>
+        </>
+      ) : (
+        <div className="bg-gray-100 rounded p-4">This comment cannot be found.</div>
+      )}
 
       {!!comment.replies?.length && level === 1 && (
         <span
-          className="text-[#212529] text-base cursor-pointer font-bold"
+          className="text-[#212529] text-base cursor-pointer font-bold mt-2 block"
           onClick={() => setShowReplies(!showReplies)}
         >
           {`${showReplies ? 'Hide' : 'Show'} replies`}
@@ -172,7 +188,7 @@ const Comment = ({
       )}
 
       {showReplies && (
-        <div className={`border-l border-gray-200 ${level === 1 ? 'pt-8' : ''}`}>
+        <div className={`${level === 1 && 'pt-4'}`}>
           {comment.replies?.map(reply => {
             return (
               <div className="ml-8" key={`replies-${reply.id}`}>
@@ -323,7 +339,8 @@ const IdeaPage = () => {
 
         <div className="mt-2 mb-2">
           <h3 className="text-2xl lodrina font-bold">
-            {comments?.length} {comments?.length === 1 ? 'comment' : 'comments'}
+            {comments.filter(c => !!c.deleted)?.length}{' '}
+            {comments.filter(c => !!c.deleted)?.length === 1 ? 'comment' : 'comments'}
           </h3>
         </div>
 

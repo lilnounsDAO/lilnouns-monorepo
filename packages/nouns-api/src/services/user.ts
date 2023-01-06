@@ -42,6 +42,11 @@ class UserService {
     try {
       const users = await prisma.user.findMany({
         include: {
+          votes: {
+            include: {
+              idea: true,
+            },
+          },
           _count: {
             select: { comments: true, votes: true, ideas: true },
           },
