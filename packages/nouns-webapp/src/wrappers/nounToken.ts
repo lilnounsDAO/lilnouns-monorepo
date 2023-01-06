@@ -231,7 +231,7 @@ export const useUserVotesAsOfBlock = (block: number | undefined): number | undef
       abi,
       address: config.addresses.nounsToken,
       method: 'getPriorVotes',
-      args: [account, block],
+      args: [account ?? "", block],
     }) || [];
   return votes?.toNumber();
 };

@@ -672,6 +672,41 @@ export const BIG_NOUNS_GOVERNANCE_BY_OWNER_SUB = gql`
   }
 `;
 
+export const activeProposals = (id: string) => gql`
+  {
+    daaa: proposals(
+      where: {
+        status: "ACTIVE"
+        votes_: { voter_not_contains: "${id}" }
+      }
+      first: 100
+      orderBy: createdBlock
+      orderDirection: desc
+    ) {
+      id
+      status
+      createdBlock
+      description
+      proposalThreshold
+      quorumVotes
+      forVotes
+      againstVotes
+      abstainVotes
+      createdTransactionHash
+      startBlock
+      endBlock
+      executionETA
+      targets
+      values
+      signatures
+      calldatas
+      proposer {
+        id
+      }
+    }
+  }
+`;
+
 export const clientFactory = (uri: string) =>
   new ApolloClient({
     uri,

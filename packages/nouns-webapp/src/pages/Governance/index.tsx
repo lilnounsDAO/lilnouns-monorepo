@@ -1,6 +1,6 @@
 import { Button, Col, Row, Spinner } from 'react-bootstrap';
 import Section from '../../layout/Section';
-import { Proposal, useAllProposals, useProposalThreshold } from '../../wrappers/nounsDao';
+import { useActiveProposalsViaSubgraph, useAllProposals, useProposalThreshold } from '../../wrappers/nounsDao';
 import { useAllBigNounProposals } from '../../wrappers/bigNounsDao';
 import Proposals, { SnapshotProposal } from '../../components/Proposals';
 import classes from './Governance.module.css';
@@ -25,6 +25,8 @@ const GovernancePage = ({
 }: RouteComponentProps<{ id: string }>) => {
   const { data: proposals, loading: loadingProposals } = useAllProposals();
   const { data: bigNounProposals, loading: loadingBigNounProposals } = useAllBigNounProposals();
+  const { data: proposalVotes, loading: loadingProposalVotes } = useActiveProposalsViaSubgraph();
+
 
   const {
     loading: nounsInTreasuryLoading,
@@ -71,7 +73,7 @@ const GovernancePage = ({
   const location = useLocation();
 
   useEffect(() => {
-    if(!location.pathname) return;
+    if (!location.pathname) return;
 
     if (location.pathname == '/vote/nounsdao') {
       setNounsDAOProps();
@@ -87,7 +89,8 @@ const GovernancePage = ({
     nounsInTreasuryLoading ||
     snapshotProposalLoading ||
     loadingBigNounProposals ||
-    loadingProposals
+    loadingProposals ||
+    loadingProposalVotes
   ) {
     return (
       <div className={classes.spinner}>
@@ -229,8 +232,8 @@ const GovernancePage = ({
             ...v,
             proposalNo: i + 1,
           }))}
-          isNounsDAOProp={isNounsDAOProp}
-        />
+          isNounsDAOProp={isNounsDAOProp} 
+          proposalsAwaitingVote={proposalVotes ?? []}/>
       </Col>
     </Section>
   );
