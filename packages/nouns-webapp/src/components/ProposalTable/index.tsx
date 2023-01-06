@@ -22,7 +22,7 @@ const ProposalTable = ({ proposals }: { proposals: Proposal[] }) => {
       ) : (
         <Alert variant="secondary">
           <Alert.Heading>No proposals found</Alert.Heading>
-          {/* <p>You've voted on all.</p> */}
+          <p>Active proposals you haven't voted on will appear here.</p>
         </Alert>
       )}
        <br />
