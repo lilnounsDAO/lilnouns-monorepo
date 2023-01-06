@@ -414,7 +414,7 @@ const Proposals = ({
             </div>
           )}
 
-          {proposalsToVoteOn?.length ? <ProposalTable proposals={proposalsToVoteOn} /> : <></>}
+          <ProposalTable proposals={proposalsToVoteOn} />
 
           {proposals?.length ? (
             <>
