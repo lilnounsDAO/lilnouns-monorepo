@@ -677,7 +677,7 @@ export const activeProposals = (id: string) => gql`
     daaa: proposals(
       where: {
         status: "ACTIVE"
-        votes_: { voter_not_contains: "${id}" }
+        votes_: { voter_contains: "${id}" }
       }
       first: 100
       orderBy: createdBlock
