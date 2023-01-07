@@ -322,34 +322,33 @@ const Proposals = ({
   const filteredAllProps = proposals.filter(a => a.status === ProposalState.ACTIVE)
   const onlyNonVoteActiveProps = filteredAllProps.filter(a => proposalsAwaitingVote && !proposalsAwaitingVote.map(a => a.id).includes(a.id))
 
-const filteredProposals = () => {
-  if (account !== null && connectedAccountNounVotes > 0) 
-  {
-    const propSnapshots = onlyNonVoteActiveProps
-      .slice(0)
-      .reverse()
-      .map(function (prop) {
-        const availableVotes = useUserVotesAsOfBlock(prop.createdBlock ?? 0) ?? 0;
-        return { id: prop.id, balance: availableVotes };
-      })
-      .filter(p => p.balance > 0)
-      .map(a => a.id);
+  const filteredProposals = () => {
+    if (account !== null && connectedAccountNounVotes > 0) {
+      const propSnapshots = onlyNonVoteActiveProps
+        .slice(0)
+        .reverse()
+        .map(function (prop) {
+          const availableVotes = useUserVotesAsOfBlock(prop.createdBlock ?? 0) ?? 0;
+          return { id: prop.id, balance: availableVotes };
+        })
+        .filter(p => p.balance > 0)
+        .map(a => a.id);
 
-    return onlyNonVoteActiveProps
-      .filter(a => propSnapshots.includes(a.id))
-      .slice(0)
-      .reverse();
-  }
-  return [];
-};
+      return onlyNonVoteActiveProps
+        .filter(a => propSnapshots.includes(a.id))
+        .slice(0)
+        .reverse();
+    }
+    return [];
+  };
 
-const proposalsToVoteOn = filteredProposals();
-const allProposals = proposalsToVoteOn.length
-  ? proposals
+  const proposalsToVoteOn = filteredProposals();
+  const allProposals = proposalsToVoteOn.length
+    ? proposals
       .slice(0)
       .reverse()
       .filter(a => a.id && !proposalsToVoteOn.map(a => a.id).includes(a.id))
-  : proposals.slice(0).reverse();
+    : proposals.slice(0).reverse();
 
   return (
     <>
@@ -416,7 +415,7 @@ const allProposals = proposalsToVoteOn.length
             </div>
           )}
 
-          <ProposalTable proposals={proposalsToVoteOn} />
+          {account ? <ProposalTable proposals={proposalsToVoteOn} /> : <></>}
 
           {proposals?.length ? (
             <>
