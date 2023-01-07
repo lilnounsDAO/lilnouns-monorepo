@@ -319,35 +319,37 @@ const Proposals = ({
     return 'Connect wallet to make a proposal.';
   };
 
-  const filteredProposals = () => {
-    if (account == null && connectedAccountNounVotes > 0) {
-      const propSnapshots = proposalsAwaitingVote
-        .slice(0)
-        .reverse()
-        .map(function (prop) {
-          const availableVotes = useUserVotesAsOfBlock(prop.createdBlock ?? 0) ?? 0;
-          return { id: prop.id, balance: availableVotes };
-        })
-        .filter(p => p.balance > 0)
-        .map(a => a.id);
+  const filteredAllProps = proposals.filter(a => a.status === ProposalState.ACTIVE)
+  const onlyNonVoteActiveProps = filteredAllProps.filter(a => proposalsAwaitingVote && !proposalsAwaitingVote.map(a => a.id).includes(a.id))
 
-      return proposalsAwaitingVote
-        .filter(a => propSnapshots.includes(a.id))
-        .slice(0)
-        .reverse();
-    }
-    return [];
-  };
-
-  const proposalsToVoteOn = filteredProposals();
-
-  const proposalsToVoteOnIds = proposalsToVoteOn.map(a => a.id && a.id);
-  const allProposals = proposalsToVoteOn.length
-    ? proposals
+const filteredProposals = () => {
+  if (account !== null && connectedAccountNounVotes > 0) 
+  {
+    const propSnapshots = onlyNonVoteActiveProps
       .slice(0)
       .reverse()
-      .filter(a => a.id && !proposalsToVoteOnIds.includes(a.id))
-    : proposals.slice(0).reverse();
+      .map(function (prop) {
+        const availableVotes = useUserVotesAsOfBlock(prop.createdBlock ?? 0) ?? 0;
+        return { id: prop.id, balance: availableVotes };
+      })
+      .filter(p => p.balance > 0)
+      .map(a => a.id);
+
+    return onlyNonVoteActiveProps
+      .filter(a => propSnapshots.includes(a.id))
+      .slice(0)
+      .reverse();
+  }
+  return [];
+};
+
+const proposalsToVoteOn = filteredProposals();
+const allProposals = proposalsToVoteOn.length
+  ? proposals
+      .slice(0)
+      .reverse()
+      .filter(a => a.id && !proposalsToVoteOn.map(a => a.id).includes(a.id))
+  : proposals.slice(0).reverse();
 
   return (
     <>
