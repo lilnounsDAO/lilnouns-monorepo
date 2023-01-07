@@ -24,7 +24,7 @@ dayjs.extend(timezone);
 dayjs.extend(advanced);
 dayjs.extend(relativeTime);
 
-const getCountdownCopy = (
+export const getCountdownCopy = (
   proposal: Proposal,
   currentBlock: number,
   propState?: ProposalState,
