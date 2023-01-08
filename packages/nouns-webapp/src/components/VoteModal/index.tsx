@@ -1,5 +1,5 @@
 import { Button, FloatingLabel, FormControl, Spinner } from 'react-bootstrap';
-import Modal from '../Modal';
+import SolidColorBackgroundModal from '../SolidColorBackgroundModal';
 import classes from './VoteModal.module.css';
 import { useCastVote, useCastVoteWithReason, Vote } from '../../wrappers/nounsDao';
 import { useCallback, useEffect, useState } from 'react';
@@ -89,6 +89,20 @@ const VoteModal = ({ show, onHide, proposalId, availableVotes }: VoteModalProps)
 
   const voteModalContent = (
     <>
+      <div className={classes.voteModalTitle}>
+        <a>Vote on Prop {proposalId}</a>
+      </div>
+      <div className={classes.voteModalSubtitle}>
+        {availableVotes === 1 ? (
+          <a>
+            Voting with <span className={classes.bold}>{availableVotes}</span> Lil Noun
+          </a>
+        ) : (
+          <a>
+            Voting with <span className={classes.bold}>{availableVotes}</span> Lil Nouns
+          </a>
+        )}
+      </div>
       {isVoteSucessful && (
         <div className={classes.transactionStatus}>
           <p>You've successfully voted on on prop {proposalId}</p>
@@ -108,40 +122,41 @@ const VoteModal = ({ show, onHide, proposalId, availableVotes }: VoteModalProps)
         <div className={clsx(classes.votingButtonsWrapper, isLoading ? classes.disabled : '')}>
           <div onClick={() => setVote(Vote.FOR)}>
             <NavBarButton
-              buttonText={`Cast ${availableVotes} ${
-                availableVotes > 1 ? 'votes' : 'vote'
-              } for Prop ${proposalId} `}
+              buttonText={'For'}
               buttonIcon={<></>}
-              buttonStyle={
-                vote === Vote.FOR
-                  ? NavBarButtonStyle.WHITE_ACTIVE_VOTE_SUBMIT
-                  : NavBarButtonStyle.WHITE_INFO
+              buttonStyle={NavBarButtonStyle.FOR_VOTE_SUBMIT}
+              className={
+                vote === Vote.FOR ? '' : vote === undefined ? classes.inactive : classes.unselected
               }
             />
           </div>
           <br />
           <div onClick={() => setVote(Vote.AGAINST)}>
             <NavBarButton
-              buttonText={`Cast ${availableVotes} ${
-                availableVotes > 1 ? 'votes' : 'vote'
-              } against Prop ${proposalId} `}
+              buttonText={'Against'}
               buttonIcon={<></>}
-              buttonStyle={
+              buttonStyle={NavBarButtonStyle.AGAINST_VOTE_SUBMIT}
+              className={
                 vote === Vote.AGAINST
-                  ? NavBarButtonStyle.WHITE_ACTIVE_VOTE_SUBMIT
-                  : NavBarButtonStyle.WHITE_INFO
+                  ? ''
+                  : vote === undefined
+                  ? classes.inactive
+                  : classes.unselected
               }
             />
           </div>
           <br />
           <div onClick={() => setVote(Vote.ABSTAIN)}>
             <NavBarButton
-              buttonText={`Abstain from voting on Prop ${proposalId} `}
+              buttonText={'Abstain'}
               buttonIcon={<></>}
-              buttonStyle={
+              buttonStyle={NavBarButtonStyle.ABSTAIN_VOTE_SUBMIT}
+              className={
                 vote === Vote.ABSTAIN
-                  ? NavBarButtonStyle.WHITE_ACTIVE_VOTE_SUBMIT
-                  : NavBarButtonStyle.WHITE_INFO
+                  ? ''
+                  : vote === undefined
+                  ? classes.inactive
+                  : classes.unselected
               }
             />
           </div>
@@ -177,11 +192,22 @@ const VoteModal = ({ show, onHide, proposalId, availableVotes }: VoteModalProps)
     </>
   );
 
+  // On modal dismiss, reset non-success state
+  const resetNonSuccessStateAndHideModal = () => {
+    setIsLoading(false);
+    setIsVoteFailed(false);
+    setErrorMessage('');
+    setFailureCopy('');
+    onHide();
+  };
+
   return (
     <>
-      {show && (
-        <Modal onDismiss={onHide} title={`Vote on Prop ${proposalId}`} content={voteModalContent} />
-      )}
+      <SolidColorBackgroundModal
+        show={show}
+        onDismiss={resetNonSuccessStateAndHideModal}
+        content={voteModalContent}
+      />
     </>
   );
 };

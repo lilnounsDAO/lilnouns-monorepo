@@ -1,0 +1,196 @@
+scalar Date
+
+type Query {
+  getIdea(options: IdeaInputOptions!): Idea
+  getIdeas(options: IdeaInputOptions!): [Idea!]
+  getAllUsers: [User!]
+  getUser(options: UserInputOptions!): User
+  getPropLot(options: PropLotInputOptions!): PropLotResponse!
+  getPropLotProfile(options: PropLotProfileInputOptions!): PropLotProfileResponse!
+}
+
+type Mutation {
+  submitIdeaVote(options: SubmitVoteInputOptions!): Vote!
+}
+
+# Query input types
+input UserInputOptions {
+  wallet: String!
+}
+
+input IdeaInputOptions {
+  ideaId: Int
+  sort: SORT_TYPE
+}
+
+input SubmitVoteInputOptions {
+  direction: Int!
+  ideaId: Int!
+}
+
+input PropLotInputOptions {
+  filters: [String!]
+  requestUUID: String!
+}
+
+input PropLotProfileInputOptions {
+  filters: [String!]
+  wallet: String!
+  requestUUID: String!
+}
+
+# Query response types
+
+type PropLotResponse {
+  ideas: [Idea!]
+  sortFilter: PropLotFilter
+  tagFilter: PropLotFilter
+  dateFilter: PropLotFilter
+  metadata: PropLotResponseMetadata!
+}
+
+type PropLotProfileResponse {
+  profile: PropLotUserProfile!
+  list: [PropLotListItems!]
+  sortFilter: PropLotFilter
+  tabFilter: PropLotFilter
+  metadata: PropLotResponseMetadata!
+}
+
+type PropLotUserProfile {
+  user: User!
+}
+
+union PropLotListItems = Idea | Comment
+
+type PropLotFilter {
+  id: String!
+  label: String
+  type: FilterType!
+  options: [FilterOption!]!
+}
+
+type FilterOption {
+  id: String!
+  selected: Boolean!
+  label: String
+  value: String!
+  icon: String
+}
+
+type PropLotResponseMetadata {
+  appliedFilters: [String!]
+  requestUUID: String!
+}
+
+# Raw Data Types
+
+type UserStats {
+  # Number of votes in total applied
+  totalVotes: Int
+  # Number of upvotes a user has applied
+  totalUpvotes: Int
+  # Number of downvotes a user has applied
+  totalDownvotes: Int
+  # Number of comments left in total
+  totalComments: Int
+  # Number of idea submissions in total
+  totalIdeas: Int
+  # Net votes received on own users ideas
+  netVotesReceived: Int
+  # Net downvotes received on own users ideas
+  downvotesReceived: Int
+  # Net upvotes received on own users ideas
+  upvotesReceived: Int
+}
+
+type User {
+  wallet: String!
+  lilnounCount: Int!
+  userStats: UserStats
+}
+
+type Vote {
+  id: Int!
+  voterId: String!
+  ideaId: Int!
+  direction: Int!
+  voter: User!
+}
+
+type Comment {
+  id: Int!
+  body: String!
+  ideaId: Int!
+  idea: Idea
+  parent: CommentParent
+  parentId: Int
+  authorId: String!
+  replies: [Comment!]
+  createdAt: Date!
+  deleted: Boolean!
+}
+
+type CommentParent {
+  id: Int!
+  body: String!
+  ideaId: Int!
+  authorId: String!
+  createdAt: Date!
+}
+
+type IdeaStats {
+  comments: Int
+}
+
+type IdeaTags {
+  label: String!
+  type: TagType!
+}
+
+type Idea {
+  id: Int!
+  title: String!
+  tldr: String!
+  description: String!
+  votes: [Vote!]
+  creatorId: String!
+  comments: [Comment!]
+  votecount: Int!
+  createdAt: Date!
+  ideaStats: IdeaStats
+  tags: [IdeaTags!]
+  closed: Boolean!
+  consensus: Float
+  deleted: Boolean!
+}
+
+# Enums
+
+enum FilterType {
+  SINGLE_SELECT
+  MULTI_SELECT
+}
+
+enum SORT_TYPE {
+  VOTES_DESC
+  VOTES_ASC
+  LATEST
+  OLDEST
+}
+
+enum TagType {
+  NEW
+  INFO
+  QUORUM
+  ARCHIVED
+  DISCUSSION
+  SUGGESTION
+  GOVERNANCE
+  COMMUNITY
+  REQUEST
+  OTHER
+  CONSENSUS
+  CLOSED
+  NOUNS
+}

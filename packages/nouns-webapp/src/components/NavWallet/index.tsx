@@ -1,7 +1,8 @@
 import Davatar from '@davatar/react';
 import { useEthers } from '@usedapp/core';
 import React, { useState } from 'react';
-// import { useReverseENSLookUp } from '../../utils/ensLookup';
+
+import { Link } from 'react-router-dom';
 import { getNavBarButtonVariant, NavBarButtonStyle } from '../NavBarButton';
 import classes from './NavWallet.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,7 +13,7 @@ import WalletConnectModal from '../WalletConnectModal';
 import { useAppSelector } from '../../hooks';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
-import { useShortAddress } from '../ShortAddress';
+import { useShortAddress } from '../../utils/addressAndENSDisplayUtils';
 import { isMobileScreen } from '../../utils/isMobile';
 import { usePickByState } from '../../utils/colorResponsiveUIUtils';
 import WalletConnectButton from './WalletConnectButton';
@@ -46,8 +47,6 @@ const NavWallet: React.FC<NavWalletProps> = props => {
   const { library: provider, deactivate, account } = useEthers();
   const { logout } = useAuth();
   const activeAccount = useAppSelector(state => state.account.activeAccount);
-   //TODO: Add reverse lookup after stable rpc plan
-  // const ens = useReverseENSLookUp(address);
   const shortAddress = useShortAddress(address);
 
   const setModalStateHandler = (state: boolean) => {
@@ -58,16 +57,20 @@ const NavWallet: React.FC<NavWalletProps> = props => {
     setShowConnectModal(false);
     setButtonUp(false);
     deactivate();
-    logout()
+    logout();
     setShowConnectModal(false);
     setShowConnectModal(true);
+  };
+
+  const propLotProfileHandler = () => {
+    history.push(`/proplot/profile/${account}`);
   };
 
   const disconectWalletHandler = () => {
     setShowConnectModal(false);
     setButtonUp(false);
     deactivate();
-    logout()
+    logout();
   };
 
   const statePrimaryButtonClass = usePickByState(
@@ -122,7 +125,6 @@ const NavWallet: React.FC<NavWalletProps> = props => {
             {' '}
             <Davatar size={21} address={address} provider={provider} />
           </div>
-          {/* <div className={classes.address}>{ens ? ens : shortAddress}</div> */}
           <div className={classes.address}>{shortAddress}</div>
           <div className={buttonUp ? classes.arrowUp : classes.arrowDown}>
             <FontAwesomeIcon icon={buttonUp ? faSortUp : faSortDown} />{' '}
@@ -142,7 +144,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
       >
         <div>
           <div
-            onClick={switchWalletHandler}
+            onClick={propLotProfileHandler}
             className={clsx(
               classes.dropDownTop,
               classes.button,
@@ -155,9 +157,43 @@ const NavWallet: React.FC<NavWalletProps> = props => {
               ),
             )}
           >
+            Profile
+            <span className={clsx(classes.badge)}>new</span>
+          </div>
+          <Link style={{ textDecoration: 'none' }} to="/badges">
+            <div
+              className={clsx(
+                classes.dropDownItem,
+                classes.button,
+                classes.switchWalletText,
+                usePickByState(
+                  classes.whiteInfoSelectedTop,
+                  classes.coolInfoSelected,
+                  classes.warmInfoSelected,
+                  history,
+                ),
+              )}
+            >
+              Badges
+              <span className={clsx(classes.badge)}>new</span>
+            </div>
+          </Link>
+          <div
+            onClick={switchWalletHandler}
+            className={clsx(
+              classes.dropDownItem,
+              classes.button,
+              classes.switchWalletText,
+              usePickByState(
+                classes.whiteInfoSelectedTop,
+                classes.coolInfoSelected,
+                classes.warmInfoSelected,
+                history,
+              ),
+            )}
+          >
             Switch wallet
           </div>
-
           <div
             onClick={disconectWalletHandler}
             className={clsx(
@@ -180,7 +216,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
   });
 
   const walletConnectedContentMobile = (
-    <div className="d-flex flex-row justify-content-between">
+    <div className="d-flex flex-column justify-content-between">
       <div className={classes.connectContentMobileWrapper}>
         <div className={clsx(classes.wrapper, getNavBarButtonVariant(buttonStyle))}>
           <div className={classes.button}>
@@ -188,13 +224,24 @@ const NavWallet: React.FC<NavWalletProps> = props => {
               {' '}
               <Davatar size={21} address={address} provider={provider} />
             </div>
-            {/* <div className={classes.address}>{ens ? ens : shortAddress}</div> */}
             <div className={classes.address}>{shortAddress}</div>
           </div>
         </div>
       </div>
 
-      <div className={`d-flex flex-row ${classes.connectContentMobileText}`}>
+      <div className={`d-flex flex-row ${classes.connectContentMobileRoutes}`}>
+        <Link style={{ textDecoration: 'none' }} to="/badges">
+          <div
+            style={{
+              borderRight: `1px solid ${mobileBorderColor}`,
+              color: mobileTextColor,
+            }}
+            className={classes.mobileSwitchWalletText}
+          >
+            Badges
+            <span className={clsx(classes.badge)}>new</span>
+          </div>
+        </Link>
         <div
           style={{
             borderRight: `1px solid ${mobileBorderColor}`,

@@ -4,7 +4,7 @@ import { Idea, VoteFormData } from '../../hooks/useIdeas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { useReverseENSLookUp } from '../../utils/ensLookup';
-import { useShortAddress } from '../ShortAddress';
+import { useShortAddress } from '../../utils/addressAndENSDisplayUtils';
 import moment from 'moment';
 import { createBreakpoint } from 'react-use';
 
@@ -24,7 +24,7 @@ const IdeaCard = ({
   const breakpoint = useBreakpoint();
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { id, tldr, title, creatorId, votecount: voteCount, votes, createdAt, _count } = idea;
+  const { id, tldr, title, creatorId, votes, createdAt, _count, closed } = idea;
   const isMobile = breakpoint === 'S';
 
   const ens = useReverseENSLookUp(creatorId);
@@ -40,11 +40,9 @@ const IdeaCard = ({
         </span>
         <div className="flex justify-self-end">
           <IdeaVoteControls
-            id={id}
+            idea={idea}
             voteOnIdea={voteOnIdea}
             nounBalance={nounBalance}
-            voteCount={voteCount}
-            votes={votes}
             withAvatars={!isMobile}
           />
         </div>
@@ -62,13 +60,11 @@ const IdeaCard = ({
         <span className="truncate">{ens || shortAddress}</span>
       </span>
       <span className="text-[#212529] font-normal text-2xl flex flex-1 lodrina ml-6">{title}</span>
-      <div className="flex justify-self-end">
+      <div className="flex justify-self-end items-center">
         <IdeaVoteControls
-          id={id}
+          idea={idea}
           voteOnIdea={voteOnIdea}
           nounBalance={nounBalance}
-          voteCount={voteCount}
-          votes={votes}
           withAvatars={!isMobile}
         />
       </div>
@@ -77,7 +73,7 @@ const IdeaCard = ({
 
   return (
     <div
-      className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-2 px-3 pb-2"
+      className="flex flex-col border border-[#e2e3e8] rounded-2xl cursor-pointer pt-2 px-3 pb-2"
       onClick={() => setIsOpen(!isOpen)}
     >
       {isMobile ? mobileHeading : desktopHeading}
@@ -97,12 +93,12 @@ const IdeaCard = ({
                 _count?.comments === 1
                   ? `${_count?.comments} comment`
                   : `${_count?.comments || 0} comments`
-              }`}
+              } ${closed ? '| closed' : ''}`}
             </span>
             <span className="flex justify-self-end text-[#2b83f6] text-sm font-bold flex justify-end">
               <span
                 onClick={() => {
-                  history.push(`/ideas/${id}`);
+                  history.push(`/proplot/${id}`);
                 }}
               >
                 <span className={`${isMobile ? 'hidden' : ''}`}>See Full Details</span>

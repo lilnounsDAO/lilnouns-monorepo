@@ -43,6 +43,87 @@ export interface Delegates {
   delegates: Delegate[];
 }
 
+//TODO: figure out way to fetch seeds for more than first 1k
+export const lilnounsSeedsQuery = (nounIds: string[], first = 1_000) => gql`
+{
+  seeds(first: ${first}, where: { id_in: ${JSON.stringify(nounIds)} } ) {
+    id
+    background
+    body
+    accessory
+    head
+    glasses
+  }
+}
+`;
+
+export const seedsQuery = (first = 1_000) => gql`
+{
+  seeds(first: ${first}) {
+    id
+    background
+    body
+    accessory
+    head
+    glasses
+  }
+}
+`;
+
+export const proposalsQuery = (first = 1_000) => gql`
+{
+  proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
+    id
+    description
+    status
+    proposalThreshold
+    quorumVotes
+    forVotes
+    againstVotes
+    abstainVotes
+    createdTransactionHash
+    createdBlock
+    startBlock
+    endBlock
+    executionETA
+    targets
+    values
+    signatures
+    calldatas
+    proposer {
+      id
+    }
+  }
+}
+`;
+
+export const bigNounsProposalsQuery = (first = 1_000) => gql`
+{
+daa: proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
+    id
+    description
+    status
+    proposalThreshold
+    quorumVotes
+    forVotes
+    againstVotes
+    abstainVotes
+    createdTransactionHash
+    createdBlock
+    startBlock
+    endBlock
+    executionETA
+    targets
+    values
+    signatures
+    calldatas
+    proposer {
+      id
+    }
+  }
+}
+`;
+
 export const auctionQuery = (auctionId: number) => gql`
 {
 	auction(id: ${auctionId}) {
@@ -199,13 +280,47 @@ export const nounVotingHistoryQuery = (nounId: number) => gql`
 	noun(id: ${nounId}) {
 		id
 		votes {
-		proposal {
-			id
-		}
-		support
-		supportDetailed
+      blockNumber
+      proposal {
+        id
+      }
+      support
+      supportDetailed
+      voter {
+        id
+      }
 		}
 	}
+}
+`;
+
+export const nounTransferHistoryQuery = (nounId: number) => gql`
+{
+  transferEvents(where: {noun: "${nounId}"}) {
+    id
+    previousHolder {
+      id
+    }
+    newHolder {
+      id
+    }
+    blockNumber
+  }
+}
+`;
+
+export const nounDelegationHistoryQuery = (nounId: number) => gql`
+{
+  delegationEvents(where: {noun: "${nounId}"}) {
+    id
+    previousDelegate {
+      id
+    }
+    newDelegate {
+      id
+    }
+    blockNumber
+  }
 }
 `;
 
@@ -229,10 +344,22 @@ export const proposalVotesQuery = (proposalId: string) => gql`
   }
 `;
 
+export const proposalVotesQuerya = (proposalId: string) => gql`
+  {
+    aa:votes(where: { proposal: "${proposalId}", votesRaw_gt: 0 }) {
+      supportDetailed
+      voter {
+        id
+      }
+    }	
+  }
+`;
+
 export const delegateNounsAtBlockQuery = (delegates: string[], block: number) => gql`
 {
   delegates(where: { id_in: ${JSON.stringify(delegates)} }, block: { number: ${block} }) {
     id
+    delegatedVotes
     nounsRepresented {
       id
     }
@@ -244,17 +371,7 @@ export const delegateLilNounsAtBlockQuery = (delegatess: string[], blocks: numbe
 {
   delegates(where: { id_in: ${JSON.stringify(delegatess)} }, block: { number: ${blocks} }) {
     id
-    nounsRepresented {
-      id
-    }
-  }
-}
-`;
-
-export const delegateNounsAtBlockQueryTest = (delegates: string, block: number) => gql`
-{
-  delegates(where: { id_in: ${delegates} }, block: { number: ${block} }) {
-    id
+    delegatedVotes
     nounsRepresented {
       id
     }
@@ -265,11 +382,11 @@ export const delegateNounsAtBlockQueryTest = (delegates: string, block: number) 
 export const snapshotProposalsQuery = () => gql`
   {
     proposals(
-      first: 20
+      first: 1000
       skip: 0
       where: { space_in: ["League of Lils", "leagueoflils.eth"] }
       orderBy: "created"
-      orderDirection: asc
+      orderDirection: desc
     ) {
       id
       title
@@ -358,11 +475,240 @@ export const delegatedLilNounsHeldByVoterQuery = (voterId: string) => gql`
   }
 `;
 
+export const totalNounSupplyAtPropSnapshot = (proposalId: string) => gql`
+{
+  proposals(where: {id: ${proposalId}}) {
+    totalSupply
+  }
+}
+`;
+
+export const propUsingDynamicQuorum = (propoaslId: string) => gql`
+{
+  proposal(id: "${propoaslId}") {
+    quorumCoefficient 
+  }
+}
+`;
+
+// Used for PropLot
+export const NOUNS_BY_OWNER_SUB = gql`
+  query account($id: String!) {
+    account(id: $id) {
+      id
+      nouns {
+        id
+        seed {
+          background
+          body
+          accessory
+          head
+          glasses
+        }
+      }
+    }
+  }
+`;
+
+export const LIL_NOUNS_GOVERNANCE_BY_OWNER_SUB = gql`
+  query governanceProfile($id: String!) {
+    votes(where: { voter: $id }) {
+      proposal {
+        id
+        description
+        status
+        proposalThreshold
+        quorumVotes
+        forVotes
+        againstVotes
+        abstainVotes
+        createdTransactionHash
+        createdBlock
+        startBlock
+        endBlock
+        executionETA
+        targets
+        values
+        signatures
+        calldatas
+        proposer {
+          id
+        }
+      }
+      reason
+      supportDetailed
+    }
+
+    proposals(where: { proposer: $id }) {
+      id
+      description
+      status
+      proposalThreshold
+      quorumVotes
+      forVotes
+      againstVotes
+      abstainVotes
+      createdTransactionHash
+      createdBlock
+      startBlock
+      endBlock
+      executionETA
+      targets
+      values
+      signatures
+      calldatas
+      proposer {
+        id
+      }
+    }
+  }
+`;
+
+export const SNAPSHOT_GOVERNANCE_BY_OWNER_SUB = gql`
+  query governanceProfile($id: String!) {
+    votes(orderBy: "vp", where: { voter: $id, space_in: ["League of Lils", "leagueoflils.eth"] }) {
+      voter
+      vp
+      choice
+      id
+      reason
+      proposal {
+        id
+        title
+        body
+        choices
+        start
+        end
+        snapshot
+        state
+        author
+        scores
+        space {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const BIG_NOUNS_PROPOSALS_SUB = gql`
+  query bigNounsProposalData($ids: [String!]!) {
+    proposals(where: { id_in: $ids }) {
+      id
+      description
+      status
+      proposalThreshold
+      quorumVotes
+      forVotes
+      againstVotes
+      abstainVotes
+      createdTransactionHash
+      createdBlock
+      startBlock
+      endBlock
+      executionETA
+      targets
+      values
+      signatures
+      calldatas
+      proposer {
+        id
+      }
+    }
+  }
+`;
+
+export const BIG_NOUNS_GOVERNANCE_BY_OWNER_SUB = gql`
+  query governanceProfile($id: String!) {
+    votes(where: { voter: $id }) {
+      proposal {
+        id
+        description
+        status
+        proposalThreshold
+        quorumVotes
+        forVotes
+        againstVotes
+        abstainVotes
+        createdTransactionHash
+        createdBlock
+        startBlock
+        endBlock
+        executionETA
+        targets
+        values
+        signatures
+        calldatas
+        proposer {
+          id
+        }
+      }
+      supportDetailed
+    }
+
+    proposals(where: { proposer: $id }) {
+      id
+      description
+      status
+      proposalThreshold
+      quorumVotes
+      forVotes
+      againstVotes
+      abstainVotes
+      createdTransactionHash
+      createdBlock
+      startBlock
+      endBlock
+      executionETA
+      targets
+      values
+      signatures
+      calldatas
+      proposer {
+        id
+      }
+    }
+  }
+`;
+
+export const activeProposals = (id: string) => gql`
+  {
+    daaa: proposals(
+      where: {
+        status: "ACTIVE"
+        votes_: { voter_contains: "${id}" }
+      }
+      first: 100
+      orderBy: createdBlock
+      orderDirection: desc
+    ) {
+      id
+      status
+      createdBlock
+      description
+      proposalThreshold
+      quorumVotes
+      forVotes
+      againstVotes
+      abstainVotes
+      createdTransactionHash
+      startBlock
+      endBlock
+      executionETA
+      targets
+      values
+      signatures
+      calldatas
+      proposer {
+        id
+      }
+    }
+  }
+`;
+
 export const clientFactory = (uri: string) =>
   new ApolloClient({
     uri,
     cache: new InMemoryCache(),
   });
-
-
- 

@@ -31,16 +31,24 @@ export interface Vote {
   };
 }
 
+export interface Tag {
+  label: string;
+  type: string;
+}
+
 export interface Idea {
   id: number;
   title: string;
   tldr: string;
   description: string;
-  votes: Vote[];
+  tags?: Tag[];
+  votes?: Vote[];
   creatorId: string;
-  comments: Comment[];
+  comments?: Comment[];
   votecount: number;
   createdAt: string;
+  closed: boolean;
+  deleted: boolean;
   _count?: {
     comments: number;
   };
@@ -54,6 +62,7 @@ export interface Comment {
   authorId: string;
   replies: Reply[];
   createdAt: string;
+  deleted: boolean;
 }
 
 type Reply = Comment;
@@ -78,15 +87,16 @@ const updateVotesState = (ideas: Idea[], vote: Vote) => {
       let seenVote = false;
       let voteCount = idea.votecount + direction * lilnounCount;
 
-      const newIdeaVotes = idea.votes.map(v => {
-        if (v.voterId === voterId) {
-          seenVote = true;
-          voteCount = idea.votecount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
-          return { ...vote, direction };
-        } else {
-          return vote;
-        }
-      });
+      const newIdeaVotes =
+        idea.votes?.map(v => {
+          if (v.voterId === voterId) {
+            seenVote = true;
+            voteCount = idea.votecount + direction * 2 * lilnounCount; // * by 2 to double the weighting against their previous vote
+            return { ...vote, direction };
+          } else {
+            return vote;
+          }
+        }) || [];
 
       if (!seenVote) {
         newIdeaVotes.push(vote);
@@ -132,6 +142,9 @@ export const useIdeas = () => {
   }, [sortBy]);
 
   const fetcher: Fetcher = async (input: RequestInfo, init?: RequestInit, ...args: any[]) => {
+    if (!HOST) {
+      throw new Error('API host not defined');
+    }
     const res = await fetch(input, init);
     if (!res.ok) throw new Error('Failed to fetch');
     return res.json();
@@ -274,10 +287,12 @@ export const useIdeas = () => {
     title,
     tldr,
     description,
+    tags,
   }: {
     title: string;
     tldr: string;
     description: string;
+    tags?: string[];
   }) => {
     try {
       const res = await fetch(`${HOST}/ideas`, {
@@ -290,6 +305,7 @@ export const useIdeas = () => {
           title,
           tldr,
           description,
+          tags,
         }),
       });
 
@@ -299,10 +315,90 @@ export const useIdeas = () => {
         throw new Error('Failed to create Idea');
       }
 
-      history.push(`/ideas/${data.id}`);
+      history.push(`/proplot/${data.id}`);
     } catch (e: any) {
       const error = {
         message: e.message || 'Failed to submit your idea!',
+        status: e.status || 500,
+      };
+      setError(error);
+    }
+  };
+
+  const deleteCommentWithoutReValidation = async (ideaId: number, commentId: number) => {
+    const response = await fetch(`${HOST}/comment/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        ...getAuthHeader(),
+      },
+    });
+    if (!response.ok) throw new Error('Failed to delete comment');
+
+    const data = await response.json();
+    return data;
+  };
+
+  const deleteComment = (ideaId: number, commentId: number) => {
+    const key = `${HOST}/idea/${ideaId}/comments`;
+    try {
+      mutate(
+        key,
+        async () => {
+          const response = await fetch(`${HOST}/comment/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+              ...getAuthHeader(),
+            },
+          });
+          if (!response.ok) throw new Error('Failed to delete comment');
+
+          const data = await response.json();
+          return data;
+        },
+        {
+          optimisticData: ({ data }: { data: Comment[] }) => {
+            const comments = data.map(comment => {
+              if (comment.id === commentId) {
+                comment.deleted = true;
+              }
+              return comment;
+            });
+
+            return { data: comments };
+          },
+          rollbackOnError: true,
+          populateCache: ({ data }: { data: Comment }, currentData: { data: Comment[] }) => {
+            return { data: currentData.data };
+          },
+          revalidate: true,
+        },
+      );
+    } catch (e: any) {
+      const error = {
+        message: e.message || 'Failed to delete your comment!',
+        status: e.status || 500,
+      };
+      setError(error);
+    }
+  };
+
+  // no mutate here, because we are getting the list of ideas from the graphql query and not the API.
+  // there is no cache key to update. (unlike comments)
+  const deleteIdea = async (id: number) => {
+    try {
+      const response = await fetch(`${HOST}/idea/${id}`, {
+        method: 'DELETE',
+        headers: {
+          ...getAuthHeader(),
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete idea');
+      const idea = await response.json();
+      return idea.data;
+    } catch (e: any) {
+      console.error(e);
+      const error = {
+        message: e.message || 'Failed to delete your comment!',
         status: e.status || 500,
       };
       setError(error);
@@ -330,7 +426,12 @@ export const useIdeas = () => {
         voteOnIdea(formData);
       }
     },
-    submitIdea: async (data: { title: string; tldr: string; description: string }) => {
+    submitIdea: async (data: {
+      title: string;
+      tldr: string;
+      description: string;
+      tags: string[];
+    }) => {
       if (!isLoggedIn()) {
         try {
           await triggerSignIn();
@@ -348,6 +449,36 @@ export const useIdeas = () => {
         } catch (e) {}
       } else {
         commentOnIdea(formData);
+      }
+    },
+    deleteCommentWithoutReValidation: async (ideaId: number, commentId: number) => {
+      if (!isLoggedIn()) {
+        try {
+          await triggerSignIn();
+          await deleteCommentWithoutReValidation(ideaId, commentId);
+        } catch (e) {}
+      } else {
+        await deleteCommentWithoutReValidation(ideaId, commentId);
+      }
+    },
+    deleteComment: async (ideaId: number, commentId: number) => {
+      if (!isLoggedIn()) {
+        try {
+          await triggerSignIn();
+          await deleteComment(ideaId, commentId);
+        } catch (e) {}
+      } else {
+        await deleteComment(ideaId, commentId);
+      }
+    },
+    deleteIdea: async (ideaId: number) => {
+      if (!isLoggedIn()) {
+        try {
+          await triggerSignIn();
+          await deleteIdea(ideaId);
+        } catch (e) {}
+      } else {
+        await deleteIdea(ideaId);
       }
     },
     getIdeas,

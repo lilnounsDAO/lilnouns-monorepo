@@ -1,0 +1,81 @@
+@media (max-width: 992px) {
+  .emergencySettleWrapper {
+    text-align: center;
+    margin-left: 0.5rem;
+  }
+}
+
+@media (max-width: 660px) {
+  .emergencySettleWrapper {
+    text-align: center;
+    margin-left: 0rem;
+  }
+}
+
+.emergencySettleButton {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+.emergencySettleButton:disabled {
+  color: #8c8d92;
+  text-decoration: none;
+  cursor: default;
+}
+
+.bidBtnAuctionEnded {
+  width: 100%;
+  height: 3rem;
+  color: white;
+  border: transparent;
+  background-color: var(--brand-black);
+  font-weight: bold;
+  font-family: 'PT Root UI';
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+.bidBtnAuctionEnded:hover,
+.bidBtnAuctionEnded:active,
+.bidBtnAuctionEnded:focus,
+.bidBtnAuctionEnded:disabled {
+  background-color: gray !important;
+  color: rgb(209, 207, 207);
+  outline: none !important;
+  box-shadow: none;
+}
+
+@media (max-width: 992px) {
+  .voteForNextNounBtnWrapper {
+    width: 100%;
+  }
+
+  .bidBtnAuctionEnded {
+    width: 100%;
+    height: 3rem;
+    color: white;
+    border: transparent;
+    background-color: var(--brand-black);
+    font-weight: bold;
+    font-family: 'PT Root UI';
+    font-size: 16px;
+    border-radius: 10px;
+  }
+}
+
+.nounButtonContents {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 2px;
+}
+
+.divider{
+  width:10px;
+  height:auto;
+  display:inline-block;
+}

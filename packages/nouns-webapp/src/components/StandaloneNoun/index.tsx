@@ -1,5 +1,10 @@
-import { ImageData as data, getNounData, getBigNounData, BigNounImageData as bigNounData } from '@nouns/assets';
-import { buildSVG } from '@nouns/sdk';
+import {
+  ImageData as data,
+  getNounData,
+  getBigNounData,
+  BigNounImageData as bigNounData,
+} from '@lilnounsdao/assets';
+import { buildSVG } from '@lilnounsdao/sdk';
 import { BigNumber, BigNumber as EthersBN } from 'ethers';
 import { INounSeed, useBigNounSeed, useNounSeed } from '../../wrappers/nounToken';
 import Noun from '../Noun';
@@ -15,6 +20,7 @@ interface StandaloneNounProps {
 }
 interface StandaloneCircularNounProps {
   nounId: EthersBN;
+  border?: boolean;
 }
 
 interface StandaloneNounWithSeedProps {
@@ -23,7 +29,7 @@ interface StandaloneNounWithSeedProps {
   shouldLinkToProfile: boolean;
 }
 
-const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
+export const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
   const id = nounId.toString();
   const name = `Noun ${id}`;
   const description = `Lil Noun ${id} is a member of the Lil Nouns DAO`;
@@ -40,7 +46,7 @@ const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
   };
 };
 
-const getBigNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
+export const getBigNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
   const id = nounId.toString();
   const name = `Noun ${id}`;
   const description = `Noun ${id} is a member of the Nouns DAO`;
@@ -84,10 +90,10 @@ const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProp
   );
 };
 
-export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
-  props: StandaloneCircularNounProps,
-) => {
-  const { nounId } = props;
+export const StandaloneNounCircular: React.FC<
+  StandaloneCircularNounProps & { styleOverride?: string }
+> = (props: StandaloneCircularNounProps & { styleOverride?: string }) => {
+  const { nounId, border, styleOverride } = props;
   const seed = useNounSeed(nounId);
   const noun = seed && getNoun(nounId, seed);
 
@@ -105,8 +111,8 @@ export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
       <Noun
         imgPath={noun ? noun.image : ''}
         alt={noun ? noun.description : 'Lil Noun'}
-        wrapperClassName={nounClasses.circularNounWrapper}
-        className={nounClasses.circular}
+        wrapperClassName={`${nounClasses.circularNounWrapper} ${styleOverride || ''}`}
+        className={border ? nounClasses.circleWithBorder : nounClasses.circular}
       />
     </Link>
   );

@@ -24,15 +24,23 @@ import onDisplayAuction, {
   setOnDisplayAuctionNounId,
   setOnDisplayAuctionStartTime,
 } from './state/slices/onDisplayAuction';
-import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, Operation, useQuery } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  HttpLink,
+  InMemoryCache,
+  Operation,
+  useQuery,
+} from '@apollo/client';
 import { clientFactory, latestAuctionsQuery, singularAuctionQuery } from './wrappers/subgraph';
 import { useEffect } from 'react';
 import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
-import config, { CHAIN_ID, createNetworkHttpUrl } from './config';
+import config, { CHAIN_ID, createNetworkHttpUrl, multicallOnLocalhost } from './config';
 import { WebSocketProvider } from '@ethersproject/providers';
 import { BigNumber, BigNumberish, providers } from 'ethers';
-import { NounsAuctionHouseFactory } from '@nouns/sdk';
+import { NounsAuctionHouseFactory } from '@lilnounsdao/sdk';
 import dotenv from 'dotenv';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { appendBid } from './state/slices/auction';
@@ -44,7 +52,6 @@ import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
-import { createClient, WagmiConfig } from 'wagmi';
 import { AuthProvider } from './hooks/useAuth';
 import { ErrorModalProvider } from './hooks/useApiError';
 
@@ -93,51 +100,46 @@ const useDappConfig = {
     [ChainId.Rinkeby]: createNetworkHttpUrl('rinkeby'),
     [ChainId.Mainnet]: createNetworkHttpUrl('mainnet'),
     [ChainId.Hardhat]: 'http://localhost:8545',
+    [ChainId.Goerli]:  createNetworkHttpUrl('goerli'),
   },
+  multicallAddresses: {
+    [ChainId.Hardhat]: multicallOnLocalhost,
+  }
 };
 
-const alchemyId = 'tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0';
-
-const wagmiClient = createClient({
-  provider(config) {
-    return new providers.AlchemyProvider(config.chainId, alchemyId);
-  },
+const defaultLink = new HttpLink({
+  uri: config.app.subgraphApiUri,
 });
 
-
-
-
-const defaultLink = new HttpLink({
-  uri: config.app.subgraphApiUri
-})
-
 const nounsDAOLink = new HttpLink({
-  uri: config.app.nounsDAOSubgraphApiUri
-})
+  uri: config.app.nounsDAOSubgraphApiUri,
+});
 
 const nounsDAOVotingSnapshotLink = new HttpLink({
-  uri: 'https://hub.snapshot.org/graphql'
-})
+  uri: 'https://hub.snapshot.org/graphql',
+});
 
 const zoraAPILink = new HttpLink({
-  uri: 'https://api.zora.co/graphql'
-})
-
+  uri: 'https://api.zora.co/graphql',
+});
 
 //pass them to apollo-client config
 const client = new ApolloClient({
   link: ApolloLink.split(
     operation => operation.getContext().clientName === 'NounsDAO',
-    nounsDAOLink, //if above 
-    ApolloLink.split(operation => operation.getContext().clientName === 'NounsDAOSnapshot',
-    nounsDAOVotingSnapshotLink,
-    ApolloLink.split(operation => operation.getContext().clientName === 'ZoraAPI',
-    zoraAPILink,
-    defaultLink))
-),
+    nounsDAOLink, //if above
+    ApolloLink.split(
+      operation => operation.getContext().clientName === 'NounsDAOSnapshot',
+      nounsDAOVotingSnapshotLink,
+      ApolloLink.split(
+        operation => operation.getContext().clientName === 'ZoraAPI',
+        zoraAPILink,
+        defaultLink,
+      ),
+    ),
+  ),
   cache: new InMemoryCache(),
-})
-
+});
 
 const Updaters = () => {
   return (
@@ -247,13 +249,13 @@ const PastAuctions: React.FC = () => {
 
   const nounId = BigNumber.from(onDisplayAuctionNounId ?? 0);
   const distanceToAuctionAbove = isNounderNoun(BigNumber.from(onDisplayAuctionNounId ?? 0)) ? 2 : 1;
-  const nextNounId = nounId.add(distanceToAuctionAbove)
+  const nextNounId = nounId.add(distanceToAuctionAbove);
 
-  const { data: postData } = useQuery(
-    singularAuctionQuery(nextNounId?.toString() || '0'),
+  const { data: postData } = useQuery(singularAuctionQuery(nextNounId?.toString() || '0'));
+
+  const { data } = useQuery(
+    latestAuctionsQuery(postData?.auctions?.[0]?.startTime || onDisplayAuctionStartTime || 0),
   );
-
-  const { data } = useQuery(latestAuctionsQuery(postData?.auctions?.[0]?.startTime || onDisplayAuctionStartTime || 0));
 
   const { data: auctionData } = useQuery(
     singularAuctionQuery(onDisplayAuctionNounId?.toString() || '0'),
@@ -289,32 +291,30 @@ const rollbarConfig = {
 
 ReactDOM.render(
   <RollbarProvider config={rollbarConfig}>
-    <WagmiConfig client={wagmiClient}>
-      <Provider store={store}>
-        <ConnectedRouter history={history}>
-          <ChainSubscriber />
-          <React.StrictMode>
-            <Web3ReactProvider
-              getLibrary={
-                provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
-              }
-            >
-              <ApolloProvider client={client}>
-                <PastAuctions />
-                <DAppProvider config={useDappConfig}>
-                  <ErrorModalProvider>
-                    <AuthProvider>
-                      <App />
-                      <Updaters />
-                    </AuthProvider>
-                  </ErrorModalProvider>
-                </DAppProvider>
-              </ApolloProvider>
-            </Web3ReactProvider>
-          </React.StrictMode>
-        </ConnectedRouter>
-      </Provider>
-    </WagmiConfig>
+    <Provider store={store}>
+      <ConnectedRouter history={history}>
+        <ChainSubscriber />
+        <React.StrictMode>
+          <Web3ReactProvider
+            getLibrary={
+              provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
+            }
+          >
+            <ApolloProvider client={client}>
+              <PastAuctions />
+              <DAppProvider config={useDappConfig}>
+                <ErrorModalProvider>
+                  <AuthProvider>
+                    <App />
+                    <Updaters />
+                  </AuthProvider>
+                </ErrorModalProvider>
+              </DAppProvider>
+            </ApolloProvider>
+          </Web3ReactProvider>
+        </React.StrictMode>
+      </ConnectedRouter>
+    </Provider>
     ,
   </RollbarProvider>,
   document.getElementById('root'),

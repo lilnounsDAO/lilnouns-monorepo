@@ -17,6 +17,9 @@ const Documentation = () => {
   const compoundGovLink = (
     <Link text="Compound Governance" url="https://compound.finance/governance" leavesPage={true} />
   );
+
+  const lilBlockPartyLink = <Link text="Lil Block Party" url="https://lilblockparty.wtf" leavesPage={true} />;
+
   return (
     <Section fullWidth={false}>
       <Col lg={{ span: 10, offset: 1 }}>
@@ -123,6 +126,23 @@ const Documentation = () => {
                 <br />
                 Settlement gas price of every 9th Lil Noun is higher. This is due to the transaction
                 also triggering 2 free Lil Noun mints: The Lil Nounders mint and The Nouns DAO mint.
+                <br />
+                <br />
+                <h3>Settling Auctions through Lil Block Party</h3>
+                Lil Nouns currently utilises a community built app called {lilBlockPartyLink} to settle its
+                auctions.
+                <br />
+                <br />
+                Lil Block Party gives prospective bidders the opportunity to select which Lil Noun
+                they'd like to see auctioned next. It does this by monitoring Lil Noun seed changes
+                per new ethereum block created. We recommend prospective bidders pick their
+                favourite Lil Nouns pre-settlement via Lil Block Party.
+                <br />
+                <br />
+                Alternatively, auction winners that solely care to mint the current Lil Noun to
+                their wallet, can settle manually.
+                <br />
+                <br />
               </p>
             </Accordion.Body>
           </Accordion.Item>
@@ -166,9 +186,9 @@ const Documentation = () => {
               <ul>
                 <li>backgrounds (2) </li>
                 <li>bodies (30)</li>
-                <li>accessories (137) </li>
-                <li>heads (234) </li>
-                <li>glasses (21)</li>
+                <li>accessories (140) </li>
+                <li>heads (242) </li>
+                <li>glasses (23)</li>
               </ul>
               You can experiment with off-chain Lil Noun generation at the {playgroundLink}.
             </Accordion.Body>
@@ -233,9 +253,6 @@ const Documentation = () => {
                     url="https://twitter.com/adelidusiam"
                     leavesPage={true}
                   />
-                </li>
-                <li>
-                  <Link text="@js_horne" url="https://twitter.com/js_horne" leavesPage={true} />
                 </li>
                 <li>
                   <Link text="@dg_goens" url="https://twitter.com/dg_goens" leavesPage={true} />

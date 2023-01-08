@@ -44,7 +44,13 @@ const ProposalEditor = ({
       </InputGroup>
       {proposalText !== '' && (
         <div className={classes.previewArea}>
-          <h3>Preview:</h3>
+          <h3>Preview</h3>
+          {title && (
+            <>
+              <h1 className={classes.propTitle}>{title}</h1>
+              <hr />
+            </>
+          )}
           <ReactMarkdown
             className={classes.markdown}
             children={proposalText}

@@ -1,12 +1,16 @@
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import express, { Express, Request, Response } from 'express';
+
+import { ApolloServer } from 'apollo-server-express';
+import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
+
 import AuthController from './controllers/auth';
 import bodyParser from 'body-parser';
 import IdeasController from './controllers/ideas';
 
 import { PrismaClient } from '@prisma/client';
-import authMiddleware from './middlewares/auth';
+import { authMiddleware, apolloAuthScope } from './middlewares/auth';
 
 import cors from 'cors';
 
@@ -15,6 +19,8 @@ import Rollbar from 'rollbar';
 export const prisma = new PrismaClient();
 
 import { config } from './config';
+
+import schema from './graphql/schemasMap';
 
 export const rollbar = new Rollbar({
   accessToken: config.rollbarApiKey,
@@ -30,6 +36,23 @@ export const rollbar = new Rollbar({
  */
 export const createAPI = (): Express => {
   const app = express();
+
+  async function startApolloServer() {
+    const apolloServer = new ApolloServer({
+      schema,
+      plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
+      introspection: true,
+      context: async ({ req }) => {
+        return {
+          authScope: await apolloAuthScope(req.headers.authorization),
+          timeZone: req.headers['proplot-tz'] || 'UTC',
+        };
+      },
+    });
+    await apolloServer.start();
+    apolloServer.applyMiddleware({ app });
+  }
+
   Sentry.init({
     dsn: config.sentryDSN,
     integrations: [
@@ -47,7 +70,6 @@ export const createAPI = (): Express => {
   });
 
   app.use(express.json());
-
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 
@@ -73,6 +95,7 @@ export const createAPI = (): Express => {
         'Access-Control-Allow-Origin',
         'Origin',
         'Accept',
+        'proplot-tz',
       ],
     }),
   );
@@ -87,6 +110,8 @@ export const createAPI = (): Express => {
   app.use(Sentry.Handlers.requestHandler());
   // TracingHandler creates a trace for every incoming request
   app.use(Sentry.Handlers.tracingHandler());
+
+  startApolloServer();
 
   app.get('/', (_req, res) => {
     res.status(200).send({
@@ -104,6 +129,8 @@ export const createAPI = (): Express => {
   app.get('/ideas', IdeasController.getAllIdeas);
   app.post('/ideas', authMiddleware, IdeasController.createIdea);
   app.post('/token-transfer', authMiddleware, AuthController.syncUserTokenCounts);
+  app.delete('/idea/:id', authMiddleware, IdeasController.deleteIdea);
+  app.delete('/comment/:id', authMiddleware, IdeasController.deleteComment);
 
   app.use(rollbar.errorHandler());
   app.use((err: any, req: Request, res: Response, next: any) => {

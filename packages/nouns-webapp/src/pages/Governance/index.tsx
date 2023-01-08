@@ -1,6 +1,6 @@
 import { Button, Col, Row, Spinner } from 'react-bootstrap';
 import Section from '../../layout/Section';
-import { Proposal, useAllProposals, useProposalThreshold } from '../../wrappers/nounsDao';
+import { useActiveProposalsViaSubgraph, useAllProposals, useProposalThreshold } from '../../wrappers/nounsDao';
 import { useAllBigNounProposals } from '../../wrappers/bigNounsDao';
 import Proposals, { SnapshotProposal } from '../../components/Proposals';
 import classes from './Governance.module.css';
@@ -8,18 +8,25 @@ import { utils } from 'ethers/lib/ethers';
 import clsx from 'clsx';
 import { useTreasuryBalance, useTreasuryUSDValue } from '../../hooks/useTreasuryBalance';
 
-import NounImageInllineTable from '../../components/NounImageInllineTable';
+import NounImageInlineTable from '../../components/NounImageInlineTable';
 import { isMobileScreen } from '../../utils/isMobile';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { snapshotProposalsQuery, nounsInTreasuryQuery } from '../../wrappers/subgraph';
 import { useQuery } from '@apollo/client';
 import Link from '../../components/Link';
+import { RouteComponentProps } from 'react-router-dom';
+import { useLocation } from 'react-router-dom'
 
-
-const GovernancePage = () => {
-  const { data: proposals } = useAllProposals();
+const GovernancePage = ({
+  match: {
+    params: { id }
+  },
+}: RouteComponentProps<{ id: string }>) => {
+  const { data: proposals, loading: loadingProposals } = useAllProposals();
   const { data: bigNounProposals, loading: loadingBigNounProposals } = useAllBigNounProposals();
+  const { data: proposalVotes, loading: loadingProposalVotes } = useActiveProposalsViaSubgraph();
+
 
   const {
     loading: nounsInTreasuryLoading,
@@ -54,23 +61,45 @@ const GovernancePage = () => {
   function setLilNounsDAOProps() {
     setDaoButtonActive('1');
     setisNounsDAOProp(false);
+    window.history.pushState({}, 'Lil Nouns DAO', '/vote');
   }
 
   function setNounsDAOProps() {
     setDaoButtonActive('2');
     setisNounsDAOProp(true);
+    window.history.pushState({}, 'Lil Nouns DAO', '/vote/nounsdao');
   }
 
-  const nounsDaoLink = <Link text="Nouns DAO" url="https://nouns.wtf" leavesPage={true} />;
-  const snapshotLink = <Link text="Snapshot" url="https://snapshot.org/#/leagueoflils.eth" leavesPage={true} />;
+  const location = useLocation();
 
-  if (nounsInTreasuryLoading || snapshotProposalLoading || loadingBigNounProposals) {
+  useEffect(() => {
+    if (!location.pathname) return;
+
+    if (location.pathname == '/vote/nounsdao') {
+      setNounsDAOProps();
+    }
+  }, []);
+
+  const nounsDaoLink = <Link text="Nouns DAO" url="https://nouns.wtf" leavesPage={true} />;
+  const snapshotLink = (
+    <Link text="Snapshot" url="https://snapshot.org/#/leagueoflils.eth" leavesPage={true} />
+  );
+
+  if (
+    nounsInTreasuryLoading ||
+    snapshotProposalLoading ||
+    loadingBigNounProposals ||
+    loadingProposals ||
+    loadingProposalVotes
+  ) {
     return (
       <div className={classes.spinner}>
         <Spinner animation="border" />
       </div>
     );
   }
+
+  const nounCount = nounsInTreasury.accounts.length ? nounsInTreasury.accounts[0].tokenBalance : "0"
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -120,10 +149,10 @@ const GovernancePage = () => {
             ) : (
               <>
                 Lil Nouns use Nouns collectivley purchased by the DAO to govern in{' '}
-                <span className={classes.boldText}>{nounsDaoLink}</span>. Lil Nouners can use their lil
-                nouns to vote on Nouns DAO proposals. Voting is free and is conducted via <span className={classes.boldText}>{snapshotLink}</span>.
-                A minimum of <span className={classes.boldText}>{'1 Lil Noun'}</span> is required to
-                vote.
+                <span className={classes.boldText}>{nounsDaoLink}</span>. Lil Nouners can use their
+                lil nouns to vote on Nouns DAO proposals. Voting is free and is conducted via{' '}
+                <span className={classes.boldText}>{snapshotLink}</span>. A minimum of{' '}
+                <span className={classes.boldText}>{'1 Lil Noun'}</span> is required to vote.
               </>
             )}
           </p>
@@ -133,35 +162,34 @@ const GovernancePage = () => {
               <Row className={classes.headerRow}>
                 <span>Treasury</span>
               </Row>
-            
 
-                {isNounsDAOProp ? (
-                  <></>
-                ) : (  <Row>
+              {isNounsDAOProp ? (
+                <></>
+              ) : (
+                <Row>
                   <Col className={clsx(classes.ethTreasuryAmt)} lg={3}>
                     <h1 className={classes.ethSymbol}>Ξ</h1>
                     <h1>
                       {treasuryBalance &&
-                        Number(Number(utils.formatEther(treasuryBalance)).toFixed(0)).toLocaleString(
-                          'en-US',
-                        )}
+                        Number(
+                          Number(utils.formatEther(treasuryBalance)).toFixed(0),
+                        ).toLocaleString('en-US')}
                     </h1>
                   </Col>
                   <Col className={classes.usdTreasuryAmt}>
-                  <h1 className={classes.usdBalance}>
-                    ${' '}
-                    {treasuryBalanceUSD &&
-                      Number(treasuryBalanceUSD.toFixed(0)).toLocaleString('en-US')}
-                  </h1>
-                </Col>
+                    <h1 className={classes.usdBalance}>
+                      ${' '}
+                      {treasuryBalanceUSD &&
+                        Number(treasuryBalanceUSD.toFixed(0)).toLocaleString('en-US')}
+                    </h1>
+                  </Col>
                 </Row>
-                )}
-            
-            
+              )}
+
               <Row>
                 <Col className={clsx(classes.ethTreasuryAmt)} lg={3}>
                   <h1 className={classes.BigNounBalance}>
-                    {nounsInTreasury.accounts[0].tokenBalance}
+                    {nounCount}
                   </h1>
                   <h1>{' Nouns'}</h1>
                 </Col>
@@ -169,10 +197,10 @@ const GovernancePage = () => {
                 {!isMobile && (
                   <Col className={classes.usdTreasuryAmt}>
                     <Row className={classes.nounProfilePics}>
-                      <NounImageInllineTable
-                        nounIds={nounsInTreasury.accounts[0].nouns.flatMap(
+                      <NounImageInlineTable
+                        nounIds={nounsInTreasury.accounts.length ? nounsInTreasury.accounts[0].nouns.flatMap(
                           (obj: { id: any }) => obj.id,
-                        )}
+                        ) : []}
                       />
                     </Row>
                   </Col>
@@ -204,8 +232,8 @@ const GovernancePage = () => {
             ...v,
             proposalNo: i + 1,
           }))}
-          isNounsDAOProp={isNounsDAOProp}
-        />
+          isNounsDAOProp={isNounsDAOProp} 
+          proposalsAwaitingVote={proposalVotes ?? []}/>
       </Col>
     </Section>
   );

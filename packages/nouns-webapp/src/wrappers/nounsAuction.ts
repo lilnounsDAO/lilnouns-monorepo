@@ -1,6 +1,6 @@
 import { useContractCall } from '@usedapp/core';
 import { BigNumber as EthersBN, utils } from 'ethers';
-import { NounsAuctionHouseABI } from '@nouns/sdk';
+import { NounsAuctionHouseABI } from '@lilnounsdao/sdk';
 import config from '../config';
 import BigNumber from 'bignumber.js';
 import { BigNumber as bNum } from '@ethersproject/bignumber';
@@ -72,6 +72,6 @@ export const useNounCanVoteTimestamp = (nounId: number) => {
   }
 
   const auction = findAuction(EthersBN.from(nounId), pastAuctions);
-  return EthersBN.from(auction?.startTime);
+  return auction?.startTime ? EthersBN.from(auction?.startTime) : EthersBN.from(0);;
 
 };

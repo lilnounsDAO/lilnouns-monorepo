@@ -1,0 +1,30 @@
+.carousel {
+	cursor: grab;
+	overflow: hidden;
+	mask-image: linear-gradient(to right, transparent 0%, black 5% 95%, transparent 100%);
+	width: 450px;
+}
+
+.innerCarousel {
+	display: flex;
+	animation: scroll 10s linear infinite;
+}
+
+.item {
+	width: fit-content;
+	height: fit-content;
+	/* pointer-events: none; */
+	margin-left: auto;
+	margin-right: 5px;
+
+	
+}
+
+@keyframes scroll {
+	0% { transform: translateX(0); }
+	100% { transform: translateX(calc(-42px * 16.78))}
+}
+
+.innerCarousel:hover {
+	animation-play-state: paused;
+}

@@ -32,7 +32,6 @@ const Ideas = () => {
   return (
     <div>
       <div>
-        <h3 className={classes.heading}>Ideas</h3>
         <div className={clsx('d-flex', classes.submitIdeaButtonWrapper)}>
           {ideas?.length > 0 && (
             <div className={classes.sortFilter}>
@@ -51,7 +50,7 @@ const Ideas = () => {
             </div>
           )}
           {account !== undefined && hasNouns ? (
-            <Button className={classes.generateBtn} onClick={() => history.push('/ideas/create')}>
+            <Button className={classes.generateBtn} onClick={() => history.push('/proplot/create')}>
               Submit Idea
             </Button>
           ) : (
