@@ -8,7 +8,7 @@ import { utils } from 'ethers/lib/ethers';
 import clsx from 'clsx';
 import { useTreasuryBalance, useTreasuryUSDValue } from '../../hooks/useTreasuryBalance';
 
-import NounImageInllineTable from '../../components/NounImageInlineTable';
+import NounImageInlineTable from '../../components/NounImageInlineTable';
 import { isMobileScreen } from '../../utils/isMobile';
 import { useEffect, useState } from 'react';
 
@@ -197,7 +197,7 @@ const GovernancePage = ({
                 {!isMobile && (
                   <Col className={classes.usdTreasuryAmt}>
                     <Row className={classes.nounProfilePics}>
-                      <NounImageInllineTable
+                      <NounImageInlineTable
                         nounIds={nounsInTreasury.accounts.length ? nounsInTreasury.accounts[0].nouns.flatMap(
                           (obj: { id: any }) => obj.id,
                         ) : []}
