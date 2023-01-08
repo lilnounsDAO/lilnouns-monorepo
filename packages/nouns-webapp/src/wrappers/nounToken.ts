@@ -1,10 +1,12 @@
-import { useContractCall, useContractFunction, useEthers } from '@usedapp/core';
+import { useContractCall, useContractCalls, useContractFunction, useEthers } from '@usedapp/core';
 import { BigNumber as EthersBN, ethers, utils } from 'ethers';
 import { NounsTokenABI, NounsTokenFactory } from '@lilnounsdao/contracts';
 import config, { cache, cacheKey, CHAIN_ID } from '../config';
 import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
 import { seedsQuery, lilnounsSeedsQuery } from './subgraph';
+import { Proposal } from './nounsDao';
+
 interface NounToken {
   name: string;
   description: string;
@@ -168,11 +170,11 @@ export const useBigNounSeed = (nounId: EthersBN) => {
   const seed = seeds?.[nounId.toString()];
   // prettier-ignore
   const request = seed ? false : {
-      abi,
-      address: config.bigNounsAddresses.nounsToken,
-      method: 'seeds',
-      args: [nounId],
-    };
+    abi,
+    address: config.bigNounsAddresses.nounsToken,
+    method: 'seeds',
+    args: [nounId],
+  };
   const response = useContractCall<INounSeed>(request);
   if (response) {
     const seedCache = localStorage.getItem(bigNounSeedCacheKey);
@@ -234,6 +236,27 @@ export const useUserVotesAsOfBlock = (block: number | undefined): number | undef
       args: [account ?? "", block],
     }) || [];
   return votes?.toNumber();
+};
+
+export const useUserVotesAsOfBlockByProp = (proposals: Proposal[]) => {
+  const { account } = useEthers();
+
+  const snapshotBlocks = proposals.map(prop => prop.createdBlock);
+
+  const votes = useContractCalls(
+    snapshotBlocks.map(
+      (block: number) =>
+      ({
+        abi: abi,
+        address: config.addresses.nounsToken,
+        method: 'getPriorVotes',
+        args: [account, block],
+      } || []),
+    ),
+  );
+
+  const voteBalances = votes.flat().map(a => a?.toNumber() ?? 0);
+  return voteBalances || [];
 };
 
 export const useDelegateVotes = () => {

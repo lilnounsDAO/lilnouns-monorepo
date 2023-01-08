@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { useBlockNumber, useEthers } from '@usedapp/core';
 import { isMobileScreen } from '../../utils/isMobile';
 import clsx from 'clsx';
-import { useNounTokenBalance, useUserDelegatee, useUserVotes, useUserVotesAsOfBlock } from '../../wrappers/nounToken';
+import { useNounTokenBalance, useUserDelegatee, useUserVotes, useUserVotesAsOfBlockByProp } from '../../wrappers/nounToken';
 import { ClockIcon } from '@heroicons/react/solid';
 import proposalStatusClasses from '../ProposalStatus/ProposalStatus.module.css';
 import dayjs from 'dayjs';
@@ -302,6 +302,7 @@ const Proposals = ({
 
   const threshold = (useProposalThreshold() ?? 0) + 1;
   const hasEnoughVotesToPropose = account !== undefined && connectedAccountNounVotes >= threshold;
+  const hasEnoughVotesToVote = account !== undefined && connectedAccountNounVotes >= 1;
   const hasNounBalance = (useNounTokenBalance(account || undefined) ?? 0) > 0;
   const userDelegatee = useUserDelegatee();
   const hasDelegatedVotes = account !== undefined && userDelegatee != account;
@@ -319,17 +320,20 @@ const Proposals = ({
     return 'Connect wallet to make a proposal.';
   };
 
-  const filteredAllProps = proposals.filter(a => a.status === ProposalState.ACTIVE)
-  const onlyNonVoteActiveProps = filteredAllProps.filter(a => proposalsAwaitingVote && !proposalsAwaitingVote.map(a => a.id).includes(a.id))
+  const filteredAllProps = proposals.filter(a => a.status === ProposalState.ACTIVE);
+  const onlyNonVoteActiveProps = filteredAllProps.filter(
+    a => proposalsAwaitingVote && !proposalsAwaitingVote.map(a => a.id).includes(a.id),
+  );
 
-  const filteredProposals = () => {
-    if (account !== null && connectedAccountNounVotes > 0) {
+  const voteBalances = useUserVotesAsOfBlockByProp(onlyNonVoteActiveProps);
+
+  function filteredProposals() {
+    if (account !== null && account !== undefined && hasEnoughVotesToVote) {
       const propSnapshots = onlyNonVoteActiveProps
-        .slice(0)
-        .reverse()
-        .map(function (prop) {
-          const availableVotes = useUserVotesAsOfBlock(prop.createdBlock ?? 0) ?? 0;
-          return { id: prop.id, balance: availableVotes };
+        .map(function (prop, index) {
+          const votes = voteBalances[index];
+
+          return { id: prop.id, balance: votes ?? 0 };
         })
         .filter(p => p.balance > 0)
         .map(a => a.id);
@@ -340,14 +344,14 @@ const Proposals = ({
         .reverse();
     }
     return [];
-  };
+  }
 
-  const proposalsToVoteOn = filteredProposals();
+  const proposalsToVoteOn = hasEnoughVotesToVote ? filteredProposals() : [];
   const allProposals = proposalsToVoteOn.length
     ? proposals
-      .slice(0)
-      .reverse()
-      .filter(a => a.id && !proposalsToVoteOn.map(a => a.id).includes(a.id))
+        .slice(0)
+        .reverse()
+        .filter(a => a.id && !proposalsToVoteOn.map(a => a.id).includes(a.id))
     : proposals.slice(0).reverse();
 
   return (
@@ -415,7 +419,7 @@ const Proposals = ({
             </div>
           )}
 
-          {account ? <ProposalTable proposals={proposalsToVoteOn} /> : <></>}
+          {hasEnoughVotesToVote ? <ProposalTable proposals={proposalsToVoteOn} /> : <></>}
 
           {proposals?.length ? (
             <>
