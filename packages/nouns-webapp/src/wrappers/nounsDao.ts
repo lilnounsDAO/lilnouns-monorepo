@@ -476,7 +476,7 @@ export const useActiveProposalsViaSubgraph = (): ProposalData => {
   const { account } = useEthers();
   
   const { loading, data, error } = useQuery(
-    activeProposals(account ?? "")
+    activeProposals(account?.toLowerCase() ?? "")
     , { fetchPolicy: 'no-cache' });
   const blockNumber = useBlockNumber();
   const { timestamp } = useBlockMeta();
