@@ -438,6 +438,20 @@ export const nounsInTreasuryQuery = () => gql`
         id
       }
     }
+    delegates(
+    where: {id: "0xdcb4117e3a00632efcac3c169e0b23959f555e5e"}
+  ) {
+    id
+    delegatedVotes
+    tokenHoldersRepresentedAmount
+    nounsRepresented {
+      id
+    }
+    tokenHoldersRepresented(where: {id_not: "0xd5f279ff9eb21c6d40c8f345a66f2751c4eea1fb"}) {
+      id
+      tokenBalance
+    }
+  }
   }
 `;
 
