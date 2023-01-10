@@ -265,6 +265,13 @@ p {
   font-weight: 500;
 }
 
+.subheader {
+  text-align: center;
+  color: var(--brand-gray-light-text);
+  font-family: 'Londrina Solid';
+  font-size: 14px;
+}
+
 @media (min-width: 992px) {
   .treasuryAmtWrapper {
     border-right: 2px solid #e2e3e8;
