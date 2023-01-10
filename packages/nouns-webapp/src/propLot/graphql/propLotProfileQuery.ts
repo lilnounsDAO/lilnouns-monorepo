@@ -27,6 +27,7 @@ export const GET_PROPLOT_PROFILE_QUERY = gql`
           parentId
           authorId
           createdAt
+          deleted
           parent {
             id
             body
@@ -50,6 +51,7 @@ export const GET_PROPLOT_PROFILE_QUERY = gql`
           description
           votecount
           createdAt
+          deleted
           ideaStats {
             comments
           }

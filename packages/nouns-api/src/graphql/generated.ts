@@ -21,6 +21,7 @@ export type Comment = {
   authorId: Scalars['String'];
   body: Scalars['String'];
   createdAt: Scalars['Date'];
+  deleted: Scalars['Boolean'];
   id: Scalars['Int'];
   idea?: Maybe<Idea>;
   ideaId: Scalars['Int'];
@@ -59,6 +60,7 @@ export type Idea = {
   consensus?: Maybe<Scalars['Float']>;
   createdAt: Scalars['Date'];
   creatorId: Scalars['String'];
+  deleted: Scalars['Boolean'];
   description: Scalars['String'];
   id: Scalars['Int'];
   ideaStats?: Maybe<IdeaStats>;
@@ -201,6 +203,7 @@ export enum TagType {
   Governance = 'GOVERNANCE',
   Info = 'INFO',
   New = 'NEW',
+  Nouns = 'NOUNS',
   Other = 'OTHER',
   Quorum = 'QUORUM',
   Request = 'REQUEST',
@@ -375,6 +378,7 @@ export type CommentResolvers<ContextType = any, ParentType extends ResolversPare
   authorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   idea?: Resolver<Maybe<ResolversTypes['Idea']>, ParentType, ContextType>;
   ideaId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -412,6 +416,7 @@ export type IdeaResolvers<ContextType = any, ParentType extends ResolversParentT
   consensus?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   ideaStats?: Resolver<Maybe<ResolversTypes['IdeaStats']>, ParentType, ContextType>;

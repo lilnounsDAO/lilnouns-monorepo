@@ -438,6 +438,20 @@ export const nounsInTreasuryQuery = () => gql`
         id
       }
     }
+    delegates(
+    where: {id: "0xdcb4117e3a00632efcac3c169e0b23959f555e5e"}
+  ) {
+    id
+    delegatedVotes
+    tokenHoldersRepresentedAmount
+    nounsRepresented {
+      id
+    }
+    tokenHoldersRepresented(where: {id_not: "0xd5f279ff9eb21c6d40c8f345a66f2751c4eea1fb"}) {
+      id
+      tokenBalance
+    }
+  }
   }
 `;
 
@@ -658,6 +672,41 @@ export const BIG_NOUNS_GOVERNANCE_BY_OWNER_SUB = gql`
       abstainVotes
       createdTransactionHash
       createdBlock
+      startBlock
+      endBlock
+      executionETA
+      targets
+      values
+      signatures
+      calldatas
+      proposer {
+        id
+      }
+    }
+  }
+`;
+
+export const activeProposals = (id: string) => gql`
+  {
+    daaa: proposals(
+      where: {
+        status: "ACTIVE"
+        votes_: { voter_contains: "${id}" }
+      }
+      first: 100
+      orderBy: createdBlock
+      orderDirection: desc
+    ) {
+      id
+      status
+      createdBlock
+      description
+      proposalThreshold
+      quorumVotes
+      forVotes
+      againstVotes
+      abstainVotes
+      createdTransactionHash
       startBlock
       endBlock
       executionETA

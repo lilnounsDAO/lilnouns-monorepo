@@ -15,7 +15,7 @@ import { useLogs } from '../hooks/useLogs';
 import * as R from 'ramda';
 import config, { CHAIN_ID } from '../config';
 import { useQuery } from '@apollo/client';
-import { proposalsQuery } from './subgraph';
+import { activeProposals, proposalsQuery } from './subgraph';
 import BigNumber from 'bignumber.js';
 
 export enum Vote {
@@ -377,6 +377,25 @@ export const formatSubgraphProposal = (
   };
 };
 
+export const formatSubgraphVoteFilterProposal = (
+  proposal: ProposalSubgraphEntity,
+  blockNumber?: number,
+  timestamp?: Date,
+) => {
+  const description = proposal.description?.replace(/\\n/g, '\n').replace(/(^['"]|['"]$)/g, '');
+
+  return {
+    id: proposal.id,
+    title: R.pipe(extractTitle, removeMarkdownStyle)(description) ?? 'Untitled',
+    description: description ?? 'No description.',
+    status: getProposalState(blockNumber, timestamp, proposal),
+    eta: proposal.executionETA ? new Date(Number(proposal.executionETA) * 1000) : undefined,
+    createdBlock: parseInt(proposal.createdBlock),
+    startBlock: parseInt(proposal.startBlock),
+    endBlock: parseInt(proposal.endBlock),
+  };
+};
+
 export const useAllProposalsViaSubgraph = (): ProposalData => {
   const { loading, data, error } = useQuery(proposalsQuery(), { fetchPolicy: 'no-cache' });
   const blockNumber = useBlockNumber();
@@ -451,6 +470,26 @@ export const useAllProposalsViaChain = (skip = false): ProposalData => {
       loading: false,
     };
   }, [formattedLogs, proposalStates, proposals, votingDelay]);
+};
+
+export const useActiveProposalsViaSubgraph = (): ProposalData => {
+  const { account } = useEthers();
+  
+  const { loading, data, error } = useQuery(
+    activeProposals(account?.toLowerCase() ?? "")
+    , { fetchPolicy: 'no-cache' });
+  const blockNumber = useBlockNumber();
+  const { timestamp } = useBlockMeta();
+
+  const proposals = data?.daaa?.map((proposal: ProposalSubgraphEntity) => {
+    return formatSubgraphVoteFilterProposal(proposal, blockNumber, timestamp);
+  }).filter((p: Proposal) => p.status === ProposalState.ACTIVE);
+
+  return {
+    loading,
+    error,
+    data: proposals ?? [],
+  };
 };
 
 export const useAllProposals = (): ProposalData => {

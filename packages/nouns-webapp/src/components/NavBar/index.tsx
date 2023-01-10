@@ -68,17 +68,17 @@ const NavBar = () => {
       `;
 
   async function fetchData() {
-    const repsonse = await createClient({ url: config.app.nounsDAOSubgraphApiUri })
+    const response = await createClient({ url: config.app.nounsDAOSubgraphApiUri })
       .query(fetchNounsQuery)
       .toPromise();
-    return repsonse.data.accounts[0];
+    return response.data;
   }
 
   useEffect(() => {
     fetchData()
-      .then(async repsonse => {
-        const tokenBalance = repsonse.tokenBalance;
-        const nounIds = repsonse.nouns.flatMap((obj: { id: any }) => obj.id);
+      .then(async response => {
+        const account = response.accounts[0]
+        const tokenBalance = account.tokenBalance;
 
         setBigNounBalance(tokenBalance);
         return;

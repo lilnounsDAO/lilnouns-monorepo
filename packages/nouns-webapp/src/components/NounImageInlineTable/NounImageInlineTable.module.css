@@ -22,7 +22,7 @@
 
 @keyframes scroll {
 	0% { transform: translateX(0); }
-	100% { transform: translateX(calc(-42px * 15.68))}
+	100% { transform: translateX(calc(-42px * 16.78))}
 }
 
 .innerCarousel:hover {

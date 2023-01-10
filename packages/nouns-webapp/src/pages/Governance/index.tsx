@@ -1,6 +1,6 @@
 import { Button, Col, Row, Spinner } from 'react-bootstrap';
 import Section from '../../layout/Section';
-import { Proposal, useAllProposals, useProposalThreshold } from '../../wrappers/nounsDao';
+import { useActiveProposalsViaSubgraph, useAllProposals, useProposalThreshold } from '../../wrappers/nounsDao';
 import { useAllBigNounProposals } from '../../wrappers/bigNounsDao';
 import Proposals, { SnapshotProposal } from '../../components/Proposals';
 import classes from './Governance.module.css';
@@ -8,7 +8,7 @@ import { utils } from 'ethers/lib/ethers';
 import clsx from 'clsx';
 import { useTreasuryBalance, useTreasuryUSDValue } from '../../hooks/useTreasuryBalance';
 
-import NounImageInllineTable from '../../components/NounImageInlineTable';
+import NounImageInlineTable from '../../components/NounImageInlineTable';
 import { isMobileScreen } from '../../utils/isMobile';
 import { useEffect, useState } from 'react';
 
@@ -25,6 +25,8 @@ const GovernancePage = ({
 }: RouteComponentProps<{ id: string }>) => {
   const { data: proposals, loading: loadingProposals } = useAllProposals();
   const { data: bigNounProposals, loading: loadingBigNounProposals } = useAllBigNounProposals();
+  const { data: proposalVotes, loading: loadingProposalVotes } = useActiveProposalsViaSubgraph();
+
 
   const {
     loading: nounsInTreasuryLoading,
@@ -71,7 +73,7 @@ const GovernancePage = ({
   const location = useLocation();
 
   useEffect(() => {
-    if(!location.pathname) return;
+    if (!location.pathname) return;
 
     if (location.pathname == '/vote/nounsdao') {
       setNounsDAOProps();
@@ -87,7 +89,8 @@ const GovernancePage = ({
     nounsInTreasuryLoading ||
     snapshotProposalLoading ||
     loadingBigNounProposals ||
-    loadingProposals
+    loadingProposals ||
+    loadingProposalVotes
   ) {
     return (
       <div className={classes.spinner}>
@@ -97,6 +100,19 @@ const GovernancePage = ({
   }
 
   const nounCount = nounsInTreasury.accounts.length ? nounsInTreasury.accounts[0].tokenBalance : "0"
+  // const nounIds = nounsInTreasury.accounts[0].nouns.flatMap(
+  //   (obj: { id: any }) => obj.id,
+  // )
+
+  const delegatedNounCount = nounsInTreasury.accounts.length
+    ? nounsInTreasury.delegates[0].delegatedVotes - nounCount
+    : '0';
+  const totalNounBalance = nounsInTreasury.delegates[0].delegatedVotes
+  const delegatedNounIds = nounsInTreasury.delegates[0].nounsRepresented.flatMap(
+    (obj: { id: any }) => obj.id,
+  )
+
+  const nounBreakdown = `${nounCount} owned/${delegatedNounCount} delegated`
 
   return (
     <Section fullWidth={false} className={classes.section}>
@@ -186,7 +202,7 @@ const GovernancePage = ({
               <Row>
                 <Col className={clsx(classes.ethTreasuryAmt)} lg={3}>
                   <h1 className={classes.BigNounBalance}>
-                    {nounCount}
+                    {totalNounBalance}
                   </h1>
                   <h1>{' Nouns'}</h1>
                 </Col>
@@ -194,14 +210,21 @@ const GovernancePage = ({
                 {!isMobile && (
                   <Col className={classes.usdTreasuryAmt}>
                     <Row className={classes.nounProfilePics}>
-                      <NounImageInllineTable
-                        nounIds={nounsInTreasury.accounts.length ? nounsInTreasury.accounts[0].nouns.flatMap(
-                          (obj: { id: any }) => obj.id,
-                        ) : []}
+                      <NounImageInlineTable
+                        nounIds={
+                          nounsInTreasury.delegates.length
+                            ? delegatedNounIds
+                            : []
+                        }
                       />
                     </Row>
                   </Col>
                 )}
+              </Row>
+              <Row>
+                <Col lg={3}>
+                  <span className={classes.subheader}>{nounBreakdown}</span>
+                </Col>
               </Row>
             </Col>
             <Col className={classes.treasuryInfoText}>
@@ -232,7 +255,7 @@ const GovernancePage = ({
           })): 
           undefined}
           isNounsDAOProp={isNounsDAOProp}
-        />
+          proposalsAwaitingVote={proposalVotes ?? []} />
       </Col>
     </Section>
   );

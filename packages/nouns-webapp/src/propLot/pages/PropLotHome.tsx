@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAccountVotes } from '../../wrappers/nounToken';
 import { useAuth } from '../../hooks/useAuth';
-import { useLazyQuery, useQuery, gql } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import propLotClient from '../graphql/config';
 import { GET_PROPLOT_QUERY } from '../graphql/propLotQuery';
 import { getPropLot } from '../graphql/__generated__/getPropLot';
@@ -80,6 +80,10 @@ const PropLotHome = () => {
     refetch({ options: { requestUUID: v4(), filters: selectedfilters } });
   };
 
+  const handleRefresh = () => {
+    refetch({ options: { requestUUID: v4(), filters: appliedFilters } });
+  };
+
   const nounBalance = useAccountVotes(account || undefined) ?? 0;
 
   const nullStateCopy = () => {
@@ -126,7 +130,14 @@ const PropLotHome = () => {
       {data?.propLot?.ideas?.map(idea => {
         return (
           <div className="mb-[16px] space-y-4">
-            <IdeaRow idea={idea} key={`idea-${idea.id}`} nounBalance={nounBalance} />
+            <IdeaRow
+              idea={idea}
+              key={`idea-${idea.id}`}
+              nounBalance={nounBalance}
+              refetch={() => {
+                handleRefresh();
+              }}
+            />
           </div>
         );
       })}

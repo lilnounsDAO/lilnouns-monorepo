@@ -48,6 +48,7 @@ export interface Idea {
   votecount: number;
   createdAt: string;
   closed: boolean;
+  deleted: boolean;
   _count?: {
     comments: number;
   };
@@ -61,6 +62,7 @@ export interface Comment {
   authorId: string;
   replies: Reply[];
   createdAt: string;
+  deleted: boolean;
 }
 
 type Reply = Comment;
@@ -323,6 +325,86 @@ export const useIdeas = () => {
     }
   };
 
+  const deleteCommentWithoutReValidation = async (ideaId: number, commentId: number) => {
+    const response = await fetch(`${HOST}/comment/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        ...getAuthHeader(),
+      },
+    });
+    if (!response.ok) throw new Error('Failed to delete comment');
+
+    const data = await response.json();
+    return data;
+  };
+
+  const deleteComment = (ideaId: number, commentId: number) => {
+    const key = `${HOST}/idea/${ideaId}/comments`;
+    try {
+      mutate(
+        key,
+        async () => {
+          const response = await fetch(`${HOST}/comment/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+              ...getAuthHeader(),
+            },
+          });
+          if (!response.ok) throw new Error('Failed to delete comment');
+
+          const data = await response.json();
+          return data;
+        },
+        {
+          optimisticData: ({ data }: { data: Comment[] }) => {
+            const comments = data.map(comment => {
+              if (comment.id === commentId) {
+                comment.deleted = true;
+              }
+              return comment;
+            });
+
+            return { data: comments };
+          },
+          rollbackOnError: true,
+          populateCache: ({ data }: { data: Comment }, currentData: { data: Comment[] }) => {
+            return { data: currentData.data };
+          },
+          revalidate: true,
+        },
+      );
+    } catch (e: any) {
+      const error = {
+        message: e.message || 'Failed to delete your comment!',
+        status: e.status || 500,
+      };
+      setError(error);
+    }
+  };
+
+  // no mutate here, because we are getting the list of ideas from the graphql query and not the API.
+  // there is no cache key to update. (unlike comments)
+  const deleteIdea = async (id: number) => {
+    try {
+      const response = await fetch(`${HOST}/idea/${id}`, {
+        method: 'DELETE',
+        headers: {
+          ...getAuthHeader(),
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete idea');
+      const idea = await response.json();
+      return idea.data;
+    } catch (e: any) {
+      console.error(e);
+      const error = {
+        message: e.message || 'Failed to delete your comment!',
+        status: e.status || 500,
+      };
+      setError(error);
+    }
+  };
+
   return {
     voteOnIdeaList: async (formData: VoteFormData) => {
       if (!isLoggedIn()) {
@@ -367,6 +449,36 @@ export const useIdeas = () => {
         } catch (e) {}
       } else {
         commentOnIdea(formData);
+      }
+    },
+    deleteCommentWithoutReValidation: async (ideaId: number, commentId: number) => {
+      if (!isLoggedIn()) {
+        try {
+          await triggerSignIn();
+          await deleteCommentWithoutReValidation(ideaId, commentId);
+        } catch (e) {}
+      } else {
+        await deleteCommentWithoutReValidation(ideaId, commentId);
+      }
+    },
+    deleteComment: async (ideaId: number, commentId: number) => {
+      if (!isLoggedIn()) {
+        try {
+          await triggerSignIn();
+          await deleteComment(ideaId, commentId);
+        } catch (e) {}
+      } else {
+        await deleteComment(ideaId, commentId);
+      }
+    },
+    deleteIdea: async (ideaId: number) => {
+      if (!isLoggedIn()) {
+        try {
+          await triggerSignIn();
+          await deleteIdea(ideaId);
+        } catch (e) {}
+      } else {
+        await deleteIdea(ideaId);
       }
     },
     getIdeas,

@@ -10,6 +10,7 @@ export const GET_IDEA_QUERY = gql`
       description
       votecount
       createdAt
+      deleted
       ideaStats {
         comments
       }
