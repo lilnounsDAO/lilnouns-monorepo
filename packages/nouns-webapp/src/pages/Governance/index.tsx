@@ -107,10 +107,12 @@ const GovernancePage = ({
   const delegatedNounCount = nounsInTreasury.accounts.length
     ? nounsInTreasury.delegates[0].delegatedVotes - nounCount
     : '0';
-  const totalNounBalance = nounsInTreasury.delegates[0].delegatedVotes
-  const delegatedNounIds = nounsInTreasury.delegates[0].nounsRepresented.flatMap(
-    (obj: { id: any }) => obj.id,
-  )
+  const totalNounBalance = nounsInTreasury.delegates.length
+    ? nounsInTreasury.delegates[0].delegatedVotes
+    : [];
+  const delegatedNounIds = nounsInTreasury.delegates.length
+    ? nounsInTreasury.delegates[0].nounsRepresented.flatMap((obj: { id: any }) => obj.id)
+    : [];
 
   const nounBreakdown = `${nounCount} owned/${delegatedNounCount} delegated`
 
