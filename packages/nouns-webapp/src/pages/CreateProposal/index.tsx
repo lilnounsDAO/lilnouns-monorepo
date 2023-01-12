@@ -24,7 +24,7 @@ import { useAppDispatch } from '../../hooks';
 const CreateProposalPage = () => {
   const { account } = useEthers();
   const latestProposalId = useProposalCount();
-  const latestProposal = useProposal(latestProposalId ?? 0);
+  const {proposal: latestProposal} = useProposal(latestProposalId ?? 0);
   const availableVotes = useUserVotes();
   const proposalThreshold = useProposalThreshold();
 
