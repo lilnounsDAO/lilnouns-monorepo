@@ -125,7 +125,7 @@
 .byLineWrapper h3 {
   font-family: 'Londrina Solid';
   color: var(--brand-gray-light-text);
-  margin-left: 3rem;
+  /* margin-left: 3rem;/ */
   font-size: 24px;
 }
 

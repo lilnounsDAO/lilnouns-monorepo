@@ -417,12 +417,12 @@ export const useAllBigNounProposals = (): ProposalData => {
   // return onchains;
 };
 
-export const useBigNounProposal = (id: string | number): Proposal | undefined => {
+export const useBigNounProposal = (id: string | number): {proposal: Proposal | undefined, proposalCount: number} => {
   const subgraph = useAllBigNounProposalsViaSubgraph();
   const { data } = subgraph; //useAllBigNounProposals();
 
   // console.log(`useBigNounProposal: ${id.toString()} == ${JSON.stringify(data?.find(p => p.id === "171")?.title)}`);
-  return data?.find(p => p.id === id.toString());
+  return { proposal : data?.find(p => p.id === id.toString()), proposalCount: data?.length ?? 0}
 };
 
 export const useCastBigNounVote = () => {

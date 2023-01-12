@@ -19,12 +19,18 @@ import ShortAddress from '../ShortAddress';
 
 interface ProposalHeaderProps {
   proposal: Proposal;
+  proposalCount: number;
   snapshotProposal?: SnapshotProposal;
   snapshotVoters?: SnapshotVoters[];
   isNounsDAOProp?: boolean;
   isActiveForVoting?: boolean;
   isWalletConnected: boolean;
   submitButtonClickHandler: () => void;
+}
+
+interface PropNavigationProps { 
+  proposal: Proposal;
+  proposalCount: number;
 }
 
 export const useHasVotedOnSnapshotProposal = (snapshotVoters: SnapshotVoters[] | undefined): boolean => {
@@ -34,7 +40,7 @@ export const useHasVotedOnSnapshotProposal = (snapshotVoters: SnapshotVoters[] |
 };
 
 const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
-  const { proposal, isActiveForVoting, isWalletConnected, submitButtonClickHandler , snapshotProposal, isNounsDAOProp, snapshotVoters} = props;
+  const { proposal, proposalCount, isActiveForVoting, isWalletConnected, submitButtonClickHandler , snapshotProposal, isNounsDAOProp, snapshotVoters} = props;
 
   const isMobile = isMobileScreen();
   const availableVotes = useUserVotesAsOfBlock(proposal?.createdBlock) ?? 0;
@@ -81,14 +87,50 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
     </>
   );
 
+  const PropNavigation: React.FC<PropNavigationProps> = props => {
+    const { proposal, proposalCount } = props;
+
+    const enableBackToggle: boolean = parseInt(proposal?.id ?? "0") > 1
+    const enableForwardToggle: boolean = parseInt(proposal?.id ?? "0") < proposalCount
+
+    const previousProposal = parseInt(proposal?.id ?? "0") - 1
+    const nextProposal = parseInt(proposal?.id ?? "0") + 1
+
+      return (
+        <>
+          {!enableBackToggle && enableForwardToggle ? (
+            <>
+            <Link to={isNounsDAOProp ? `/vote/nounsdao/${nextProposal}` : `/vote/${nextProposal}`}>
+              <button className={clsx(classes.backButton, navBarButtonClasses.whiteInfo)}>→</button>
+            </Link>
+            </>
+          ) : enableBackToggle && enableForwardToggle ? (
+            <>
+             <Link to={isNounsDAOProp ? `/vote/nounsdao/${previousProposal}` : `/vote/${previousProposal}`}>
+                <button className={clsx(classes.backButton, navBarButtonClasses.whiteInfo)}>←</button>
+              </Link>
+              <Link to={isNounsDAOProp ? `/vote/nounsdao/${nextProposal}` : `/vote/${nextProposal}`}>
+                <button className={clsx(classes.backButton, navBarButtonClasses.whiteInfo)}>→</button>
+              </Link>
+            </>
+          ) : enableBackToggle && !enableForwardToggle && (
+            <>
+             <Link to={isNounsDAOProp ? `/vote/nounsdao/${previousProposal}` : `/vote/${previousProposal}`}>
+                <button className={clsx(classes.backButton, navBarButtonClasses.whiteInfo)}>←</button>
+              </Link>
+            </>
+          )}
+        </>
+      );
+  }
+
+
   return (
     <>
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex justify-content-start align-items-start">
-          <Link to={isNounsDAOProp ? '/vote/nounsdao' : '/vote' }>
-            <button className={clsx(classes.backButton, navBarButtonClasses.whiteInfo)}>←</button>
-          </Link>
           <div className={classes.headerRow}>
+            {<PropNavigation proposal={proposal} proposalCount={proposalCount} />}
             <span>
               <div className="d-flex">
                 <div>Proposal {proposal.id}</div>
