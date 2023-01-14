@@ -3,7 +3,7 @@ import ReactTooltip from 'react-tooltip';
 import classes from './Tooltip.module.css';
 
 interface TooltipProps {
-  tooltipContent: (dataTip: string) => React.ReactNode;
+  tooltipContent: (dataTip: string) => string;
   tip: string;
   id: string;
 }
