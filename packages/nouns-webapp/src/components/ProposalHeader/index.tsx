@@ -92,11 +92,11 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
   const isLastProposal: boolean = parseInt(proposal?.id ?? "0") == proposalCount
 
   const prevProposalHandler = () => {
-    const path = isNounsDAOProp ? "/vote/nounsdao " : "/vote"
+    const path = isNounsDAOProp ? "/vote/nounsdao" : "/vote"
     history.push(`${path}/${parseInt(proposal?.id ?? "0") - 1}`);
   };
   const nextProposalHandler = () => {
-    const path = isNounsDAOProp ? "/vote/nounsdao " : "/vote"
+    const path = isNounsDAOProp ? "/vote/nounsdao" : "/vote"
     history.push(`${path}/${parseInt(proposal?.id ?? "0") + 1}`);
   };
 
