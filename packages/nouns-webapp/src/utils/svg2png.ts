@@ -16,6 +16,10 @@ export const svg2png = (
     const width = Number(modSvg.getAttribute('width'));
     const height = Number(modSvg.getAttribute('height'));
 
+    if (!canScale(width, newWidth) || !canScale(height, newHeight)) {
+      throw new Error(`Unable to scale canvas without unwanted pixel gap`);
+    }
+
     const canvas = document.createElement('canvas');
     canvas.width = newWidth;
     canvas.height = newHeight;
@@ -34,10 +38,23 @@ export const svg2png = (
       try {
         resolve(png);
       } catch (e) {
-        console.log('error converting svg to png: ', e);
+        console.log('Error converting SVG to PNG:', e);
         resolve(null);
       }
     };
     img.src = url;
   });
+};
+
+/**
+ * Determine if the image can be scaled without creating a pixel gap.
+ * This will occur if the `desired` pixel length divided by the `current`
+ * pixel length has more than one decimal place.
+ * @param current The current pixel length
+ * @param desired The desired pixel length
+ */
+const canScale = (current: number, desired: number) => {
+  const result = desired / current;
+  const decimals = result.toString().split('.')?.[1]?.length ?? 0;
+  return decimals <= 1;
 };

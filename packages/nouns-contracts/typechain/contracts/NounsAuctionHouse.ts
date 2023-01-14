@@ -196,6 +196,7 @@ export interface NounsAuctionHouseInterface extends utils.Interface {
     "AuctionReservePriceUpdated(uint256)": EventFragment;
     "AuctionSettled(uint256,address,uint256)": EventFragment;
     "AuctionTimeBufferUpdated(uint256)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
     "Unpaused(address)": EventFragment;
@@ -210,6 +211,7 @@ export interface NounsAuctionHouseInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "AuctionReservePriceUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AuctionSettled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AuctionTimeBufferUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
@@ -295,6 +297,13 @@ export type AuctionTimeBufferUpdatedEvent = TypedEvent<
 
 export type AuctionTimeBufferUpdatedEventFilter =
   TypedEventFilter<AuctionTimeBufferUpdatedEvent>;
+
+export interface InitializedEventObject {
+  version: number;
+}
+export type InitializedEvent = TypedEvent<[number], InitializedEventObject>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export interface OwnershipTransferredEventObject {
   previousOwner: string;
@@ -659,6 +668,9 @@ export interface NounsAuctionHouse extends BaseContract {
     AuctionTimeBufferUpdated(
       timeBuffer?: null
     ): AuctionTimeBufferUpdatedEventFilter;
+
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: PromiseOrValue<string> | null,
