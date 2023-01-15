@@ -74,7 +74,7 @@ export const createNetworkHttpUrl = (network: string): string => {
   } else {
     return custom || isLocalhost
       ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
-      : `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
+      : `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
   }
 };
 
@@ -86,7 +86,7 @@ export const createNetworkWsUrl = (network: string): string => {
   } else {
     return custom || isLocalhost
     ? `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
-    : `wss://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
+    : `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
   }
 };
 
