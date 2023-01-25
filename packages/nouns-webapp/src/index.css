@@ -54,3 +54,7 @@ code {
   src: url(./fonts/Inter/Inter-Bold.woff2) format('woff2'),
     url(./fonts/Inter/Inter-Bold.woff) format('woff');
 }
+
+.description img {
+  max-width: 100%;
+}
