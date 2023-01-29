@@ -27,6 +27,7 @@ interface ProposalHeaderProps {
   isActiveForVoting?: boolean;
   isWalletConnected: boolean;
   submitButtonClickHandler: () => void;
+  isShowVoteModalOpen: boolean;
 }
 
 interface PropNavigationProps { 
@@ -41,7 +42,7 @@ export const useHasVotedOnSnapshotProposal = (snapshotVoters: SnapshotVoters[] |
 };
 
 const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
-  const { proposal, proposalCount, isActiveForVoting, isWalletConnected, submitButtonClickHandler , snapshotProposal, isNounsDAOProp, snapshotVoters} = props;
+  const { proposal, proposalCount, isActiveForVoting, isWalletConnected, submitButtonClickHandler , snapshotProposal, isNounsDAOProp, snapshotVoters, isShowVoteModalOpen} = props;
 
   const history = useHistory();
   const isMobile = isMobileScreen();
@@ -111,6 +112,7 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
               isLastProposal={isLastProposal}
               onPrevProposalClick={prevProposalHandler}
               onNextProposalClick={nextProposalHandler}
+              isShowVoteModalOpen={isShowVoteModalOpen}
             />
             <span>
               <div className="d-flex">
