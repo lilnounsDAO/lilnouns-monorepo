@@ -510,6 +510,7 @@ const NounsVotePage = ({
             isActiveForVoting={isActiveForVoting}
             isWalletConnected={isWalletConnected}
             submitButtonClickHandler={() => setShowVoteModal(true)}
+            isShowVoteModalOpen={showVoteModal}
           />
         )}
       </Col>
