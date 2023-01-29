@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "yarn i18n:compile && react-scripts build",
+    "build": "yarn i18n:compile && yarn tailwind-build && react-scripts build",
     "eject": "react-scripts eject",
     "i18n:compile": "lingui compile",
     "i18n:extract": "lingui extract",
@@ -11,8 +11,10 @@
     "prepare": "yarn i18n:compile",
     "proplot-schema:build": "npx apollo codegen:generate --localSchemaFile=./src/propLot/graphql/proplot-schema.json --globalTypesFile=./src/propLot/graphql/__generated__/globalTypes.ts --target=typescript --tagName=gql --excludes=src/wrappers/subgraph.ts",
     "proplot-schema:fetch": "npx apollo service:download --endpoint=http://localhost:5001/graphql/ ./src/propLot/graphql/proplot-schema.json",
-    "start": "react-scripts start",
-    "test": "react-scripts test"
+    "start": "yarn tailwind-run && react-scripts start",
+    "test": "react-scripts test",
+    "tailwind-run": "npx tailwindcss -i ./src/css/globals.css -o ./src/css/output.css --watch",
+    "tailwind-build": "npx tailwindcss -i ./src/css/globals.css -o ./src/css/output.css"
   },
   "browserslist": {
     "production": [

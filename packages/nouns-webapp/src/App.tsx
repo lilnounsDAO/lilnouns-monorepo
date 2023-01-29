@@ -8,6 +8,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { setAlertModal } from './state/slices/application';
 import classes from './App.module.css';
 import '../src/css/globals.css';
+import '../src/css/output.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AlertModal from './components/Modal';
 import NavBar from './components/NavBar';

@@ -312,6 +312,7 @@ const IdeaPage = () => {
           <div className="flex flex-col">
             <h3 className="lodrina font-bold text-2xl mb-2">Description</h3>
             <div
+              className="description"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(marked.parse(data.getIdea.description), {
                   ADD_ATTR: ['target'],
