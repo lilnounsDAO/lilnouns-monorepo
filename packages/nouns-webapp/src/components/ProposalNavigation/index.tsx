@@ -9,8 +9,9 @@ const ProposalNavigation: React.FC<{
     isLastProposal: boolean;
     onPrevProposalClick: () => void;
     onNextProposalClick: () => void;
+    isShowVoteModalOpen: boolean;
 }> = props => {
-    const { isFirstProposal, isLastProposal, onPrevProposalClick, onNextProposalClick } = props;
+    const { isFirstProposal, isLastProposal, onPrevProposalClick, onNextProposalClick, isShowVoteModalOpen } = props;
 
     const history = useHistory();
 
@@ -40,6 +41,7 @@ const ProposalNavigation: React.FC<{
     );
 
     useEffect(() => {
+        if(isShowVoteModalOpen == true) return;
         // attach the event listener
         document.addEventListener('keydown', handleKeyPress);
 
