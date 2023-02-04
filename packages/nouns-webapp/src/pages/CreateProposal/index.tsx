@@ -20,11 +20,12 @@ import ProposalTransactionFormModal from '../../components/ProposalTransactionFo
 import { withStepProgress } from 'react-stepz';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '../../hooks';
+import ProposalActionModal from '../../components/ProposalActionsModal';
 
 const CreateProposalPage = () => {
   const { account } = useEthers();
   const latestProposalId = useProposalCount();
-  const {proposal: latestProposal} = useProposal(latestProposalId ?? 0);
+  const { proposal: latestProposal } = useProposal(latestProposalId ?? 0);
   const availableVotes = useUserVotes();
   const proposalThreshold = useProposalThreshold();
 
@@ -133,10 +134,10 @@ const CreateProposalPage = () => {
 
   return (
     <Section fullWidth={false} className={classes.createProposalPage}>
-      <ProposalTransactionFormModal
+      <ProposalActionModal
+        onDismiss={() => setShowTransactionFormModal(false)}
         show={showTransactionFormModal}
-        onHide={() => setShowTransactionFormModal(false)}
-        onProposalTransactionAdded={handleAddProposalAction}
+        onActionAdd={handleAddProposalAction}
       />
       <Col lg={{ span: 8, offset: 2 }}>
         <Link to="/vote">← All Proposals</Link>
@@ -147,14 +148,18 @@ const CreateProposalPage = () => {
           <b>Tip</b>: Add one or more transactions and describe your proposal for the community. The
           proposal cannot be modified after submission, so please verify all information before
           submitting. The voting period will begin after 2 1/3 days and last for 3 days.
+          <br />
+          <br />
+          You <b>MUST</b> maintain enough voting power to meet the proposal threshold until your
+          proposal is executed. If you fail to do so, anyone can cancel your proposal.
         </Alert>
         <div className="d-grid">
           <Button
-            className={classes.addTransactionButton}
+            className={classes.proposalActionButton}
             variant="dark"
             onClick={() => setShowTransactionFormModal(true)}
           >
-            Add Transaction
+            Add Action
           </Button>
         </div>
         <ProposalTransactions
