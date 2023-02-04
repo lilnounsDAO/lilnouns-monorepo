@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Trans } from '@lingui/macro';
 import {
   ProposalActionCreationStep,
   ProposalActionModalStepProps,
@@ -9,6 +8,7 @@ import BrandDropdown from '../../../BrandDropdown';
 import ModalSubTitle from '../../../ModalSubtitle';
 import ModalBottomButtonRow from '../../../ModalBottomButtonRow';
 import ModalTitle from '../../../ModalTitle';
+import Link from '../../../Link';
 
 const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props => {
   const { onPrevBtnClick, onNextBtnClick, state, setState } = props;
@@ -18,10 +18,17 @@ const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props =
       : ProposalActionCreationStep.LUMP_SUM_DETAILS,
   );
 
+  const nounsConnectLink = (
+    <Link
+      text="Nouns Connect"
+      url="https://www.nounsconnect.wtf/"
+      leavesPage={true}
+    />
+  );
+
   return (
     <div>
       <ModalTitle>Add Proposal Action</ModalTitle>
-
       <ModalSubTitle>
         <b>Supported Action Types:</b>
         <hr />
@@ -29,7 +36,6 @@ const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props =
         <br />
         <b>• Function Call: </b>Call a contract function.
       </ModalSubTitle>
-
       <BrandDropdown
         value={
           state.actionType === ProposalActionType.LUMP_SUM ? 'Transfer Funds' : 'Function Call'
@@ -53,7 +59,6 @@ const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props =
         <option value={'Transfer Funds'}>Transfer Funds</option>
         <option value={'Function Call'}>Function Call</option>
       </BrandDropdown>
-
       <ModalBottomButtonRow
         prevBtnText={'Close'}
         onPrevBtnClick={onPrevBtnClick}
@@ -62,6 +67,10 @@ const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props =
           onNextBtnClick(nextStep);
         }}
       />
+      <div style={{textAlign: "center", fontSize: "13px"}}>
+        <br />
+        Alternativley, build proposal actions through {nounsConnectLink}.
+      </div>
     </div>
   );
 };
