@@ -9,6 +9,7 @@ import ModalSubTitle from '../../../ModalSubtitle';
 import ModalBottomButtonRow from '../../../ModalBottomButtonRow';
 import ModalTitle from '../../../ModalTitle';
 import Link from '../../../Link';
+import classes from './SelectProposalActionStep.module.css';
 
 const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props => {
   const { onPrevBtnClick, onNextBtnClick, state, setState } = props;
@@ -19,11 +20,7 @@ const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props =
   );
 
   const nounsConnectLink = (
-    <Link
-      text="Nouns Connect"
-      url="https://www.nounsconnect.wtf/"
-      leavesPage={true}
-    />
+    <Link text="Nouns Connect" url="https://www.nounsconnect.wtf/" leavesPage={true} />
   );
 
   return (
@@ -67,9 +64,10 @@ const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props =
           onNextBtnClick(nextStep);
         }}
       />
-      <div style={{textAlign: "center", fontSize: "13px"}}>
-        <br />
-        Alternativley, build proposal actions through {nounsConnectLink}.
+      <div className={classes.nounsConnectWrapper}>
+        <span className={classes.nounsConnectCopy}>
+          Alternativley, build proposal actions through {nounsConnectLink}.
+        </span>
       </div>
     </div>
   );
