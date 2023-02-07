@@ -250,10 +250,12 @@ const GovernancePage = ({
         <Proposals
           proposals={proposals}
           nounsDAOProposals={bigNounProposals}
-          snapshotProposals={snapshotProposalData.proposals.map((v: any, i: any) => ({
+          snapshotProposals={
+            !snapshotProposalError && !snapshotProposalLoading && snapshotProposalData ? snapshotProposalData.proposals.map((v: any, i: any) => ({
             ...v,
             proposalNo: i + 1,
-          }))}
+          })): 
+          undefined}
           isNounsDAOProp={isNounsDAOProp}
           proposalsAwaitingVote={proposalVotes ?? []} />
       </Col>
