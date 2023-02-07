@@ -321,7 +321,7 @@ export const formatBigNounSubgraphProposal = (
     startBlock: parseInt(proposal.startBlock),
     endBlock: parseInt(proposal.endBlock),
     eta: proposal.executionETA ? new Date(Number(proposal.executionETA) * 1000) : undefined,
-    details: formatProposalTransactionDetails(proposal),
+    details: [],
     transactionHash: proposal.createdTransactionHash,
   };
 };
