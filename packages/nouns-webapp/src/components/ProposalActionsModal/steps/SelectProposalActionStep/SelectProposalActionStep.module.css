@@ -1,0 +1,15 @@
+.nounsConnectWrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+  
+  .nounsConnectCopy {
+    font-family: 'PT Root UI';
+    font-size: 14px;
+    color: var(--brand-gray-light-text);
+    opacity: 0.75;
+    width: fit-content;
+    text-align: center;
+  }
