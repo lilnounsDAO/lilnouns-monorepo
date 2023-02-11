@@ -2,8 +2,8 @@ import { StandaloneBigNounCircular } from '../StandaloneNoun';
 import { BigNumber as EthersBN } from 'ethers';
 import classes from './NounImageInlineTable.module.css';
 import { pseudoRandomPredictableShuffle } from '../../utils/pseudoRandomPredictableShuffle';
-import { motion } from "framer-motion"
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
+import styled, { keyframes } from 'styled-components';
 
 interface NounImageInlineTableTableProps {
   nounIds: string[];
@@ -11,19 +11,38 @@ interface NounImageInlineTableTableProps {
 
 const isXLScreen = window.innerWidth > 1200;
 
+const scroll = (nounCount: number) => {
+  return keyframes`
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(-42px * (1.12 * ${nounCount})))}
+    }`;
+};
+
+interface CarouselProps {
+  nounCount: number;
+}
+
+const InnerCarousel = styled.div<CarouselProps>`
+  display: flex;
+  animation: ${prop => scroll(prop.nounCount)} 10s linear infinite;
+
+  :hover {
+    animation-play-state: paused;
+  }
+`;
+
 const NounImageInlineTable: React.FC<NounImageInlineTableTableProps> = props => {
   const { nounIds } = props;
-
-  const [width, setWidth] = useState(0);
-  const carousel = useRef(null);;
+  const carousel = useRef(null);
 
   const shuffledNounIds = pseudoRandomPredictableShuffle(nounIds);
-  const paddedNounIds = shuffledNounIds
-    .map((nounId: string) => {
-      return <motion.div className={classes.item}>
+  const paddedNounIds = shuffledNounIds.map((nounId: string) => {
+    return (
+      <div className={classes.item}>
         <StandaloneBigNounCircular nounId={EthersBN.from(nounId)} />
-      </motion.div>
-    })
+      </div>
+    );
+  });
 
   const content = () => {
     const rows = 1;
@@ -42,24 +61,14 @@ const NounImageInlineTable: React.FC<NounImageInlineTableTableProps> = props => 
       ));
   };
 
-
-  useEffect(() => {
-    const node = carousel.current as any
-    setWidth(node.scrollWidth - node.offsetWidth)
-  }, [])
-
   return (
-    <motion.div ref={carousel} className={classes.carousel}>
-      <motion.div
-        drag="x"
-        dragConstraints={{ right: 0, left: -width }}
-        className={classes.innerCarousel}>
+    <div ref={carousel} className={classes.carousel}>
+      <InnerCarousel nounCount={nounIds.length}>
         {content()}
         {content()}
-      </motion.div>
-    </motion.div>
-  )
-
+      </InnerCarousel>
+    </div>
+  );
 };
 
 export default NounImageInlineTable;

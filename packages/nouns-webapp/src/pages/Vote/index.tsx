@@ -42,7 +42,7 @@ const VotePage = ({
     params: { id },
   },
 }: RouteComponentProps<{ id: string }>) => {
-  const proposal = useProposal(id);
+  const {proposal, proposalCount} = useProposal(id);
   const { account } = useEthers();
 
   const [showVoteModal, setShowVoteModal] = useState<boolean>(false);
@@ -292,9 +292,11 @@ const VotePage = ({
         {proposal && (
           <ProposalHeader
             proposal={proposal}
+            proposalCount={proposalCount}
             isActiveForVoting={isActiveForVoting}
             isWalletConnected={isWalletConnected}
             submitButtonClickHandler={() => setShowVoteModal(true)}
+            isShowVoteModalOpen={showVoteModal}
           />
         )}
       </Col>

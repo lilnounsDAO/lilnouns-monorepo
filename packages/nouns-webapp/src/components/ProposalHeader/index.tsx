@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import ProposalStatus from '../ProposalStatus';
 import classes from './ProposalHeader.module.css';
 import navBarButtonClasses from '../NavBarButton/NavBarButton.module.css';
@@ -16,15 +16,23 @@ import { useEthers } from '@usedapp/core';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import { transactionLink } from '../ProposalContent';
 import ShortAddress from '../ShortAddress';
+import ProposalNavigation from '../ProposalNavigation';
 
 interface ProposalHeaderProps {
   proposal: Proposal;
+  proposalCount: number;
   snapshotProposal?: SnapshotProposal;
   snapshotVoters?: SnapshotVoters[];
   isNounsDAOProp?: boolean;
   isActiveForVoting?: boolean;
   isWalletConnected: boolean;
   submitButtonClickHandler: () => void;
+  isShowVoteModalOpen: boolean;
+}
+
+interface PropNavigationProps { 
+  proposal: Proposal;
+  proposalCount: number;
 }
 
 export const useHasVotedOnSnapshotProposal = (snapshotVoters: SnapshotVoters[] | undefined): boolean => {
@@ -34,8 +42,9 @@ export const useHasVotedOnSnapshotProposal = (snapshotVoters: SnapshotVoters[] |
 };
 
 const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
-  const { proposal, isActiveForVoting, isWalletConnected, submitButtonClickHandler , snapshotProposal, isNounsDAOProp, snapshotVoters} = props;
+  const { proposal, proposalCount, isActiveForVoting, isWalletConnected, submitButtonClickHandler , snapshotProposal, isNounsDAOProp, snapshotVoters, isShowVoteModalOpen} = props;
 
+  const history = useHistory();
   const isMobile = isMobileScreen();
   const availableVotes = useUserVotesAsOfBlock(proposal?.createdBlock) ?? 0;
   const hasVoted = !snapshotProposal ? useHasVotedOnProposal(proposal?.id) : useHasVotedOnSnapshotProposal(snapshotVoters) 
@@ -80,15 +89,31 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
       </span>
     </>
   );
+  const isFirstProposal: boolean = parseInt(proposal?.id ?? "0") == 1
+  const isLastProposal: boolean = parseInt(proposal?.id ?? "0") == proposalCount
+
+  const prevProposalHandler = () => {
+    const path = isNounsDAOProp ? "/vote/nounsdao" : "/vote"
+    history.push(`${path}/${parseInt(proposal?.id ?? "0") - 1}`);
+  };
+  const nextProposalHandler = () => {
+    const path = isNounsDAOProp ? "/vote/nounsdao" : "/vote"
+    history.push(`${path}/${parseInt(proposal?.id ?? "0") + 1}`);
+  };
+
 
   return (
     <>
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex justify-content-start align-items-start">
-          <Link to={isNounsDAOProp ? '/vote/nounsdao' : '/vote' }>
-            <button className={clsx(classes.backButton, navBarButtonClasses.whiteInfo)}>←</button>
-          </Link>
           <div className={classes.headerRow}>
+          <ProposalNavigation
+              isFirstProposal={isFirstProposal}
+              isLastProposal={isLastProposal}
+              onPrevProposalClick={prevProposalHandler}
+              onNextProposalClick={nextProposalHandler}
+              isShowVoteModalOpen={isShowVoteModalOpen}
+            />
             <span>
               <div className="d-flex">
                 <div>Proposal {proposal.id}</div>

@@ -29,14 +29,39 @@
   opacity: 0.5;
 }
 
+.wrapper.dropdown {
+  padding-left: 4px;
+}
+
+.icon.dropdown {
+  margin-right: 0.2rem;
+  width: 30px;
+  display: block;
+}
+
+.icon.dropdown > svg {
+  width: 100%;
+  max-height: 40px;
+  position: relative;
+  top: 1px;
+}
+
 @media (max-width: 992px) {
   .icon > svg {
     max-height: 17px;
   }
 }
 
+.btnEnabled {
+  cursor: pointer;
+}
+
 .button:hover {
   cursor: pointer;
+}
+
+.btnDisabled {
+  cursor: not-allowed;
 }
 
 .coolInfo {
@@ -123,6 +148,61 @@
   .button {
     height: 48px;
     font-size: 18px;
+  }
+}
+
+.delegateBack {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--brand-cool-dark-text);
+  width: 100px;
+}
+
+.delegateBack:hover {
+  background-color: #e2e3e8;
+  color: var(--brand-cool-dark-text);
+}
+
+.delegatePrimary {
+  background-color: var(--brand-cool-dark-text);
+  color: white;
+  width: 315px;
+}
+
+.delegatePrimary:hover {
+  filter: brightness(200%);
+}
+
+.delegateSecondary {
+  background-color: var(--brand-color-blue);
+  color: white;
+  width: 315px;
+  border: none;
+}
+
+.delegateSecondary:hover {
+  background-color: var(--brand-color-blue-darker);
+}
+
+.delegateDisabled {
+  background-color: var(--brand-color-blue);
+  opacity: 0.5;
+  color: white;
+  width: 315px;
+  border: none;
+}
+
+@media (max-width: 992px) {
+  .delegatePrimary {
+    width: 210px;
+  }
+
+  .delegateSecondary {
+    width: 210px;
+  }
+
+  .delegateDisabled {
+    width: 210px;
   }
 }
 

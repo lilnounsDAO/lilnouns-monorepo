@@ -476,7 +476,7 @@ export const useActiveProposalsViaSubgraph = (): ProposalData => {
   const { account } = useEthers();
   
   const { loading, data, error } = useQuery(
-    activeProposals(account ?? "")
+    activeProposals(account?.toLowerCase() ?? "")
     , { fetchPolicy: 'no-cache' });
   const blockNumber = useBlockNumber();
   const { timestamp } = useBlockMeta();
@@ -498,9 +498,9 @@ export const useAllProposals = (): ProposalData => {
   return subgraph?.error ? onchain : subgraph;
 };
 
-export const useProposal = (id: string | number): Proposal | undefined => {
+export const useProposal = (id: string | number): {proposal: Proposal | undefined, proposalCount: number} => {
   const { data } = useAllProposals();
-  return data?.find(p => p.id === id.toString());
+  return { proposal : data?.find(p => p.id === id.toString()), proposalCount: data?.length ?? 0}
 };
 
 export const useCastVote = () => {

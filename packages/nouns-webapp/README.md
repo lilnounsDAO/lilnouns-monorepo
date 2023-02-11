@@ -25,7 +25,7 @@ cd packages/nouns-webapp
 # Copy local example environment file
 cp .env.example.local .env
 # Start local development
-yarn start
+yarn start-local or yarn start
 ```
 
 ### MetaMask

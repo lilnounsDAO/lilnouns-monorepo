@@ -384,7 +384,7 @@ export const snapshotProposalsQuery = () => gql`
     proposals(
       first: 1000
       skip: 0
-      where: { space_in: ["League of Lils", "leagueoflils.eth"] }
+      where: { space_in: ["leagueoflils.eth"] }
       orderBy: "created"
       orderDirection: desc
     ) {
@@ -438,6 +438,20 @@ export const nounsInTreasuryQuery = () => gql`
         id
       }
     }
+    delegates(
+    where: {id: "0xdcb4117e3a00632efcac3c169e0b23959f555e5e"}
+  ) {
+    id
+    delegatedVotes
+    tokenHoldersRepresentedAmount
+    nounsRepresented {
+      id
+    }
+    tokenHoldersRepresented(where: {id_not: "0xd5f279ff9eb21c6d40c8f345a66f2751c4eea1fb"}) {
+      id
+      tokenBalance
+    }
+  }
   }
 `;
 
@@ -566,7 +580,7 @@ export const LIL_NOUNS_GOVERNANCE_BY_OWNER_SUB = gql`
 
 export const SNAPSHOT_GOVERNANCE_BY_OWNER_SUB = gql`
   query governanceProfile($id: String!) {
-    votes(orderBy: "vp", where: { voter: $id, space_in: ["League of Lils", "leagueoflils.eth"] }) {
+    votes(orderBy: "vp", where: { voter: $id, space_in: ["leagueoflils.eth"] }) {
       voter
       vp
       choice
