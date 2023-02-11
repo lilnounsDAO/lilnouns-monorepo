@@ -1,4 +1,11 @@
 src/types
 subgraph.yaml
+# graph-node docker data folder
+data
+matchstick.yaml
+tests/.bin
+
 lil-nouns-subgraph-rinkeby
+lil-nouns-subgraph-goerli
+lil-nouns-subgraph-dq
 lil-nouns-subgraph
