@@ -22,7 +22,7 @@ const DelegateHoverCard: React.FC<DelegateHoverCardProps> = props => {
   const { data, loading, error } = useQuery(
     delegateNounsAtBlockQuery([unwrappedDelegateId], proposalCreationBlock),
     {
-      context: { clientName: isNounsDAOProp ? 'NounsDAO' : '' },
+      context: { clientName: isNounsDAOProp ? 'NounsDAO' : 'LilNounsDAO' },
       //* no cache to mitigate against object mutation between lils and nouns
       fetchPolicy: 'no-cache',
     },

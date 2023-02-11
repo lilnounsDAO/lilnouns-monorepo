@@ -28,7 +28,7 @@ const DelegateGruopedNounImageVoteTable: React.FC<
     propId,
   );
 
-  console.log(`shuffledDelegatedGroupedNouns: ${JSON.stringify(shuffledDelegatedGroupedNouns)}`);
+  // console.log(`shuffledDelegatedGroupedNouns: ${JSON.stringify(shuffledDelegatedGroupedNouns)}`);
   
   const [page, setPage] = useState<number>(0);
 

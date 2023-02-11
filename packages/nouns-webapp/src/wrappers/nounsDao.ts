@@ -1,4 +1,4 @@
-import { NounsDAOABI, NounsDaoLogicV1Factory } from '@lilnounsdao/sdk';
+import { NounsDAOV2ABI, NounsDaoLogicV1Factory } from '@lilnounsdao/sdk';
 import {
   ChainId,
   useBlockMeta,
@@ -131,7 +131,13 @@ export interface ProposalTransaction {
   calldata: string;
 }
 
-const abi = new utils.Interface(NounsDAOABI);
+export interface DynamicQuorumParams {
+  minQuorumVotesBPS: number;
+  maxQuorumVotesBPS: number;
+  quorumCoefficient: number;
+}
+
+const abi = new utils.Interface(NounsDAOV2ABI);
 const nounsDaoContract = new NounsDaoLogicV1Factory().attach(config.addresses.nounsDAOProxy);
 
 // Start the log search at the mainnet deployment block to speed up log queries
@@ -183,9 +189,41 @@ const removeItalics = (text: string | null): string | null =>
 
 const removeMarkdownStyle = R.compose(removeBold, removeItalics);
 
+export const useCurrentQuorum = (
+  nounsDao: string,
+  proposalId: number,
+  skip: boolean,
+): number | undefined => {
+  const request = () => {
+    if (skip) return false;
+    return {
+      abi,
+      address: nounsDao,
+      method: 'quorumVotes',
+      args: [proposalId],
+    };
+  };
+  const [quorum] = useContractCall<[EthersBN]>(request()) || [];
+  return quorum?.toNumber();
+};
+
+export const useDynamicQuorumProps = (
+  nounsDao: string,
+  block: number,
+): DynamicQuorumParams | undefined => {
+  const [params] =
+    useContractCall<[DynamicQuorumParams]>({
+      abi,
+      address: nounsDao,
+      method: 'getDynamicQuorumParamsAt',
+      args: [block],
+    }) || [];
+
+  return params;
+};
+
 export const useHasVotedOnProposal = (proposalId: string | undefined): boolean => {
   const { account } = useEthers();
-
   // Fetch a voting receipt for the passed proposal id
   const [receipt] =
     useContractCall<[any]>({
@@ -481,7 +519,7 @@ export const useActiveProposalsViaSubgraph = (): ProposalData => {
   const blockNumber = useBlockNumber();
   const { timestamp } = useBlockMeta();
 
-  const proposals = data?.daaa?.map((proposal: ProposalSubgraphEntity) => {
+  const proposals = data?.activeProps?.map((proposal: ProposalSubgraphEntity) => {
     return formatSubgraphVoteFilterProposal(proposal, blockNumber, timestamp);
   }).filter((p: Proposal) => p.status === ProposalState.ACTIVE);
 

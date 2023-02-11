@@ -21,16 +21,12 @@ import {
   Proposal,
   ProposalSubgraphEntity,
   ProposalTransactionDetails,
+  DynamicQuorumParams,
 } from './nounsDao';
 import { bigNounsProposalsQuery } from './subgraph';
 import BigNumber from 'bignumber.js';
 import { useBlockTimestamp } from '../hooks/useBlockTimestamp';
 
-export interface DynamicQuorumParams {
-  minQuorumVotesBPS: number;
-  maxQuorumVotesBPS: number;
-  quorumCoefficient: number;
-}
 
 const abi = new utils.Interface(NounsDAOV2ABI);
 // const abi_v2 = new utils.Interface(NounsDAOV2ABI);
@@ -89,7 +85,7 @@ const removeItalics = (text: string | null): string | null =>
 
 const removeMarkdownStyle = R.compose(removeBold, removeItalics);
 
-export const useCurrentQuorum = (
+export const useCurrentBigNounQuorum = (
   nounsDao: string,
   proposalId: number,
   skip: boolean,
@@ -107,7 +103,7 @@ export const useCurrentQuorum = (
   return quorum?.toNumber();
 };
 
-export const useDynamicQuorumProps = (
+export const useBigNounDynamicQuorumProps = (
   nounsDao: string,
   block: number,
 ): DynamicQuorumParams | undefined => {
@@ -365,11 +361,11 @@ export const useAllBigNounProposalsViaSubgraph = (): ProposalData => {
   const blockNumber = useBlockNumber();
   const timestamp = useBlockTimestamp(blockNumber);
 
-  const proposals = data?.daa?.map((proposal: ProposalSubgraphEntity) => {
+  const proposals = data?.nounsProps?.map((proposal: ProposalSubgraphEntity) => {
     return formatBigNounSubgraphProposal(proposal, blockNumber, timestamp);
   });
 
-  // console.log(`proposals??:  ${JSON.stringify(data.daa)}`);
+  // console.log(`proposals??:  ${JSON.stringify(data.nounsProps)}`);
 
   return {
     loading,

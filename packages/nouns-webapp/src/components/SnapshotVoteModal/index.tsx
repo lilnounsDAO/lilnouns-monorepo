@@ -25,7 +25,7 @@ export enum SnapshotVote {
 
 const POST_SUCESSFUL_VOTE_MODAL_CLOSE_TIME_MS = 5000;
 
-const SnapshotVoteModalModal = ({
+const SnapshotVoteModal = ({
   show,
   onHide,
   proposalId,
@@ -253,4 +253,4 @@ const SnapshotVoteModalModal = ({
     </>
   );
 };
-export default SnapshotVoteModalModal;
+export default SnapshotVoteModal;

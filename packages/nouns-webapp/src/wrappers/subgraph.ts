@@ -99,7 +99,7 @@ export const proposalsQuery = (first = 1_000) => gql`
 
 export const bigNounsProposalsQuery = (first = 1_000) => gql`
 {
-daa: proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
+  nounsProps: proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
     id
     description
     status
@@ -499,7 +499,15 @@ export const totalNounSupplyAtPropSnapshot = (proposalId: string) => gql`
 
 export const propUsingDynamicQuorum = (propoaslId: string) => gql`
 {
-  proposal(id: "${propoaslId}") {
+  lilnounsprop: proposal(id: "${propoaslId}") {
+    quorumCoefficient 
+  }
+}
+`;
+
+export const bigNounPropUsingDynamicQuorum = (propoaslId: string) => gql`
+{
+  nounsProp: proposal(id: "${propoaslId}") {
     quorumCoefficient 
   }
 }
@@ -688,7 +696,7 @@ export const BIG_NOUNS_GOVERNANCE_BY_OWNER_SUB = gql`
 
 export const activeProposals = (id: string) => gql`
   {
-    daaa: proposals(
+    activeProps: proposals(
       where: {
         status: "ACTIVE"
         votes_: { voter_contains: "${id}" }

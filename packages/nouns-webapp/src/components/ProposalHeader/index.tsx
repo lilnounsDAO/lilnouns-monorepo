@@ -47,7 +47,7 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
   const history = useHistory();
   const isMobile = isMobileScreen();
   const availableVotes = useUserVotesAsOfBlock(proposal?.createdBlock) ?? 0;
-  const hasVoted = !snapshotProposal ? useHasVotedOnProposal(proposal?.id) : useHasVotedOnSnapshotProposal(snapshotVoters) 
+  const hasVoted = !snapshotProposal && !isNounsDAOProp ? useHasVotedOnProposal(proposal?.id) : useHasVotedOnSnapshotProposal(snapshotVoters) 
   const proposalVote = useProposalVote(proposal?.id);
   const proposalCreationTimestamp = !snapshotProposal ? useBlockTimestamp(proposal?.createdBlock) : useBlockTimestamp(Number(snapshotProposal?.snapshot))
   const disableVoteButton = !isWalletConnected || !availableVotes;
