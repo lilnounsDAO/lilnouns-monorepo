@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Proposal } from '../../wrappers/nounsDao';
-import { useDynamicQuorumProps } from '../../wrappers/bigNounsDao';
+import { useDynamicQuorumProps } from '../../wrappers/nounsDao';
 import { totalNounSupplyAtPropSnapshot } from '../../wrappers/subgraph';
 import { Backdrop } from '../Modal';
 import classes from './DynamicQuorumInfoModal.module.css';
@@ -10,6 +10,7 @@ import { XIcon } from '@heroicons/react/solid';
 import clsx from 'clsx';
 import responsiveUiUtilsClasses from '../../utils/ResponsiveUIUtils.module.css';
 import config from '../../config';
+import { useBigNounDynamicQuorumProps } from '../../wrappers/bigNounsDao';
 
 const PLOTTING_CONSTANTS = {
   width: 950,
@@ -84,21 +85,21 @@ const DynamicQuorumInfoModalOverlay: React.FC<{
       <div className={classes.modal}>
         <div className={classes.content}>
           <h1 className={classes.title}>
-            <a>Dynamic Quorum</a>
+            <a>Dynamic Threshold</a>
           </h1>
 
           <p className={classes.mainCopy}>
             {window.innerWidth < 1200 ? (
               <a>
-                The Quorum (minimum number of For votes required to pass a proposal) is set as a
-                function of the number of Against votes a proposal has recieved. It increases
+                The Threshold (minimum number of For votes required to pass a proposal) is set as a
+                function of the number of Against votes a proposal has received. It increases
                 quadratically as a function of the % of {token} voting against a prop, varying
-                between Min Quorum and Max Quorum.
+                between Min Threshold and Max Threshold.
               </a>
             ) : (
               <a>
-                The Quorum (minimum number of For votes required to pass a proposal) is set as a
-                function of the number of Against votes a proposal has recieved. The number of For
+                The Threshold (minimum number of For votes required to pass a proposal) is set as a
+                function of the number of Against votes a proposal has received. The number of For
                 votes required to pass Proposal {proposal.id} is given by the following curve:
               </a>
             )}
@@ -107,12 +108,12 @@ const DynamicQuorumInfoModalOverlay: React.FC<{
           {/* Mobile - no graph content */}
           <div className={clsx(responsiveUiUtilsClasses.mobileOnly, classes.mobileQuorumWrapper)}>
             <div className={classes.mobileQuorumInfo}>
-              <span>Min Quorum:</span> {Math.floor((minQuorumBps * totalNounSupply) / 10_000)}{' '}
-              {tokens}
+              <span>Min Threshold:</span>
+              {Math.floor((minQuorumBps * totalNounSupply) / 10_000)} {tokens}
             </div>
 
             <div className={classes.mobileQuorumInfo}>
-              <span>Current Quorum:</span>{' '}
+              <span>Current Threshold:</span>
               {Math.floor(
                 (Math.min(maxQuorumBps, dqmFunction(againstVotesBps)) * totalNounSupply) / 10_000,
               )}{' '}
@@ -120,8 +121,8 @@ const DynamicQuorumInfoModalOverlay: React.FC<{
             </div>
 
             <div className={classes.mobileQuorumInfo}>
-              <span>Max Quorum:</span> {Math.floor((maxQuorumBps * totalNounSupply) / 10_000)}{' '}
-              {tokens}
+              <span>Max Threshold:</span>
+              {Math.floor((maxQuorumBps * totalNounSupply) / 10_000)} {tokens}
             </div>
           </div>
 
@@ -197,7 +198,7 @@ const DynamicQuorumInfoModalOverlay: React.FC<{
                   />
                   <circle cy={y} cx={x} r="7" fill="var(--brand-gray-light-text)" />
                   <text x="20" y="24">
-                    Max Quorum: {Math.floor((maxQuorumBps * totalNounSupply) / 10_000)} {tokens}{' '}
+                    Max Threshold: {Math.floor((maxQuorumBps * totalNounSupply) / 10_000)} {tokens}{' '}
                     <tspan fill="var(--brand-gray-light-text)">
                       ({maxQuorumBps / 100}% of {tokens})
                     </tspan>
@@ -205,10 +206,10 @@ const DynamicQuorumInfoModalOverlay: React.FC<{
                   {Math.abs(y - 10 - PLOTTING_CONSTANTS.minQHeightPlotSpace) > 100 ? (
                     <>
                       <text x="20" y="280">
-                        Min Quorum: {Math.floor((minQuorumBps * totalNounSupply) / 10_000)}{' '}
+                        Min Threshold: {Math.floor((minQuorumBps * totalNounSupply) / 10_000)}{' '}
                         {Math.floor((minQuorumBps * totalNounSupply) / 10_000) === 1
-                          ? '${token}'
-                          : '${tokens}'}{' '}
+                          ? `${token}`
+                          : `${tokens}`}{' '}
                         <tspan fill="var(--brand-gray-light-text)">
                           ({minQuorumBps / 100}% of {tokens})
                         </tspan>
@@ -217,7 +218,7 @@ const DynamicQuorumInfoModalOverlay: React.FC<{
                   ) : (
                     <>
                       <text x="550" y="280">
-                        Min Quorum: {Math.floor((minQuorumBps * totalNounSupply) / 10_000)} {tokens}{' '}
+                        Min Threshold: {Math.floor((minQuorumBps * totalNounSupply) / 10_000)} {tokens}{' '}
                         <tspan fill="var(--brand-gray-light-text)">
                           ({minQuorumBps / 100}% of {tokens})
                         </tspan>
@@ -235,13 +236,13 @@ const DynamicQuorumInfoModalOverlay: React.FC<{
                       x={x - 390}
                       y={y + (againstVotesBps > 0.9 * linearToConstantCrossoverBPS ? 20 : -10)}
                     >
-                      Current Quorum:{' '}
+                      Current Threshold:{' '}
                       {Math.floor(
                         (Math.min(maxQuorumBps, dqmFunction(againstVotesBps)) * totalNounSupply) /
                           10_000,
                       )}{' '}
                       <tspan fill="var(--brand-gray-light-text)">
-                        ({againstVotesAbs} {againstVotesAbs === 1 ? '${token}' : `${tokens}`}{' '}
+                        ({againstVotesAbs} {againstVotesAbs === 1 ? `${token}` : `${tokens}`}{' '}
                         Currently Against)
                       </tspan>
                     </text>
@@ -250,13 +251,13 @@ const DynamicQuorumInfoModalOverlay: React.FC<{
                       x={x + 10}
                       y={y + (againstVotesBps > 0.9 * linearToConstantCrossoverBPS ? 20 : -10)}
                     >
-                      Current Quorum:{' '}
+                      Current Threshold:{' '}
                       {Math.floor(
                         (Math.min(maxQuorumBps, dqmFunction(againstVotesBps)) * totalNounSupply) /
                           10_000,
                       )}{' '}
                       <tspan fill="var(--brand-gray-light-text)">
-                        ({againstVotesAbs} {againstVotesAbs === 1 ? `${token}` : '${tokens}'}{' '}
+                        ({againstVotesAbs} {againstVotesAbs === 1 ? `${token}` : `${tokens}`}{' '}
                         Currently Against)
                       </tspan>
                     </text>
@@ -281,12 +282,12 @@ const DynamicQuorumInfoModalOverlay: React.FC<{
             </div>
           </div>
 
-          <p className={classes.moreDetailsCopy}>
+          {/* <p className={classes.moreDetailsCopy}>
             <a>
               More details on how dynamic quorum works can be found{' '}
               <span className={classes.underline}>here</span>.
             </a>
-          </p>
+          </p> */}
         </div>
       </div>
     </>
@@ -300,7 +301,9 @@ const DynamicQuorumInfoModal: React.FC<{
   onDismiss: () => void;
 }> = props => {
   const { onDismiss, proposal, isNounsDAOProp, againstVotesAbsolute } = props;
-
+  const nounsProxyAddress = isNounsDAOProp
+    ? config.bigNounsAddresses.nounsDAOProxy
+    : config.addresses.nounsDAOProxy;
   const { data, loading, error } = useQuery(
     totalNounSupplyAtPropSnapshot(proposal && proposal.id ? proposal.id : '0'),
     {
@@ -308,14 +311,13 @@ const DynamicQuorumInfoModal: React.FC<{
     },
   );
 
-  const dynamicQuorumProps = useDynamicQuorumProps(
-    config.bigNounsAddresses.nounsDAOProxy,
-    proposal.startBlock,
-  );
+  const dynamicQuorumProps = isNounsDAOProp
+    ? useBigNounDynamicQuorumProps(nounsProxyAddress, proposal.startBlock)
+    : useDynamicQuorumProps(nounsProxyAddress, proposal.startBlock);
 
   if (error) {
     console.log(`proposalproposal=${proposal}`);
-    return <>Failed to fetch dynamic quorum info</>;
+    return <>Failed to fetch dynamic threshold info</>;
   }
 
   if (loading) {
