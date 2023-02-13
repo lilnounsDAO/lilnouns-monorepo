@@ -51,13 +51,13 @@ const NounImageInlineTable: React.FC<NounImageInlineTableTableProps> = props => 
     return Array(rows)
       .fill(0)
       .map((_, i) => (
-        <tr>
-          {Array(rowLength)
-            .fill(0)
-            .map((_, j) => (
-              <td>{paddedNounIds[i * rowLength + j]}</td>
-            ))}
-        </tr>
+            <tr key={i}>
+              {Array(rowLength)
+                .fill(0)
+                .map((_, j) => (
+                  <td>{paddedNounIds[i * rowLength + j]}</td>
+                ))}
+            </tr>
       ));
   };
 
