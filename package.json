@@ -25,7 +25,7 @@
     ]
   },
   "resolutions": {
-    "**/@ethersproject/contracts": "^5.6.2",
+    "**/@ethersproject/contracts": "5.6.2",
     "**/ethers": "5.6.8",
     "@usedapp/core/ethers": "5.6.8",
     "graphql": "^15.5.1"
