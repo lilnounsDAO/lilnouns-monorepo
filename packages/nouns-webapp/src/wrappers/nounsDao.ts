@@ -1,6 +1,7 @@
 import { NounsDAOV2ABI, NounsDaoLogicV1Factory } from '@lilnounsdao/sdk';
 import {
   ChainId,
+  connectContractToSigner,
   useBlockMeta,
   useBlockNumber,
   useContractCall,
@@ -15,8 +16,9 @@ import { useLogs } from '../hooks/useLogs';
 import * as R from 'ramda';
 import config, { CHAIN_ID } from '../config';
 import { useQuery } from '@apollo/client';
-import { activeProposals, proposalsQuery } from './subgraph';
+import { activeProposals, partialProposalsQuery, proposalQuery, proposalsQuery } from './subgraph';
 import BigNumber from 'bignumber.js';
+import { useBlockTimestamp } from '../hooks/useBlockTimestamp';
 
 export enum Vote {
   AGAINST = 0,
@@ -63,7 +65,29 @@ export interface ProposalDetail {
   callData: string;
 }
 
-export interface Proposal {
+export interface PartialProposal {
+  id: string | undefined;
+  title: string;
+  status: ProposalState;
+  forCount: number;
+  againstCount: number;
+  abstainCount: number;
+  transactionHash: string;
+  quorumVotes: number;
+  eta: Date | undefined;
+  createdBlock: number;
+  startBlock: number;
+  endBlock: number;
+
+  snapshotEnd?: number;
+  snapshotProposalId?: string;
+
+  snapshotForCount?: number;
+  snapshotAgainstCount?: number;
+  snapshotAbstainCount?: number;
+}
+
+export interface Proposal extends PartialProposal {
   id: string | undefined;
   title: string;
   description: string;
@@ -80,12 +104,6 @@ export interface Proposal {
   quorumVotes: number;
   details: ProposalDetail[];
   transactionHash: string;
-  snapshotEnd?: number;
-  snapshotProposalId?: string;
-
-  snapshotForCount?: number;
-  snapshotAgainstCount?: number;
-  snapshotAbstainCount?: number;
 }
 
 export interface ProposalTransactionDetails {
@@ -95,25 +113,32 @@ export interface ProposalTransactionDetails {
   calldatas: string[];
 }
 
-export interface ProposalSubgraphEntity extends ProposalTransactionDetails {
+export interface PartialProposalSubgraphEntity {
   id: string;
-  description: string;
+  title: string;
   status: keyof typeof ProposalState;
   forVotes: string;
   againstVotes: string;
   abstainVotes: string;
-  createdBlock: string;
   createdTransactionHash: string;
   startBlock: string;
   endBlock: string;
   executionETA: string | null;
-  proposer: { id: string };
-  proposalThreshold: string;
   quorumVotes: string;
 }
 
-export interface ProposalData {
-  data: Proposal[];
+export interface ProposalSubgraphEntity
+  extends ProposalTransactionDetails,
+    PartialProposalSubgraphEntity {
+  description: string;
+  createdBlock: string;
+  createdTransactionHash: string;
+  proposer: { id: string };
+  proposalThreshold: string;
+}
+
+export interface PartialProposalData {
+  data: PartialProposal[];
   error?: Error;
   loading: boolean;
 }
@@ -348,7 +373,7 @@ const useFormattedProposalCreatedLogs = (skip: boolean, fromBlock?: number) => {
 const getProposalState = (
   blockNumber: number | undefined,
   blockTimestamp: Date | undefined,
-  proposal: ProposalSubgraphEntity,
+  proposal: PartialProposalSubgraphEntity,
 ) => {
   const status = ProposalState[proposal.status];
   if (status === ProposalState.PENDING) {
@@ -388,11 +413,35 @@ const getProposalState = (
   return status;
 };
 
+export const formatPartialSubgraphProposal = (
+  proposal: PartialProposalSubgraphEntity,
+  blockNumber: number | undefined,
+  timestamp: number | undefined,
+) => {
+  return {
+    id: proposal.id,
+    title: proposal.title ?? 'Untitled',
+    status: getProposalState(blockNumber, new Date((timestamp ?? 0) * 1000), proposal),
+    startBlock: parseInt(proposal.startBlock),
+    endBlock: parseInt(proposal.endBlock),
+    forCount: parseInt(proposal.forVotes),
+    againstCount: parseInt(proposal.againstVotes),
+    abstainCount: parseInt(proposal.abstainVotes),
+    quorumVotes: parseInt(proposal.quorumVotes),
+    eta: proposal.executionETA ? new Date(Number(proposal.executionETA) * 1000) : undefined,
+    transactionHash: proposal.createdTransactionHash,
+  };
+};
+
 export const formatSubgraphProposal = (
   proposal: ProposalSubgraphEntity,
   blockNumber?: number,
-  timestamp?: Date,
+  timestamp?: number | undefined,
 ) => {
+  if (!proposal) {
+    return;
+  }
+
   const description = proposal.description?.replace(/\\n/g, '\n').replace(/(^['"]|['"]$)/g, '');
 
   return {
@@ -400,7 +449,7 @@ export const formatSubgraphProposal = (
     title: R.pipe(extractTitle, removeMarkdownStyle)(description) ?? 'Untitled',
     description: description ?? 'No description.',
     proposer: proposal.proposer.id,
-    status: getProposalState(blockNumber, timestamp, proposal),
+    status: getProposalState(blockNumber, new Date((timestamp ?? 0) * 1000), proposal),
     proposalThreshold: parseInt(proposal.proposalThreshold),
     quorumVotes: parseInt(proposal.quorumVotes),
     forCount: parseInt(proposal.forVotes),
@@ -434,13 +483,16 @@ export const formatSubgraphVoteFilterProposal = (
   };
 };
 
-export const useAllProposalsViaSubgraph = (): ProposalData => {
-  const { loading, data, error } = useQuery(proposalsQuery(), { fetchPolicy: 'no-cache' });
+export const useAllProposalsViaSubgraph = (): PartialProposalData => {
+  const { loading, data, error } = useQuery(partialProposalsQuery(), {
+    context: { clientName: 'LilNounsDAO' },
+    // fetchPolicy: 'no-cache',
+  });
   const blockNumber = useBlockNumber();
-  const { timestamp } = useBlockMeta();
+  const timestamp = useBlockTimestamp(blockNumber);
 
   const proposals = data?.proposals?.map((proposal: ProposalSubgraphEntity) => {
-    return formatSubgraphProposal(proposal, blockNumber, timestamp);
+    return formatPartialSubgraphProposal(proposal, blockNumber, timestamp);
   });
 
   return {
@@ -450,7 +502,7 @@ export const useAllProposalsViaSubgraph = (): ProposalData => {
   };
 };
 
-export const useAllProposalsViaChain = (skip = false): ProposalData => {
+export const useAllProposalsViaChain = (skip = false): PartialProposalData => {
   const proposalCount = useProposalCount();
   const votingDelay = useVotingDelay(nounsDaoContract.address);
 
@@ -483,25 +535,20 @@ export const useAllProposalsViaChain = (skip = false): ProposalData => {
     return {
       data: proposals.map((p, i) => {
         const proposal = p?.[0];
-        const description = logs[i]?.description
-          ?.replace(/\\n/g, '\n')
-          .replace(/(^['"]|['"]$)/g, '');
+        const description = logs[i]?.description?.replace(/\\n/g, '\n');
         return {
           id: proposal?.id.toString(),
           title: R.pipe(extractTitle, removeMarkdownStyle)(description) ?? 'Untitled',
-          description: description ?? 'No description.',
-          proposer: proposal?.proposer,
           status: proposalStates[i]?.[0] ?? ProposalState.UNDETERMINED,
-          proposalThreshold: parseInt(proposal?.proposalThreshold?.toString() ?? '0'),
-          quorumVotes: parseInt(proposal?.quorumVotes?.toString() ?? '0'),
-          forCount: parseInt(proposal?.forVotes?.toString() ?? '0'),
-          againstCount: parseInt(proposal?.againstVotes?.toString() ?? '0'),
-          abstainCount: parseInt(proposal?.abstainVotes?.toString() ?? '0'),
+
           createdBlock: parseInt(proposal?.startBlock.sub(votingDelay ?? 0)?.toString() ?? ''),
           startBlock: parseInt(proposal?.startBlock?.toString() ?? ''),
           endBlock: parseInt(proposal?.endBlock?.toString() ?? ''),
+          forCount: parseInt(proposal?.forVotes?.toString() ?? '0'),
+          againstCount: parseInt(proposal?.againstVotes?.toString() ?? '0'),
+          abstainCount: parseInt(proposal?.abstainVotes?.toString() ?? '0'),
+          quorumVotes: parseInt(proposal?.quorumVotes?.toString() ?? '0'),
           eta: proposal?.eta ? new Date(proposal?.eta?.toNumber() * 1000) : undefined,
-          details: logs[i]?.details,
           transactionHash: logs[i]?.transactionHash,
         };
       }),
@@ -510,18 +557,20 @@ export const useAllProposalsViaChain = (skip = false): ProposalData => {
   }, [formattedLogs, proposalStates, proposals, votingDelay]);
 };
 
-export const useActiveProposalsViaSubgraph = (): ProposalData => {
+export const useActiveProposalsViaSubgraph = (): PartialProposalData => {
   const { account } = useEthers();
-  
-  const { loading, data, error } = useQuery(
-    activeProposals(account?.toLowerCase() ?? "")
-    , { fetchPolicy: 'no-cache' });
+
+  const { loading, data, error } = useQuery(activeProposals(account?.toLowerCase() ?? ''), {
+    fetchPolicy: 'no-cache',
+  });
   const blockNumber = useBlockNumber();
   const { timestamp } = useBlockMeta();
 
-  const proposals = data?.activeProps?.map((proposal: ProposalSubgraphEntity) => {
-    return formatSubgraphVoteFilterProposal(proposal, blockNumber, timestamp);
-  }).filter((p: Proposal) => p.status === ProposalState.ACTIVE);
+  const proposals = data?.activeProps
+    ?.map((proposal: ProposalSubgraphEntity) => {
+      return formatSubgraphVoteFilterProposal(proposal, blockNumber, timestamp);
+    })
+    .filter((p: Proposal) => p.status === ProposalState.ACTIVE);
 
   return {
     loading,
@@ -530,15 +579,25 @@ export const useActiveProposalsViaSubgraph = (): ProposalData => {
   };
 };
 
-export const useAllProposals = (): ProposalData => {
+export const useAllProposals = (): PartialProposalData => {
   const subgraph = useAllProposalsViaSubgraph();
   const onchain = useAllProposalsViaChain(!subgraph.error);
   return subgraph?.error ? onchain : subgraph;
 };
 
-export const useProposal = (id: string | number): {proposal: Proposal | undefined, proposalCount: number} => {
-  const { data } = useAllProposals();
-  return { proposal : data?.find(p => p.id === id.toString()), proposalCount: data?.length ?? 0}
+export const useProposal = (id: string | number): { proposal: Proposal | undefined } => {
+  const blockNumber = useBlockNumber();
+  const timestamp = useBlockTimestamp(blockNumber);
+  const prop = formatSubgraphProposal(
+    useQuery(proposalQuery(id)).data?.proposal,
+    blockNumber,
+    timestamp,
+  );
+  return { proposal: prop };
+
+  // const { data } = useAllProposals();
+  // const prop = data?.find(p => p.id === id.toString())
+  // return { proposal: prop, proposalCount: data?.length ?? 0}
 };
 
 export const useCastVote = () => {
@@ -555,6 +614,45 @@ export const useCastVoteWithReason = () => {
     'castVoteWithReason',
   );
   return { castVoteWithReason, castVoteWithReasonState };
+};
+
+export const useCastRefundableVote = () => {
+  const { library } = useEthers();
+  const { send: castRefundableVote, state: castRefundableVoteState } = useContractFunction(
+    nounsDaoContract,
+    'castRefundableVote',
+  );
+
+  return {
+    castRefundableVote: async (...args: any[]): Promise<void> => {
+      const contract = connectContractToSigner(nounsDaoContract, undefined, library);
+      const gasLimit = await contract.estimateGas.castRefundableVote(...args);
+      return castRefundableVote(...args, {
+        gasLimit: gasLimit.add(30_000), // A 30,000 gas pad is used to avoid 'Out of gas' errors
+      });
+    },
+    castRefundableVoteState,
+  };
+};
+
+export const useCastRefundableVoteWithReason = () => {
+  const { library } = useEthers();
+  // prettier-ignore
+  const { send: castRefundableVoteWithReason, state: castRefundableVoteWithReasonState } = useContractFunction(
+    nounsDaoContract,
+    'castRefundableVoteWithReason',
+  );
+
+  return {
+    castRefundableVoteWithReason: async (...args: any[]): Promise<void> => {
+      const contract = connectContractToSigner(nounsDaoContract, undefined, library);
+      const gasLimit = await contract.estimateGas.castRefundableVoteWithReason(...args);
+      return castRefundableVoteWithReason(...args, {
+        gasLimit: gasLimit.add(30_000), // A 30,000 gas pad is used to avoid 'Out of gas' errors
+      });
+    },
+    castRefundableVoteWithReasonState,
+  };
 };
 
 export const usePropose = () => {

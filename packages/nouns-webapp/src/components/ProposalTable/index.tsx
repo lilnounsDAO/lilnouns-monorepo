@@ -1,9 +1,9 @@
 import classes from './ProposalTable.module.css';
-import { Proposal } from '../../wrappers/nounsDao';
+import { PartialProposal } from '../../wrappers/nounsDao';
 import { Alert, Row } from 'react-bootstrap';
 import { LilNounProposalRow } from '../Proposals';
 
-const ProposalTable = ({ proposals }: { proposals: Proposal[] }) => {
+const ProposalTable = ({ proposals }: { proposals: PartialProposal[] }) => {
   return (
     <>
     <span className={classes.subHeaderRow}>Active proposals waiting for your vote</span>

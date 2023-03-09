@@ -155,12 +155,13 @@ const NounderNounContent: React.FC<{
             }
           >
             {nounIdNumber % 10 === 0 ? (
-              <DocLink
-                to="/lilnounders"
-                className={isCool ? bidBtnClasses.bidHistoryCool : bidBtnClasses.bidHistoryWarm}
-              >
-                Learn more →
-              </DocLink>
+              // <DocLink
+              //   to="/lilnounders"
+              //   className={isCool ? bidBtnClasses.bidHistoryCool : bidBtnClasses.bidHistoryWarm}
+              // >
+              //   Learn more →
+              // </DocLink>
+              <></>
             ) : (
               <></>
             )}

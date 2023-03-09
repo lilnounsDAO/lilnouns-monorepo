@@ -124,6 +124,96 @@ export const bigNounsProposalsQuery = (first = 1_000) => gql`
 }
 `;
 
+export const partialProposalsQuery = (first = 1_000) => gql`
+{
+  proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
+    id
+    title
+    status
+    forVotes
+    againstVotes
+    abstainVotes
+    createdTransactionHash
+    quorumVotes
+    executionETA
+    startBlock
+    endBlock
+  }
+}
+`;
+
+export const bigNounsPartialProposalsQuery = (first = 1_000) => gql`
+{
+  nounsProps: proposals(first: ${first}, orderBy: createdBlock, orderDirection: asc) {
+    id
+    title
+    status
+    forVotes
+    againstVotes
+    abstainVotes
+    createdTransactionHash
+    quorumVotes
+    executionETA
+    startBlock
+    endBlock
+  }
+}
+`;
+
+export const proposalQuery = (id: string | number) => gql`
+{
+  proposal(id: ${id}) {
+    id
+    description
+    status
+    proposalThreshold
+    quorumVotes
+    forVotes
+    againstVotes
+    abstainVotes
+    createdTransactionHash
+    createdBlock
+    startBlock
+    endBlock
+    executionETA
+    targets
+    values
+    signatures
+    calldatas
+    proposer {
+      id
+    }
+  }
+}
+`;
+
+export const bigNounsProposalQuery = (id: string | number) => gql`
+{
+  nounsProp: proposal(id: ${id}) {
+    id
+    description
+    status
+    proposalThreshold
+    quorumVotes
+    forVotes
+    againstVotes
+    abstainVotes
+    createdTransactionHash
+    createdBlock
+    startBlock
+    endBlock
+    executionETA
+    targets
+    values
+    signatures
+    calldatas
+    proposer {
+      id
+    }
+  }
+}
+`;
+
 export const auctionQuery = (auctionId: number) => gql`
 {
 	auction(id: ${auctionId}) {

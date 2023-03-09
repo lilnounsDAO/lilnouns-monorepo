@@ -5,7 +5,7 @@ import config, { cache, cacheKey, CHAIN_ID } from '../config';
 import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
 import { seedsQuery, lilnounsSeedsQuery } from './subgraph';
-import { Proposal } from './nounsDao';
+import { PartialProposal, Proposal } from './nounsDao';
 
 interface NounToken {
   name: string;
@@ -238,7 +238,7 @@ export const useUserVotesAsOfBlock = (block: number | undefined): number | undef
   return votes?.toNumber();
 };
 
-export const useUserVotesAsOfBlockByProp = (proposals: Proposal[]) => {
+export const useUserVotesAsOfBlockByProp = (proposals: PartialProposal[]) => {
   const { account } = useEthers();
 
   const snapshotBlocks = proposals.map(prop => prop.createdBlock);
