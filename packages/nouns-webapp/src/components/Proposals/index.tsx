@@ -1,4 +1,4 @@
-import { Proposal, ProposalState, useProposalThreshold } from '../../wrappers/nounsDao';
+import { PartialProposal, ProposalState, useProposalThreshold } from '../../wrappers/nounsDao';
 import { Alert, Button } from 'react-bootstrap';
 import ProposalStatus from '../ProposalStatus';
 import classes from './Proposals.module.css';
@@ -25,7 +25,7 @@ dayjs.extend(advanced);
 dayjs.extend(relativeTime);
 
 export const getCountdownCopy = (
-  proposal: Proposal,
+  proposal: PartialProposal,
   currentBlock: number,
   propState?: ProposalState,
   snapshotProp?: SnapshotProposal,
@@ -114,7 +114,7 @@ export interface SnapshotProposal {
   [key: string]: any;
 }
 
-export const LilNounProposalRow = ({ proposal }: { proposal: Proposal }) => {
+export const LilNounProposalRow = ({ proposal }: { proposal: PartialProposal }) => {
   const currentBlock = useBlockNumber();
 
   const isPropInStateToHaveCountDown =
@@ -163,7 +163,7 @@ export const LilNounProposalRow = ({ proposal }: { proposal: Proposal }) => {
   );
 };
 
-export const bigNounsPropStatus = (proposal: Proposal, snapshotVoteObject?: SnapshotProposal) => {
+export const bigNounsPropStatus = (proposal: PartialProposal, snapshotVoteObject?: SnapshotProposal) => {
   let propStatus = proposal.status;
 
   if (snapshotVoteObject && !proposal.snapshotForCount) {
@@ -218,7 +218,7 @@ export const BigNounProposalRow = ({
   proposal,
   snapshotProposals,
 }: {
-  proposal: Proposal;
+  proposal: PartialProposal;
   snapshotProposals: SnapshotProposal[];
 }) => {
   const currentBlock = useBlockNumber();
@@ -286,9 +286,9 @@ const Proposals = ({
   snapshotProposals,
   isNounsDAOProp,
 }: {
-  proposals: Proposal[];
-  proposalsAwaitingVote: Proposal[];
-  nounsDAOProposals: Proposal[];
+  proposals: PartialProposal[];
+  proposalsAwaitingVote: PartialProposal[];
+  nounsDAOProposals: PartialProposal[];
   snapshotProposals: SnapshotProposal[] | null;
   isNounsDAOProp: boolean;
 }) => {

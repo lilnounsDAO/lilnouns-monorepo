@@ -80,7 +80,7 @@ const NounsVotePage = ({
     params: { id },
   },
 }: RouteComponentProps<{ id: string }>) => {
-  const {proposal, proposalCount} = useBigNounProposal(id);
+  const {proposal} = useBigNounProposal(id);
 
   const activeAccount = useAppSelector(state => state.account.activeAccount);
   const {
@@ -506,7 +506,6 @@ const NounsVotePage = ({
           <ProposalHeader
             snapshotProposal={snapProp}
             proposal={proposal}
-            proposalCount={proposalCount}
             isNounsDAOProp={true}
             isActiveForVoting={isActiveForVoting}
             isWalletConnected={isWalletConnected}
@@ -537,8 +536,7 @@ const NounsVotePage = ({
 
         <p
           onClick={() => {
-            //TODO: implement delegate view
-
+            
             if (isDelegateView) {
               setIsDelegateView(false);
               if (snapProp) {

@@ -13,11 +13,12 @@ import WalletConnectModal from '../WalletConnectModal';
 import { useAppSelector } from '../../hooks';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
-import { useShortAddress } from '../../utils/addressAndENSDisplayUtils';
+import { shortENS, useShortAddress as usesA, useShortAddress } from '../../utils/addressAndENSDisplayUtils';
 import { isMobileScreen } from '../../utils/isMobile';
 import { usePickByState } from '../../utils/colorResponsiveUIUtils';
 import WalletConnectButton from './WalletConnectButton';
 import { useAuth } from '../../hooks/useAuth';
+import { useReverseENSLookUp } from '../../utils/ensLookup';
 
 interface NavWalletProps {
   address: string;
@@ -47,6 +48,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
   const { library: provider, deactivate, account } = useEthers();
   const { logout } = useAuth();
   const activeAccount = useAppSelector(state => state.account.activeAccount);
+  const ens = useReverseENSLookUp(address);
   const shortAddress = useShortAddress(address);
 
   const setModalStateHandler = (state: boolean) => {
@@ -125,7 +127,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
             {' '}
             <Davatar size={21} address={address} provider={provider} />
           </div>
-          <div className={classes.address}>{shortAddress}</div>
+          <div className={classes.address}>{ens ? shortENS(ens) : shortAddress}</div>
           <div className={buttonUp ? classes.arrowUp : classes.arrowDown}>
             <FontAwesomeIcon icon={buttonUp ? faSortUp : faSortDown} />{' '}
           </div>
@@ -224,7 +226,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
               {' '}
               <Davatar size={21} address={address} provider={provider} />
             </div>
-            <div className={classes.address}>{shortAddress}</div>
+            <div className={classes.address}>{ens ? shortENS(ens) : shortAddress}</div>
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@ const NounImageVoteTable: React.FC<NounImageVoteTableProps> = props => {
   const shuffledNounIds = pseudoRandomPredictableShuffle(nounIds, propId);
   const paddedNounIds = shuffledNounIds
     .map((nounId: string) => {
-      if(isNounsDAOProp){
+      if (isNounsDAOProp) {
         return <StandaloneBigNounCircular nounId={EthersBN.from(nounId)} />;
       }
       return <StandaloneNounCircular nounId={EthersBN.from(nounId)} />;
@@ -34,13 +34,15 @@ const NounImageVoteTable: React.FC<NounImageVoteTableProps> = props => {
     return Array(rows)
       .fill(0)
       .map((_, i) => (
-        <tr>
-          {Array(rowLength)
-            .fill(0)
-            .map((_, j) => (
-              <td>{paddedNounIds[i * rowLength + j]}</td>
-            ))}
-        </tr>
+          <thead>
+            <tr>
+              {Array(rowLength)
+                .fill(0)
+                .map((_, j) => (
+                  <td key={i}>{paddedNounIds[i * rowLength + j]}</td>
+                ))}
+            </tr>
+          </thead>
       ));
   };
 
