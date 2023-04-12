@@ -29,7 +29,7 @@ const NounModal: React.FC<{ onDismiss: () => void; svg: string }> = props => {
     window.addEventListener('resize', handleWindowSizeChange);
 
     const loadPng = async () => {
-      setPng(await svg2png(svg, 500, 500));
+      setPng(await svg2png(svg, 512, 512));
     };
     loadPng();
 
@@ -46,7 +46,6 @@ const NounModal: React.FC<{ onDismiss: () => void; svg: string }> = props => {
             onDismiss();
           }}
         />,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         document.getElementById('backdrop-root')!,
       )}
       {ReactDOM.createPortal(
@@ -72,7 +71,6 @@ const NounModal: React.FC<{ onDismiss: () => void; svg: string }> = props => {
             )}
           </div>
         </div>,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         document.getElementById('overlay-root')!,
       )}
     </>
