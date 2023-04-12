@@ -6,6 +6,7 @@ import {
   useProposal,
   useQueueProposal,
   useCancelProposal,
+  useCurrentQuorum,
 } from '../../wrappers/nounsDao';
 import { useUserVotesAsOfBlock } from '../../wrappers/nounToken';
 import classes from './Vote.module.css';
@@ -29,9 +30,14 @@ import {
   delegateNounsAtBlockQuery,
   ProposalVotes,
   Delegates,
+  propUsingDynamicQuorum,
 } from '../../wrappers/subgraph';
 import { getNounVotes } from '../../utils/getNounsVotes';
 import { AVERAGE_BLOCK_TIME_IN_SECS } from '../../utils/constants';
+import ReactTooltip from 'react-tooltip';
+import { SearchIcon } from '@heroicons/react/solid';
+import DynamicQuorumInfoModal from '../../components/DynamicQuorumInfoModal';
+import config from '../../config';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -42,10 +48,11 @@ const VotePage = ({
     params: { id },
   },
 }: RouteComponentProps<{ id: string }>) => {
-  const {proposal, proposalCount} = useProposal(id);
+  const { proposal } = useProposal(id);
   const { account } = useEthers();
 
   const [showVoteModal, setShowVoteModal] = useState<boolean>(false);
+  const [showDynamicQuorumInfoModal, setShowDynamicQuorumInfoModal] = useState<boolean>(false);
   const [isDelegateView, setIsDelegateView] = useState(false);
 
   const [isQueuePending, setQueuePending] = useState<boolean>(false);
@@ -54,6 +61,14 @@ const VotePage = ({
 
   const dispatch = useAppDispatch();
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
+  const {
+    data: dqInfo,
+    loading: loadingDQInfo,
+    error: dqError,
+  } = useQuery(propUsingDynamicQuorum(id ?? '0'), {
+    context: { clientName: 'LilNounsDAO' },
+    skip: !proposal,
+  });
 
   const { queueProposal, queueProposalState } = useQueueProposal();
   const { executeProposal, executeProposalState } = useExecuteProposal();
@@ -89,6 +104,13 @@ const VotePage = ({
 
   // Only count available votes as of the proposal created block
   const availableVotes = useUserVotesAsOfBlock(proposal?.createdBlock ?? undefined);
+
+  const currentQuorum = useCurrentQuorum(
+    config.addresses.nounsDAOProxy,
+    proposal && proposal.id ? parseInt(proposal.id) : 0,
+    dqInfo && dqInfo.lilnounsprop ? dqInfo.lilnounsprop.quorumCoefficient === '0' : true,
+  );
+  
   const hasSucceeded = proposal?.status === ProposalState.SUCCEEDED;
 
   const isQueued = proposal?.status === ProposalState.QUEUED;
@@ -261,16 +283,12 @@ const VotePage = ({
     }
   }, [showToast]);
 
-  if (!proposal || loading || !data) {
+  if (!proposal || loading || !data || loadingDQInfo) {
     return (
       <div className={classes.spinner}>
         <Spinner animation="border" />
       </div>
     );
-  }
-
-  if (error) {
-    return <>Failed to fetch</>;
   }
 
   const isWalletConnected = !(activeAccount === undefined);
@@ -279,9 +297,22 @@ const VotePage = ({
   const forNouns = getNounVotes(data, 1);
   const againstNouns = getNounVotes(data, 0);
   const abstainNouns = getNounVotes(data, 2);
+  const isV2Prop = dqInfo.lilnounsprop.quorumCoefficient > 0;
+
+  if (error || dqError) {
+    return <>{'Failed to fetch'}</>;
+  }
 
   return (
     <Section fullWidth={false} className={classes.votePage}>
+      {showDynamicQuorumInfoModal && (
+        <DynamicQuorumInfoModal
+          proposal={proposal}
+          isNounsDAOProp={false}
+          againstVotesAbsolute={againstNouns.length}
+          onDismiss={() => setShowDynamicQuorumInfoModal(false)}
+        />
+      )}
       <VoteModal
         show={showVoteModal}
         onHide={() => setShowVoteModal(false)}
@@ -292,7 +323,6 @@ const VotePage = ({
         {proposal && (
           <ProposalHeader
             proposal={proposal}
-            proposalCount={proposalCount}
             isActiveForVoting={isActiveForVoting}
             isWalletConnected={isWalletConnected}
             submitButtonClickHandler={() => setShowVoteModal(true)}
@@ -381,15 +411,32 @@ const VotePage = ({
           <Col xl={4} lg={12}>
             <Card className={classes.voteInfoCard}>
               <Card.Body className="p-2">
-                <Row className={classes.voteMetadataRow}>
-                  <Col className={classes.voteMetadataRowTitle}>
+                <div className={classes.voteMetadataRow}>
+                  <div className={classes.voteMetadataRowTitle}>
                     <h1>Threshold</h1>
-                  </Col>
-                  <Col className={classes.thresholdInfo}>
-                    <span>Quorum</span>
-                    <h3>{proposal.quorumVotes} votes</h3>
-                  </Col>
-                </Row>
+                  </div>
+                  {isV2Prop && (
+                    <ReactTooltip
+                      id={'view-dq-info'}
+                      className={classes.delegateHover}
+                      getContent={dataTip => {
+                        return <a>View Dynamic Threshold Info</a>;
+                      }}
+                    />
+                  )}
+                  <div
+                    data-for="view-dq-info"
+                    data-tip="View Dynamic Quorum Info"
+                    onClick={() => setShowDynamicQuorumInfoModal(true && isV2Prop)}
+                    className={clsx(classes.thresholdInfo, isV2Prop ? classes.cursorPointer : '')}
+                  >
+                    <span>{isV2Prop ? 'Threshold' : isV2Prop ? 'Current Threshold' : 'Threshold'}</span>
+                    <h3>
+                      {isV2Prop ? currentQuorum ?? 0 : proposal.quorumVotes} votes
+                      {isV2Prop && <SearchIcon className={classes.dqIcon} />}
+                    </h3>
+                  </div>
+                </div>
               </Card.Body>
             </Card>
           </Col>

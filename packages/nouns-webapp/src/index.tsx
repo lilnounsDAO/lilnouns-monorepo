@@ -134,7 +134,11 @@ const client = new ApolloClient({
       ApolloLink.split(
         operation => operation.getContext().clientName === 'ZoraAPI',
         zoraAPILink,
-        defaultLink,
+        ApolloLink.split(
+          operation => operation.getContext().clientName === 'LilNounsDAO',
+          defaultLink,
+          defaultLink,
+        )
       ),
     ),
   ),

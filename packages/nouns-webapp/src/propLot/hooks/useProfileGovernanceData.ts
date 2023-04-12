@@ -53,7 +53,8 @@ const useProfileGovernanceData = () => {
   );
   const blockNumber = useBlockNumber();
   const bigNounsTimestamp = useBlockTimestamp(blockNumber);
-  const { timestamp } = useBlockMeta();
+  // const { timestamp } = useBlockMeta();
+  const timestamp = useBlockTimestamp(blockNumber)
 
   const [
     getLilNounGovernanceHistory,
@@ -132,7 +133,7 @@ const useProfileGovernanceData = () => {
         return {
           type: 'LIL_NOUN',
           proposal,
-          createdAt: proposal.createdBlock,
+          createdAt: proposal?.createdBlock,
           voted: vote.supportDetailed,
           reason: vote.reason || '',
         };
@@ -147,9 +148,9 @@ const useProfileGovernanceData = () => {
         return {
           type: 'BIG_NOUN',
           proposal,
-          createdAt: proposal.createdBlock,
-          voted: snapshotProposalVoteMap.current[proposal.id]?.voted,
-          reason: snapshotProposalVoteMap.current[proposal.id]?.reason,
+          createdAt: proposal?.createdBlock,
+          voted: snapshotProposalVoteMap.current[proposal?.id ?? ""]?.voted,
+          reason: snapshotProposalVoteMap.current[proposal?.id ?? ""]?.reason,
         };
       }) || []
     );

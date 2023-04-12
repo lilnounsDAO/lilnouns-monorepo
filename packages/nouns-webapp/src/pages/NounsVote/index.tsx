@@ -2,7 +2,7 @@ import { Row, Col, Button, Card, Spinner } from 'react-bootstrap';
 import Section from '../../layout/Section';
 import { ProposalState } from '../../wrappers/nounsDao';
 import {
-  useCurrentQuorum,
+  useCurrentBigNounQuorum,
   useExecuteBigNounProposal,
   useBigNounProposal,
   useQueueBigNounProposal,
@@ -16,8 +16,8 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import advanced from 'dayjs/plugin/advancedFormat';
-import SnapshotVoteModalModal from '../../components/SnapshotVoteModal';
-import React, { useCallback, useEffect, useState } from 'react';
+import SnapshotVoteModal from '../../components/SnapshotVoteModal';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import clsx from 'clsx';
 import ProposalHeader from '../../components/ProposalHeader';
@@ -37,6 +37,7 @@ import {
   snapshotSingularProposalVotesQuery,
   snapshotProposalsQuery,
   lilNounsHeldByVoterQuery,
+  bigNounPropUsingDynamicQuorum,
 } from '../../wrappers/subgraph';
 import { getNounVotes } from '../../utils/getNounsVotes';
 import { useQuery } from '@apollo/client';
@@ -79,7 +80,7 @@ const NounsVotePage = ({
     params: { id },
   },
 }: RouteComponentProps<{ id: string }>) => {
-  const {proposal, proposalCount} = useBigNounProposal(id);
+  const {proposal} = useBigNounProposal(id);
 
   const activeAccount = useAppSelector(state => state.account.activeAccount);
   const {
@@ -177,7 +178,7 @@ const NounsVotePage = ({
     data: dqInfo,
     loading: loadingDQInfo,
     error: dqError,
-  } = useQuery(propUsingDynamicQuorum(id ?? '0'), {
+  } = useQuery(bigNounPropUsingDynamicQuorum(id ?? '0'), {
     context: { clientName: 'NounsDAO' },
     skip: !proposal,
   });
@@ -217,10 +218,10 @@ const NounsVotePage = ({
     ? useUserVotesAsOfBlock(proposal?.createdBlock ?? undefined)
     : useUserVotesAsOfBlock(snapProp?.snapshot ?? undefined);
 
-  const currentQuorum = useCurrentQuorum(
+  const currentQuorum = useCurrentBigNounQuorum(
     config.bigNounsAddresses.nounsDAOProxy,
     proposal && proposal.id ? parseInt(proposal.id) : 0,
-    dqInfo && dqInfo.proposal ? dqInfo.proposal.quorumCoefficient === '0' : true,
+    dqInfo && dqInfo.nounsProp ? dqInfo.nounsProp.quorumCoefficient === '0' : true,
   );
 
   const hasSucceeded = proposal?.status === ProposalState.SUCCEEDED;
@@ -353,7 +354,7 @@ const NounsVotePage = ({
   const forNouns = getNounVotes(data, 1);
   const againstNouns = getNounVotes(data, 0);
   const abstainNouns = getNounVotes(data, 2);
-  const isV2Prop = dqInfo.proposal.quorumCoefficient > 0;
+  const isV2Prop = dqInfo.nounsProp.quorumCoefficient > 0;
 
   if (error || snapshotProposalError || snapshotVoteError || dqError) {
     return <>{'Failed to fetch'}</>;
@@ -493,7 +494,7 @@ const NounsVotePage = ({
           onDismiss={() => setShowDynamicQuorumInfoModal(false)}
         />
       )}
-      <SnapshotVoteModalModal
+      <SnapshotVoteModal
         show={showVoteModal}
         onHide={() => setShowVoteModal(false)}
         proposalId={proposal?.id}
@@ -505,7 +506,6 @@ const NounsVotePage = ({
           <ProposalHeader
             snapshotProposal={snapProp}
             proposal={proposal}
-            proposalCount={proposalCount}
             isNounsDAOProp={true}
             isActiveForVoting={isActiveForVoting}
             isWalletConnected={isWalletConnected}
@@ -536,8 +536,7 @@ const NounsVotePage = ({
 
         <p
           onClick={() => {
-            //TODO: implement delegate view
-
+            
             if (isDelegateView) {
               setIsDelegateView(false);
               if (snapProp) {
