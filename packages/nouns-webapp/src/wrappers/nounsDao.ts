@@ -154,6 +154,7 @@ export interface ProposalTransaction {
   value: string;
   signature: string;
   calldata: string;
+  decodedCalldata?: string;
 }
 
 export interface DynamicQuorumParams {
@@ -329,7 +330,8 @@ const formatProposalTransactionDetails = (details: ProposalTransactionDetails | 
       // Handle both logs and subgraph responses
       (details as ProposalTransactionDetails).values?.[i] ?? (details as Result)?.[3]?.[i] ?? 0,
     );
-    const [name, types] = signature.substring(0, signature.length - 1)?.split('(');
+    // Split at first occurrence of '('
+    const [name, types] = signature.substring(0, signature.length - 1)?.split(/\((.*)/s);
     if (!name || !types) {
       return {
         target,
@@ -338,7 +340,8 @@ const formatProposalTransactionDetails = (details: ProposalTransactionDetails | 
       };
     }
     const calldata = details.calldatas[i];
-    const decoded = defaultAbiCoder.decode(types.split(','), calldata);
+    // Split using comma as separator, unless comma is between parentheses (tuple).
+    const decoded = defaultAbiCoder.decode(types.split(/,(?![^(]*\))/g), calldata);
     return {
       target,
       functionSig: name,
