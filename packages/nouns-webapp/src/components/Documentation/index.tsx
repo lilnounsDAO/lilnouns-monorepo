@@ -245,6 +245,9 @@ const Documentation = () => {
               </p>
               <ul>
                 <li>
+                  <Link text="@js_horn" url="https://twitter.com/js_horne" leavesPage={true} />
+                </li>
+                <li>
                   <Link text="@0xsvg" url="https://twitter.com/0xsvg" leavesPage={true} />
                 </li>
                 <li>
