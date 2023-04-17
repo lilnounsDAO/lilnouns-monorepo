@@ -3,6 +3,7 @@ export enum ExternalURL {
   twitter,
   notion,
   discourse,
+  feelingNounish,
 }
 
 export const externalURL = (externalURL: ExternalURL) => {
@@ -15,5 +16,7 @@ export const externalURL = (externalURL: ExternalURL) => {
       return 'https://lilnouns.notion.site/Explore-Lil-Nouns-db990658e6ab4cf19121b22642645032';
     case ExternalURL.discourse:
       return 'https://discourse.lilnouns.wtf/';
+    case ExternalURL.feelingNounish:
+      return 'https://nouns.ooo/';
   }
 };
