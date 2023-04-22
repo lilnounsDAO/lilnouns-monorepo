@@ -16,7 +16,7 @@ const Footer = () => {
     <div className={classes.wrapper}>
       <Container className={classes.container}>
         <footer className={classes.footerSignature}>
-          <FeelingNounishButton />
+<!--           <FeelingNounishButton /> -->
           <div className={classes.footerLinks}>
             <Link text="Discord" url={discordURL} leavesPage={true} />
             <Link text="Twitter" url={twitterURL} leavesPage={true} />
