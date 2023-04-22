@@ -4,6 +4,7 @@ import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import { externalURL, ExternalURL } from '../../utils/externalURL';
 import config from '../../config';
 import Link from '../Link';
+import FeelingNounishButton from '../FeelingNounishButton';
 
 const Footer = () => {
   const twitterURL = externalURL(ExternalURL.twitter);
@@ -15,10 +16,13 @@ const Footer = () => {
     <div className={classes.wrapper}>
       <Container className={classes.container}>
         <footer className={classes.footerSignature}>
-          <Link text="Discord" url={discordURL} leavesPage={true} />
-          <Link text="Twitter" url={twitterURL} leavesPage={true} />
-          <Link text="Etherscan" url={etherscanURL} leavesPage={true} />
-          <Link text="Forums" url={discourseURL} leavesPage={false} />
+          <FeelingNounishButton />
+          <div className={classes.footerLinks}>
+            <Link text="Discord" url={discordURL} leavesPage={true} />
+            <Link text="Twitter" url={twitterURL} leavesPage={true} />
+            <Link text="Etherscan" url={etherscanURL} leavesPage={true} />
+            <Link text="Forums" url={discourseURL} leavesPage={false} />
+          </div>
         </footer>
       </Container>
     </div>
