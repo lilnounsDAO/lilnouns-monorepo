@@ -7,9 +7,18 @@ import remarkBreaks from 'remark-breaks';
 import { buildEtherscanAddressLink, buildEtherscanTxLink } from '../../utils/etherscan';
 import { utils } from 'ethers';
 import classes from './ProposalContent.module.css';
+import ProposalVoteTable from '../ProposalVoteTable';
 
+interface Vote {
+  reason: string;
+  delegate: string;
+  supportDetailed: 0 | 1 | 2;
+  nounsRepresented: string[];
+}
 interface ProposalContentProps {
   proposal?: Proposal;
+  isVotesToggled?: boolean;
+  votes?: Vote[];
 }
 
 export const linkIfAddress = (content: string) => {
@@ -32,67 +41,74 @@ export const transactionLink = (content: string) => {
 };
 
 const ProposalContent: React.FC<ProposalContentProps> = props => {
-  const { proposal } = props;
+  const { isVotesToggled, proposal, votes } = props;
 
   return (
     <>
-      <Row>
-        <Col className={classes.section}>
-          <h5>Description</h5>
-          {proposal?.description && (
-            <ReactMarkdown
-              className={classes.markdown}
-              children={processProposalDescriptionText(proposal.description, proposal.title)}
-              remarkPlugins={[remarkBreaks]}
-            />
-          )}
-        </Col>
-      </Row>
-      <Row>
-        <Col className={classes.section}>
-          <h5>Proposed Transactions</h5>
-          <ol>
-            {proposal?.details?.map((d, i) => {
-              return (
-                <li key={i} className="m-0">
-                  {linkIfAddress(d.target)}.{d.functionSig}
-                  {d.value}
-                  {!!d.functionSig ? (
-                    <>
-                      (<br />
-                      {d.callData.split(',').map((content, i) => {
-                        return (
-                          <Fragment key={i}>
-                            <span key={i}>
-                              &emsp;
-                              {linkIfAddress(content)}
-                              {d.callData.split(',').length - 1 === i ? '' : ','}
-                            </span>
-                            <br />
-                          </Fragment>
-                        );
-                      })}
-                      )
-                    </>
-                  ) : (
-                    d.callData
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-        </Col>
-      </Row>
-      <Row>
-        <Col className={classes.section}>
-          <h5>Proposer</h5>
-          {proposal?.proposer && proposal?.transactionHash && (
-            <>
-              {linkIfAddress(proposal.proposer)} at {transactionLink(proposal.transactionHash)}
-            </>
-          )}
-        </Col>
-      </Row>
+      {isVotesToggled ? (
+        <>
+         <Row>
+          <ProposalVoteTable votes={votes} />
+          </Row>
+        </>
+      ) : (
+        <>
+          <Row>
+            {proposal?.description && (
+              <ReactMarkdown
+                className={classes.markdown}
+                children={processProposalDescriptionText(proposal.description, proposal.title)}
+                remarkPlugins={[remarkBreaks]}
+              />
+            )}
+          </Row>
+          <Row>
+            <Col className={classes.section}>
+              <h5>Proposed Transactions</h5>
+              <ol>
+                {proposal?.details?.map((d, i) => {
+                  return (
+                    <li key={i} className="m-0">
+                      {linkIfAddress(d.target)}.{d.functionSig}
+                      {d.value}
+                      {!!d.functionSig ? (
+                        <>
+                          (<br />
+                          {d.callData.split(',').map((content, i) => {
+                            return (
+                              <Fragment key={i}>
+                                <span key={i}>
+                                  &emsp;
+                                  {linkIfAddress(content)}
+                                  {d.callData.split(',').length - 1 === i ? '' : ','}
+                                </span>
+                                <br />
+                              </Fragment>
+                            );
+                          })}
+                          )
+                        </>
+                      ) : (
+                        d.callData
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            </Col>
+          </Row>
+          <Row>
+            <Col className={classes.section}>
+              <h5>Proposer</h5>
+              {proposal?.proposer && proposal?.transactionHash && (
+                <>
+                  {linkIfAddress(proposal.proposer)} at {transactionLink(proposal.transactionHash)}
+                </>
+              )}
+            </Col>
+          </Row>
+        </>
+      )}
     </>
   );
 };
