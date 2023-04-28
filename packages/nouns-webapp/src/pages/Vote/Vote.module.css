@@ -38,6 +38,7 @@
   font-size: 1.7rem;
   margin-top: 1rem;
   font-family: 'Londrina Solid';
+  font-size: 36px;
 }
 
 .voterIneligibleAlert {
@@ -171,4 +172,97 @@
   .toggleDelegateVoteView {
     display: none;
   }
+}
+
+.governanceSwitchBtn {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  margin-bottom: 0.5rem;
+  margin-right: 8px;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E3E8;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+}
+
+.governanceSwitchBtnActive{
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  margin-bottom: 0.5rem;
+  margin-right: 8px;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+
+  color: #14161b;
+  border: 2px solid var(--brand-color-blue);
+}
+
+.governanceSwitchBtn2 {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  border: 2px solid var(--brand-color-blue);
+  margin-bottom: 0.5rem;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E3E8;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+}
+
+.governanceSwitchBtn2Active {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  border: 2px solid var(--brand-color-blue);
+  margin-bottom: 0.5rem;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E3E8;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+
+  color: #14161b;
+  border: 2px solid var(--brand-color-blue);
 }
