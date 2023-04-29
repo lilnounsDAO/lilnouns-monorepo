@@ -40,8 +40,8 @@ const ProposalVoteTableCell: React.FC<ProposalVoteTableCellProps> = props => {
   const expandedTextClass = isExpanded ? 'expanded' : '';
 
   return (
-    <div className={classes.columns}>
-      <Col className={classes.wrapper}>
+    <div className={classes.columns} style={{ paddingBottom: isExpanded ? '0.5rem' : '0' }}>
+      <Col className={classes.wrapper} style={{ paddingBottom: isExpanded ? '0.5rem' : '0' }}>
         <div className={classes.full}>
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex justify-content-start align-items-center">
@@ -52,7 +52,6 @@ const ProposalVoteTableCell: React.FC<ProposalVoteTableCellProps> = props => {
                     : []
                 }
                 isNounsDAOProp={false}
-                isCell={true}
               />
 
               <div className={classes.voterDetails}>
