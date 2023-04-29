@@ -4,13 +4,12 @@ import TightStackedCircleNoun, { TightStackedCircleNounCell } from '../TightStac
 interface StackedCircleNounsProps {
   nounIds: Array<number>;
   isNounsDAOProp?: boolean;
-  isCell?: boolean;
 }
 
 const MAX_NOUNS_PER_STACK = 3;
 
 const TightStackedCircleNouns: React.FC<StackedCircleNounsProps> = props => {
-  const { nounIds, isNounsDAOProp, isCell } = props;
+  const { nounIds, isNounsDAOProp } = props;
 
   const shift = 3;
 
@@ -39,7 +38,7 @@ export default TightStackedCircleNouns;
 
 
 export const TightStackedCircleNounsCells: React.FC<StackedCircleNounsProps> = props => {
-  const { nounIds, isNounsDAOProp, isCell } = props;
+  const { nounIds, isNounsDAOProp } = props;
 
   const shift = 3;
 
