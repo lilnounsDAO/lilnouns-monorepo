@@ -22,6 +22,7 @@ export interface IBid {
 }
 
 interface ProposalVote {
+  reason: string;
   supportDetailed: 0 | 1 | 2;
   voter: {
     id: string;
@@ -34,6 +35,7 @@ export interface ProposalVotes {
 
 export interface Delegate {
   id: string;
+  delegatedVotes?: string;
   nounsRepresented: {
     id: string;
   }[];
@@ -427,6 +429,7 @@ export const proposalVotesQuery = (proposalId: string) => gql`
   {
     votes(where: { proposal: "${proposalId}", votesRaw_gt: 0 }) {
       supportDetailed
+      reason
       voter {
         id
       }

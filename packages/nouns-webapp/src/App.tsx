@@ -142,6 +142,8 @@ function App() {
               <Route exact path={['/ideas/:id', '/proplot/:id']} component={IdeaPage} />
               <Route exact path="/proplot/profile/:id" component={PropLotUserProfilePage} />
               <Route exact path="/vote/:id" component={VotePage} />
+              <Route exact path="/vote/:id/description" component={VotePage} />
+              <Route exact path="/vote/:id/votes" component={VotePage} />
               <Route exact path="/vote/nounsdao/:id" component={NounsVotePage} />
               <Route exact path="/playground" component={Playground} />
               <Route exact path="/delegate" component={DelegatePage} />
