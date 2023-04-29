@@ -9,7 +9,7 @@ interface StackedCircleNounsProps {
 const MAX_NOUNS_PER_STACK = 3;
 
 const TightStackedCircleNouns: React.FC<StackedCircleNounsProps> = props => {
-  const { nounIds, isNounsDAOProp, isCell } = props;
+  const { nounIds, isNounsDAOProp } = props;
 
   const shift = 3;
 
