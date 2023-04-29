@@ -172,6 +172,13 @@
   .toggleDelegateVoteView {
     display: none;
   }
+  
+  .section h5 {
+    font-size: 1.7rem;
+    margin-top: 1rem;
+    font-family: 'Londrina Solid';
+    font-size: 26px;
+  }
 }
 
 .governanceSwitchBtn {
