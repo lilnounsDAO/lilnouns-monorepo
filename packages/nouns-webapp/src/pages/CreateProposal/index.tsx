@@ -97,6 +97,12 @@ const CreateProposalPage = () => {
   const dispatch = useAppDispatch();
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
 
+  const pageTitle = "Create Proposal - Lil Nouns DAO";
+
+  useEffect(() => {
+    document.title = pageTitle;
+  }, [pageTitle]);
+
   useEffect(() => {
     switch (proposeState.status) {
       case 'None':

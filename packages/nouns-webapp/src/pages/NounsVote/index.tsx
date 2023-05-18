@@ -315,6 +315,12 @@ const NounsVotePage = ({
     [setModal],
   );
 
+  const pageTitle = `${proposal?.title} - Nouns DAO Prop ${id}` ?? `Nouns DAO Prop ${id}`;
+
+  useEffect(() => {
+    document.title = pageTitle;
+  }, [pageTitle]);
+
   useEffect(
     () => onTransactionStateChange(queueProposalState, 'Proposal Queued!', setQueuePending),
     [queueProposalState, onTransactionStateChange, setModal],
