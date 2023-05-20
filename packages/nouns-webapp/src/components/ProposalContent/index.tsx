@@ -8,6 +8,7 @@ import { buildEtherscanAddressLink, buildEtherscanTxLink } from '../../utils/eth
 import { utils } from 'ethers';
 import classes from './ProposalContent.module.css';
 import ProposalVoteTable from '../ProposalVoteTable';
+import { SnapshotVoters } from '../../pages/NounsVote';
 
 interface Vote {
   reason: string;
@@ -18,6 +19,8 @@ interface Vote {
 interface ProposalContentProps {
   proposal?: Proposal;
   isVotesToggled?: boolean;
+  metagovVotes?: SnapshotVoters[];
+  isNounsDAOProp?: boolean
   votes?: Vote[];
 }
 
@@ -41,14 +44,14 @@ export const transactionLink = (content: string) => {
 };
 
 const ProposalContent: React.FC<ProposalContentProps> = props => {
-  const { isVotesToggled, proposal, votes } = props;
+  const { isVotesToggled, proposal, votes, metagovVotes, isNounsDAOProp} = props;
 
   return (
     <>
       {isVotesToggled ? (
         <>
          <Row>
-          <ProposalVoteTable votes={votes} />
+          <ProposalVoteTable votes={votes} metagovVotes={metagovVotes} isNounsDAOProp={isNounsDAOProp} />
           </Row>
         </>
       ) : (

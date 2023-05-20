@@ -181,7 +181,6 @@ const VotePage = ({
     }
   })();
 
-  //* TODO: Vote Reason Buttons
   const [descriptionButtonActive, setDescriptionButtonActive] = useState('1');
   const [isPropVotesToggled, setIsPropVotesToggled] = useState(false);
 

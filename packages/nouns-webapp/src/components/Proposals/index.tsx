@@ -446,12 +446,12 @@ const Proposals = ({
           >
             <h3 className={classes.heading}>Proposals</h3>
           </div>
-          {nounsDAOProposals?.length && snapshotProposals?.length ? (
+          {nounsDAOProposals?.length  ? (
             nounsDAOProposals
               .slice(0)
               .reverse()
               .map(p => (
-                <BigNounProposalRow proposal={p} snapshotProposals={snapshotProposals} key={p.id} />
+                <BigNounProposalRow proposal={p} snapshotProposals={snapshotProposals ?? []} key={p.id} />
               ))
           ) : (
             <Alert variant="secondary">
