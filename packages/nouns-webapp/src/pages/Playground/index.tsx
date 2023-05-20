@@ -97,7 +97,11 @@ const Playground: React.FC = () => {
     [pendingTrait, modSeed],
   );
 
+  const pageTitle = "Playground - Lil Nouns DAO";
+
   useEffect(() => {
+    document.title = pageTitle
+
     const traitTitles = ['background', 'body', 'accessory', 'head', 'glasses'];
     const traitNames = [
       ['cool', 'warm'],

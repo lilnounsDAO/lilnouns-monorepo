@@ -3,8 +3,16 @@ import Section from '../../layout/Section';
 import PropLotHome from '../../propLot/pages/PropLotHome';
 
 import classes from './Ideas.module.css';
+import { useEffect } from 'react';
 
 const IdeasPage = () => {
+
+  const pageTitle = "Prop Lot - Lil Nouns DAO";
+
+  useEffect(() => {
+    document.title = pageTitle;
+  }, [pageTitle]);
+
   return (
     <Section fullWidth={false} className={classes.section}>
       <Col lg={10} className={classes.wrapper}>

@@ -9,7 +9,7 @@ import {
 } from '../../wrappers/bigNounsDao';
 import { useUserVotesAsOfBlock } from '../../wrappers/nounToken';
 import classes from './NounsVote.module.css';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useLocation } from 'react-router-dom';
 import { TransactionStatus, useBlockNumber } from '@usedapp/core';
 import { AlertModal, setAlertModal } from '../../state/slices/application';
 import dayjs from 'dayjs';
@@ -59,6 +59,7 @@ export interface SnapshotVoters {
   vp: number;
   choice: number;
   nounIds: string[];
+  reason?: string;
 }
 
 interface SnapshotProp {
@@ -109,8 +110,10 @@ const NounsVotePage = ({
   }, {});
 
   const data = voters?.votes?.map(v => ({
+    reason: v.reason ?? '',
     delegate: v.voter.id,
     supportDetailed: v.supportDetailed,
+    delegatedVotes: delegates?.find(d => d.id === v.voter.id)?.delegatedVotes ?? '0',
     nounsRepresented: delegateToNounIds?.[v.voter.id] ?? [],
   }));
 
@@ -268,6 +271,36 @@ const NounsVotePage = ({
     };
   })();
 
+    const [descriptionButtonActive, setDescriptionButtonActive] = useState('1');
+    const [isPropVotesToggled, setIsPropVotesToggled] = useState(false);
+  
+    function setPropDescription() {
+      setDescriptionButtonActive('1');
+      setIsPropVotesToggled(false);
+      window.history.pushState({}, 'Lil Nouns DAO', `/vote/nounsdao/${proposal?.id}/description`);
+    }
+  
+    function setPropVotes() {
+      setDescriptionButtonActive('2');
+      setIsPropVotesToggled(true);
+      window.history.pushState({}, 'Lil Nouns DAO', `/vote/nounsdao/${proposal?.id}/votes`);
+    }
+  
+    const location = useLocation();
+
+    const pageTitle = `${proposal?.title} - Nouns DAO Prop ${id}` ?? `Nouns DAO Prop ${id}`;
+  
+    useEffect(() => {
+      document.title = pageTitle;
+
+      if (!location.pathname) return;
+  
+      if (location.pathname.includes('votes')) {
+        setDescriptionButtonActive('2');
+        setIsPropVotesToggled(true);
+      }
+    }, [pageTitle]);
+
   const onTransactionStateChange = useCallback(
     (
       tx: TransactionStatus,
@@ -356,7 +389,7 @@ const NounsVotePage = ({
   const abstainNouns = getNounVotes(data, 2);
   const isV2Prop = dqInfo.nounsProp.quorumCoefficient > 0;
 
-  if (error || snapshotProposalError || snapshotVoteError || dqError) {
+  if (error /*|| snapshotProposalError*/ || snapshotVoteError || dqError) {
     return <>{'Failed to fetch'}</>;
   }
 
@@ -395,6 +428,7 @@ const NounsVotePage = ({
           vp: obj.vp,
           choice: obj.choice,
           nounIds: delegatedVoterRepresentedNounIds,
+          reason: obj.reason
         };
 
         return res;
@@ -703,7 +737,44 @@ const NounsVotePage = ({
           </Col>
         </Row>
 
-        <ProposalContent proposal={proposal} />
+        <div className={classes.section}>
+          <div>
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex justify-content-start align-items-start">
+                <h5>{isPropVotesToggled ? 'Votes' : 'Description'}</h5>
+              </div>
+
+              <div className="d-flex justify-content-end align-items-end">
+                <div className="btn-toolbar" role="btn-toolbar" aria-label="Basic example">
+                  <Button
+                    key={1}
+                    className={
+                      descriptionButtonActive === '1'
+                        ? classes.governanceSwitchBtnActive
+                        : classes.governanceSwitchBtn
+                    }
+                    id={'1'}
+                    onClick={e => setPropDescription()}
+                  >
+                    Description
+                  </Button>
+                  <Button
+                    key={2}
+                    className={
+                      descriptionButtonActive === '2'
+                        ? classes.governanceSwitchBtn2Active
+                        : classes.governanceSwitchBtn2
+                    }
+                    onClick={e => setPropVotes()}
+                  >
+                    Votes
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ProposalContent proposal={proposal} isVotesToggled={isPropVotesToggled} votes={data} metagovVotes={fetchedValues.snapshotVoters} isNounsDAOProp={true}/>
       </Col>
     </Section>
   );
