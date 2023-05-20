@@ -28,6 +28,11 @@ import { bigNounsProposalQuery, bigNounsProposalsQuery } from './subgraph';
 import BigNumber from 'bignumber.js';
 import { useBlockTimestamp } from '../hooks/useBlockTimestamp';
 
+export enum MetagovVote {
+  AGAINST = 2,
+  FOR = 1,
+  ABSTAIN = 3,
+}
 
 const abi = new utils.Interface(NounsDAOV2ABI);
 // const abi_v2 = new utils.Interface(NounsDAOV2ABI);
