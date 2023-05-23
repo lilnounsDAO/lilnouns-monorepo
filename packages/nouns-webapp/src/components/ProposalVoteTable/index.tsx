@@ -87,7 +87,7 @@ export const unifyVotes = (votes?: Vote[], metagovVotes?: SnapshotVoters[]): Uni
   // Add all metagovVotes to the unifiedVotes array, merging any that have the same delegate/voter
   metagovVotes?.forEach((metagovVote: SnapshotVoters) => {
     const omniVoter = unifiedVotes.find(
-      vote => vote.delegate.toLowerCase() === metagovVote.voter.toLowerCase(),
+      vote => vote.delegate.toLowerCase() === metagovVote.voter.toLowerCase() && vote.supportDetailed === mapSupportDetailedToChoice(metagovVote.choice),
     );
     if (omniVoter) {
       omniVoter.reason = omniVoter.reason
@@ -96,13 +96,10 @@ export const unifyVotes = (votes?: Vote[], metagovVotes?: SnapshotVoters[]): Uni
       omniVoter.isMetagovVote = true;
       omniVoter.isNounVote = true;
 
-      // Update/merge all other fields
       omniVoter.choice = mapChoiceToSupportDetailed(metagovVote.choice);
       omniVoter.vp = metagovVote.vp;
       omniVoter.delegatedVotes = omniVoter.delegatedVotes;
       omniVoter.nounIds = metagovVote.nounIds;
-
-      // Add any other fields you want to update/merge here...
     } else {
       unifiedVotes.push({
         ...metagovVote,
