@@ -72,13 +72,15 @@ const GovernancePage = ({
 
   const location = useLocation();
 
+  const pageTitle = "Governance - Lil Nouns DAO";
+
   useEffect(() => {
     if (!location.pathname) return;
-
+    document.title = pageTitle;
     if (location.pathname == '/vote/nounsdao') {
       setNounsDAOProps();
     }
-  }, []);
+  }, [pageTitle]);
 
   const nounsDaoLink = <Link text="Nouns DAO" url="https://nouns.wtf" leavesPage={true} />;
   const snapshotLink = (
@@ -99,7 +101,7 @@ const GovernancePage = ({
     );
   }
 
-  const nounCount = nounsInTreasury.accounts.length ? nounsInTreasury.accounts[0].tokenBalance : "0"
+  const nounCount = nounsInTreasury.accounts.length ? nounsInTreasury.accounts[0].tokenBalance : 0
   // const nounIds = nounsInTreasury.accounts[0].nouns.flatMap(
   //   (obj: { id: any }) => obj.id,
   // )

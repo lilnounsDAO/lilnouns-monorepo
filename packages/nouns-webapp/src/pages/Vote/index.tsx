@@ -181,7 +181,6 @@ const VotePage = ({
     }
   })();
 
-  //* TODO: Vote Reason Buttons
   const [descriptionButtonActive, setDescriptionButtonActive] = useState('1');
   const [isPropVotesToggled, setIsPropVotesToggled] = useState(false);
 
@@ -199,14 +198,18 @@ const VotePage = ({
 
   const location = useLocation();
 
+  const pageTitle = `${proposal?.title} - Lil Nouns DAO Prop ${id}` ?? `Lil Nouns DAO Prop ${id}`;
+
   useEffect(() => {
+    document.title = pageTitle
+
     if (!location.pathname) return;
 
     if (location.pathname.includes('votes')) {
       setDescriptionButtonActive('2');
       setIsPropVotesToggled(true);
     }
-  }, []);
+  }, [pageTitle]);
 
   const onTransactionStateChange = useCallback(
     (

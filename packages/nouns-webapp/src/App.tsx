@@ -145,6 +145,8 @@ function App() {
               <Route exact path="/vote/:id/description" component={VotePage} />
               <Route exact path="/vote/:id/votes" component={VotePage} />
               <Route exact path="/vote/nounsdao/:id" component={NounsVotePage} />
+              <Route exact path="/vote/nounsdao/:id/description" component={NounsVotePage} />
+              <Route exact path="/vote/nounsdao/:id/votes" component={NounsVotePage} />
               <Route exact path="/playground" component={Playground} />
               <Route exact path="/delegate" component={DelegatePage} />
               <Route exact path="/nouniverse/:id" component={Nouniverse} />

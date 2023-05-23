@@ -1,168 +1,273 @@
 .votePage a {
-    color: var(--brand-dark-red);
+  color: var(--brand-dark-red);
+}
+
+.proposal {
+  margin-top: 1em;
+  background-color: white;
+}
+
+.backArrow {
+  height: 1rem;
+}
+
+.votingButton {
+  margin-top: 1rem;
+}
+
+.voteCountCard {
+  margin-top: 1rem;
+}
+
+.proposalId {
+  margin: 1rem 0;
+}
+
+.voteCountCard p {
+  display: flex;
+  justify-content: space-between;
+}
+
+.section {
+  word-wrap: break-word;
+  padding-top: 2rem;
+  margin-top: 2rem;
+}
+
+.section h5 {
+  font-size: 1.7rem;
+  margin-top: 1rem;
+  font-family: 'Londrina Solid';
+}
+
+.voterIneligibleAlert {
+  margin: 1rem 0 0 0;
+}
+
+.blockRestrictionAlert {
+  margin: 1rem 0 0 0;
+}
+
+.wrapper {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.transitionStateButton {
+  height: 50px;
+  border-radius: 8px;
+  font-family: 'PT Root UI';
+  font-weight: bold;
+  font-size: 24px;
+  transition: all 0.125s ease-in-out;
+}
+
+.transitionStateButton:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.transitionStateButtonSection {
+  border-top: 0px;
+}
+
+.spinner {
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--brand-gray-light-text);
+}
+
+/* Info section stuff */
+.voteInfoCard {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 12px;
+}
+
+.voteMetadataRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.voteMetadataRow h1 {
+  font-size: 20px;
+  color: var(--brand-gray-light-text);
+  font-family: 'Londrina Solid';
+}
+
+.voteMetadataRow span {
+  font-size: 14px;
+  font-family: 'PT Root UI';
+  color: var(--brand-gray-light-text);
+}
+
+.voteMetadataRow h3 {
+  font-size: 18px;
+  font-family: 'PT Root UI';
+  font-weight: bold;
+}
+
+.voteMetadataRowTitle {
+  margin-top: 0.5rem;
+}
+
+.voteMetadataTime {
+  min-width: 11rem;
+  text-align: right;
+}
+
+.snapshotBlock {
+  text-align: right;
+}
+
+.thresholdInfo {
+  text-align: right;
+}
+
+.toggleVoteView {
+  margin-top: 0.1rem;
+  margin-bottom: 0.1rem;
+  opacity: 0.5;
+  font-size: 14px;
+  cursor: pointer;
+  transition: ease-in-out 125ms;
+  width: fit-content;
+  margin-left: 0.1rem;
+}
+
+.toggleVoteView:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1200px) {
+  /* .toggleVoteView {
+      display: none;
+    } */
+}
+
+.delegateHover {
+  border-radius: 8px !important;
+  background-color: var(--brand-gray-dark-text) !important;
+  color: white;
+  opacity: 0.75 !important;
+  font-weight: 500;
+  transition: ease-in-out 125ms;
+}
+
+.dqIcon {
+  opacity: 0.5;
+  margin-left: 0.25rem;
+  margin-bottom: 0.25rem;
+  height: 18px;
+  width: 18px;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+@media (max-width: 1200px) {
+  .toggleDelegateVoteView {
+    display: none;
   }
-  
-  .proposal {
-    margin-top: 1em;
-    background-color: white;
-  }
-  
-  .backArrow {
-    height: 1rem;
-  }
-  
-  .votingButton {
-    margin-top: 1rem;
-  }
-  
-  .voteCountCard {
-    margin-top: 1rem;
-  }
-  
-  .proposalId {
-    margin: 1rem 0;
-  }
-  
-  .voteCountCard p {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .section {
-    word-wrap: break-word;
-    padding-top: 2rem;
-    margin-top: 2rem;
-  }
-  
+
   .section h5 {
     font-size: 1.7rem;
     margin-top: 1rem;
     font-family: 'Londrina Solid';
+    font-size: 26px;
   }
-  
-  .voterIneligibleAlert {
-    margin: 1rem 0 0 0;
-  }
-  
-  .blockRestrictionAlert {
-    margin: 1rem 0 0 0;
-  }
-  
-  .wrapper {
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .transitionStateButton {
-    height: 50px;
-    border-radius: 8px;
-    font-family: 'PT Root UI';
-    font-weight: bold;
-    font-size: 24px;
-    transition: all 0.125s ease-in-out;
-  }
-  
-  .transitionStateButton:hover {
-    opacity: 0.5;
-    cursor: pointer;
-  }
-  
-  .transitionStateButtonSection {
-    border-top: 0px;
-  }
-  
-  .spinner {
-    margin-left: auto;
-    margin-right: auto;
-    color: var(--brand-gray-light-text);
-  }
-  
-  /* Info section stuff */
-  .voteInfoCard {
-    margin-top: 1rem;
-    padding: 0.5rem;
-    border-radius: 12px;
-  }
+}
 
-  .voteMetadataRow {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .voteMetadataRow h1 {
-    font-size: 20px;
-    color: var(--brand-gray-light-text);
-    font-family: 'Londrina Solid';
-  }
-  
-  .voteMetadataRow span {
-    font-size: 14px;
-    font-family: 'PT Root UI';
-    color: var(--brand-gray-light-text);
-  }
-  
-  .voteMetadataRow h3 {
-    font-size: 18px;
-    font-family: 'PT Root UI';
-    font-weight: bold;
-  }
-  
-  .voteMetadataRowTitle {
-    margin-top: 0.5rem;
-  }
-  
-  .voteMetadataTime {
-    min-width: 11rem;
-    text-align: right;
-  }
-  
-  .snapshotBlock {
-    text-align: right;
-  }
-  
-  .thresholdInfo {
-    text-align: right;
-  }
-  
-  .toggleVoteView {
-    margin-top: 0.1rem;
-    margin-bottom: 0.1rem;
-    opacity: 0.5;
-    font-size: 14px;
-    cursor: pointer;
-    transition: ease-in-out 125ms;
-    width: fit-content;
-    margin-left: 0.1rem;
-  }
-  
-  .toggleVoteView:hover {
-    text-decoration: underline;
-  }
-  
-  @media (max-width: 1200px) {
-    /* .toggleVoteView {
-      display: none;
-    } */
-  }
-  
-  .delegateHover {
-    border-radius: 8px !important;
-    background-color: var(--brand-gray-dark-text) !important;
-    color: white;
-    opacity: 0.75 !important;
-    font-weight: 500;
-    transition: ease-in-out 125ms;
-  }
-  
-  .dqIcon {
-    opacity: 0.5;
-    margin-left: 0.25rem;
-    margin-bottom: 0.25rem;
-    height: 18px;
-    width: 18px;
-  }
-  
-  .cursorPointer {
-    cursor: pointer;
-  }
-  
+.governanceSwitchBtn {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  margin-bottom: 0.5rem;
+  margin-right: 8px;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E3E8;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+}
+
+.governanceSwitchBtnActive {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  margin-bottom: 0.5rem;
+  margin-right: 8px;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+
+  color: #14161b;
+  border: 2px solid var(--brand-color-blue);
+}
+
+.governanceSwitchBtn2 {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  border: 2px solid var(--brand-color-blue);
+  margin-bottom: 0.5rem;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E3E8;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+}
+
+.governanceSwitchBtn2Active {
+  max-width: 10rem;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8C8D92;
+  border: 2px solid var(--brand-color-blue);
+  margin-bottom: 0.5rem;
+
+  border-radius: 32.5px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E3E8;
+  height: 43px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+
+  color: #14161b;
+  border: 2px solid var(--brand-color-blue);
+}
