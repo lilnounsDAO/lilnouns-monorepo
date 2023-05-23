@@ -22,6 +22,7 @@ import { GET_IDEA_QUERY } from '../../../propLot/graphql/ideaQuery';
 import { virtualTagColorMap } from '../../../utils/virtualTagColors';
 
 import IdeaVoteControls from '../../../propLot/components/IdeaVoteControls';
+import RedirectToStandalone from '../../../propLot/components/RedirectToStandalone';
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -265,6 +266,9 @@ const IdeaPage = () => {
   )?.voter?.lilnounCount;
 
   return (
+    <>
+    <RedirectToStandalone id={id} />
+    
     <Section fullWidth={false}>
       <Col lg={10} className="mx-auto">
         <Row>
@@ -376,6 +380,8 @@ const IdeaPage = () => {
         )}
       </Col>
     </Section>
+    </>
+ 
   );
 };
 

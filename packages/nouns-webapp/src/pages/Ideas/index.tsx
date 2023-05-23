@@ -6,11 +6,12 @@ import classes from './Ideas.module.css';
 import { useEffect } from 'react';
 
 const IdeasPage = () => {
-
-  const pageTitle = "Prop Lot - Lil Nouns DAO";
+  const pageTitle = 'Prop Lot - Lil Nouns DAO';
 
   useEffect(() => {
     document.title = pageTitle;
+    // * Redirects to standalone client
+    window.location.href = `https://lilnouns.proplot.wtf`;
   }, [pageTitle]);
 
   return (
