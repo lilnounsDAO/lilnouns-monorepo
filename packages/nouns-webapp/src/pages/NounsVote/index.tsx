@@ -57,7 +57,7 @@ dayjs.extend(advanced);
 export interface SnapshotVoters {
   voter: string;
   vp: number;
-  choice: number;
+  choice: 1 | 2 | 3;
   nounIds: string[];
   reason?: string;
 }

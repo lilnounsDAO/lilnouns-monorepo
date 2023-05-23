@@ -87,6 +87,7 @@ const ProposalVoteTableCell: React.FC<ProposalVoteTableCellProps> = props => {
   };
   
   const expandedTextClass = isExpanded ? 'expanded' : '';
+  const voteToken = isNounsDAOProp ? "Noun" : "Lil Noun"
 
   return (
     <div className={classes.columns} style={{ paddingBottom: isExpanded ? '0.5rem' : '0' }}>
@@ -105,9 +106,9 @@ const ProposalVoteTableCell: React.FC<ProposalVoteTableCellProps> = props => {
                 {isNounVote ? (
                   <>
                     {vote?.delegatedVotes === '1' ? (
-                      <div className={classes.subheading}>{`${vote?.delegatedVotes} Noun`}</div>
+                      <div className={classes.subheading}>{`${vote?.delegatedVotes} ${voteToken}`}</div>
                     ) : (
-                      <div className={classes.subheading}>{`${vote?.delegatedVotes} Nouns`}</div>
+                      <div className={classes.subheading}>{`${vote?.delegatedVotes} ${voteToken}s`}</div>
                     )}
                   </>
                 ) : (
@@ -125,7 +126,7 @@ const ProposalVoteTableCell: React.FC<ProposalVoteTableCellProps> = props => {
                 ) : (
                   <></>
                 )}
-                
+
               </div>
             </div>
             <div className="d-flex justify-content-end align-items-start">
