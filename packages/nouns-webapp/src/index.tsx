@@ -123,6 +123,10 @@ const zoraAPILink = new HttpLink({
   uri: 'https://api.zora.co/graphql',
 });
 
+const uniswapAPILink = new HttpLink({
+  uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
+});
+
 //pass them to apollo-client config
 const client = new ApolloClient({
   link: ApolloLink.split(
@@ -137,8 +141,12 @@ const client = new ApolloClient({
         ApolloLink.split(
           operation => operation.getContext().clientName === 'LilNounsDAO',
           defaultLink,
-          defaultLink,
-        )
+          ApolloLink.split(
+            operation => operation.getContext().clientName === 'Uniswap',
+            uniswapAPILink,
+            defaultLink,
+          ),
+        ),
       ),
     ),
   ),
