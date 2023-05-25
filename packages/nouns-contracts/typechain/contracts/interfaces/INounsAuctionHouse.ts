@@ -31,6 +31,7 @@ import type {
 export interface INounsAuctionHouseInterface extends utils.Interface {
   functions: {
     "createBid(uint256)": FunctionFragment;
+    "createBidWithComment(uint256,string)": FunctionFragment;
     "pause()": FunctionFragment;
     "setMinBidIncrementPercentage(uint8)": FunctionFragment;
     "setReservePrice(uint256)": FunctionFragment;
@@ -43,6 +44,7 @@ export interface INounsAuctionHouseInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "createBid"
+      | "createBidWithComment"
       | "pause"
       | "setMinBidIncrementPercentage"
       | "setReservePrice"
@@ -55,6 +57,10 @@ export interface INounsAuctionHouseInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "createBid",
     values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "createBidWithComment",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(
@@ -80,6 +86,10 @@ export interface INounsAuctionHouseInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "createBid", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "createBidWithComment",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMinBidIncrementPercentage",
@@ -104,7 +114,7 @@ export interface INounsAuctionHouseInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
 
   events: {
-    "AuctionBid(uint256,address,uint256,bool)": EventFragment;
+    "AuctionBid(uint256,address,uint256,bool,string)": EventFragment;
     "AuctionCreated(uint256,uint256,uint256)": EventFragment;
     "AuctionExtended(uint256,uint256)": EventFragment;
     "AuctionMinBidIncrementPercentageUpdated(uint256)": EventFragment;
@@ -129,9 +139,10 @@ export interface AuctionBidEventObject {
   sender: string;
   value: BigNumber;
   extended: boolean;
+  comment: string;
 }
 export type AuctionBidEvent = TypedEvent<
-  [BigNumber, string, BigNumber, boolean],
+  [BigNumber, string, BigNumber, boolean, string],
   AuctionBidEventObject
 >;
 
@@ -237,6 +248,12 @@ export interface INounsAuctionHouse extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    createBidWithComment(
+      nounId: PromiseOrValue<BigNumberish>,
+      comment: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     pause(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -271,6 +288,12 @@ export interface INounsAuctionHouse extends BaseContract {
 
   createBid(
     nounId: PromiseOrValue<BigNumberish>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  createBidWithComment(
+    nounId: PromiseOrValue<BigNumberish>,
+    comment: PromiseOrValue<string>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -311,6 +334,12 @@ export interface INounsAuctionHouse extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    createBidWithComment(
+      nounId: PromiseOrValue<BigNumberish>,
+      comment: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     pause(overrides?: CallOverrides): Promise<void>;
 
     setMinBidIncrementPercentage(
@@ -336,17 +365,19 @@ export interface INounsAuctionHouse extends BaseContract {
   };
 
   filters: {
-    "AuctionBid(uint256,address,uint256,bool)"(
+    "AuctionBid(uint256,address,uint256,bool,string)"(
       nounId?: PromiseOrValue<BigNumberish> | null,
       sender?: null,
       value?: null,
-      extended?: null
+      extended?: null,
+      comment?: null
     ): AuctionBidEventFilter;
     AuctionBid(
       nounId?: PromiseOrValue<BigNumberish> | null,
       sender?: null,
       value?: null,
-      extended?: null
+      extended?: null,
+      comment?: null
     ): AuctionBidEventFilter;
 
     "AuctionCreated(uint256,uint256,uint256)"(
@@ -408,6 +439,12 @@ export interface INounsAuctionHouse extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    createBidWithComment(
+      nounId: PromiseOrValue<BigNumberish>,
+      comment: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     pause(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -443,6 +480,12 @@ export interface INounsAuctionHouse extends BaseContract {
   populateTransaction: {
     createBid(
       nounId: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    createBidWithComment(
+      nounId: PromiseOrValue<BigNumberish>,
+      comment: PromiseOrValue<string>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

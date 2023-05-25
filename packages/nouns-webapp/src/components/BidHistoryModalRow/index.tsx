@@ -59,16 +59,24 @@ const BidHistoryModalRow: React.FC<BidHistoryModalRowProps> = props => {
             </div>
           </div>
         </div>
+
         <div className={auctionActivityClasses.rightSectionWrapper}>
-          <div className={clsx(classes.bidAmount, auctionActivityClasses.bidAmount)}>
-            {bidAmount}
-          </div>
-          <div className={auctionActivityClasses.linkSymbol}>
-            <a href={txLink} target="_blank" rel="noreferrer">
-              <div className={classes.linkIcon}>
-                <ExternalLinkIcon height={24} width={24} />
-              </div>
-            </a>
+          <div className={classes.bidderInfoWrapper}>
+            <div className={classes.bidderCommentText}>
+              <span>
+                {bidAmount}
+                <br />
+              <div className={classes.bidComment}>{bid.comment ? `"${bid.comment}"` : null}</div>
+              </span>
+            </div>
+
+            <div className={auctionActivityClasses.linkSymbol}>
+              <a href={txLink} target="_blank" rel="noreferrer">
+                <div className={classes.linkIcon}>
+                  <ExternalLinkIcon height={24} width={24} />
+                </div>
+              </a>
+            </div>
           </div>
         </div>
       </div>

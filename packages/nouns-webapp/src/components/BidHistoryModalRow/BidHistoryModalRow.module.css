@@ -19,6 +19,14 @@
   line-height: 23px;
 }
 
+.bidderCommentText {
+  margin-right: 0.5rem;
+  display: inline-block;
+  padding: 0;
+  line-height: 23px;
+  text-align: right;
+}
+
 .bidDate {
   color: rgba(140, 141, 146, 1);
   font-weight: 500;
@@ -44,4 +52,11 @@
 
 .bidAmount {
   white-space: nowrap;
+}
+
+.bidComment {
+  color: rgba(140, 141, 146, 1);
+  font-weight: 500;
+  font-family: 'PT Root UI';
+  font-size: 13px;
 }
