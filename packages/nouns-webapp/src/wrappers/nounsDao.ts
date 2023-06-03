@@ -155,6 +155,8 @@ export interface ProposalTransaction {
   signature: string;
   calldata: string;
   decodedCalldata?: string;
+  abi?: utils.Interface | undefined;
+  simulationStatus?: boolean;
 }
 
 export interface DynamicQuorumParams {

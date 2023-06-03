@@ -225,7 +225,10 @@ const ChainSubscriber: React.FC = () => {
     const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
     for (const event of previousBids) {
       if (event.args === undefined) return;
-      processBidFilter(...(event.args as [BigNumber, string, BigNumber, boolean]), event);
+      processBidFilter(
+        ...(event.args.slice(0, 5) as [BigNumber, string, BigNumber, boolean]),
+        event,
+      );
     }
 
     nounsAuctionHouseContract.on(bidFilter, (nounId, sender, value, extended, event) =>

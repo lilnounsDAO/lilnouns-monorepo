@@ -1,18 +1,22 @@
-import { Popover, OverlayTrigger, Row, Col } from 'react-bootstrap';
+import { Popover, OverlayTrigger, Row, Col, Button } from 'react-bootstrap';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import { ProposalTransaction } from '../../wrappers/nounsDao';
 import classes from './ProposalTransactions.module.css';
 import xIcon from '../../assets/x-icon.png';
 import { utils } from 'ethers';
+import { simulateTransaction } from '../../utils/tenderly';
+import config from '../../config';
 
 const ProposalTransactions = ({
   className,
   proposalTransactions,
   onRemoveProposalTransaction,
+  onSimulateProposalTransaction,
 }: {
   className?: string;
   proposalTransactions: ProposalTransaction[];
   onRemoveProposalTransaction: (index: number) => void;
+  onSimulateProposalTransaction: (index: number, status: boolean) => void;
 }) => {
   const getPopover = (tx: ProposalTransaction) => (
     <Popover className={classes.popover} id="transaction-details-popover">
@@ -52,6 +56,31 @@ const ProposalTransactions = ({
     </Popover>
   );
 
+  const simulateRPC = (propTxns: ProposalTransaction[]) => {
+    propTxns.forEach(async (item, i) => {
+
+      const resp = await simulateTransaction(
+        config.addresses.nounsDaoExecutor,
+        item.address,
+        item.decodedCalldata,
+        item.value ? parseInt(item.value) : 0,
+        item.abi,
+        item.signature,
+      )
+        .then(res => {
+          const status: boolean = res.data.simulation.status;
+          onSimulateProposalTransaction(i, status);
+          return status;
+        })
+        .catch(err => {
+          onSimulateProposalTransaction(i, false);
+          return false;
+        });
+
+      return resp;
+    });
+  };
+
   return (
     <div className={className}>
       {proposalTransactions.map((tx, i) => (
@@ -65,7 +94,26 @@ const ProposalTransactions = ({
             className={`${classes.transactionDetails} d-flex justify-content-between align-items-center`}
           >
             <div>
-              <span>Transaction #{i + 1} - </span>
+              <span>
+                {tx.simulationStatus == undefined ? (
+                  <></>
+                ) : (
+                  <>
+                    <span
+                      style={{
+                        height: '10px',
+                        width: '10px',
+                        borderRadius: '50%',
+                        display: 'inline-block',
+                        backgroundColor: tx.simulationStatus ? 'green' : 'red',
+                        marginLeft: '0px',
+                        marginRight: '5px',
+                      }}
+                    />
+                  </>
+                )}
+                Transaction #{i + 1} -{' '}
+              </span>
               <span>
                 <b>{tx.signature || 'transfer()'}</b>
               </span>
@@ -79,6 +127,15 @@ const ProposalTransactions = ({
           </div>
         </OverlayTrigger>
       ))}
+      {proposalTransactions.length ? (
+        <Button
+          onClick={() => simulateRPC(proposalTransactions)}
+          className={classes.simulateTransactionButton}
+          variant="outline-success"
+        >
+          simulate
+        </Button>
+      ) : null}
     </div>
   );
 };

@@ -19,3 +19,21 @@
 .removeTransactionButton img {
   width: 1rem;
 }
+.simulateTransactionButton {
+  height: 40px;
+  border-radius: 8px;
+  font-family: 'PT Root UI';
+  font-weight: bold;
+  transition: all 0.125s ease-in-out;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.simulateTransactionButton:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.simulateTransactionButtonSection {
+  border-top: 0px;
+}
