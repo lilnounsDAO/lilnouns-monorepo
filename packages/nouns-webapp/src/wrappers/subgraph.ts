@@ -822,6 +822,16 @@ export const activeProposals = (id: string) => gql`
   }
 `;
 
+export const ethPriceUSD = () => gql`
+  {
+    bundles(
+      where: { id: 1 }
+      ) {
+        ethPriceUSD
+      }
+    }
+`;
+
 export const clientFactory = (uri: string) =>
   new ApolloClient({
     uri,

@@ -222,7 +222,7 @@ const ProposalTransactionFormModal = ({
           <FormControl value={value} id="eth-value" onChange={e => setValue(e.target.value)} />
         </Step>
         <Step step={2}>
-          <label htmlFor="function">Function (Optional). Default is .trasnfer()</label>
+          <label htmlFor="function">Function (Optional). Default is .transfer()</label>
           <FormControl
             value={func}
             as="select"
