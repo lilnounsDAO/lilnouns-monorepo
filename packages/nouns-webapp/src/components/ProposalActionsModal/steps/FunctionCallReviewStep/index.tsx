@@ -23,6 +23,7 @@ const handleActionAdd = (state: ProposalActionModalState, onActionAdd: (e?: any)
       state.abi?.functions[state.function ?? '']?.inputs ?? [],
       state.args ?? [],
     ),
+    abi: state.abi ?? undefined
   });
 };
 
@@ -36,15 +37,11 @@ const FunctionCallReviewStep: React.FC<FinalProposalActionStepProps> = props => 
 
   return (
     <div>
-      <ModalTitle>
-        Review Function Call Action
-      </ModalTitle>
+      <ModalTitle>Review Function Call Action</ModalTitle>
 
       <div className={classes.row}>
         <div>
-          <span className={classes.label}>
-            Address
-          </span>
+          <span className={classes.label}>Address</span>
           <div className={classes.value}>
             <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
               <ShortAddress address={address} />
@@ -56,10 +53,8 @@ const FunctionCallReviewStep: React.FC<FinalProposalActionStepProps> = props => 
       {value ? (
         <div className={classes.row}>
           <div>
-            <span className={classes.label}>
-              Value
-            </span>
-            <div className={classes.value}>{value ? `${value} ETH` : "None"}</div>
+            <span className={classes.label}>Value</span>
+            <div className={classes.value}>{value ? `${value} ETH` : 'None'}</div>
           </div>
         </div>
       ) : (
@@ -69,26 +64,20 @@ const FunctionCallReviewStep: React.FC<FinalProposalActionStepProps> = props => 
       {func && (
         <div className={classes.row}>
           <div>
-            <span className={classes.label}>
-              Function
-            </span>
-            <div className={classes.value}>{func || "None"}</div>
+            <span className={classes.label}>Function</span>
+            <div className={classes.value}>{func || 'None'}</div>
           </div>
         </div>
       )}
 
       <Row>
         <Col sm="3" className={classes.label}>
-          <b>
-            Arguments
-          </b>
+          <b>Arguments</b>
         </Col>
         <Col sm="9">
           <hr />
         </Col>
-        <Col sm="9">
-          {state.abi?.functions[state.function ?? '']?.inputs?.length ? '' : "None"}
-        </Col>
+        <Col sm="9">{state.abi?.functions[state.function ?? '']?.inputs?.length ? '' : 'None'}</Col>
       </Row>
       {state.abi?.functions[state.function ?? '']?.inputs.map((input, i) => (
         <Row key={i}>
@@ -100,9 +89,9 @@ const FunctionCallReviewStep: React.FC<FinalProposalActionStepProps> = props => 
       ))}
 
       <ModalBottomButtonRow
-        prevBtnText={"Back"}
+        prevBtnText={'Back'}
         onPrevBtnClick={onPrevBtnClick}
-        nextBtnText={"Add Action"}
+        nextBtnText={'Add Action'}
         onNextBtnClick={() => {
           handleActionAdd(state, onNextBtnClick);
           onDismiss();
