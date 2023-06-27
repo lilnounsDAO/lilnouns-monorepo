@@ -189,12 +189,7 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
             auction.endTime = _auction.endTime = block.timestamp + timeBuffer;
         }
 
-        
-        if (bytes(comment).length > 0) {
-            emit AuctionBid(_auction.nounId, msg.sender, msg.value, extended, comment);
-        } else {
-            emit AuctionBid(_auction.nounId, msg.sender, msg.value, extended, '');
-        }
+        emit AuctionBid(_auction.nounId, msg.sender, msg.value, extended, comment);
 
         if (extended) {
             emit AuctionExtended(_auction.nounId, _auction.endTime);
