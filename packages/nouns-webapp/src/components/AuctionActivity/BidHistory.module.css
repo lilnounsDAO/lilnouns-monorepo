@@ -91,10 +91,6 @@
 }
 
 .rightSectionWrapper {
-  /* display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center; */
   display: flex;
   flex-direction: column;
 }
@@ -115,11 +111,6 @@
 }
 
 .bidComment {
-  /* font-family: 'PT Root UI'; */
-  /* font-weight: medium; */
-  /* margin-right: 1rem; */
-  /* font-size: 13px; */
-  /* padding-top: 2px; */
   color: gray;
 }
 

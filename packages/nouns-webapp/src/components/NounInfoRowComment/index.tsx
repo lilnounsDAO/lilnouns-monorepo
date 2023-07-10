@@ -1,10 +1,9 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import React, { useEffect, useState } from 'react';
-import { isNounderNoun, isNounsDAONoun } from '../../utils/nounderNoun';
+import { isNounderNoun } from '../../utils/nounderNoun';
 
 import classes from './NounInfoRowComment.module.css';
 import _CommentIcon from '../../assets/icons/Comment.svg';
-import _HeartIcon from '../../assets/icons/Heart.svg';
 
 import { Image } from 'react-bootstrap';
 import { useQuery } from '@apollo/client';
@@ -28,24 +27,24 @@ const NounInfoRowComment: React.FC<NounInfoRowCommentProps> = props => {
   const dismissCommentModalHanlder = () => setShowCommentModal(false);
 
   const isBurned = data ? data.bids.length === 0 : true;
-  const isRewardOrBurned =
-    isNounderNoun(BigNumber.from(nounId)) || isNounsDAONoun(BigNumber.from(nounId)) || isBurned;
+  const isRewardOrBurned = isNounderNoun(BigNumber.from(nounId)) || isBurned;
 
-  const winner = !isRewardOrBurned && data ? data.bids[0].noun.owner.id : 'null';
-  const comment = !isRewardOrBurned && data ? data.bids[0].comment : 'null';
+  const bid = !isRewardOrBurned && data ? data.bids[0] : null;
+  const winner = bid !== null ? bid.noun.owner.id : 'null';
+  const comment = bid !== null ? bid.comment : 'null';
 
   useEffect(() => {
     if (!comment) return;
 
-    if (comment.length > 20) {
-      let truncComment = comment.substring(0, 20);
+    if (comment.length > 30) {
+      let truncComment = comment.substring(0, 30);
 
       // check the next character, if it is not a space, go back to previous space
-      if (comment.length > 20 && comment[20] !== ' ') {
+      if (comment.length > 30 && comment[20] !== ' ') {
         truncComment = truncComment.substring(0, truncComment.lastIndexOf(' '));
       }
       // add ellipsis
-      setDisplayedComment(truncComment + '..');
+      setDisplayedComment(truncComment + '...');
     } else {
       setDisplayedComment(comment);
     }
@@ -60,13 +59,20 @@ const NounInfoRowComment: React.FC<NounInfoRowCommentProps> = props => {
   }
 
   if (error) {
-    return <div>Failed to fetch noun info</div>;
+    return <div>Failed to fetch lil noun info</div>;
   }
 
   return (
     <>
       {showCommentModal && (
-        <CommentModal onDismiss={dismissCommentModalHanlder} bidder={winner} comment={comment} />
+        <CommentModal
+          onDismiss={dismissCommentModalHanlder}
+          bidder={winner}
+          comment={comment}
+          nounId={BigNumber.from(nounId)}
+          amount={BigNumber.from(bid.amount)}
+          timestamp={BigNumber.from(bid.blockTimestamp)}
+        />
       )}
       {!isRewardOrBurned ? (
         <div className={classes.commentInfoContainer}>

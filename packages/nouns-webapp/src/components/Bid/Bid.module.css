@@ -120,6 +120,16 @@
   pointer-events: none;
 }
 
+.commentInput {
+  border: none;
+  border: 1px solid #8c8d9275;
+}
+.customPlaceholderBidComment {
+  left: 3.5%;
+  top: 16%;
+}
+
+
 .customPlaceholderBidComment {
   position: absolute;
   opacity: 0.3;

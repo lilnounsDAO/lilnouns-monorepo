@@ -159,9 +159,12 @@ const Bid: React.FC<{
           gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
         });
       } else {
+        const COMMENT_GAS_COST_PER_BYTE = 8;
+        const additionalGasForComment = Buffer.byteLength(bidComment) * COMMENT_GAS_COST_PER_BYTE;
+        const totalGas = gasLimit.add(10_000).add(additionalGasForComment);
         placeBidWithComment(auction.nounId, bidComment, {
           value,
-          gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
+          gasLimit: gasLimit.add(totalGas), // A 10,000 gas pad is used to avoid 'Out of gas' errors
         });
       }
     };
@@ -193,9 +196,12 @@ const Bid: React.FC<{
           gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
         });
       } else {
+        const COMMENT_GAS_COST_PER_BYTE = 8;
+        const additionalGasForComment = Buffer.byteLength(bidComment) * COMMENT_GAS_COST_PER_BYTE;
+        const totalGas = gasLimit.add(10_000).add(additionalGasForComment);
         placeBidWithComment(auction.nounId, bidComment, {
           value,
-          gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
+          gasLimit: gasLimit.add(totalGas), // A 10,000 gas pad is used to avoid 'Out of gas' errors
         });
       }
     }
@@ -364,13 +370,10 @@ const Bid: React.FC<{
 
   const isWalletConnected = activeAccount !== undefined;
 
-
   const [inputClicked, setInputClicked] = useState(false);
   const handleInputClick = () => {
     setInputClicked(true);
   };
-
-
 
   return (
     <>
