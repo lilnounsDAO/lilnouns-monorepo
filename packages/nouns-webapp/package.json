@@ -17,18 +17,11 @@
     "tailwind-run": "npx tailwindcss -i ./src/css/globals.css -o ./src/css/output.css --watch",
     "tailwind-build": "npx tailwindcss -i ./src/css/globals.css -o ./src/css/output.css"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
   "dependencies": {
     "@apollo/client": "^3.3.21",
     "@davatar/react": "^1.10.3",
@@ -56,12 +49,13 @@
     "@types/styled-components": "^5.1.26",
     "@usedapp/coingecko": "0.5.1",
     "@usedapp/core": "0.9.1",
+    "@walletconnect/ethereum-provider": "^2.8.4",
+    "@walletconnect/modal": "^2.4.5",
     "@web3-react/core": "^6.1.9",
     "@web3-react/fortmatic-connector": "^6.1.6",
     "@web3-react/injected-connector": "^6.0.7",
     "@web3-react/ledger-connector": "^6.1.9",
     "@web3-react/trezor-connector": "^6.1.9",
-    "@web3-react/walletconnect-connector": "^6.2.4",
     "@web3-react/walletlink-connector": "^6.2.3",
     "apollo": "^2.34.0",
     "autoprefixer": "^10.4.7",

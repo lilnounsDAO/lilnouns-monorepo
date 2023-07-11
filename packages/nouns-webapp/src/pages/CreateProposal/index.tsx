@@ -56,6 +56,17 @@ const CreateProposalPage = () => {
     [proposalTransactions],
   );
 
+  const handleSimulateTxn = useCallback((index: number, status: boolean) => {
+    setProposalTransactions(prevProposalTransactions =>
+      prevProposalTransactions.map((tx, i) => {
+        if (i === index) {
+          return { ...tx, simulationStatus: status };
+        }
+        return tx;
+      }),
+    );
+  }, []);
+
   const handleTitleInput = useCallback(
     (title: string) => {
       setTitleValue(title);
@@ -156,6 +167,9 @@ const CreateProposalPage = () => {
           submitting. The voting period will begin after 2 1/3 days and last for 3 days.
           <br />
           <br />
+          <b>Simulate transactions</b>: Simulate to see if all transactions can be executed before submiting your proposal.
+          <br />
+          <br />
           You <b>MUST</b> maintain enough voting power to meet the proposal threshold until your
           proposal is executed. If you fail to do so, anyone can cancel your proposal.
         </Alert>
@@ -170,8 +184,9 @@ const CreateProposalPage = () => {
         </div>
         <ProposalTransactions
           proposalTransactions={proposalTransactions}
-          onRemoveProposalTransaction={handleRemoveProposalAction}
-        />
+          onRemoveProposalTransaction={handleRemoveProposalAction} 
+          onSimulateProposalTransaction={handleSimulateTxn}     
+          />
         <ProposalEditor
           title={titleValue}
           body={bodyValue}
