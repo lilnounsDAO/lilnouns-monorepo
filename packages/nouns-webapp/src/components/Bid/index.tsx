@@ -72,8 +72,6 @@ const Bid: React.FC<{
   const bidInputRef = useRef<HTMLInputElement>(null);
 
   const [bidInput, setBidInput] = useState('');
-  const [bidComment, setBidComment] = useState('');
-
   const [bidButtonContent, setBidButtonContent] = useState({
     loading: false,
     content: auctionEnded ? 'Settle' : 'Place bid',
@@ -103,12 +101,6 @@ const Bid: React.FC<{
     nounsAuctionHouseContract,
     AuctionHouseContractFunction.createBid,
   );
-
-  const { send: placeBidWithComment, state: placeBidWithCommentState } = useContractFunction(
-    nounsAuctionHouseContract,
-    AuctionHouseContractFunction.createBidWithComment,
-  );
-
   const { send: settleAuction, state: settleAuctionState } = useContractFunction(
     nounsAuctionHouseContract,
     AuctionHouseContractFunction.settleCurrentAndCreateNewAuction,
@@ -149,25 +141,15 @@ const Bid: React.FC<{
     });
 
     const placeBidWarned = () => {
-      if (bidComment.trim() === '') {
-        placeBid(auction.nounId, {
-          value,
-          gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
-        });
-      } else {
-        const COMMENT_GAS_COST_PER_BYTE = 8;
-        const additionalGasForComment = Buffer.byteLength(bidComment) * COMMENT_GAS_COST_PER_BYTE;
-        const totalGas = gasLimit.add(10_000).add(additionalGasForComment);
-        placeBidWithComment(auction.nounId, bidComment, {
-          value,
-          gasLimit: gasLimit.add(totalGas), // A 10,000 gas pad is used to avoid 'Out of gas' errors
-        });
-      }
+      placeBid(auction.nounId, {
+        value,
+        gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
+      });
     };
 
     //TODO: fat finger check here 900% increase
     //Operator '>' cannot be applied to types 'BigNumber' and 'number'.
-
+    
     //0.15 = 150000000000000000
     //1.5 = 1500000000000000000
     if (
@@ -186,25 +168,15 @@ const Bid: React.FC<{
         action: placeBidWarned,
       });
     } else {
-      if (bidComment.trim() === '') {
-        placeBid(auction.nounId, {
-          value,
-          gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
-        });
-      } else {
-        const COMMENT_GAS_COST_PER_BYTE = 8;
-        const additionalGasForComment = Buffer.byteLength(bidComment) * COMMENT_GAS_COST_PER_BYTE;
-        const totalGas = gasLimit.add(10_000).add(additionalGasForComment);
-        placeBidWithComment(auction.nounId, bidComment, {
-          value,
-          gasLimit: gasLimit.add(totalGas), // A 10,000 gas pad is used to avoid 'Out of gas' errors
-        });
-      }
+      placeBid(auction.nounId, {
+        value,
+        gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
+      });
     }
   };
 
   const settleAuctionHandlerFunc = () => {
-    settleAuction();
+    settleAuction()
   };
 
   const settleAuctionHandler = () => {
@@ -217,6 +189,7 @@ const Bid: React.FC<{
       actionMessage: 'Settle Auction',
       action: settleAuctionHandlerFunc,
     });
+
   };
 
   const clearBidInput = () => {
@@ -225,25 +198,16 @@ const Bid: React.FC<{
     }
   };
 
-  const clearCommentInput = () => {
-    if (bidComment.trim() !== '') {
-      setBidComment('');
-    }
-  };
-
   // successful bid using redux store state
   useEffect(() => {
     if (!account) return;
 
-    const state: TransactionStatus =
-      bidComment.trim() === '' ? placeBidState : placeBidWithCommentState;
-
     // tx state is mining
-    const isMiningUserTx = state.status === 'Mining';
+    const isMiningUserTx = placeBidState.status === 'Mining';
     // allows user to rebid against themselves so long as it is not the same tx
     const isCorrectTx = currentBid(bidInputRef).isEqualTo(new BigNumber(auction.amount.toString()));
     if (isMiningUserTx && auction.bidder === account && isCorrectTx) {
-      state.status = 'Success';
+      placeBidState.status = 'Success';
       setModal({
         title: 'Success',
         message: `Bid was placed successfully!`,
@@ -252,54 +216,39 @@ const Bid: React.FC<{
       });
       setBidButtonContent({ loading: false, content: 'Place bid' });
       clearBidInput();
-      clearCommentInput();
     }
-  }, [auction, placeBidState, placeBidWithCommentState, account, setModal]);
-
-  const handleBidStateChange = useCallback(
-    (state: TransactionStatus) => {
-      switch (state.status) {
-        case 'None':
-          setBidButtonContent({
-            loading: false,
-            content: 'Place bid',
-          });
-          break;
-        case 'Mining':
-          setBidButtonContent({ loading: true, content: '' });
-          break;
-        case 'Fail':
-          setModal({
-            title: 'Transaction Failed',
-            message: state?.errorMessage ? state?.errorMessage : 'Please try again.',
-            show: true,
-          });
-          setBidButtonContent({ loading: false, content: 'Bid' });
-          break;
-        case 'Exception':
-          setModal({
-            title: 'Error',
-            message: state?.errorMessage ? state?.errorMessage : 'Please try again.',
-            show: true,
-          });
-          setBidButtonContent({ loading: false, content: 'Bid' });
-          break;
-      }
-    },
-    [auctionEnded, setModal],
-  );
+  }, [auction, placeBidState, account, setModal]);
 
   // placing bid transaction state hook
   useEffect(() => {
-    if (auctionEnded) return;
-    handleBidStateChange(placeBidState);
-  }, [placeBidState, handleBidStateChange]);
-
-  // placing bid with comment transaction state hook
-  useEffect(() => {
-    if (auctionEnded) return;
-    handleBidStateChange(placeBidWithCommentState);
-  }, [placeBidWithCommentState, handleBidStateChange]);
+    switch (!auctionEnded && placeBidState.status) {
+      case 'None':
+        setBidButtonContent({
+          loading: false,
+          content: 'Place bid',
+        });
+        break;
+      case 'Mining':
+        setBidButtonContent({ loading: true, content: '' });
+        break;
+      case 'Fail':
+        setModal({
+          title: 'Transaction Failed',
+          message: placeBidState.errorMessage ? placeBidState.errorMessage : 'Please try again.',
+          show: true,
+        });
+        setBidButtonContent({ loading: false, content: 'Bid' });
+        break;
+      case 'Exception':
+        setModal({
+          title: 'Error',
+          message: placeBidState.errorMessage ? placeBidState.errorMessage : 'Please try again.',
+          show: true,
+        });
+        setBidButtonContent({ loading: false, content: 'Bid' });
+        break;
+    }
+  }, [placeBidState, auctionEnded, setModal]);
 
   //TODO: Refactor Modal to utilitse new modal design
   const [showBidHistoryModal, setShowBidHistoryModal] = useState(false);
@@ -356,20 +305,11 @@ const Bid: React.FC<{
   if (!auction) return null;
 
   const isDisabled =
-    placeBidState.status === 'Mining' ||
-    placeBidWithCommentState.status === 'Mining' ||
-    settleAuctionState.status === 'Mining' ||
-    !activeAccount;
+    placeBidState.status === 'Mining' || settleAuctionState.status === 'Mining' || !activeAccount;
 
   const minBidCopy = `Ξ ${minBidEth(minBid)} or more`;
-  const commentCopy = 'leave a comment with your bid (optional)';
 
   const isWalletConnected = activeAccount !== undefined;
-
-  const [inputClicked, setInputClicked] = useState(false);
-  const handleInputClick = () => {
-    setInputClicked(true);
-  };
 
   return (
     <>
@@ -378,7 +318,7 @@ const Bid: React.FC<{
       {showConnectModal && activeAccount === undefined && (
         <WalletConnectModal onDismiss={hideModalHandler} />
       )}
-      <InputGroup className={classes.inputGroup}>
+      <InputGroup>
         {!auctionEnded && (
           <>
             <span className={classes.customPlaceholderBidAmt}>
@@ -392,7 +332,6 @@ const Bid: React.FC<{
               onChange={bidInputHandler}
               ref={bidInputRef}
               value={bidInput}
-              // onClick={handleInputClick}
             />
           </>
         )}
@@ -434,23 +373,6 @@ const Bid: React.FC<{
           </>
         )}
       </InputGroup>
-
-      {/* Only render the div if the input field has been clicked */}
-      {!auctionEnded && (
-        <>
-          <InputGroup>
-            <span className={classes.customPlaceholderBidComment}>
-              {!auctionEnded && bidComment.trim() === '' ? commentCopy : ''}
-            </span>
-            <FormControl
-              className={classes.commentInput}
-              as="textarea"
-              onChange={e => setBidComment(e.target.value)}
-              value={bidComment}
-            />
-          </InputGroup>
-        </>
-      )}
 
       {!auctionEnded ? (
         <Col lg={11} style={{ paddingTop: '0.5em' }}>

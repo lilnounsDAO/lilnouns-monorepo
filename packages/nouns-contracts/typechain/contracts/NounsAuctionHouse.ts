@@ -32,7 +32,6 @@ export interface NounsAuctionHouseInterface extends utils.Interface {
   functions: {
     "auction()": FunctionFragment;
     "createBid(uint256)": FunctionFragment;
-    "createBidWithComment(uint256,string)": FunctionFragment;
     "duration()": FunctionFragment;
     "initialize(address,address,uint256,uint256,uint8,uint256)": FunctionFragment;
     "minBidIncrementPercentage()": FunctionFragment;
@@ -57,7 +56,6 @@ export interface NounsAuctionHouseInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "auction"
       | "createBid"
-      | "createBidWithComment"
       | "duration"
       | "initialize"
       | "minBidIncrementPercentage"
@@ -82,10 +80,6 @@ export interface NounsAuctionHouseInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "createBid",
     values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "createBidWithComment",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "duration", values?: undefined): string;
   encodeFunctionData(
@@ -148,10 +142,6 @@ export interface NounsAuctionHouseInterface extends utils.Interface {
 
   decodeFunctionResult(functionFragment: "auction", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "createBid", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "createBidWithComment",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "duration", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
@@ -199,7 +189,7 @@ export interface NounsAuctionHouseInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "weth", data: BytesLike): Result;
 
   events: {
-    "AuctionBid(uint256,address,uint256,bool,string)": EventFragment;
+    "AuctionBid(uint256,address,uint256,bool)": EventFragment;
     "AuctionCreated(uint256,uint256,uint256)": EventFragment;
     "AuctionExtended(uint256,uint256)": EventFragment;
     "AuctionMinBidIncrementPercentageUpdated(uint256)": EventFragment;
@@ -232,10 +222,9 @@ export interface AuctionBidEventObject {
   sender: string;
   value: BigNumber;
   extended: boolean;
-  comment: string;
 }
 export type AuctionBidEvent = TypedEvent<
-  [BigNumber, string, BigNumber, boolean, string],
+  [BigNumber, string, BigNumber, boolean],
   AuctionBidEventObject
 >;
 
@@ -387,12 +376,6 @@ export interface NounsAuctionHouse extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    createBidWithComment(
-      nounId: PromiseOrValue<BigNumberish>,
-      comment: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     duration(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     initialize(
@@ -475,12 +458,6 @@ export interface NounsAuctionHouse extends BaseContract {
 
   createBid(
     nounId: PromiseOrValue<BigNumberish>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  createBidWithComment(
-    nounId: PromiseOrValue<BigNumberish>,
-    comment: PromiseOrValue<string>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -569,12 +546,6 @@ export interface NounsAuctionHouse extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    createBidWithComment(
-      nounId: PromiseOrValue<BigNumberish>,
-      comment: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     duration(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
@@ -633,19 +604,17 @@ export interface NounsAuctionHouse extends BaseContract {
   };
 
   filters: {
-    "AuctionBid(uint256,address,uint256,bool,string)"(
+    "AuctionBid(uint256,address,uint256,bool)"(
       nounId?: PromiseOrValue<BigNumberish> | null,
       sender?: null,
       value?: null,
-      extended?: null,
-      comment?: null
+      extended?: null
     ): AuctionBidEventFilter;
     AuctionBid(
       nounId?: PromiseOrValue<BigNumberish> | null,
       sender?: null,
       value?: null,
-      extended?: null,
-      comment?: null
+      extended?: null
     ): AuctionBidEventFilter;
 
     "AuctionCreated(uint256,uint256,uint256)"(
@@ -727,12 +696,6 @@ export interface NounsAuctionHouse extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    createBidWithComment(
-      nounId: PromiseOrValue<BigNumberish>,
-      comment: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     duration(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
@@ -805,12 +768,6 @@ export interface NounsAuctionHouse extends BaseContract {
 
     createBid(
       nounId: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    createBidWithComment(
-      nounId: PromiseOrValue<BigNumberish>,
-      comment: PromiseOrValue<string>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

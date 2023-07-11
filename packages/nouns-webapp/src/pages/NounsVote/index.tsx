@@ -76,8 +76,6 @@ interface SnapshotProp {
   snapshotVoters: SnapshotVoters[];
 }
 
-// TODO: txnlink addresses /  const txLink = buildEtherscanTxLink(bid.transactionHash);
-
 const NounsVotePage = ({
   match: {
     params: { id },
