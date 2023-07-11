@@ -14,7 +14,6 @@ export enum AuctionHouseContractFunction {
   minBidIncrementPercentage = 'minBidIncrementPercentage',
   nouns = 'nouns',
   createBid = 'createBid',
-  createBidWithComment = 'createBidWithComment',
   settleCurrentAndCreateNewAuction = 'settleCurrentAndCreateNewAuction',
 }
 

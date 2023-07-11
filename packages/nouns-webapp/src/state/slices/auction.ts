@@ -41,7 +41,6 @@ export const reduxSafeBid = (bid: BidEvent): BidEvent => ({
   sender: bid.sender,
   value: BigNumber.from(bid.value).toJSON(),
   extended: bid.extended,
-  comment: bid.comment,
   transactionHash: bid.transactionHash,
   timestamp: bid.timestamp,
 });
