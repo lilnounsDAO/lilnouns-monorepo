@@ -10,6 +10,7 @@ import { useQuery } from '@apollo/client';
 import { bidsByAuctionQueryForWinningBid } from '../../wrappers/subgraph';
 import { useAppSelector } from '../../hooks';
 import CommentModal from '../CommentModal';
+import { isMobileScreen } from '../../utils/isMobile';
 
 interface NounInfoRowCommentProps {
   nounId: number;
@@ -33,14 +34,17 @@ const NounInfoRowComment: React.FC<NounInfoRowCommentProps> = props => {
   const winner = bid !== null ? bid.noun.owner.id : 'null';
   const comment = bid !== null ? bid.comment : 'null';
 
+  const isMobile = isMobileScreen();
+  const commentLength = isMobile ? 13 : 30
+
   useEffect(() => {
     if (!comment) return;
 
-    if (comment.length > 30) {
-      let truncComment = comment.substring(0, 30);
+    if (comment.length > commentLength) {
+      let truncComment = comment.substring(0, commentLength);
 
       // check the next character, if it is not a space, go back to previous space
-      if (comment.length > 30 && comment[20] !== ' ') {
+      if (comment.length > commentLength && comment[commentLength] !== ' ') {
         truncComment = truncComment.substring(0, truncComment.lastIndexOf(' '));
       }
       // add ellipsis

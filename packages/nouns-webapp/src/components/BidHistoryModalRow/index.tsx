@@ -14,6 +14,7 @@ import Davatar from '@davatar/react';
 import { useEthers } from '@usedapp/core';
 import { useReverseENSLookUp } from '../../utils/ensLookup';
 import { shortENS, useShortAddress } from '../../utils/addressAndENSDisplayUtils';
+import { isMobileScreen } from '../../utils/isMobile';
 
 interface BidHistoryModalRowProps {
   bid: Bid;
@@ -33,16 +34,19 @@ const BidHistoryModalRow: React.FC<BidHistoryModalRowProps> = props => {
   const ens = useReverseENSLookUp(bid.sender);
   const shortAddress = useShortAddress(bid.sender);
 
+  const isMobile = isMobileScreen();
+  const commentLength = isMobile ? 13 : 30
+
   const [expanded, setExpanded] = useState(false); // new state here
-  const expandRowHandler = () => (bid.comment.length > 13 ? setExpanded(!expanded) : null); // new handler to toggle expanded state
+  const expandRowHandler = () => (bid.comment.length > commentLength ? setExpanded(!expanded) : null); // new handler to toggle expanded state
   const [displayedComment, setDisplayedComment] = useState('');
 
   useEffect(() => {
     if (!bid.comment) return;
-    if (bid.comment.length > 30) {
-      let truncComment = bid.comment.substring(0, 30);
+    if (bid.comment.length > commentLength) {
+      let truncComment = bid.comment.substring(0, commentLength);
       // check the next character, if it is not a space, go back to previous space
-      if (bid.comment.length > 30 && bid.comment[30] !== ' ') {
+      if (bid.comment.length > commentLength && bid.comment[commentLength] !== ' ') {
         truncComment = truncComment.substring(0, truncComment.lastIndexOf(' '));
       }
       // add ellipsis
