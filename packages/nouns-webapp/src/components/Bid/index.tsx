@@ -203,8 +203,16 @@ const Bid: React.FC<{
     }
   };
 
+  function refreshPage() {
+    location.reload()
+  }
+
   const settleAuctionHandlerFunc = () => {
-    settleAuction();
+    settleAuction().then(()=>{
+      refreshPage()
+    }).catch(() => {
+      location.reload()
+    })
   };
 
   const settleAuctionHandler = () => {
