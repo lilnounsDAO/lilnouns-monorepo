@@ -136,6 +136,7 @@ export const partialProposalsQuery = (first = 1_000) => gql`
     forVotes
     againstVotes
     abstainVotes
+    createdBlock
     createdTransactionHash
     quorumVotes
     executionETA
