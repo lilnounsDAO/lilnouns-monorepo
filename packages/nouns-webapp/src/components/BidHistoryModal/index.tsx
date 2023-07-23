@@ -36,12 +36,14 @@ const BidHistoryModalOverlay: React.FC<{
             </div>
 
             <div className={classes.title}>
-              <h2>Bids for</h2>
+              <h2>
+                Bids for
+              </h2>
               <h1>Lil Noun {auction && auction.nounId.toString()}</h1>
             </div>
           </div>
           <div className={classes.bidWrapper}>
-          {bids && bids.length > 0 ? (
+            {bids && bids.length > 0 ? (
               <ul>
                 {bids?.map((bid: Bid, i: number) => {
                   return <BidHistoryModalRow index={i} bid={bid} />;
