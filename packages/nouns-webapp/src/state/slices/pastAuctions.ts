@@ -29,6 +29,8 @@ const reduxSafePastAuctions = (data: any): AuctionState[] => {
           sender: bid.bidder.id,
           value: BigNumber.from(bid.amount).toJSON(),
           extended: false,
+          // TODO: change back
+          comment: bid.comment,
           transactionHash: bid.id,
           timestamp: BigNumber.from(bid.blockTimestamp).toJSON(),
         };

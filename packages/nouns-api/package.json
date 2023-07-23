@@ -41,7 +41,7 @@
   "dependencies": {
     "@graphql-tools/schema": "^9.0.3",
     "@graphql-tools/utils": "^8.11.0",
-    "@lilnounsdao/contracts": "^0.2.8",
+    "@lilnounsdao/contracts": "^0.3.3",
     "@prisma/client": "^4.7.1",
     "@sentry/node": "^7.7.0",
     "@sentry/tracing": "^7.7.0",

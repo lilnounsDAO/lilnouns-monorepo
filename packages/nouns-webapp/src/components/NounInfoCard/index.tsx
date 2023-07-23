@@ -17,6 +17,7 @@ import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import { useNounData } from '../StandaloneNoun';
 import { svg2png } from '../../utils/svg2png';
 import { buildEtherscanTokenLink } from '../../utils/etherscan';
+import NounInfoRowComment from '../NounInfoRowComment';
 
 interface NounInfoCardProps {
   nounId: number;
@@ -54,7 +55,7 @@ const NounInfoCard: React.FC<NounInfoCardProps> = props => {
   }, [noun, nounId]);
 
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
-
+  
   return (
     <>
       <Col lg={12} className={classes.nounInfoRow}>
@@ -62,6 +63,9 @@ const NounInfoCard: React.FC<NounInfoCardProps> = props => {
       </Col>
       <Col lg={12} className={classes.nounInfoRow}>
         <NounInfoRowHolder nounId={nounId} />
+      </Col>
+      <Col lg={12} className={classes.nounInfoRow}>
+        <NounInfoRowComment nounId={nounId} />
       </Col>
       <Col lg={12} className={classes.nounInfoRow}>
         <NounInfoRowButton
