@@ -8,6 +8,10 @@
     "address": "0x598949186a38683C18697705aDcdC705bFc691a0",
     "startBlock": 8923172
   },
+  "nounsAuctionHouseV1": {
+    "address": "0x598949186a38683C18697705aDcdC705bFc691a0",
+    "startBlock": 8923172
+  },
   "nounsDAO": {
     "address": "0xddE586Bc15E36aFE7ED322DF8582171f224374ad",
     "startBlock": 8923176
