@@ -4121,6 +4121,14 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@lilnounsdao/assets@^0.5.12":
+  version "0.5.12"
+  resolved "https://registry.yarnpkg.com/@lilnounsdao/assets/-/assets-0.5.12.tgz#89f8ce36afd43243187d918fdc29d4f81ec181db"
+  integrity sha512-/uJaEampxQPT+SXF6V3vjKC0XC0puiEl1MNHPHH0a1FccaUxbYDOoWTt/Y3HHN+N2LsnTNXa7tGLYJ7JJkhLrQ==
+  dependencies:
+    "@ethersproject/bignumber" "^5.5.0"
+    "@ethersproject/solidity" "^5.5.0"
+
 "@lingui/babel-plugin-extract-messages@^3.15.0":
   version "3.15.0"
   resolved "https://registry.yarnpkg.com/@lingui/babel-plugin-extract-messages/-/babel-plugin-extract-messages-3.15.0.tgz#370c5fa3a677252c13fc6709ee56defbffb692fc"
