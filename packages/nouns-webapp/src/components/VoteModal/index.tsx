@@ -1,7 +1,7 @@
 import { Button, FloatingLabel, FormControl, Spinner } from 'react-bootstrap';
 import SolidColorBackgroundModal from '../SolidColorBackgroundModal';
 import classes from './VoteModal.module.css';
-import { useCastVote, useCastVoteWithReason, Vote } from '../../wrappers/nounsDao';
+import { useCastRefundableVote, useCastRefundableVoteWithReason, useCastVote, useCastVoteWithReason, Vote } from '../../wrappers/nounsDao';
 import { useCallback, useEffect, useState } from 'react';
 import { TransactionStatus } from '@usedapp/core';
 import NavBarButton, { NavBarButtonStyle } from '../NavBarButton';
@@ -17,8 +17,9 @@ interface VoteModalProps {
 const POST_SUCESSFUL_VOTE_MODAL_CLOSE_TIME_MS = 3000;
 
 const VoteModal = ({ show, onHide, proposalId, availableVotes }: VoteModalProps): JSX.Element => {
-  const { castVote, castVoteState } = useCastVote();
-  const { castVoteWithReason, castVoteWithReasonState } = useCastVoteWithReason();
+  const { castRefundableVote, castRefundableVoteState } = useCastRefundableVote();
+  const { castRefundableVoteWithReason, castRefundableVoteWithReasonState } =
+    useCastRefundableVoteWithReason();
   const [vote, setVote] = useState<Vote>();
   const [voteReason, setVoteReason] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -63,13 +64,13 @@ const VoteModal = ({ show, onHide, proposalId, availableVotes }: VoteModalProps)
 
   // Cast vote transaction state hook
   useEffect(() => {
-    handleVoteStateChange(castVoteState);
-  }, [castVoteState, handleVoteStateChange]);
+    handleVoteStateChange(castRefundableVoteState);
+  }, [castRefundableVoteState, handleVoteStateChange]);
 
   // Cast vote with reason transaction state hook
   useEffect(() => {
-    handleVoteStateChange(castVoteWithReasonState);
-  }, [castVoteWithReasonState, handleVoteStateChange]);
+    handleVoteStateChange(castRefundableVoteWithReasonState);
+  }, [castRefundableVoteWithReasonState, handleVoteStateChange]);
 
   // Auto close the modal after a transaction completes succesfully
   // Leave failed transaction up until user closes manually to allow for debugging
@@ -178,9 +179,9 @@ const VoteModal = ({ show, onHide, proposalId, availableVotes }: VoteModalProps)
               }
               setIsLoading(true);
               if (voteReason.trim() === '') {
-                castVote(proposalId, vote);
+                castRefundableVote(proposalId, vote);
               } else {
-                castVoteWithReason(proposalId, vote, voteReason);
+                castRefundableVoteWithReason(proposalId, vote, voteReason);
               }
             }}
             className={vote === undefined ? classes.submitBtnDisabled : classes.submitBtn}
