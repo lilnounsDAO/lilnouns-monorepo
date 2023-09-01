@@ -19,6 +19,7 @@ import { useQuery } from '@apollo/client';
 import { activeProposals, partialProposalsQuery, proposalQuery, proposalsQuery } from './subgraph';
 import BigNumber from 'bignumber.js';
 import { useBlockTimestamp } from '../hooks/useBlockTimestamp';
+import { NounsDaoLogicV2Factory } from '@lilnounsdao/contracts';
 
 export enum Vote {
   AGAINST = 0,
@@ -168,7 +169,7 @@ export interface DynamicQuorumParams {
 }
 
 const abi = new utils.Interface(NounsDAOV2ABI);
-const nounsDaoContract = new NounsDaoLogicV1Factory().attach(config.addresses.nounsDAOProxy);
+const nounsDaoContract = new NounsDaoLogicV2Factory().attach(config.addresses.nounsDAOProxy);
 
 // Start the log search at the mainnet deployment block to speed up log queries
 const fromBlock = CHAIN_ID === ChainId.Mainnet ? 12985453 : 0;
