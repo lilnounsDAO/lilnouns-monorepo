@@ -14,10 +14,10 @@ export async function getLastAuctionBids(): Promise<AuctionBids> {
       query {
         auctions(orderBy: startTime, orderDirection: desc, first: 1) {
           id
-          comment
           endTime
           bids(orderBy: blockNumber, orderDirection: desc, first: 1) {
             id
+            comment
             amount
             bidder {
               id
