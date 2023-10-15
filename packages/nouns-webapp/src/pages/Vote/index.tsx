@@ -201,7 +201,7 @@ const VotePage = ({
   const pageTitle = `${proposal?.title} - Lil Nouns DAO Prop ${id}` ?? `Lil Nouns DAO Prop ${id}`;
 
   useEffect(() => {
-    document.title = pageTitle
+    document.title = pageTitle;
 
     if (!location.pathname) return;
 
@@ -323,7 +323,7 @@ const VotePage = ({
   }
 
   const isWalletConnected = !(activeAccount === undefined);
-  const isActiveForVoting = startDate?.isBefore(now) && endDate?.isAfter(now);
+  const isActiveForVoting = proposal?.status === ProposalState.ACTIVE ? startDate?.isBefore(now) && endDate?.isAfter(now) : false;
 
   const forNouns = getNounVotes(data, 1);
   const againstNouns = getNounVotes(data, 0);

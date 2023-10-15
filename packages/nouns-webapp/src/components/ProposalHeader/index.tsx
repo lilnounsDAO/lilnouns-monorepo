@@ -49,7 +49,7 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
   const hasVoted = !snapshotProposal && !isNounsDAOProp ? useHasVotedOnProposal(proposal?.id) : useHasVotedOnSnapshotProposal(snapshotVoters) 
   const proposalVote = useProposalVote(proposal?.id);
   const proposalCreationTimestamp = !snapshotProposal ? useBlockTimestamp(proposal?.createdBlock) : useBlockTimestamp(Number(snapshotProposal?.snapshot))
-  const disableVoteButton = !isWalletConnected || !availableVotes;
+  const disableVoteButton = !isWalletConnected || !availableVotes || !snapshotProposal && hasVoted
 
   const voteButton = (
     <>
