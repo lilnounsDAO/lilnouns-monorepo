@@ -11,3 +11,5 @@ dist
 *.log
 *.tool-versions
 .npmrc
+# Local Netlify folder
+.netlify
