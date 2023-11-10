@@ -163,15 +163,30 @@ const Documentation = () => {
             </Accordion.Header>
             <Accordion.Body>
               <p>
-                In addition to the precautions taken by Compound Governance, Lil Nounders have given
-                themselves a special veto right to ensure that no malicious proposals can be passed
-                while the Lil Noun supply is low. This veto right will only be used if an obviously
-                harmful governance proposal has been passed, and is intended as a last resort.
+                  The proposal veto right was initially envisioned as a temporary solution to the
+                  problem of ‘51% attacks’ on the Nouns DAO treasury and was copied over during the creation of Lil Nouns DAO.
+                  While Nounders initially believed that a healthy distribution of Nouns would be sufficient protection for
+                  the DAO, a more complete understanding of the incentives and risks has led to
+                  general consensus that a more robust solution should be implemented before
+                  the right is removed. Naturally, so is the case in Lil Nouns DAO.
               </p>
               <p>
-                Lil Nounders will proveably revoke this veto right when they deem it safe to do so.
-                This decision will be based on a healthy Lil Noun distribution and a community that
-                is engaged in the governance process.
+                  The lil nounders will veto proposals that introduce non-trivial risks to Lil Nouns DAO, including (but not necessarily limited to) proposals
+                  that:
+              </p>
+              <ul>
+                <li>unequally withdraw the treasury for personal gain</li>
+                <li>bribe voters to facilitate withdraws of the treasury for personal gain</li>
+                <li>
+                  attempt to alter auction cadence for the purpose of maintaining or acquiring
+                  a voting majority
+                </li>
+                <li>make upgrades to critical smart contracts without undergoing an audit</li>
+              </ul>
+              <p>
+                  There are unfortunately no algorithmic solutions for making these determinations
+                  in advance (if there were, the veto would not be required), and proposals must be
+                  considered on a case by case basis.
               </p>
             </Accordion.Body>
           </Accordion.Item>
