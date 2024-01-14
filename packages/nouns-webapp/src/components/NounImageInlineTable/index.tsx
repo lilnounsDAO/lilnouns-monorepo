@@ -31,6 +31,11 @@ const InnerCarousel = styled.div<CarouselProps>`
   }
 `;
 
+const StaticDisplay = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 const NounImageInlineTable: React.FC<NounImageInlineTableTableProps> = props => {
   const { nounIds } = props;
   const carousel = useRef(null);
@@ -63,10 +68,13 @@ const NounImageInlineTable: React.FC<NounImageInlineTableTableProps> = props => 
 
   return (
     <div ref={carousel} className={classes.carousel}>
-      <InnerCarousel nounCount={nounIds.length}>
-        {content()}
-        {content()}
-      </InnerCarousel>
+      {nounIds && nounIds.length > 10 ? (
+        <InnerCarousel nounCount={nounIds.length}>
+          {content()}
+        </InnerCarousel>
+      ) : (
+        <StaticDisplay>{content()}</StaticDisplay>
+      )}
     </div>
   );
 };
