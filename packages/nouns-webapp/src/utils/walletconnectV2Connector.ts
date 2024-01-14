@@ -25,6 +25,7 @@ export class WalletConnectV2Connector extends AbstractConnector {
           projectId: this.options.projectId,
           rpcMap: this.options.rpcMap || {},
           chains: this.options.chains,
+          optionalChains: [1],
           showQrModal: true,
           // RPCs may not support the `test` method used for the ping.
           disableProviderPing: true,

@@ -527,24 +527,17 @@ const NounsVotePage = ({
   const forVotes = filteredVotes
   .filter(vote => vote.choice === 1)
   .map(vote => `**${vote.voter}** | *"${vote.reason}"*`)
-  .join('\n');
+  .join('\n\n');
   const againstVotes = filteredVotes
   .filter(vote => vote.choice === 2)
   .map(vote => `**${vote.voter}** | *"${vote.reason}"*`)
-  .join('\n');
+  .join('\n\n');
   const abstainVotes = filteredVotes
   .filter(vote => vote.choice === 3)
   .map(vote => `**${vote.voter}** | *"${vote.reason}"*`)
-  .join('\n');
+  .join('\n\n');
 
-  const markdown = `
-  https://www.lilnouns.wtf/vote/nounsdao/${proposal.id}/votes\n
-  **FOR ${snapshotForCountAmt} VOTES**
-  ${forVotes ? `${forVotes}` : ''}\n
-  **AGAINST ${snapshotAgainstCountAmt} VOTES**
-  ${againstVotes ? `${againstVotes}` : ''}\n
-  **ABSTAINS ${snapshotAbstainCountAmt} VOTES**
-  ${abstainVotes ? `${abstainVotes}` : ''}`;
+  const markdown = `https://www.lilnouns.wtf/vote/nounsdao/${proposal.id}/votes\n\n**FOR ${snapshotForCountAmt} VOTES**\n\n${forVotes ? `${forVotes}` : ''}\n\n**AGAINST ${snapshotAgainstCountAmt} VOTES**\n\n${againstVotes ? `${againstVotes}` : ''}\n\n**ABSTAINS ${snapshotAbstainCountAmt} VOTES**\n\n${abstainVotes ? `${abstainVotes}` : ''}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(markdown);
