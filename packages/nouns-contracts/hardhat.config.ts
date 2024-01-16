@@ -2,7 +2,7 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import dotenv from 'dotenv';
 import '@nomiclabs/hardhat-waffle';
-import '@nomiclabs/hardhat-etherscan';
+import '@nomicfoundation/hardhat-verify';
 import 'solidity-coverage';
 import '@typechain/hardhat';
 import 'hardhat-abi-exporter';
