@@ -1,6 +1,6 @@
 {
   "name": "@lilnounsdao/sdk",
-  "version": "0.3.13",
+  "version": "0.3.15",
   "description": "Useful tooling for interacting with the Nouns protocol",
   "author": "Nounders",
   "homepage": "https://lilnouns.wtf",
@@ -18,7 +18,7 @@
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\""
   },
   "dependencies": {
-    "@lilnounsdao/contracts": "^0.3.4",
+    "@lilnounsdao/contracts": "^0.3.5",
     "ethers": "^5.6.8"
   },
   "devDependencies": {

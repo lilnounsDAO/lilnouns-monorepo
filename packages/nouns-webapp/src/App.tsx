@@ -4,7 +4,7 @@ import { useEthers } from '@usedapp/core';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { setActiveAccount } from './state/slices/account';
 import { useAuth as usePropLotAuth } from './hooks/useAuth';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { setAlertModal } from './state/slices/application';
 import classes from './App.module.css';
 import '../src/css/globals.css';
@@ -127,6 +127,7 @@ function App() {
           ) : (
             <Switch>
               <Route exact path="/" component={AuctionPage} />
+              <Route exact path="/sponsor" render={() => ( <Redirect to="/"/> )} />
               <Route
                 exact
                 path="/lilnoun/:id"

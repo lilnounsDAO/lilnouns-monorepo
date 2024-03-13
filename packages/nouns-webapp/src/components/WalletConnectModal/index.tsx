@@ -43,6 +43,7 @@ const WalletConnectModal: React.FC<{ onDismiss: () => void }> = props => {
             projectId: WALLET_CONNECT_V2_PROJECT_ID,
             showQrModal: true,
             chains: supportedChainIds,
+            optionalChains: [CHAIN_ID], // add this line
             rpcMap: {
               [CHAIN_ID]: config.app.jsonRpcUri,
             },

@@ -83,7 +83,7 @@ const NounsVotePage = ({
     params: { id },
   },
 }: RouteComponentProps<{ id: string }>) => {
-  const {proposal} = useBigNounProposal(id);
+  const { proposal } = useBigNounProposal(id);
 
   const activeAccount = useAppSelector(state => state.account.activeAccount);
   const {
@@ -138,8 +138,8 @@ const NounsVotePage = ({
         spi.body.includes(proposal?.transactionHash ?? ''),
       ) !== undefined
         ? snapshotProposalData?.proposals?.find((spi: SnapshotProposal) =>
-          spi.body.includes(proposal?.transactionHash ?? ''),
-        ).id
+            spi.body.includes(proposal?.transactionHash ?? ''),
+          ).id
         : '',
     ),
     {
@@ -196,17 +196,17 @@ const NounsVotePage = ({
   const startDate =
     proposal && timestamp && currentBlock
       ? dayjs(timestamp).add(
-        AVERAGE_BLOCK_TIME_IN_SECS * (proposal.startBlock - currentBlock),
-        'seconds',
-      )
+          AVERAGE_BLOCK_TIME_IN_SECS * (proposal.startBlock - currentBlock),
+          'seconds',
+        )
       : undefined;
 
   const endDate =
     proposal && timestamp && currentBlock
       ? dayjs(timestamp).add(
-        AVERAGE_BLOCK_TIME_IN_SECS * (proposal.endBlock - currentBlock),
-        'seconds',
-      )
+          AVERAGE_BLOCK_TIME_IN_SECS * (proposal.endBlock - currentBlock),
+          'seconds',
+        )
       : undefined;
   const now = dayjs();
 
@@ -273,35 +273,35 @@ const NounsVotePage = ({
     };
   })();
 
-    const [descriptionButtonActive, setDescriptionButtonActive] = useState('1');
-    const [isPropVotesToggled, setIsPropVotesToggled] = useState(false);
-  
-    function setPropDescription() {
-      setDescriptionButtonActive('1');
-      setIsPropVotesToggled(false);
-      window.history.pushState({}, 'Lil Nouns DAO', `/vote/nounsdao/${proposal?.id}/description`);
-    }
-  
-    function setPropVotes() {
+  const [descriptionButtonActive, setDescriptionButtonActive] = useState('1');
+  const [isPropVotesToggled, setIsPropVotesToggled] = useState(false);
+
+  function setPropDescription() {
+    setDescriptionButtonActive('1');
+    setIsPropVotesToggled(false);
+    window.history.pushState({}, 'Lil Nouns DAO', `/vote/nounsdao/${proposal?.id}/description`);
+  }
+
+  function setPropVotes() {
+    setDescriptionButtonActive('2');
+    setIsPropVotesToggled(true);
+    window.history.pushState({}, 'Lil Nouns DAO', `/vote/nounsdao/${proposal?.id}/votes`);
+  }
+
+  const location = useLocation();
+
+  const pageTitle = `${proposal?.title} - Nouns DAO Prop ${id}` ?? `Nouns DAO Prop ${id}`;
+
+  useEffect(() => {
+    document.title = pageTitle;
+
+    if (!location.pathname) return;
+
+    if (location.pathname.includes('votes')) {
       setDescriptionButtonActive('2');
       setIsPropVotesToggled(true);
-      window.history.pushState({}, 'Lil Nouns DAO', `/vote/nounsdao/${proposal?.id}/votes`);
     }
-  
-    const location = useLocation();
-
-    const pageTitle = `${proposal?.title} - Nouns DAO Prop ${id}` ?? `Nouns DAO Prop ${id}`;
-  
-    useEffect(() => {
-      document.title = pageTitle;
-
-      if (!location.pathname) return;
-  
-      if (location.pathname.includes('votes')) {
-        setDescriptionButtonActive('2');
-        setIsPropVotesToggled(true);
-      }
-    }, [pageTitle]);
+  }, [pageTitle]);
 
   const onTransactionStateChange = useCallback(
     (
@@ -430,7 +430,7 @@ const NounsVotePage = ({
           vp: obj.vp,
           choice: obj.choice,
           nounIds: delegatedVoterRepresentedNounIds,
-          reason: obj.reason
+          reason: obj.reason,
         };
 
         return res;
@@ -520,6 +520,29 @@ const NounsVotePage = ({
 
   const isMobile = isMobileScreen();
 
+  const filteredVotes = fetchedValues.snapshotVoters.filter(vote => vote.reason);
+  
+  
+
+  const forVotes = filteredVotes
+  .filter(vote => vote.choice === 1)
+  .map(vote => `**${vote.voter}** | *"${vote.reason}"*`)
+  .join('\n\n');
+  const againstVotes = filteredVotes
+  .filter(vote => vote.choice === 2)
+  .map(vote => `**${vote.voter}** | *"${vote.reason}"*`)
+  .join('\n\n');
+  const abstainVotes = filteredVotes
+  .filter(vote => vote.choice === 3)
+  .map(vote => `**${vote.voter}** | *"${vote.reason}"*`)
+  .join('\n\n');
+
+  const markdown = `https://www.lilnouns.wtf/vote/nounsdao/${proposal.id}/votes\n\n**FOR ${snapshotForCountAmt} VOTES**\n\n${forVotes ? `${forVotes}` : ''}\n\n**AGAINST ${snapshotAgainstCountAmt} VOTES**\n\n${againstVotes ? `${againstVotes}` : ''}\n\n**ABSTAINS ${snapshotAbstainCountAmt} VOTES**\n\n${abstainVotes ? `${abstainVotes}` : ''}`;
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(markdown);
+  };
+
   return (
     <Section fullWidth={false} className={classes.votePage}>
       {showDynamicQuorumInfoModal && (
@@ -572,7 +595,6 @@ const NounsVotePage = ({
 
         <p
           onClick={() => {
-            
             if (isDelegateView) {
               setIsDelegateView(false);
               if (snapProp) {
@@ -587,8 +609,6 @@ const NounsVotePage = ({
             if (isLilNounView) {
               setIsLilNounView(false);
             }
-
-
           }}
           className={classes.toggleVoteView}
         >
@@ -596,18 +616,15 @@ const NounsVotePage = ({
             ? isDelegateView
               ? 'Switch to Noun view'
               : 'Switch to Noun delegate view'
-
             : !isMobile
-              ? isDelegateView
-                ? 'Switch to Lil Noun view'
-                : isLilNounView
-                  ? 'Switch to Noun view'
-                  : 'Switch to Noun delegate view'
+            ? isDelegateView
+              ? 'Switch to Lil Noun view'
               : isLilNounView
-                ? 'Switch to Noun view'
-                : 'Switch to Lil Noun view'}
-
-          {/* {isLilNounView ? 'Switch to Noun view' : 'Switch to Lil Noun view'} */}
+              ? 'Switch to Noun view'
+              : 'Switch to Noun delegate view'
+            : isLilNounView
+            ? 'Switch to Noun view'
+            : 'Switch to Lil Noun view'}
         </p>
 
         <Row>
@@ -670,12 +687,12 @@ const NounsVotePage = ({
                   <div
                     data-for="view-dq-info"
                     data-tip="View Dynamic Quorum Info"
-                    onClick={() => setShowDynamicQuorumInfoModal(true && isV2Prop && !isLilNounView)}
+                    onClick={() =>
+                      setShowDynamicQuorumInfoModal(true && isV2Prop && !isLilNounView)
+                    }
                     className={clsx(classes.thresholdInfo, isV2Prop ? classes.cursorPointer : '')}
                   >
-                    <span>
-                      {isLilNounView ? 'Quorum' : isV2Prop ? 'Current Quorum' : 'Quorum'}
-                    </span>
+                    <span>{isLilNounView ? 'Quorum' : isV2Prop ? 'Current Quorum' : 'Quorum'}</span>
                     {isLilNounView ? (
                       <h3>N/A</h3>
                     ) : (
@@ -702,20 +719,20 @@ const NounsVotePage = ({
                         ? !isLilNounView
                           ? startOrEndTimeTime() && startOrEndTimeTime()?.format('h:mm A z')
                           : snapshotStartOrEndTimeTime() &&
-                          snapshotStartOrEndTimeTime()?.format('h:mm A z')
+                            snapshotStartOrEndTimeTime()?.format('h:mm A z')
                         : !isLilNounView
-                          ? startOrEndTimeTime() && startOrEndTimeTime()?.format('h:mm A z')
-                          : 'Time'}
+                        ? startOrEndTimeTime() && startOrEndTimeTime()?.format('h:mm A z')
+                        : 'Time'}
                     </span>
                     <h3>
                       {snapshotStartOrEndTimeTime() !== undefined
                         ? !isLilNounView
                           ? startOrEndTimeTime() && startOrEndTimeTime()?.format('MMM D, YYYY')
                           : snapshotStartOrEndTimeTime() &&
-                          snapshotStartOrEndTimeTime()?.format('MMM D, YYYY')
+                            snapshotStartOrEndTimeTime()?.format('MMM D, YYYY')
                         : !isLilNounView
-                          ? startOrEndTimeTime() && startOrEndTimeTime()?.format('MMM D, YYYY')
-                          : 'N/A'}
+                        ? startOrEndTimeTime() && startOrEndTimeTime()?.format('MMM D, YYYY')
+                        : 'N/A'}
                     </h3>
                   </Col>
                 </Row>
@@ -738,6 +755,15 @@ const NounsVotePage = ({
             </Card>
           </Col>
         </Row>
+
+          <p
+            onClick={() => {
+              copyToClipboard()
+            }}
+            className={classes.toggleVoteView}
+          >
+            copy vote reasons
+          </p>
 
         <div className={classes.section}>
           <div>
@@ -776,7 +802,13 @@ const NounsVotePage = ({
             </div>
           </div>
         </div>
-        <ProposalContent proposal={proposal} isVotesToggled={isPropVotesToggled} votes={data} metagovVotes={fetchedValues.snapshotVoters} isNounsDAOProp={true}/>
+        <ProposalContent
+          proposal={proposal}
+          isVotesToggled={isPropVotesToggled}
+          votes={data}
+          metagovVotes={fetchedValues.snapshotVoters}
+          isNounsDAOProp={true}
+        />
       </Col>
     </Section>
   );

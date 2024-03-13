@@ -37,7 +37,7 @@ const CurrentBid: React.FC<{ currentBid: BigNumber | BidNa; auctionEnded: boolea
           className={classes.currentBid}
           style={{ color: isCool ? 'var(--brand-cool-dark-text)' : 'var(--brand-warm-dark-text)' }}
         >
-          {currentBid === BID_N_A ? BID_N_A : <TruncatedAmount amount={currentBid && currentBid} />}
+          {currentBid === BID_N_A || (auctionEnded && currentBid.isZero()) ? BID_N_A : <TruncatedAmount amount={currentBid} />}
         </h2>
       </Col>
     </Row>
