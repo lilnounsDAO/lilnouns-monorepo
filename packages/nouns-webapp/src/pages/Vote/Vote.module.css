@@ -273,3 +273,11 @@
   color: #14161b;
   border: 2px solid var(--brand-color-blue);
 }
+
+.dqIcon {
+  opacity: 0.5;
+  margin-left: 0.25rem;
+  margin-bottom: 0.25rem;
+  height: 18px;
+  width: 18px;
+}
