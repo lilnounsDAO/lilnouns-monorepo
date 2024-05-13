@@ -1,19 +1,29 @@
 import {
-  ImageData as data,
-  getNounData,
-  getBigNounData,
   BigNounImageData as bigNounData,
+  ImageData as data,
+  getBigNounData,
+  getNounData,
 } from '@lilnounsdao/assets';
 import { buildSVG } from '@lilnounsdao/sdk';
 import { BigNumber, BigNumber as EthersBN } from 'ethers';
+import { useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { setOnDisplayAuctionNounId } from '../../state/slices/onDisplayAuction';
 import { INounSeed, useBigNounSeed, useNounSeed } from '../../wrappers/nounToken';
 import Noun from '../Noun';
-import { Link } from 'react-router-dom';
-import classes from './StandaloneNoun.module.css';
-import { useDispatch } from 'react-redux';
-import { setOnDisplayAuctionNounId } from '../../state/slices/onDisplayAuction';
 import nounClasses from '../Noun/Noun.module.css';
-import { useMemo } from 'react';
+import classes from './StandaloneNoun.module.css';
+
+export interface INoun {
+  id: string;
+  name: string;
+  svg: string;
+  description: string;
+  image: string;
+  seed: INounSeed;
+  blockNumber?: number;
+}
 
 interface StandaloneNounProps {
   nounId: EthersBN;
@@ -25,11 +35,12 @@ interface StandaloneCircularNounProps {
 
 interface StandaloneNounWithSeedProps {
   nounId: EthersBN;
+  seed?: INounSeed;
   onLoadSeed?: (seed: INounSeed) => void;
   shouldLinkToProfile: boolean;
 }
 
-export const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
+export const getNoun = (nounId: string | EthersBN | number, seed: INounSeed): INoun => {
   const id = nounId.toString();
   const name = `Noun ${id}`;
   const description = `Lil Noun ${id} is a member of the Lil Nouns DAO`;
@@ -38,15 +49,16 @@ export const getNoun = (nounId: string | EthersBN | number, seed: INounSeed) => 
   const image = `data:image/svg+xml;base64,${btoa(svg)}`;
 
   return {
+    id,
     name,
     svg,
     description,
     image,
-    parts,
+    seed,
   };
 };
 
-export const getBigNoun = (nounId: string | EthersBN | number, seed: INounSeed) => {
+export const getBigNoun = (nounId: string | EthersBN | number, seed: INounSeed): INoun => {
   const id = nounId.toString();
   const name = `Noun ${id}`;
   const description = `Noun ${id} is a member of the Nouns DAO`;
@@ -55,11 +67,12 @@ export const getBigNoun = (nounId: string | EthersBN | number, seed: INounSeed) 
   const image = `data:image/svg+xml;base64,${btoa(svg)}`;
 
   return {
+    id,
     name,
     svg,
     description,
     image,
-    parts,
+    seed,
   };
 };
 
@@ -151,19 +164,19 @@ export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
   const { nounId, onLoadSeed, shouldLinkToProfile } = props;
 
   const dispatch = useDispatch();
-  const seed = useNounSeed(nounId);
+  const seed = useNounSeed(nounId, props.seed);
 
-  if (!seed || !nounId || !onLoadSeed) return <Noun imgPath="" alt="Lil Noun" />;
+  if (!seed || !nounId || (!onLoadSeed && !props.seed)) return <Noun imgPath="" alt="Lil Noun" />;
 
-  onLoadSeed(seed);
+  onLoadSeed?.(seed);
 
   const onClickHandler = () => {
     dispatch(setOnDisplayAuctionNounId(nounId.toNumber()));
   };
 
-  const { image, description, parts } = getNoun(nounId, seed);
+  const { image, description } = getNoun(nounId, seed);
 
-  const noun = <Noun imgPath={image} alt={description} parts={parts} />;
+  const noun = <Noun imgPath={image} alt={description} seed={seed} />;
   const nounWithLink = (
     <Link
       to={'/lilnoun/' + nounId.toString()}

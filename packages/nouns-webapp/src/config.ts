@@ -1,7 +1,7 @@
 import {
   ContractAddresses as NounsContractAddresses,
-  getContractAddressesForChainOrThrow,
   getBigNounsContractAddressesForChainOrThrow,
+  getContractAddressesForChainOrThrow,
 } from '@lilnounsdao/sdk';
 import { ChainId } from '@usedapp/core';
 
@@ -9,7 +9,14 @@ interface ExternalContractAddresses {
   lidoToken: string | undefined;
 }
 
-export type ContractAddresses = NounsContractAddresses & ExternalContractAddresses;
+interface VrgdaConfig {
+  firstNounId: number;
+  network: 'sepolia' | 'mainnet';
+  auction: string;
+}
+
+export type ContractAddresses = NounsContractAddresses &
+  ExternalContractAddresses & { vrgda: VrgdaConfig };
 
 interface AppConfig {
   jsonRpcUri: string;
@@ -23,7 +30,12 @@ interface AppConfig {
 }
 
 export const ChainId_Sepolia = 11155111;
-type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat | ChainId.Goerli | typeof ChainId_Sepolia;
+type SupportedChains =
+  | ChainId.Rinkeby
+  | ChainId.Mainnet
+  | ChainId.Hardhat
+  | ChainId.Goerli
+  | typeof ChainId_Sepolia;
 interface CacheBucket {
   name: string;
   version: string;
@@ -56,7 +68,8 @@ export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID
 
 export const ETHERSCAN_API_KEY = process.env.REACT_APP_ETHERSCAN_API_KEY ?? '';
 
-export const WALLET_CONNECT_V2_PROJECT_ID = process.env.REACT_APP_WALLET_CONNECT_V2_PROJECT_ID ?? '';
+export const WALLET_CONNECT_V2_PROJECT_ID =
+  process.env.REACT_APP_WALLET_CONNECT_V2_PROJECT_ID ?? '';
 
 const INFURA_PROJECT_ID = process.env.REACT_APP_INFURA_PROJECT_ID;
 const ALCHEMY_PROJECT_ID = process.env.REACT_APP_ALCHEMY_PROJECT_ID;
@@ -88,8 +101,8 @@ export const createNetworkWsUrl = (network: string): string => {
     return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
-    ? `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
-    : `wss://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
+      ? `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
+      : `wss://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
   }
 };
 
@@ -119,8 +132,10 @@ const app: Record<SupportedChains, AppConfig> = {
   [ChainId_Sepolia]: {
     jsonRpcUri: createNetworkHttpUrl('sepolia'),
     wsRpcUri: createNetworkWsUrl('sepolia'),
-    subgraphApiUri: 'https://api.goldsky.com/api/public/project_cldjvjgtylso13swq3dre13sf/subgraphs/lil-nouns-sepolia/0.1.0/gn', //TODO: DEPLOY SEPOLIA API
-    nounsDAOSubgraphApiUri: 'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns-sepolia-the-burn/0.1.0/gn',
+    subgraphApiUri:
+      'https://api.goldsky.com/api/public/project_cldjvjgtylso13swq3dre13sf/subgraphs/lil-nouns-sepolia/0.1.0/gn', //TODO: DEPLOY SEPOLIA API
+    nounsDAOSubgraphApiUri:
+      'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns-sepolia-the-burn/0.1.0/gn',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
@@ -129,8 +144,10 @@ const app: Record<SupportedChains, AppConfig> = {
   [ChainId.Mainnet]: {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
     wsRpcUri: createNetworkWsUrl('mainnet'),
-    subgraphApiUri: 'https://api.goldsky.com/api/public/project_cldjvjgtylso13swq3dre13sf/subgraphs/lil-nouns-subgraph/1.0.4/gn',
-    nounsDAOSubgraphApiUri: 'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns/prod/gn',
+    subgraphApiUri:
+      'https://api.goldsky.com/api/public/project_cldjvjgtylso13swq3dre13sf/subgraphs/lil-nouns-subgraph/1.0.4/gn',
+    nounsDAOSubgraphApiUri:
+      'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns/prod/gn',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_MAINNET_NOUNSAPI`] || '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
@@ -166,15 +183,21 @@ const externalAddresses: Record<SupportedChains, ExternalContractAddresses> = {
   },
 };
 
+const vrgda: VrgdaConfig = {
+  firstNounId: 7975,
+  network: 'sepolia',
+  auction: '0xc27d735c529c36fc26cba27d1540429d3b8cba87',
+};
+
 const getAddresses = (): ContractAddresses => {
   let nounsAddresses = {} as NounsContractAddresses;
   try {
     nounsAddresses = getContractAddressesForChainOrThrow(CHAIN_ID);
   } catch {}
-  return { ...nounsAddresses, ...externalAddresses[CHAIN_ID] };
+  return { ...nounsAddresses, ...externalAddresses[CHAIN_ID], vrgda };
 };
 
-const getBigNounsAddresses = (): ContractAddresses => {
+const getBigNounsAddresses = (): Omit<ContractAddresses, 'vrgda'> => {
   let bigNounsNounsAddresses = {} as NounsContractAddresses;
   try {
     bigNounsNounsAddresses = getBigNounsContractAddressesForChainOrThrow(CHAIN_ID);
