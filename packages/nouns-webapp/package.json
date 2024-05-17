@@ -48,7 +48,7 @@
     "@types/marked": "^4.0.3",
     "@types/styled-components": "^5.1.26",
     "@usedapp/coingecko": "0.5.1",
-    "@usedapp/core": "0.9.1",
+    "@usedapp/core": "npm:usedapp-core-fork",
     "@walletconnect/ethereum-provider": "^2.8.4",
     "@walletconnect/modal": "^2.4.5",
     "@web3-react/core": "^6.1.9",

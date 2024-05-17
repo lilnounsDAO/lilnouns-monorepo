@@ -16,6 +16,7 @@
     "prepare:rinkeby": "mustache config/rinkeby.json subgraph.yaml.mustache > subgraph.yaml",
     "prepare:mainnet": "mustache config/mainnet.json subgraph.yaml.mustache > subgraph.yaml",
     "prepare:goerli": "mustache config/goerli.json subgraph.yaml.mustache > subgraph.yaml",
+    "prepare:sepolia": "mustache config/sepolia.json subgraph.yaml.mustache > subgraph.yaml",
     "codegen": "graph codegen --output-dir src/types/",
     "test:configgen": "echo libsFolder: $(dirname `cd ../..; pwd`)/nouns-monorepo/node_modules > matchstick.yaml",
     "test": "graph test",
@@ -23,9 +24,10 @@
     "deploy": "graph deploy --debug --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/",
     "deploy:localnode": "graph deploy --debug --node http://localhost:8020/ --ipfs http://localhost:5001/",
     "deploy:hardhat": "yarn clean && yarn prepare:hardhat && yarn codegen && yarn create:localnode nounsdao/nouns-subgraph && yarn deploy:localnode nounsdao/nouns-subgraph",
-    "deploy:goerli": "yarn clean && yarn prepare:goerli && yarn codegen && yarn deploy lilnounsdao/lil-nouns-subgraph-goerli",
     "deploy:rinkeby": "yarn clean && yarn prepare:rinkeby && yarn codegen && yarn deploy lilnounsdao/lil-nouns-subgraph-rinkeby",
     "deploy:mainnet": "yarn clean && yarn prepare:mainnet && yarn codegen && yarn deploy lilnounsdao/lil-nouns-subgraph",
+    "deploy:goerli": "yarn clean && yarn prepare:goerli && yarn codegen && yarn deploy lilnounsdao/lil-nouns-subgraph-goerli",
+    "deploy:sepolia": "yarn clean && yarn prepare:sepolia && yarn codegen && yarn graph build && goldsky subgraph deploy lil-nouns-sepolia/0.1.0",
     "mustache": "mustache"
   },
   "devDependencies": {

@@ -22,7 +22,8 @@ interface AppConfig {
   zoraKey: string;
 }
 
-type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat | ChainId.Goerli;
+export const ChainId_Sepolia = 11155111;
+type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat | ChainId.Goerli | typeof ChainId_Sepolia;
 interface CacheBucket {
   name: string;
   version: string;
@@ -71,8 +72,8 @@ const isLocalhost = Boolean(
 export const createNetworkHttpUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_JSONRPC`];
 
-  if (network === 'rinkeby' || network === 'goerli') {
-    return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
+  if (network === 'rinkeby' || network === 'goerli' || network === 'sepolia') {
+    return `https://$sepolia.infura.io/v3/f158a87082f24b668ec1ac89c65e271b`;
   } else {
     return custom || isLocalhost
       ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
@@ -83,7 +84,7 @@ export const createNetworkHttpUrl = (network: string): string => {
 export const createNetworkWsUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_WSRPC`];
 
-  if (network === 'rinkeby' || network === 'goerli') {
+  if (network === 'rinkeby' || network === 'goerli' || network === 'sepolia') {
     return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
@@ -112,6 +113,16 @@ const app: Record<SupportedChains, AppConfig> = {
     nounsDAOSubgraphApiUri: 'https://api.thegraph.com/subgraphs/name/bcjgit/dao-v2-test',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_RINKEBY_NOUNSAPI`] || '',
+    enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
+    zoraKey: process.env.ZORA_API_KEY || '',
+  },
+  [ChainId_Sepolia]: {
+    jsonRpcUri: createNetworkHttpUrl('sepolia'),
+    wsRpcUri: createNetworkWsUrl('sepolia'),
+    subgraphApiUri: 'https://api.goldsky.com/api/public/project_cldjvjgtylso13swq3dre13sf/subgraphs/lil-nouns-sepolia/0.1.0/gn', //TODO: DEPLOY SEPOLIA API
+    nounsDAOSubgraphApiUri: 'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns-sepolia-the-burn/0.1.0/gn',
+    enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
+    nounsApiUri: '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
     zoraKey: process.env.ZORA_API_KEY || '',
   },
@@ -148,6 +159,9 @@ const externalAddresses: Record<SupportedChains, ExternalContractAddresses> = {
     lidoToken: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
   },
   [ChainId.Hardhat]: {
+    lidoToken: undefined,
+  },
+  [ChainId_Sepolia]: {
     lidoToken: undefined,
   },
 };
