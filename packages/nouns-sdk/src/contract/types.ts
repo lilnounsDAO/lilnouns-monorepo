@@ -4,6 +4,8 @@ import {
   NounsDescriptorFactory,
   NounsSeederFactory,
   NounsDaoLogicV1Factory,
+  LilVRGDAAFactory,
+  NounsSeederV2Factory,
 } from '@lilnounsdao/contracts';
 
 export interface ContractAddresses {
@@ -17,6 +19,8 @@ export interface ContractAddresses {
   nounsDaoExecutor: string;
   nounsDAOProxy: string;
   nounsDAOLogicV1: string;
+  lilVRGDA?: string;
+  nounsSeederV2?: string;
 }
 
 export interface Contracts {
@@ -25,6 +29,8 @@ export interface Contracts {
   nounsDescriptorContract: ReturnType<typeof NounsDescriptorFactory.connect>;
   nounsSeederContract: ReturnType<typeof NounsSeederFactory.connect>;
   nounsDaoContract: ReturnType<typeof NounsDaoLogicV1Factory.connect>;
+  nounsSeederV2Contract?: ReturnType<typeof NounsSeederV2Factory.connect>;
+  lilVRGDAContract?: ReturnType<typeof LilVRGDAAFactory.connect>;
 }
 
 export enum ChainId {
