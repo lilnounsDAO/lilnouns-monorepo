@@ -25434,6 +25434,11 @@ solidity-coverage@0.7.21:
     shelljs "^0.8.3"
     web3-utils "^1.3.0"
 
+solmate@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.npmjs.org/solmate/-/solmate-6.2.0.tgz#edd29b5f3d6faafafdcf65fe4d1d959b4841cfa8"
+  integrity sha512-AM38ioQ2P8zRsA42zenb9or6OybRjOLXIu3lhIT8rhddUuduCt76pUEuLxOIg9GByGojGz+EbpFdCB6B+QZVVA==
+
 sonic-boom@^2.2.1:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/sonic-boom/-/sonic-boom-2.8.0.tgz#c1def62a77425090e6ad7516aad8eb402e047611"

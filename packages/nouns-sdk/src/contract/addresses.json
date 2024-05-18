@@ -59,6 +59,8 @@
     "nounsDaoExecutor": "0x97c9d93e9Bec3b764aA1F9f344F7da0456c3D289",
     "nounsDAOProxy": "0x0F4a7f71174E79e20fc192C487c2492A82d46FAE",
     "nounsDAOLogicV1": "0x63D3506a699C9CC4a5d12dbC2489C48161DBf807",
-    "nounsDAOLogicV2": "0x63D3506a699C9CC4a5d12dbC2489C48161DBf807"
+    "nounsDAOLogicV2": "0x63D3506a699C9CC4a5d12dbC2489C48161DBf807",
+    "lilVRGDA":"0x0c3d0b70c55aa91cded0c19c96edf7b67f39bb95",
+    "nounsSeederV2": "0x7a7c1c0a87f9bbbfc8456fbd1c48e9ccb8ca2bc6"
   }
 }
