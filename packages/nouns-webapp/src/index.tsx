@@ -189,7 +189,7 @@ const ChainSubscriber: React.FC = () => {
 
     dispatch(
       setActiveAuction({
-        nounId: BigNumber.from(data.nextNoun.id),
+        nounId: Number(data.nextNoun.id),
         amount: data.currentPrice,
         startTime: data.startTime,
         settled: false,
@@ -233,11 +233,14 @@ const PastAuctions: React.FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    data &&
-      auctionData &&
-      dispatch(setOnDisplayAuctionStartTime(auctionData?.auctions?.[0]?.startTime)) &&
-      dispatch(addPastAuctions({ data }));
-  }, [data, auctionData, latestAuctionId, latestAuctionStartTime, dispatch]);
+    if (!data) return;
+    dispatch(addPastAuctions({ data }));
+  }, [data]);
+
+  useEffect(() => {
+    if (!auctionData) return;
+    dispatch(setOnDisplayAuctionStartTime(auctionData?.auctions?.[0]?.startTime));
+  }, [auctionData]);
 
   return <></>;
 };

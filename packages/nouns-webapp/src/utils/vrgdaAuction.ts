@@ -5,13 +5,13 @@ import { INoun } from '../components/StandaloneNoun';
 import config from '../config';
 import LilVRGDAABI from '../libs/abi/LilVRGDA.json';
 
-const jsonProvider = new ethers.providers.JsonRpcProvider(
-  `https://${config.addresses.vrgda.network}.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
-);
+const FIRST_VRGDA_NOUN_ID = 7975;
+
+const jsonProvider = new ethers.providers.JsonRpcProvider(config.app.jsonRpcUri);
 
 export function getVrgdaAuctionContract(provider: Provider = jsonProvider): Contract {
   return new ethers.Contract(
-    config.addresses.vrgda.auction,
+    config.addresses.vrgdaAuction,
     new utils.Interface(LilVRGDAABI),
     provider,
   );
@@ -80,7 +80,7 @@ export const useBlockListener = (callback: (blockNumber: number) => Promise<void
 };
 
 export function isVrgdaNoun(nounId: number) {
-  return nounId >= config.addresses.vrgda.firstNounId;
+  return nounId >= FIRST_VRGDA_NOUN_ID;
 }
 
 function normalizeVrgdaNoun(noun: VrgdaNoun): INoun {

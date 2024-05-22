@@ -4,6 +4,7 @@ import { Col, Row } from 'react-bootstrap';
 import config from '../../config';
 import { useAppSelector } from '../../hooks';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
+import { isVrgdaNoun } from '../../utils/vrgdaAuction';
 import { Auction } from '../../wrappers/nounsAuction';
 import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
 import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
@@ -19,7 +20,6 @@ import NounInfoCard from '../NounInfoCard';
 import Winner from '../Winner';
 import classes from './AuctionActivity.module.css';
 import bidHistoryClasses from './BidHistory.module.css';
-import { isVrgdaNoun } from '../../utils/vrgdaAuction';
 
 const openEtherscanBidHistory = () => {
   const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
@@ -36,8 +36,8 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
 
   const isCool = useAppSelector(state => state.application.isCoolBackground);
   const lastNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
-  const isLastAuction = auction.nounId.toNumber() === lastNounId;
-  const isVrgda = isVrgdaNoun(auction.nounId.toNumber());
+  const isLastAuction = auction.nounId === lastNounId;
+  const isVrgda = isVrgdaNoun(auction.nounId);
 
   const [showBidHistoryModal, setShowBidHistoryModal] = useState(false);
 
@@ -58,7 +58,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
         <div className={classes.informationRow}>
           <Row className={classes.activityRow}>
             <AuctionTitleAndNavWrapper>
-              {displayGraphDepComps && <AuctionNavigation nounId={auction.nounId.toNumber()} />}
+              {displayGraphDepComps && <AuctionNavigation nounId={auction.nounId} />}
               <AuctionActivityDateHeadline startTime={auction.startTime} />
             </AuctionTitleAndNavWrapper>
             <Col lg={12}>
@@ -91,7 +91,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
           <Col lg={12}>
             {!isLastAuction ? (
               <NounInfoCard
-                nounId={auction.nounId.toNumber()}
+                nounId={auction.nounId}
                 bidHistoryOnClickHandler={showBidModalHandler}
               />
             ) : (

@@ -1,9 +1,9 @@
+import { Contract } from '@ethersproject/contracts';
 import { useContractFunction, useEthers } from '@usedapp/core';
+import { formatEther } from 'ethers/lib/utils';
+import { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { setAlertModal } from '../state/slices/application';
-import { Contract } from '@ethersproject/contracts';
-import { useEffect, useMemo, useState } from 'react';
-import config from '../config';
 import { getVrgdaAuctionContract } from '../utils/vrgdaAuction';
 
 export function useBuyNoun() {
@@ -19,25 +19,22 @@ export function useBuyNoun() {
     return getVrgdaAuctionContract(library);
   }, [library]);
 
-  const { send, state } = useContractFunction(auctionContract, 'buyToken');
+  const { send, state } = useContractFunction(auctionContract, 'buyNow');
 
-  async function buyToken(blockNumber: number) {
+  async function buyNoun(blockNumber: number) {
     try {
       if (!activeAccount) throw new Error(`Please login`);
 
       if (!activeAuction) throw new Error(`Couldn't get data about active auction`);
+
       const { amount, nounId } = activeAuction;
+      setNounId(nounId);
 
-      setNounId(nounId.toNumber());
+      console.debug('buyNow call', { amount: formatEther(amount), blockNumber, nounId });
 
-      console.debug('buyToken call', { blockNumber, amount, nounId });
-
-      await send({
-        payableAmount: amount,
-        expectedBlockNumber: blockNumber,
-        expectedNounId: nounId,
-      });
+      await send(formatEther(amount), blockNumber, nounId);
     } catch (e: any) {
+      console.trace(e);
       dispatch(
         setAlertModal({
           title: 'Transaction error',
@@ -55,7 +52,7 @@ export function useBuyNoun() {
   }, [state.status]);
 
   return {
-    buyToken,
+    buyNoun,
     state,
     isLoading: ['Mining', 'PendingSignature', 'Success'].includes(state.status),
   };

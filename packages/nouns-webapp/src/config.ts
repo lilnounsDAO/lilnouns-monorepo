@@ -9,14 +9,7 @@ interface ExternalContractAddresses {
   lidoToken: string | undefined;
 }
 
-interface VrgdaConfig {
-  firstNounId: number;
-  network: 'sepolia' | 'mainnet';
-  auction: string;
-}
-
-export type ContractAddresses = NounsContractAddresses &
-  ExternalContractAddresses & { vrgda: VrgdaConfig };
+export type ContractAddresses = NounsContractAddresses & ExternalContractAddresses;
 
 interface AppConfig {
   jsonRpcUri: string;
@@ -36,6 +29,7 @@ type SupportedChains =
   | ChainId.Hardhat
   | ChainId.Goerli
   | typeof ChainId_Sepolia;
+
 interface CacheBucket {
   name: string;
   version: string;
@@ -86,7 +80,7 @@ export const createNetworkHttpUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_JSONRPC`];
 
   if (network === 'rinkeby' || network === 'goerli' || network === 'sepolia') {
-    return `https://$sepolia.infura.io/v3/f158a87082f24b668ec1ac89c65e271b`;
+    return `https://${network}.infura.io/v3/f158a87082f24b668ec1ac89c65e271b`;
   } else {
     return custom || isLocalhost
       ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
@@ -183,22 +177,16 @@ const externalAddresses: Record<SupportedChains, ExternalContractAddresses> = {
   },
 };
 
-const vrgda: VrgdaConfig = {
-  firstNounId: 7975,
-  network: 'sepolia',
-  auction: '0xc27d735c529c36fc26cba27d1540429d3b8cba87',
-};
-
 const getAddresses = (): ContractAddresses => {
   let nounsAddresses = {} as NounsContractAddresses;
   try {
     nounsAddresses = getContractAddressesForChainOrThrow(CHAIN_ID);
   } catch {}
-  return { ...nounsAddresses, ...externalAddresses[CHAIN_ID], vrgda };
+  return { ...nounsAddresses, ...externalAddresses[CHAIN_ID] };
 };
 
-const getBigNounsAddresses = (): Omit<ContractAddresses, 'vrgda'> => {
-  let bigNounsNounsAddresses = {} as NounsContractAddresses;
+const getBigNounsAddresses = (): Omit<ContractAddresses, 'vrgdaAuction'> => {
+  let bigNounsNounsAddresses = {} as Omit<NounsContractAddresses, 'vrgdaAuction'>;
   try {
     bigNounsNounsAddresses = getBigNounsContractAddressesForChainOrThrow(CHAIN_ID);
   } catch {}

@@ -24,12 +24,12 @@ export const AuctionNextNoun = (props: Props) => {
   const labelColor = isCool ? 'var(--brand-cool-light-text)' : 'var(--brand-warm-light-text)';
   const valueColor = isCool ? 'var(--brand-cool-dark-text)' : 'var(--brand-warm-dark-text)';
 
-  const { buyToken, isLoading } = useBuyNoun();
+  const { buyNoun, isLoading } = useBuyNoun();
 
   return (
     <div className="font-ptRoot max-sm:px-6">
       <div className="flex items-center space-x-2">
-        <AuctionNavigation nounId={auction.nounId.toNumber()} />
+        <AuctionNavigation nounId={auction.nounId} />
         <AuctionActivityDateHeadline startTime={auction.startTime} />
       </div>
       <AuctionActivityNounTitle isCool={isCool} nounId={auction.nounId} />
@@ -66,7 +66,7 @@ export const AuctionNextNoun = (props: Props) => {
           type="button"
           className="py-2.5 px-6 font-bold text-lg text-center text-white rounded-xl border-none hover:opacity-80 duration-100"
           style={{ backgroundColor: 'var(--brand-dark-red)' }}
-          onClick={() => buyToken(auction.blockNumber!)}
+          onClick={() => buyNoun(auction.blockNumber!)}
           disabled={isLoading}
         >
           Buy Now

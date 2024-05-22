@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { setStateBackgroundColor } from '../../state/slices/application';
@@ -36,7 +37,7 @@ const Auction = (props: AuctionProps) => {
             {auction ? (
               <div className={classes.nounWrapper}>
                 <StandaloneNounWithSeed
-                  nounId={auction.nounId}
+                  nounId={BigNumber.from(auction.nounId)}
                   onLoadSeed={loadedNounHandler}
                   shouldLinkToProfile={false}
                   seed={isActive && nextNoun ? nextNoun.seed : undefined}
@@ -52,8 +53,12 @@ const Auction = (props: AuctionProps) => {
             <Col lg={{ span: 6 }} className={classes.auctionActivityCol}>
               {isActive && <AuctionNextNoun auction={auction} />}
               {!isActive &&
-                (isNounderNoun(auction.nounId) || isNounsDAONoun(auction.nounId) ? (
-                  <NounderNounContent mintTimestamp={auction.startTime} nounId={auction.nounId} />
+                (isNounderNoun(BigNumber.from(auction.nounId)) ||
+                isNounsDAONoun(BigNumber.from(auction.nounId)) ? (
+                  <NounderNounContent
+                    mintTimestamp={auction.startTime}
+                    nounId={BigNumber.from(auction.nounId)}
+                  />
                 ) : (
                   <AuctionActivity auction={auction} displayGraphDepComps={true} />
                 ))}

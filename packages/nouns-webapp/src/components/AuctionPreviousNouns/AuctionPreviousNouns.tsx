@@ -34,7 +34,7 @@ export const AuctionPreviousNouns = () => {
 const PreviousNoun = (props: { noun: INoun }) => {
   const { image, name, blockNumber } = props.noun;
 
-  const { buyToken, isLoading } = useBuyNoun();
+  const { buyNoun, isLoading } = useBuyNoun();
 
   return (
     <div>
@@ -52,7 +52,7 @@ const PreviousNoun = (props: { noun: INoun }) => {
           type="button"
           className="py-2 px-4 font-bold text-center text-white rounded-xl border-none hover:opacity-80 duration-100"
           style={{ backgroundColor: 'var(--brand-dark-red)' }}
-          onClick={() => buyToken(blockNumber!)}
+          onClick={() => buyNoun(blockNumber!)}
           disabled={isLoading}
         >
           Buy Now

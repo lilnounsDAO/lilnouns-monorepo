@@ -9,7 +9,7 @@ const deserializeAuction = (reduxSafeAuction: Auction): Auction => {
     amount: BigNumber.from(reduxSafeAuction.amount),
     bidder: reduxSafeAuction.bidder,
     startTime: BigNumber.from(reduxSafeAuction.startTime),
-    nounId: BigNumber.from(reduxSafeAuction.nounId),
+    nounId: reduxSafeAuction.nounId,
     settled: false,
     blockNumber: reduxSafeAuction.blockNumber,
   };
