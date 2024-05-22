@@ -17,6 +17,7 @@ export interface ContractAddresses {
   nounsDaoExecutor: string;
   nounsDAOProxy: string;
   nounsDAOLogicV1: string;
+  vrgdaAuction: string;
 }
 
 export interface Contracts {
@@ -33,5 +34,6 @@ export enum ChainId {
   Rinkeby = 4,
   Goerli = 5,
   Kovan = 42,
+  Sepolia = 11155111,
   Local = 31337,
 }
