@@ -29,7 +29,6 @@ export function useBuyNoun() {
       const { amount, nounId } = activeAuction;
       setNounId(nounId);
 
-      // console.debug('buyNow call', { amount: formatEther(amount), blockNumber, nounId });
       console.debug('buyNow call', { blockNumber, nounId });
 
       send(blockNumber, nounId, { value: amount });
