@@ -1,6 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
 import { useContractFunction, useEthers } from '@usedapp/core';
-import { formatEther } from 'ethers/lib/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { setAlertModal } from '../state/slices/application';
@@ -30,9 +29,9 @@ export function useBuyNoun() {
       const { amount, nounId } = activeAuction;
       setNounId(nounId);
 
-      console.debug('buyNow call', { amount: formatEther(amount), blockNumber, nounId });
+      console.debug('buyNow call', { blockNumber, nounId });
 
-      await send(formatEther(amount), blockNumber, nounId);
+      send(blockNumber, nounId, { value: amount });
     } catch (e: any) {
       console.trace(e);
       dispatch(
