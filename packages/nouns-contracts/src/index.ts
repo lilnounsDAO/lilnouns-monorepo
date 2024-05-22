@@ -13,5 +13,5 @@ export { NounsDescriptor__factory as NounsDescriptorFactory } from '../typechain
 export { NounsSeeder__factory as NounsSeederFactory } from '../typechain/factories/contracts/NounsSeeder__factory';
 export { NounsDAOLogicV1__factory as NounsDaoLogicV1Factory } from '../typechain/factories/contracts/governance/NounsDAOLogicV1__factory';
 export { NounsDAOLogicV2__factory as NounsDaoLogicV2Factory } from '../typechain/factories/contracts/governance/NounsDAOLogicV2__factory';
-export { LilVRGDA__factory as LilVRGDAAFactory } from '../typechain/factories/contracts/LilVRGDA__factory';
+export { LilVRGDA__factory as LilVRGDAFactory } from '../typechain/factories/contracts/LilVRGDA__factory';
 export { NounsSeederV2__factory as NounsSeederV2Factory } from '../typechain/factories/contracts/NounsSeederV2__factory';
