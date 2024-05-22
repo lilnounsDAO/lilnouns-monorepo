@@ -11,7 +11,7 @@ const jsonProvider = new ethers.providers.JsonRpcProvider(config.app.jsonRpcUri)
 
 export function getVrgdaAuctionContract(provider: Provider = jsonProvider): Contract {
   return new ethers.Contract(
-    config.addresses.vrgdaAuction,
+    config.addresses.lilVRGDAProxy,
     new utils.Interface(LilVRGDAABI),
     provider,
   );

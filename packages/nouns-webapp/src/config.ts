@@ -185,8 +185,8 @@ const getAddresses = (): ContractAddresses => {
   return { ...nounsAddresses, ...externalAddresses[CHAIN_ID] };
 };
 
-const getBigNounsAddresses = (): Omit<ContractAddresses, 'vrgdaAuction'> => {
-  let bigNounsNounsAddresses = {} as Omit<NounsContractAddresses, 'vrgdaAuction'>;
+const getBigNounsAddresses = (): Omit<ContractAddresses, 'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'> => {
+  let bigNounsNounsAddresses = {} as Omit<NounsContractAddresses, 'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'>;
   try {
     bigNounsNounsAddresses = getBigNounsContractAddressesForChainOrThrow(CHAIN_ID);
   } catch {}

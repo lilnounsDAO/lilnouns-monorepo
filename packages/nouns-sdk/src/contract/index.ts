@@ -15,6 +15,6 @@ export {
   NounsDescriptorFactory,
   NounsSeederFactory,
   NounsDaoLogicV1Factory,
-  LilVRGDAAFactory,
+  LilVRGDAFactory,
   NounsSeederV2Factory
 } from '@lilnounsdao/contracts';

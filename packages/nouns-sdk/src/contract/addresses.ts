@@ -20,10 +20,10 @@ export const getContractAddressesForChainOrThrow = (chainId: number): ContractAd
 
 export const getBigNounsContractAddressesForChainOrThrow = (
   chainId: number,
-): Omit<ContractAddresses, 'vrgdaAuction'> => {
+): Omit<ContractAddresses, 'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'> => {
   const _bigNounsAddresses: Record<
     string,
-    Omit<ContractAddresses, 'vrgdaAuction'>
+    Omit<ContractAddresses, 'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'>
   > = nounsAddresses;
   if (!_bigNounsAddresses[chainId]) {
     throw new Error(
