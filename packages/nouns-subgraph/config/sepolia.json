@@ -1,8 +1,8 @@
 {
   "network": "sepolia",
   "nounsToken": {
-    "address": "",
-    "startBlock": 
+    "address": "0xb189804b02c3a435dd8147335d7e3ba6e15c0366",
+    "startBlock": 5909578
   },
   "nounsAuctionHouse": {
     "address": "0xB2e042E602582Aa58F076eB0aae379744bc6247E",
@@ -12,12 +12,12 @@
     "address": "0xB2e042E602582Aa58F076eB0aae379744bc6247E",
     "startBlock": 5909581
   },
-  "nounsDAO": {
-    "address": "",
-    "startBlock": 0
+  "nounsDAO": { 
+    "address": "0x3669cAdd160Daf6560e62B9835C43200922B4B94",
+    "startBlock": 5956046
   },
   "lilVRGDA": {
-    "address": "",
-    "startBlock": 
+    "address": "0xa3db9e858894bb5b96580e8e9666f30d3d58ad70",
+    "startBlock": 5955832
   }
 }
