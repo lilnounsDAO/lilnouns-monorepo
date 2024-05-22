@@ -8,8 +8,16 @@
     "address": "0xB2e042E602582Aa58F076eB0aae379744bc6247E",
     "startBlock": 5909581
   },
+  "nounsAuctionHouseV1": {
+    "address": "0xB2e042E602582Aa58F076eB0aae379744bc6247E",
+    "startBlock": 5909581
+  },
   "nounsDAO": {
     "address": "0x0F4a7f71174E79e20fc192C487c2492A82d46FAE",
     "startBlock": 5909586
+  },
+  "lilVRGDA": {
+    "address": "0x0c3d0b70c55aa91cded0c19c96edf7b67f39bb95",
+    "startBlock": 5923019
   }
 }

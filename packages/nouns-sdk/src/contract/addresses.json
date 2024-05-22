@@ -54,8 +54,8 @@
   },
   "11155111": {
     "nounsToken": "0xb189804b02C3A435dD8147335d7E3ba6E15C0366",
-    "nounsSeeder": "0xC2E18F54050a4C78aEC3C034C77B89DC20F0C690",
-    "nounsDescriptor": "0x21bd07BF66267Ab3B15F83C888AFE9f56A2b58c7",
+    "nounsSeeder": "0x08d66049bad81Ae4a195F5E1E259eF8feed3EbdA",
+    "nounsDescriptor": "0x852f20f0140A4B5Aa29C70bF39C9a85edc2B454E",
     "nftDescriptor": "0x393Eb9aD022C9C66A6bcDE3552819b0D513Ec86f",
     "nounsAuctionHouse": "0xef34733FA35CbC8b417C04eE476e2154e3a77A07",
     "nounsAuctionHouseProxy": "0xB2e042E602582Aa58F076eB0aae379744bc6247E",
@@ -65,5 +65,7 @@
     "nounsDAOLogicV1": "0x63D3506a699C9CC4a5d12dbC2489C48161DBf807",
     "nounsDAOLogicV2": "0x63D3506a699C9CC4a5d12dbC2489C48161DBf807",
     "vrgdaAuction": "0x0c3d0b70c55aa91cded0c19c96edf7b67f39bb95"
+    "lilVRGDA":"0x0c3d0b70c55aa91cded0c19c96edf7b67f39bb95",
+    "nounsSeederV2": "0x7a7c1c0a87f9bbbfc8456fbd1c48e9ccb8ca2bc6"
   }
 }
