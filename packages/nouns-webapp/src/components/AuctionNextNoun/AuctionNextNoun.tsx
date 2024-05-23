@@ -29,7 +29,7 @@ export const AuctionNextNoun = (props: Props) => {
   return (
     <div className="font-ptRoot max-sm:px-6">
       <div className="flex items-center space-x-2">
-        <AuctionNavigation nounId={auction.nounId} />
+        <AuctionNavigation nounId={auction.nounId.toNumber()} />
         <AuctionActivityDateHeadline startTime={auction.startTime} />
       </div>
       <AuctionActivityNounTitle isCool={isCool} nounId={auction.nounId} />

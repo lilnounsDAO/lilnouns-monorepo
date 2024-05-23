@@ -22,7 +22,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
   const onDisplayAuction = useOnDisplayAuction();
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
   const lastAuctionStartTime = useAppSelector(state => state.onDisplayAuction.lastAuctionStartTime);
-  const onDisplayAuctionNounId = onDisplayAuction?.nounId;
+  const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
 
   const dispatch = useAppDispatch();
 
@@ -51,7 +51,8 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
     }
   }, [lastAuctionNounId, lastAuctionStartTime, dispatch, initialAuctionId, onDisplayAuction]);
 
-  const isActiveAuction = onDisplayAuctionNounId === lastAuctionNounId || !onDisplayAuctionNounId;
+  const isActiveAuction =
+    onDisplayAuctionNounId === lastAuctionNounId || typeof onDisplayAuctionNounId === 'undefined';
 
   return (
     <>

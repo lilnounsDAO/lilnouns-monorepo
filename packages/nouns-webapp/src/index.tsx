@@ -189,7 +189,7 @@ const ChainSubscriber: React.FC = () => {
 
     dispatch(
       setActiveAuction({
-        nounId: Number(data.nextNoun.id),
+        nounId: BigNumber.from(data.nextNoun.id),
         amount: data.currentPrice,
         startTime: data.startTime,
         settled: false,

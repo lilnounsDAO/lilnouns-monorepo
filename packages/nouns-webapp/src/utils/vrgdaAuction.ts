@@ -10,6 +10,7 @@ const FIRST_VRGDA_NOUN_ID = 7975;
 const jsonProvider = new ethers.providers.JsonRpcProvider(config.app.jsonRpcUri);
 
 export function getVrgdaAuctionContract(provider: Provider = jsonProvider): Contract {
+  if (!config.addresses.lilVRGDAProxy) throw new Error('LilVRGDAProxy address not set');
   return new ethers.Contract(
     config.addresses.lilVRGDAProxy,
     new utils.Interface(LilVRGDAABI),

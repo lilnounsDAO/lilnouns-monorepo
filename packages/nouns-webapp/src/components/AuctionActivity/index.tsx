@@ -36,8 +36,8 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
 
   const isCool = useAppSelector(state => state.application.isCoolBackground);
   const lastNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
-  const isLastAuction = auction.nounId === lastNounId;
-  const isVrgda = isVrgdaNoun(auction.nounId);
+  const isLastAuction = auction.nounId.toNumber() === lastNounId;
+  const isVrgda = isVrgdaNoun(auction.nounId.toNumber());
 
   const [showBidHistoryModal, setShowBidHistoryModal] = useState(false);
 
@@ -58,7 +58,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
         <div className={classes.informationRow}>
           <Row className={classes.activityRow}>
             <AuctionTitleAndNavWrapper>
-              {displayGraphDepComps && <AuctionNavigation nounId={auction.nounId} />}
+              {displayGraphDepComps && <AuctionNavigation nounId={auction.nounId.toNumber()} />}
               <AuctionActivityDateHeadline startTime={auction.startTime} />
             </AuctionTitleAndNavWrapper>
             <Col lg={12}>
@@ -91,7 +91,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
           <Col lg={12}>
             {!isLastAuction ? (
               <NounInfoCard
-                nounId={auction.nounId}
+                nounId={auction.nounId.toNumber()}
                 bidHistoryOnClickHandler={showBidModalHandler}
               />
             ) : (

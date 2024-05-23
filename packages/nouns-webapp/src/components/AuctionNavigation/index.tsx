@@ -18,7 +18,7 @@ const AuctionNavigation = (props: { nounId: number }) => {
   const history = useHistory();
   const onDisplayAuction = useOnDisplayAuction();
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
-  const onDisplayAuctionNounId = onDisplayAuction?.nounId;
+  const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
 
   const prevAuctionHandler = () => {
     dispatch(setPrevOnDisplayAuctionNounId());

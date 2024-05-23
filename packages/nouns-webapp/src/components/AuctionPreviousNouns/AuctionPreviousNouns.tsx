@@ -8,11 +8,9 @@ export const AuctionPreviousNouns = () => {
   return (
     <section className="py-16 bg-gray-100">
       <div className="container-lg">
-        <h2 className="font-londrina text-4xl text-neutral-800 text-center">
-          Choose from previous Lil Nouns
-        </h2>
+        <h2 className="font-londrina text-4xl text-neutral-800 text-center">Previous Lil Nouns</h2>
         <h3 className="text-center text-neutral-600 text-xl font-ptRoot">
-          Some additional sentence here saying you can buy Lil Noun generated in previous blocks.
+          You may also want to mint one of 3 Lil Nouns generated in previous blocks.
         </h3>
         <div className="grid gap-8 lg:grid-cols-3 lg:gap-3 mt-8">
           {!previousNouns?.length && (

@@ -4,9 +4,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { setAlertModal } from '../state/slices/application';
 import { getVrgdaAuctionContract } from '../utils/vrgdaAuction';
+import { BigNumber } from 'ethers';
 
 export function useBuyNoun() {
-  const [nounId, setNounId] = useState(0);
+  const [nounId, setNounId] = useState(BigNumber.from(0));
   const activeAuction = useAppSelector(state => state.auction.activeAuction);
   const activeAccount = useAppSelector(state => state.account.activeAccount);
 
@@ -29,7 +30,7 @@ export function useBuyNoun() {
       const { amount, nounId } = activeAuction;
       setNounId(nounId);
 
-      console.debug('buyNow call', { blockNumber, nounId });
+      console.debug('buyNow call', { blockNumber, nounId, amount });
 
       send(blockNumber, nounId, { value: amount });
     } catch (e: any) {
@@ -46,7 +47,7 @@ export function useBuyNoun() {
 
   useEffect(() => {
     if (state.status === 'Success') {
-      window.location.href = `/lilnoun/${nounId}`;
+      window.location.href = `/lilnoun/${nounId.toString()}`;
     }
   }, [state.status]);
 
