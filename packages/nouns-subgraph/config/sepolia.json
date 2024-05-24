@@ -1,23 +1,23 @@
 {
   "network": "sepolia",
   "nounsToken": {
-    "address": "0xb189804b02c3a435dd8147335d7e3ba6e15c0366",
-    "startBlock": 5909578
+    "address": "0x6e48e79f718776CF412a87e047722dBFda5B465D",
+    "startBlock": 5962129
   },
   "nounsAuctionHouse": {
-    "address": "0xB2e042E602582Aa58F076eB0aae379744bc6247E",
-    "startBlock": 5909581
+    "address": "0xA777a0a132dCc0a1c35E1eA19f28595dBe7ca6a6",
+    "startBlock": 5962501
   },
   "nounsAuctionHouseV1": {
-    "address": "0xB2e042E602582Aa58F076eB0aae379744bc6247E",
-    "startBlock": 5909581
+    "address": "0xA777a0a132dCc0a1c35E1eA19f28595dBe7ca6a6",
+    "startBlock": 5962501
   },
-  "nounsDAO": { 
-    "address": "0x3669cAdd160Daf6560e62B9835C43200922B4B94",
-    "startBlock": 5956046
+  "nounsDAO": {
+    "address": "0xa7C37f79ff5E6F932147fC69724B6ED432CA6Aa7",
+    "startBlock": 5962504
   },
   "lilVRGDA": {
-    "address": "0xa3db9e858894bb5b96580e8e9666f30d3d58ad70",
-    "startBlock": 5955832
+    "address": "0xc2ea42edd84f49b4e69e389e384bd632053578d3",
+    "startBlock": 5965580
   }
 }
