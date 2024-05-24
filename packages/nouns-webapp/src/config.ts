@@ -75,7 +75,7 @@ export const createNetworkHttpUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_JSONRPC`];
 
   if (network === 'rinkeby' || network === 'goerli' || network === 'sepolia') {
-    return `https://$sepolia.infura.io/v3/f158a87082f24b668ec1ac89c65e271b`;
+    return `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
       ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
