@@ -1,14 +1,15 @@
 import { Contract } from '@ethersproject/contracts';
 import { useContractFunction, useEthers } from '@usedapp/core';
+import { BigNumber } from 'ethers';
 import { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { setAlertModal } from '../state/slices/application';
 import { getVrgdaAuctionContract } from '../utils/vrgdaAuction';
-import { BigNumber } from 'ethers';
+import { useActiveAuction } from './useActiveAuction';
 
 export function useBuyNoun() {
   const [nounId, setNounId] = useState(BigNumber.from(0));
-  const activeAuction = useAppSelector(state => state.auction.activeAuction);
+  const activeAuction = useActiveAuction();
   const activeAccount = useAppSelector(state => state.account.activeAccount);
 
   const { library } = useEthers();
@@ -27,12 +28,13 @@ export function useBuyNoun() {
 
       if (!activeAuction) throw new Error(`Couldn't get data about active auction`);
 
-      const { amount, nounId } = activeAuction;
+      const { nounId, amount } = activeAuction;
+
       setNounId(nounId);
 
-      console.debug('buyNow call', { blockNumber, nounId, amount });
+      console.debug('buyNow', { blockNumber, nounId, amount });
 
-      send(blockNumber, nounId, { value: amount });
+      send(blockNumber, nounId.toNumber(), { value: amount });
     } catch (e: any) {
       console.trace(e);
       dispatch(
