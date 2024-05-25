@@ -5,7 +5,7 @@ import { INoun } from '../components/StandaloneNoun';
 import config from '../config';
 import LilVRGDAABI from '../libs/abi/LilVRGDA.json';
 
-const FIRST_VRGDA_NOUN_ID = 7975;
+const FIRST_VRGDA_NOUN_ID = 3;
 
 const jsonProvider = new ethers.providers.JsonRpcProvider(config.app.jsonRpcUri);
 
