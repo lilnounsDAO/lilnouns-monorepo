@@ -48,6 +48,19 @@
   },
   {
     "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract INounsDescriptorV2",
+        "name": "descriptor",
+        "type": "address"
+      }
+    ],
+    "name": "DescriptorUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [{ "indexed": false, "internalType": "uint8", "name": "version", "type": "uint8" }],
     "name": "Initialized",
     "type": "event"
@@ -75,6 +88,19 @@
       { "indexed": false, "internalType": "uint256", "name": "poolSize", "type": "uint256" }
     ],
     "name": "PoolSizeUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract INounsSeeder",
+        "name": "seeder",
+        "type": "address"
+      }
+    ],
+    "name": "SeederUpdated",
     "type": "event"
   },
   {
@@ -120,7 +146,8 @@
       },
       { "internalType": "string", "name": "svg", "type": "string" },
       { "internalType": "uint256", "name": "price", "type": "uint256" },
-      { "internalType": "bytes32", "name": "hash", "type": "bytes32" }
+      { "internalType": "bytes32", "name": "hash", "type": "bytes32" },
+      { "internalType": "uint256", "name": "blockNumber", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -144,7 +171,8 @@
       },
       { "internalType": "string", "name": "svg", "type": "string" },
       { "internalType": "uint256", "name": "price", "type": "uint256" },
-      { "internalType": "bytes32", "name": "hash", "type": "bytes32" }
+      { "internalType": "bytes32", "name": "hash", "type": "bytes32" },
+      { "internalType": "uint256", "name": "blockNum", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -305,6 +333,28 @@
     "name": "seederBlockNumber",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INounsDescriptorV2",
+        "name": "_nounsDescriptor",
+        "type": "address"
+      }
+    ],
+    "name": "setNounsDescriptor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "contract INounsSeeder", "name": "_nounsSeeder", "type": "address" }
+    ],
+    "name": "setNounsSeeder",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
