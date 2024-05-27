@@ -1,9 +1,9 @@
 import { Provider } from '@ethersproject/abstract-provider';
+import { LilVRGDAABI } from '@lilnounsdao/sdk';
 import { BigNumber, BigNumberish, Contract, ethers, utils } from 'ethers';
 import { useEffect } from 'react';
 import { INoun } from '../components/StandaloneNoun';
 import config from '../config';
-import LilVRGDAABI from '../libs/abi/LilVRGDA.json';
 
 const FIRST_VRGDA_NOUN_ID = 3;
 
@@ -40,24 +40,25 @@ export async function getVrgdaAuctionConfig() {
   }
 }
 
-export async function getVrgdaAuctions(currentBlockNumber: number, poolSize: number) {
+export async function getVrgdaAuctions(poolSize: number) {
   const contract = getVrgdaAuctionContract();
 
   try {
-    const [currentPrice, startTime, nextNoun, ...previousNouns] = await Promise.all([
+    const nextNoun = await contract.fetchNextNoun();
+
+    const [currentPrice, startTime, ...previousNouns] = await Promise.all([
       contract.getCurrentVRGDAPrice(),
       contract.startTime(),
-      contract.fetchNextNoun(),
       ...Array.from({ length: poolSize - 1 }, (_, i) => {
-        return contract.fetchNoun(currentBlockNumber - 1 - i);
+        return contract.fetchNoun(nextNoun.blockNumber.toNumber() - 1 - i);
       }),
     ]);
 
     return {
       currentPrice: currentPrice as BigNumber,
-      nextNoun: normalizeVrgdaNoun({ ...nextNoun, blockNumber: currentBlockNumber }),
+      nextNoun: normalizeVrgdaNoun({ ...nextNoun, blockNumber: nextNoun.blockNumber.toNumber() }),
       previousNouns: previousNouns
-        .map((noun, i) => ({ ...noun, blockNumber: currentBlockNumber - 1 - i }))
+        .map((noun, i) => ({ ...noun, blockNumber: nextNoun.blockNumber.toNumber() - 1 - i }))
         .map(normalizeVrgdaNoun),
       startTime: startTime as BigNumber,
     };

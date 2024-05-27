@@ -181,7 +181,7 @@ const ChainSubscriber: React.FC = () => {
   useBlockListener(async blockNumber => {
     if (typeof poolSize === 'undefined') return;
 
-    const data = await getVrgdaAuctions(blockNumber, poolSize);
+    const data = await getVrgdaAuctions(poolSize);
     if (!data) return;
 
     dispatch(setLastAuctionStartTime(data.startTime.toNumber()));
@@ -193,7 +193,7 @@ const ChainSubscriber: React.FC = () => {
         amount: data.currentPrice,
         startTime: data.startTime,
         settled: false,
-        blockNumber,
+        blockNumber: data.nextNoun.blockNumber,
       }),
     );
 
