@@ -72,8 +72,8 @@
     "nounsDAOProxy": "0xa7C37f79ff5E6F932147fC69724B6ED432CA6Aa7",
     "nounsDAOLogicV1": "0x77a74fBb28a1E08645587f52B73170D4c69Ba212",
     "nounsDAOLogicV2": "0x77a74fBb28a1E08645587f52B73170D4c69Ba212",
-    "lilVRGDA": "0xda31546bcb71a51df463d91a656d80bd007953f0",
-    "lilVRGDAProxy": "0xe818a62bf8236ce17841a94c7d9e90e9660f31d1",
-    "nounsSeederV2": "0x66ad260efeb31a864114f3c23f777bc8440c25e3"
+    "lilVRGDA": "0xba4d2951571ee2aa78180c1d06cddb44ac2eac9f",
+    "lilVRGDAProxy": "0x0d8c4d18765ab8808ab6cee4d7a760e8b93ab20c",
+    "nounsSeederV2": "0xde44fa588474f9c6ef6a631dd46c76d6ff614e01"
   }
 }
