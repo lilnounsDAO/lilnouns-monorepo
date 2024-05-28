@@ -7,9 +7,9 @@ import config from '../config';
 
 const FIRST_VRGDA_NOUN_ID = 3;
 
-const jsonProvider = new ethers.providers.JsonRpcProvider(config.app.jsonRpcUri);
+const wsProvider = new ethers.providers.WebSocketProvider(config.app.wsRpcUri);
 
-export function getVrgdaAuctionContract(provider: Provider = jsonProvider): Contract {
+export function getVrgdaAuctionContract(provider: Provider = wsProvider): Contract {
   if (!config.addresses.lilVRGDAProxy) throw new Error('LilVRGDAProxy address not set');
   return new ethers.Contract(
     config.addresses.lilVRGDAProxy,
@@ -73,10 +73,10 @@ export const useBlockListener = (callback: (blockNumber: number) => Promise<void
       callback(blockNumber).catch(error => console.error('Error in block listener:', error));
     };
 
-    jsonProvider.on('block', handleBlock);
+    wsProvider.on('block', handleBlock);
 
     return () => {
-      jsonProvider.off('block', handleBlock);
+      wsProvider.off('block', handleBlock);
     };
   }, [callback]);
 };
