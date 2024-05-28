@@ -83,11 +83,11 @@ export const createNetworkHttpUrl = (network: string): string => {
   if (network === 'rinkeby' || network === 'goerli') {
     return `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
   } else if(network === 'sepolia') {
-    return `https://eth-sepolia.g.alchemyapi.com/v2/${ALCHEMY_SEPOLIA_PROJECT_ID}`;
+    return `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_SEPOLIA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
       ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
-      : `https://eth-mainnet.g.alchemyapi.com/v2/${ALCHEMY_PROJECT_ID}`;
+      : `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_PROJECT_ID}`;
   }
 };
 
