@@ -6,14 +6,13 @@ import {
 } from '@lilnounsdao/assets';
 import { buildSVG } from '@lilnounsdao/sdk';
 import { BigNumber, BigNumber as EthersBN } from 'ethers';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { setOnDisplayAuctionNounId } from '../../state/slices/onDisplayAuction';
 import { INounSeed, useBigNounSeed, useNounSeed } from '../../wrappers/nounToken';
 import Noun from '../Noun';
 import nounClasses from '../Noun/Noun.module.css';
-import classes from './StandaloneNoun.module.css';
 
 export interface INoun {
   id: string;
@@ -93,11 +92,7 @@ const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProp
   };
 
   return (
-    <Link
-      to={'/lilnoun/' + nounId.toString()}
-      className={classes.clickableNoun}
-      onClick={onClickHandler}
-    >
+    <Link to={'/lilnoun/' + nounId.toString()} className="cursor-pointer" onClick={onClickHandler}>
       <Noun imgPath={noun ? noun.image : ''} alt={noun ? noun.description : 'Lil Noun'} />
     </Link>
   );
@@ -116,11 +111,7 @@ export const StandaloneNounCircular: React.FC<
   };
 
   return (
-    <Link
-      to={'/lilnoun/' + nounId.toString()}
-      className={classes.clickableNoun}
-      onClick={onClickHandler}
-    >
+    <Link to={'/lilnoun/' + nounId.toString()} className="cursor-pointer" onClick={onClickHandler}>
       <Noun
         imgPath={noun ? noun.image : ''}
         alt={noun ? noun.description : 'Lil Noun'}
@@ -144,11 +135,7 @@ export const StandaloneNounRoundedCorners: React.FC<StandaloneNounProps> = (
   };
 
   return (
-    <Link
-      to={'/lilnoun/' + nounId.toString()}
-      className={classes.clickableNoun}
-      onClick={onClickHandler}
-    >
+    <Link to={'/lilnoun/' + nounId.toString()} className="cursor-pointer" onClick={onClickHandler}>
       <Noun
         imgPath={noun ? noun.image : ''}
         alt={noun ? noun.description : 'Lil Noun'}
@@ -166,27 +153,28 @@ export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
   const dispatch = useDispatch();
   const seed = useNounSeed(nounId, props.seed);
 
-  if (!seed || !nounId || (!onLoadSeed && !props.seed)) return <Noun imgPath="" alt="Lil Noun" />;
+  useEffect(() => {
+    if (!seed || !onLoadSeed) return;
+    onLoadSeed(seed);
+  }, [seed, onLoadSeed]);
 
-  onLoadSeed?.(seed);
+  const noun = useMemo(() => (seed ? getNoun(nounId, seed) : undefined), [seed, nounId]);
 
-  const onClickHandler = () => {
-    dispatch(setOnDisplayAuctionNounId(nounId.toNumber()));
-  };
+  if (!noun) return <Noun imgPath="" alt="Lil Noun" />;
 
-  const { image, description } = getNoun(nounId, seed);
-
-  const noun = <Noun imgPath={image} alt={description} seed={seed} />;
+  const nounComponent = <Noun imgPath={noun.image} alt={noun.description} seed={seed} />;
   const nounWithLink = (
     <Link
       to={'/lilnoun/' + nounId.toString()}
-      className={classes.clickableNoun}
-      onClick={onClickHandler}
+      className="cursor-pointer"
+      onClick={() => {
+        dispatch(setOnDisplayAuctionNounId(nounId.toNumber()));
+      }}
     >
-      {noun}
+      {nounComponent}
     </Link>
   );
-  return shouldLinkToProfile ? nounWithLink : noun;
+  return shouldLinkToProfile ? nounWithLink : nounComponent;
 };
 
 export const StandaloneBigNounCircular: React.FC<StandaloneCircularNounProps> = (
