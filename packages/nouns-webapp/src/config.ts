@@ -67,6 +67,7 @@ export const WALLET_CONNECT_V2_PROJECT_ID =
 
 const INFURA_PROJECT_ID = process.env.REACT_APP_INFURA_PROJECT_ID;
 const ALCHEMY_PROJECT_ID = process.env.REACT_APP_ALCHEMY_PROJECT_ID;
+const ALCHEMY_SEPOLIA_PROJECT_ID = process.env.REACT_APP_ALCHEMY_SEPOLIA_PROJECT_ID;
 
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
@@ -79,24 +80,28 @@ const isLocalhost = Boolean(
 export const createNetworkHttpUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_JSONRPC`];
 
-  if (network === 'rinkeby' || network === 'goerli' || network === 'sepolia') {
+  if (network === 'rinkeby' || network === 'goerli') {
     return `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
+  } else if(network === 'sepolia') {
+    return `https://eth-sepolia.g.alchemyapi.io/v2/${ALCHEMY_SEPOLIA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
       ? `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`
-      : `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
+      : `https://eth-mainnet.g.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
   }
 };
 
 export const createNetworkWsUrl = (network: string): string => {
   const custom = process.env[`REACT_APP_${network.toUpperCase()}_WSRPC`];
 
-  if (network === 'rinkeby' || network === 'goerli' || network === 'sepolia') {
+  if (network === 'rinkeby' || network === 'goerli') {
     return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
+  }  else if(network === 'sepolia') {
+    return `wss://eth-sepolia.g.alchemyapi.io/v2/${ALCHEMY_SEPOLIA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
       ? `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
-      : `wss://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
+      : `wss://eth-mainnet.g.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`;
   }
 };
 
