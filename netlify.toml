@@ -13,7 +13,7 @@
   REACT_APP_ENABLE_HISTORY = "true"
   
 [context."master".environment]
-  REACT_APP_CHAIN_ID = "5"
+  REACT_APP_CHAIN_ID = "11155111" #5
   REACT_APP_ENABLE_HISTORY = "true"
 
 [functions]
