@@ -12,7 +12,7 @@
     "proplot-schema:build": "npx apollo codegen:generate --localSchemaFile=./src/propLot/graphql/proplot-schema.json --globalTypesFile=./src/propLot/graphql/__generated__/globalTypes.ts --target=typescript --tagName=gql --excludes=src/wrappers/subgraph.ts",
     "proplot-schema:fetch": "npx apollo service:download --endpoint=http://localhost:5001/graphql/ ./src/propLot/graphql/proplot-schema.json",
     "start": "yarn tailwind-run && react-scripts start",
-    "start-local": "react-scripts start",
+    "start-local": "export SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
     "test": "react-scripts test",
     "tailwind-run": "npx tailwindcss -i ./src/css/globals.css -o ./src/css/output.css --watch",
     "tailwind-build": "npx tailwindcss -i ./src/css/globals.css -o ./src/css/output.css"
