@@ -43,7 +43,6 @@ const TransferFundsDetailsStep: React.FC<ProposalActionModalStepProps> = props =
         onChange={e => setCurrency(SupportedCurrency[e.target.value as SupportedCurrency])}
         chevronTop={38}
       >
-        <option value="USDC">USDC</option>
         <option value="ETH">ETH</option>
         <option value="STETH">Lido Staked ETH</option>
       </BrandDropdown>
