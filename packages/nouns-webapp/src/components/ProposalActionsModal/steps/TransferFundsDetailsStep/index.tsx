@@ -10,7 +10,8 @@ import ModalBottomButtonRow from '../../../ModalBottomButtonRow';
 import ModalTitle from '../../../ModalTitle';
 
 export enum SupportedCurrency {
-  ETH = 'ETH'
+  ETH = 'ETH',
+  STETH = 'STETH'
 }
 
 const TransferFundsDetailsStep: React.FC<ProposalActionModalStepProps> = props => {
@@ -36,6 +37,16 @@ const TransferFundsDetailsStep: React.FC<ProposalActionModalStepProps> = props =
         Add Transfer Funds Action
       </ModalTitle>
 
+      <BrandDropdown
+        label={'Currency'}
+        value={currency}
+        onChange={e => setCurrency(SupportedCurrency[e.target.value as SupportedCurrency])}
+        chevronTop={38}
+      >
+        <option value="ETH">ETH</option>
+        <option value="STETH">Lido Staked ETH</option>
+      </BrandDropdown>
+
       <BrandNumericEntry
         label={'Amount'}
         value={formattedAmount}
@@ -43,7 +54,7 @@ const TransferFundsDetailsStep: React.FC<ProposalActionModalStepProps> = props =
           setAmount(e.value);
           setFormattedAmount(e.formattedValue);
         }}
-        placeholder={SupportedCurrency.ETH}
+        placeholder={`0 ${currency}`}
         isInvalid={parseFloat(amount) > 0 && new BigNumber(amount).isNaN()}
       />
 

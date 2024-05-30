@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { ChainId, DAppProvider } from '@usedapp/core';
+import { Chain, ChainId, DAppProvider, DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
 import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import account from './state/slices/account';
@@ -37,7 +37,7 @@ import { clientFactory, latestAuctionsQuery, singularAuctionQuery } from './wrap
 import { useEffect } from 'react';
 import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
-import config, { CHAIN_ID, createNetworkHttpUrl, multicallOnLocalhost } from './config';
+import config, { CHAIN_ID, ChainId_Sepolia, createNetworkHttpUrl, multicallOnLocalhost } from './config';
 import { WebSocketProvider } from '@ethersproject/providers';
 import { BigNumber, BigNumberish, providers } from 'ethers';
 import { NounsAuctionHouseFactory } from '@lilnounsdao/sdk';
@@ -93,18 +93,35 @@ const store = configureStore({});
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
+const supportedChainURLs = {
+  [ChainId.Rinkeby]: createNetworkHttpUrl('rinkeby'),
+  [ChainId.Mainnet]: createNetworkHttpUrl('mainnet'),
+  [ChainId.Hardhat]: 'http://localhost:8545',
+  [ChainId.Goerli]: createNetworkHttpUrl('goerli'),
+  [ChainId_Sepolia]: createNetworkHttpUrl('sepolia'),
+};
+
+export const Sepolia: Chain = {
+  chainId: ChainId_Sepolia,
+  chainName: 'Sepolia',
+  isTestChain: true,
+  isLocalChain: false,
+  multicallAddress: '0x6a19Dbfc67233760E0fF235b29158bE45Cc53765',
+  getExplorerAddressLink: (address: string) => `https://sepolia.etherscan.io/address/${address}`,
+  getExplorerTransactionLink: (transactionHash: string) =>
+    `https://sepolia.etherscan.io/tx/${transactionHash}`,
+};
+
 // prettier-ignore
 const useDappConfig = {
   readOnlyChainId: CHAIN_ID,
   readOnlyUrls: {
-    [ChainId.Rinkeby]: createNetworkHttpUrl('rinkeby'),
-    [ChainId.Mainnet]: createNetworkHttpUrl('mainnet'),
-    [ChainId.Hardhat]: 'http://localhost:8545',
-    [ChainId.Goerli]:  createNetworkHttpUrl('goerli'),
+    [CHAIN_ID]: supportedChainURLs[CHAIN_ID],
   },
   multicallAddresses: {
     [ChainId.Hardhat]: multicallOnLocalhost,
-  }
+  },
+  networks: [...DEFAULT_SUPPORTED_CHAINS, Sepolia],
 };
 
 const defaultLink = new HttpLink({
