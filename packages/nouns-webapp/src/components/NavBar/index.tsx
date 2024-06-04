@@ -167,13 +167,6 @@ const NavBar = () => {
               </>
             ) : (
               <>
-                <Nav.Link as={Link} to="/proplot" className={classes.nounsNavLink}>
-                  <NavBarButton
-                    buttonText={'Prop Lot'}
-                    buttonIcon={<FontAwesomeIcon icon={faLightbulb} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
                 <Nav.Link as={Link} to="/vote" className={classes.nounsNavLink}>
                   <NavBarButton
                     buttonText={'DAO'}
@@ -190,18 +183,6 @@ const NavBar = () => {
                   <NavBarButton
                     buttonText={'Docs'}
                     buttonIcon={<FontAwesomeIcon icon={faBookOpen} />}
-                    buttonStyle={nonWalletButtonStyle}
-                  />
-                </Nav.Link>
-                <Nav.Link
-                  href={externalURL(ExternalURL.discourse)}
-                  className={classes.nounsNavLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <NavBarButton
-                    buttonText={'Discourse'}
-                    buttonIcon={<FontAwesomeIcon icon={faComments} />}
                     buttonStyle={nonWalletButtonStyle}
                   />
                 </Nav.Link>
