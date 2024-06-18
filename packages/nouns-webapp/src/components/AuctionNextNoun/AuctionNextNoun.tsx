@@ -39,7 +39,7 @@ export const AuctionNextNoun = (props: Props) => {
             Current price
           </dt>
           <dd style={{ color: valueColor }} className="font-bold text-3xl">
-            <TruncatedAmount amount={BigNumber(auction.amount.toString())} />
+            <TruncatedAmount amount={BigNumber(auction.amount.toString())} decimals={3} />
           </dd>
         </dl>
         <dl>

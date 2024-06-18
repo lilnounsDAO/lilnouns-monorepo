@@ -44,7 +44,7 @@ const CurrentBid: React.FC<{
           {currentBid === BID_N_A || (auctionEnded && currentBid.isZero()) ? (
             BID_N_A
           ) : (
-            <TruncatedAmount amount={currentBid} />
+            <TruncatedAmount amount={currentBid} decimals={3} />
           )}
         </h2>
       </Col>
