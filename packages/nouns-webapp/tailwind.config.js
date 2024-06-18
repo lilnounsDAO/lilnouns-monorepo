@@ -5,6 +5,7 @@ module.exports = {
     fontFamily: {
       propLot: ['Inter', 'sans-serif'],
       londrina: ['Londrina Solid'],
+      ptRoot: ['PT Root UI', 'sans-serif'],
     },
   },
   corePlugins: {

@@ -1,25 +1,25 @@
-import { Auction } from '../../wrappers/nounsAuction';
-import { useState, useEffect } from 'react';
 import BigNumber from 'bignumber.js';
-import { Row, Col } from 'react-bootstrap';
+import { useState } from 'react';
+import { Col, Row } from 'react-bootstrap';
+import config from '../../config';
+import { useAppSelector } from '../../hooks';
+import { buildEtherscanAddressLink } from '../../utils/etherscan';
+import { isVrgdaNoun } from '../../utils/vrgdaAuction';
+import { Auction } from '../../wrappers/nounsAuction';
+import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
+import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
+import AuctionActivityWrapper from '../AuctionActivityWrapper';
+import AuctionNavigation from '../AuctionNavigation';
+import AuctionTitleAndNavWrapper from '../AuctionTitleAndNavWrapper';
+import Bid from '../Bid';
+import BidHistory from '../BidHistory';
+import BidHistoryBtn from '../BidHistoryBtn';
+import BidHistoryModal from '../BidHistoryModal';
+import CurrentBid from '../CurrentBid';
+import NounInfoCard from '../NounInfoCard';
+import Winner from '../Winner';
 import classes from './AuctionActivity.module.css';
 import bidHistoryClasses from './BidHistory.module.css';
-import Bid from '../Bid';
-import AuctionTimer from '../AuctionTimer';
-import CurrentBid from '../CurrentBid';
-import Winner from '../Winner';
-import BidHistory from '../BidHistory';
-import AuctionNavigation from '../AuctionNavigation';
-import AuctionActivityWrapper from '../AuctionActivityWrapper';
-import AuctionTitleAndNavWrapper from '../AuctionTitleAndNavWrapper';
-import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
-import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
-import BidHistoryBtn from '../BidHistoryBtn';
-import config from '../../config';
-import { buildEtherscanAddressLink } from '../../utils/etherscan';
-import NounInfoCard from '../NounInfoCard';
-import { useAppSelector } from '../../hooks';
-import BidHistoryModal from '../BidHistoryModal';
 
 const openEtherscanBidHistory = () => {
   const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
@@ -28,29 +28,19 @@ const openEtherscanBidHistory = () => {
 
 interface AuctionActivityProps {
   auction: Auction;
-  isFirstAuction: boolean;
-  isLastAuction: boolean;
-  onPrevAuctionClick: () => void;
-  onNextAuctionClick: () => void;
   displayGraphDepComps: boolean;
 }
 
 const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityProps) => {
-  const {
-    auction,
-    isFirstAuction,
-    isLastAuction,
-    onPrevAuctionClick,
-    onNextAuctionClick,
-    displayGraphDepComps,
-  } = props;
+  const { auction, displayGraphDepComps } = props;
 
   const isCool = useAppSelector(state => state.application.isCoolBackground);
-
-  const [auctionEnded, setAuctionEnded] = useState(false);
-  const [auctionTimer, setAuctionTimer] = useState(false);
+  const lastNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
+  const isLastAuction = auction.nounId.toNumber() === lastNounId;
+  const isVrgda = isVrgdaNoun(auction.nounId.toNumber());
 
   const [showBidHistoryModal, setShowBidHistoryModal] = useState(false);
+
   const showBidModalHandler = () => {
     setShowBidHistoryModal(true);
   };
@@ -58,50 +48,17 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
     setShowBidHistoryModal(false);
   };
 
-
-  // timer logic - check auction status every 30 seconds, until five minutes remain, then check status every second
-  useEffect(() => {
-    if (!auction) return;
-
-    const timeLeft = Number(auction.endTime) - Math.floor(Date.now() / 1000);
-
-    if (auction && timeLeft <= 0) {
-      setAuctionEnded(true);
-    } else {
-      setAuctionEnded(false);
-      const timer = setTimeout(
-        () => {
-          setAuctionTimer(!auctionTimer);
-        },
-        timeLeft > 300 ? 30000 : 1000,
-      );
-
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [auctionTimer, auction]);
-
-  if (!auction) return null;
-
   return (
     <>
       {showBidHistoryModal && (
-       <BidHistoryModal onDismiss={dismissBidModalHanlder} auction={auction} />
+        <BidHistoryModal onDismiss={dismissBidModalHanlder} auction={auction} />
       )}
 
       <AuctionActivityWrapper>
         <div className={classes.informationRow}>
           <Row className={classes.activityRow}>
             <AuctionTitleAndNavWrapper>
-              {displayGraphDepComps && (
-                <AuctionNavigation
-                  isFirstAuction={isFirstAuction}
-                  isLastAuction={isLastAuction}
-                  onNextAuctionClick={onNextAuctionClick}
-                  onPrevAuctionClick={onPrevAuctionClick}
-                />
-              )}
+              {displayGraphDepComps && <AuctionNavigation nounId={auction.nounId.toNumber()} />}
               <AuctionActivityDateHeadline startTime={auction.startTime} />
             </AuctionTitleAndNavWrapper>
             <Col lg={12}>
@@ -112,15 +69,12 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
             <Col lg={4} className={classes.currentBidCol}>
               <CurrentBid
                 currentBid={new BigNumber(auction.amount.toString())}
-                auctionEnded={auctionEnded}
+                auctionEnded
+                isVrgda={isVrgda}
               />
             </Col>
             <Col lg={6} className={classes.auctionTimerCol}>
-              {auctionEnded ? (
-                <Winner winner={auction.bidder} />
-              ) : (
-                <AuctionTimer auction={auction} auctionEnded={auctionEnded} />
-              )}
+              <Winner winner={auction.bidder || ''} />
             </Col>
           </Row>
         </div>
@@ -128,7 +82,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
           <>
             <Row className={classes.activityRow}>
               <Col lg={12}>
-                <Bid auction={auction} auctionEnded={auctionEnded} />
+                <Bid auction={auction} auctionEnded />
               </Col>
             </Row>
           </>

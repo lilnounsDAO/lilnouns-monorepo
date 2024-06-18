@@ -20,6 +20,7 @@ export interface ContractAddresses {
   nounsDAOProxy: string;
   nounsDAOLogicV1: string;
   lilVRGDA?: string;
+  lilVRGDAProxy?: string;
   nounsSeederV2?: string;
 }
 
@@ -39,5 +40,6 @@ export enum ChainId {
   Rinkeby = 4,
   Goerli = 5,
   Kovan = 42,
+  Sepolia = 11155111,
   Local = 31337,
 }

@@ -1,9 +1,10 @@
-import classes from './Noun.module.css';
 import React from 'react';
+import Image from 'react-bootstrap/Image';
 import loadingNoun from '../../assets/lil-loading-skull.gif';
 import loadingBigNoun from '../../assets/loading-skull-noun.gif';
-import Image from 'react-bootstrap/Image';
+import { INounSeed } from '../../wrappers/nounToken';
 import NounTraitsOverlay from '../NounTraitsOverlay';
+import classes from './Noun.module.css';
 
 export const LoadingNoun = () => {
   return (
@@ -19,9 +20,9 @@ const Noun: React.FC<{
   alt: string;
   className?: string;
   wrapperClassName?: string;
-  parts?: { filename: string }[];
+  seed?: INounSeed;
 }> = props => {
-  const { imgPath, alt, className, wrapperClassName, parts, isBigNoun } = props;
+  const { imgPath, alt, className, wrapperClassName, seed, isBigNoun } = props;
   return (
     <div className={`${classes.imgWrapper} ${wrapperClassName}`} data-tip data-for="noun-traits">
       <Image
@@ -30,7 +31,7 @@ const Noun: React.FC<{
         alt={alt}
         fluid
       />
-      {Boolean(parts?.length) && <NounTraitsOverlay parts={parts!} />}
+      {seed && <NounTraitsOverlay seed={seed} />}
     </div>
   );
 };

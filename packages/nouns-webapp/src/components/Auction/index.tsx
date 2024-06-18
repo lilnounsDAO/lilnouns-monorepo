@@ -1,98 +1,65 @@
-import { Col } from 'react-bootstrap';
-import { StandaloneNounWithSeed } from '../StandaloneNoun';
-import AuctionActivity from '../AuctionActivity';
-import { Row, Container } from 'react-bootstrap';
-import { setStateBackgroundColor } from '../../state/slices/application';
-import { LoadingNoun } from '../Noun';
-import { Auction as IAuction } from '../../wrappers/nounsAuction';
-import classes from './Auction.module.css';
-import { INounSeed } from '../../wrappers/nounToken';
-import NounderNounContent from '../NounderNounContent';
-import { useHistory } from 'react-router-dom';
+import { BigNumber } from 'ethers';
+import { Col, Container, Row } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { isNounderNoun, isNounsDAONoun } from '../../utils/nounderNoun';
-import {
-  setNextOnDisplayAuctionNounId,
-  setPrevOnDisplayAuctionNounId,
-} from '../../state/slices/onDisplayAuction';
+import { setStateBackgroundColor } from '../../state/slices/application';
 import { beige, grey } from '../../utils/nounBgColors';
+import { isNounderNoun, isNounsDAONoun } from '../../utils/nounderNoun';
+import { INounSeed } from '../../wrappers/nounToken';
+import { Auction as IAuction } from '../../wrappers/nounsAuction';
+import AuctionActivity from '../AuctionActivity';
+import { AuctionNextNoun } from '../AuctionNextNoun/AuctionNextNoun';
+import { LoadingNoun } from '../Noun';
+import NounderNounContent from '../NounderNounContent';
+import { StandaloneNounWithSeed } from '../StandaloneNoun';
+import classes from './Auction.module.css';
 
 interface AuctionProps {
   auction?: IAuction;
+  isActive?: boolean;
 }
 
-const Auction: React.FC<AuctionProps> = props => {
-  const { auction: currentAuction } = props;
+const Auction = (props: AuctionProps) => {
+  const { auction, isActive = false } = props;
 
-  const history = useHistory();
   const dispatch = useAppDispatch();
   const stateBgColor = useAppSelector(state => state.application.stateBackgroundColor);
-  const lastNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
+  const nextNoun = useAppSelector(state => state.auction.nouns?.next);
 
   const loadedNounHandler = (seed: INounSeed) => {
     dispatch(setStateBackgroundColor(seed.background === 0 ? grey : beige));
   };
-
-  const prevAuctionHandler = () => {
-    dispatch(setPrevOnDisplayAuctionNounId());
-    currentAuction && history.push(`/lilnoun/${currentAuction.nounId.toNumber() - 1}`);
-  };
-  const nextAuctionHandler = () => {
-    dispatch(setNextOnDisplayAuctionNounId());
-    currentAuction && history.push(`/lilnoun/${currentAuction.nounId.toNumber() + 1}`);
-  };
-
-  const nounContent = currentAuction && (
-    <div className={classes.nounWrapper}>
-      <StandaloneNounWithSeed
-        nounId={currentAuction.nounId}
-        onLoadSeed={loadedNounHandler}
-        shouldLinkToProfile={false}
-      />
-    </div>
-  );
-
-  const loadingNoun = (
-    <div className={classes.nounWrapper}>
-      <LoadingNoun />
-    </div>
-  );
-
-  const currentAuctionActivityContent = currentAuction && lastNounId && (
-    <AuctionActivity
-      auction={currentAuction}
-      isFirstAuction={currentAuction.nounId.eq(0)}
-      isLastAuction={currentAuction.nounId.eq(lastNounId)}
-      onPrevAuctionClick={prevAuctionHandler}
-      onNextAuctionClick={nextAuctionHandler}
-      displayGraphDepComps={true}
-    />
-  );
-  const nounderNounContent = currentAuction && lastNounId && (
-    <NounderNounContent
-      mintTimestamp={currentAuction.startTime}
-      nounId={currentAuction.nounId}
-      isFirstAuction={currentAuction.nounId.eq(0)}
-      isLastAuction={currentAuction.nounId.eq(lastNounId)}
-      onPrevAuctionClick={prevAuctionHandler}
-      onNextAuctionClick={nextAuctionHandler}
-    />
-  );
-  //TODO:: come back to this
 
   return (
     <div style={{ backgroundColor: stateBgColor }} className={classes.wrapper}>
       <Container fluid="xl">
         <Row>
           <Col lg={{ span: 6 }} className={classes.nounContentCol}>
-            {currentAuction ? nounContent : loadingNoun}
+            {auction ? (
+              <div className={classes.nounWrapper}>
+                <StandaloneNounWithSeed
+                  nounId={auction.nounId}
+                  onLoadSeed={loadedNounHandler}
+                  shouldLinkToProfile={false}
+                  seed={isActive && nextNoun ? nextNoun.seed : undefined}
+                />
+              </div>
+            ) : (
+              <div className={classes.nounWrapper}>
+                <LoadingNoun />
+              </div>
+            )}
           </Col>
-          <Col lg={{ span: 6 }} className={classes.auctionActivityCol}>
-            {currentAuction &&
-              (isNounderNoun(currentAuction.nounId) || isNounsDAONoun(currentAuction.nounId)
-                ? nounderNounContent
-                : currentAuctionActivityContent)}
-          </Col>
+          {auction && (
+            <Col lg={{ span: 6 }} className={classes.auctionActivityCol}>
+              {isActive && <AuctionNextNoun auction={auction} />}
+              {!isActive &&
+                (isNounderNoun(auction.nounId) || isNounsDAONoun(auction.nounId) ? (
+                  <NounderNounContent mintTimestamp={auction.startTime} nounId={auction.nounId} />
+                ) : (
+                  <AuctionActivity auction={auction} displayGraphDepComps={true} />
+                ))}
+            </Col>
+          )}
         </Row>
       </Container>
     </div>
