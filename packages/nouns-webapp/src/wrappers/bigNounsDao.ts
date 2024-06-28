@@ -387,7 +387,7 @@ export const useAllBigNounProposalsViaSubgraph = (): PartialProposalData => {
     return formatBigNounSubgraphProposal(proposal, blockNumber, timestamp);
   });
 
-  const ids = data.nounsProps.map((p: ProposalSubgraphEntity) => p.id)
+  const ids = data?.nounsProps.map((p: ProposalSubgraphEntity) => p.id) ?? []
 
   console.log(`proposals??:  ${ids}`);
 
