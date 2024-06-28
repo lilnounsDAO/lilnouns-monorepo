@@ -377,7 +377,7 @@ export const formatBigNounSubgraphProposal = (
 export const useAllBigNounProposalsViaSubgraph = (): PartialProposalData => {
   const { loading, data, error } = useQuery(bigNounsProposalsQuery(), {
     context: { clientName: 'NounsDAO' },
-    // fetchPolicy: 'no-cache',
+    fetchPolicy: 'no-cache',
   });
 
   const blockNumber = useBlockNumber();
@@ -387,7 +387,9 @@ export const useAllBigNounProposalsViaSubgraph = (): PartialProposalData => {
     return formatBigNounSubgraphProposal(proposal, blockNumber, timestamp);
   });
 
-  // console.log(`proposals??:  ${JSON.stringify(data.nounsProps)}`);
+  const ids = data.nounsProps.map((p: ProposalSubgraphEntity) => p.id)
+
+  console.log(`proposals??:  ${ids}`);
 
   return {
     loading,
@@ -456,6 +458,8 @@ export const useAllBigNounProposalsViaChain = (skip = false): PartialProposalDat
 export const useAllBigNounProposals = (): PartialProposalData => {
   const subgraph = useAllBigNounProposalsViaSubgraph();
   const onchain = useAllBigNounProposalsViaChain(!subgraph.error);
+  console.log(`subgraph?.error: ${subgraph?.error}`);
+  
   return subgraph?.error ? onchain : subgraph;
 
   // const onchains = useAllBigNounProposalsViaChain(false);
