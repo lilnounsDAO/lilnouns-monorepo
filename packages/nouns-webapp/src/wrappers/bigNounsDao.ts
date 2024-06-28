@@ -35,8 +35,6 @@ export enum MetagovVote {
 }
 
 const abi = new utils.Interface(NounsDAOV2ABI);
-// const abi_v2 = new utils.Interface(NounsDAOV2ABI);
-// console.log(`NounsDAOV2ABI: ${JSON.stringify(NounsDAOV2ABI)}`);
 
 const nounsDaoContract = new NounsDaoLogicV1Factory().attach(
   config.bigNounsAddresses.nounsDAOProxy,
@@ -387,10 +385,6 @@ export const useAllBigNounProposalsViaSubgraph = (): PartialProposalData => {
     return formatBigNounSubgraphProposal(proposal, blockNumber, timestamp);
   });
 
-  const ids = data?.nounsProps.map((p: ProposalSubgraphEntity) => p.id) ?? []
-
-  console.log(`proposals??:  ${ids}`);
-
   return {
     loading,
     error,
@@ -458,7 +452,6 @@ export const useAllBigNounProposalsViaChain = (skip = false): PartialProposalDat
 export const useAllBigNounProposals = (): PartialProposalData => {
   const subgraph = useAllBigNounProposalsViaSubgraph();
   const onchain = useAllBigNounProposalsViaChain(!subgraph.error);
-  console.log(`subgraph?.error: ${subgraph?.error}`);
   
   return subgraph?.error ? onchain : subgraph;
 
