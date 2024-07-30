@@ -1,13 +1,17 @@
-import Banner from '../../components/Banner';
-import Auction from '../../components/Auction';
-import Documentation from '../../components/Documentation';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { setOnDisplayAuctionNounId, setOnDisplayAuctionStartTime } from '../../state/slices/onDisplayAuction';
 import { push } from 'connected-react-router';
+import { useEffect } from 'react';
+import Auction from '../../components/Auction';
+import { AuctionPreviousNouns } from '../../components/AuctionPreviousNouns/AuctionPreviousNouns';
+import Banner from '../../components/Banner';
+import Documentation from '../../components/Documentation';
+import ProfileActivityFeed from '../../components/ProfileActivityFeed';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import {
+  setOnDisplayAuctionNounId,
+  setOnDisplayAuctionStartTime,
+} from '../../state/slices/onDisplayAuction';
 import { nounPath } from '../../utils/history';
 import useOnDisplayAuction from '../../wrappers/onDisplayAuction';
-import { useEffect } from 'react';
-import ProfileActivityFeed from '../../components/ProfileActivityFeed';
 
 interface AuctionPageProps {
   initialAuctionId?: number;
@@ -27,13 +31,12 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
     if (!lastAuctionStartTime) return;
 
     if (initialAuctionId !== undefined && lastAuctionStartTime !== undefined) {
-
-      // handle out of bounds noun path ids
+      // handle out  of bounds noun path ids
       if (initialAuctionId > lastAuctionNounId || initialAuctionId < 0) {
         dispatch(setOnDisplayAuctionNounId(lastAuctionNounId));
         dispatch(setOnDisplayAuctionStartTime(lastAuctionStartTime!));
         dispatch(push(nounPath(lastAuctionNounId)));
-      } else {       
+      } else {
         if (onDisplayAuction === undefined) {
           // handle regular noun path ids on first load
           dispatch(setOnDisplayAuctionNounId(initialAuctionId));
@@ -48,14 +51,17 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
     }
   }, [lastAuctionNounId, lastAuctionStartTime, dispatch, initialAuctionId, onDisplayAuction]);
 
+  const isActiveAuction =
+    onDisplayAuctionNounId === lastAuctionNounId || typeof onDisplayAuctionNounId === 'undefined';
+
   return (
     <>
-      <Auction auction={onDisplayAuction} />
-      {onDisplayAuctionNounId && onDisplayAuctionNounId !== lastAuctionNounId ? (
-        <ProfileActivityFeed nounId={onDisplayAuctionNounId} />
-      ) : (
-        <Banner />
-      )}
+      <Auction auction={onDisplayAuction} isActive={isActiveAuction} />
+
+      {isActiveAuction && <AuctionPreviousNouns />}
+
+      {isActiveAuction ? <Banner /> : <ProfileActivityFeed nounId={onDisplayAuctionNounId} />}
+
       <Documentation />
     </>
   );

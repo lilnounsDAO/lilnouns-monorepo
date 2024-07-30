@@ -16,10 +16,14 @@ export const BID_N_A = 'n/a';
  */
 type BidNa = typeof BID_N_A;
 
-const CurrentBid: React.FC<{ currentBid: BigNumber | BidNa; auctionEnded: boolean }> = props => {
-  const { currentBid, auctionEnded } = props;
+const CurrentBid: React.FC<{
+  currentBid: BigNumber | BidNa;
+  auctionEnded: boolean;
+  isVrgda: boolean;
+}> = props => {
+  const { currentBid, auctionEnded, isVrgda } = props;
   const isCool = useAppSelector(state => state.application.isCoolBackground);
-  const titleContent = auctionEnded ? 'Winning bid' : 'Current bid';
+  const titleContent = auctionEnded ? (isVrgda ? 'Price' : 'Winning bid') : 'Current bid';
 
   return (
     <Row className={clsx(classes.wrapper, classes.container, classes.section)}>
@@ -37,7 +41,11 @@ const CurrentBid: React.FC<{ currentBid: BigNumber | BidNa; auctionEnded: boolea
           className={classes.currentBid}
           style={{ color: isCool ? 'var(--brand-cool-dark-text)' : 'var(--brand-warm-dark-text)' }}
         >
-          {currentBid === BID_N_A || (auctionEnded && currentBid.isZero()) ? BID_N_A : <TruncatedAmount amount={currentBid} />}
+          {currentBid === BID_N_A || (auctionEnded && currentBid.isZero()) ? (
+            BID_N_A
+          ) : (
+            <TruncatedAmount amount={currentBid} decimals={3} />
+          )}
         </h2>
       </Col>
     </Row>

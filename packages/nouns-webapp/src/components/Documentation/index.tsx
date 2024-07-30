@@ -18,7 +18,9 @@ const Documentation = () => {
     <Link text="Compound Governance" url="https://compound.finance/governance" leavesPage={true} />
   );
 
-  const lilBlockPartyLink = <Link text="Lil Block Party" url="https://lilblockparty.wtf" leavesPage={true} />;
+  const lilBlockPartyLink = (
+    <Link text="Lil Block Party" url="https://lilblockparty.wtf" leavesPage={true} />
+  );
 
   return (
     <Section fullWidth={false}>
@@ -97,7 +99,7 @@ const Documentation = () => {
               Bidding and Settling Auctions
             </Accordion.Header>
             <Accordion.Body>
-              <p className={classes.aboutText}>
+              <div className={classes.aboutText}>
                 <h3>Bids</h3>
                 Once an auction starts, everyone has 15 minutes to bid. Anyone can bid an amount
                 at/above 0.15 eth. The Amount bid is returned to bidder if they lose the auction
@@ -109,15 +111,13 @@ const Documentation = () => {
                 in and winning an auction at the very last minute/seconds (irrespective of time
                 increase).
                 <br />
-                <p className={classes.aboutText}>
-                  <h3>Bid Refunds</h3>
-                  Unsuccessful bids are refunded in full. The timing of refunds may be offset by 1
-                  bidder. This means that a refund is processed for an unsuccessful bid, when a
-                  higher bid is submitted.
-                </p>
-              </p>
+                <h3>Bid Refunds</h3>
+                Unsuccessful bids are refunded in full. The timing of refunds may be offset by 1
+                bidder. This means that a refund is processed for an unsuccessful bid, when a higher
+                bid is submitted.
+              </div>
 
-              <p className={classes.aboutText}>
+              <div className={classes.aboutText}>
                 <h3>Settlement</h3>
                 When an auction ends, a gas-only transaction is required to mint the current Lil
                 Noun to the winners wallet and start the next auction. Anyone can settle an auction.
@@ -129,8 +129,8 @@ const Documentation = () => {
                 <br />
                 <br />
                 <h3>Settling Auctions through Lil Block Party</h3>
-                Lil Nouns currently utilises a community built app called {lilBlockPartyLink} to settle its
-                auctions.
+                Lil Nouns currently utilises a community built app called {lilBlockPartyLink} to
+                settle its auctions.
                 <br />
                 <br />
                 Lil Block Party gives prospective bidders the opportunity to select which Lil Noun
@@ -143,7 +143,7 @@ const Documentation = () => {
                 their wallet, can settle manually.
                 <br />
                 <br />
-              </p>
+              </div>
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="3" className={classes.accordionItem}>
@@ -163,30 +163,31 @@ const Documentation = () => {
             </Accordion.Header>
             <Accordion.Body>
               <p>
-                  The proposal veto right was initially envisioned as a temporary solution to the
-                  problem of ‘51% attacks’ on the Nouns DAO treasury and was copied over during the creation of Lil Nouns DAO.
-                  While Nounders initially believed that a healthy distribution of Nouns would be sufficient protection for
-                  the DAO, a more complete understanding of the incentives and risks has led to
-                  general consensus that a more robust solution should be implemented before
-                  the right is removed. Naturally, so is the case in Lil Nouns DAO.
+                The proposal veto right was initially envisioned as a temporary solution to the
+                problem of ‘51% attacks’ on the Nouns DAO treasury and was copied over during the
+                creation of Lil Nouns DAO. While Nounders initially believed that a healthy
+                distribution of Nouns would be sufficient protection for the DAO, a more complete
+                understanding of the incentives and risks has led to general consensus that a more
+                robust solution should be implemented before the right is removed. Naturally, so is
+                the case in Lil Nouns DAO.
               </p>
               <p>
-                  The lil nounders will veto proposals that introduce non-trivial risks to Lil Nouns DAO, including (but not necessarily limited to) proposals
-                  that:
+                The lil nounders will veto proposals that introduce non-trivial risks to Lil Nouns
+                DAO, including (but not necessarily limited to) proposals that:
               </p>
               <ul>
                 <li>unequally withdraw the treasury for personal gain</li>
                 <li>bribe voters to facilitate withdraws of the treasury for personal gain</li>
                 <li>
-                  attempt to alter auction cadence for the purpose of maintaining or acquiring
-                  a voting majority
+                  attempt to alter auction cadence for the purpose of maintaining or acquiring a
+                  voting majority
                 </li>
                 <li>make upgrades to critical smart contracts without undergoing an audit</li>
               </ul>
               <p>
-                  There are unfortunately no algorithmic solutions for making these determinations
-                  in advance (if there were, the veto would not be required), and proposals must be
-                  considered on a case by case basis.
+                There are unfortunately no algorithmic solutions for making these determinations in
+                advance (if there were, the veto would not be required), and proposals must be
+                considered on a case by case basis.
               </p>
             </Accordion.Body>
           </Accordion.Item>
