@@ -10,9 +10,9 @@
     "nounsDaoExecutor": "0xd5f279ff9EB21c6D40C8f345a66f2751C4eeA1fB",
     "nounsDAOProxy": "0x5d2C31ce16924C2a71D317e5BbFd5ce387854039",
     "nounsDAOLogicV1": "0x8b20b261BDF0f97cfc6D3bD4903beb9D17794Ed8",
-    "lilVRGDA": "0x",
-    "lilVRGDAProxy": "0x",
-    "nounsSeederV2": "0x"
+    "lilVRGDA": "0x7a7c1c0a87f9bbbfc8456fbd1c48e9ccb8ca2bc6",
+    "lilVRGDAProxy": "0xa2587b1e2626904c8575640512b987bd3d3b592d",
+    "nounsSeederV2": "0x03d00f6483ff4584d00a8f385a5368a8dbe0912b"
   },
   "4": {
     "nounsToken": "0xF0ea2Ef2E31c9A4A74471cA6101BD755262c940a",

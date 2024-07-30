@@ -15,5 +15,9 @@
   "nounsDAO": {
     "address": "0x5d2C31ce16924C2a71D317e5BbFd5ce387854039",
     "startBlock": 14736719
+  },
+  "lilVRGDA": {
+    "address": "0xa2587b1e2626904c8575640512b987bd3d3b592d",
+    "startBlock": 20419899
   }
 }
