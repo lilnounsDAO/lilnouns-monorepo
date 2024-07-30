@@ -1,12 +1,10 @@
-import { useContractCall } from '@usedapp/core';
-import { BigNumber as EthersBN, utils } from 'ethers';
 import { NounsAuctionHouseABI } from '@lilnounsdao/sdk';
-import config from '../config';
+import { useContractCall } from '@usedapp/core';
 import BigNumber from 'bignumber.js';
-import { BigNumber as bNum } from '@ethersproject/bignumber';
-import { findAuction, isNounderNoun, isNounsDAONoun } from '../utils/nounderNoun';
+import { BigNumber as EthersBN, utils } from 'ethers';
+import config from '../config';
 import { useAppSelector } from '../hooks';
-import { AuctionState } from '../state/slices/auction';
+import { findAuction, isNounderNoun, isNounsDAONoun } from '../utils/nounderNoun';
 
 export enum AuctionHouseContractFunction {
   auction = 'auction',
@@ -20,11 +18,12 @@ export enum AuctionHouseContractFunction {
 
 export interface Auction {
   amount: EthersBN;
-  bidder: string;
-  endTime: EthersBN;
+  bidder?: string;
+  endTime?: EthersBN;
   startTime: EthersBN;
   nounId: EthersBN;
   settled: boolean;
+  blockNumber?: number;
 }
 
 const abi = new utils.Interface(NounsAuctionHouseABI);
@@ -62,17 +61,18 @@ export const useAuctionMinBidIncPercentage = () => {
  */
 
 export const useNounCanVoteTimestamp = (nounId: number) => {
-
   const pastAuctions = useAppSelector(state => state.pastAuctions.pastAuctions);
 
-  if(isNounderNoun(EthersBN.from(nounId)) || isNounsDAONoun(EthersBN.from(nounId))) {
+  if (isNounderNoun(EthersBN.from(nounId)) || isNounsDAONoun(EthersBN.from(nounId))) {
     const distanceToAuctionAbove = isNounderNoun(EthersBN.from(nounId)) ? 2 : 1;
-    const auctionAbove = findAuction(EthersBN.from(nounId).add(distanceToAuctionAbove), pastAuctions);
+    const auctionAbove = findAuction(
+      EthersBN.from(nounId).add(distanceToAuctionAbove),
+      pastAuctions,
+    );
 
-   return EthersBN.from(auctionAbove?.startTime || 0);
+    return EthersBN.from(auctionAbove?.startTime || 0);
   }
 
   const auction = findAuction(EthersBN.from(nounId), pastAuctions);
-  return auction?.startTime ? EthersBN.from(auction?.startTime) : EthersBN.from(0);;
-
+  return auction?.startTime ? EthersBN.from(auction?.startTime) : EthersBN.from(0);
 };

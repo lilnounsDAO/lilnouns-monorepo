@@ -4,6 +4,8 @@ import {
   NounsDescriptorFactory,
   NounsSeederFactory,
   NounsDaoLogicV1Factory,
+  LilVRGDAFactory,
+  NounsSeederV2Factory,
 } from '@lilnounsdao/contracts';
 
 export interface ContractAddresses {
@@ -17,6 +19,9 @@ export interface ContractAddresses {
   nounsDaoExecutor: string;
   nounsDAOProxy: string;
   nounsDAOLogicV1: string;
+  lilVRGDA?: string;
+  lilVRGDAProxy?: string;
+  nounsSeederV2?: string;
 }
 
 export interface Contracts {
@@ -25,6 +30,8 @@ export interface Contracts {
   nounsDescriptorContract: ReturnType<typeof NounsDescriptorFactory.connect>;
   nounsSeederContract: ReturnType<typeof NounsSeederFactory.connect>;
   nounsDaoContract: ReturnType<typeof NounsDaoLogicV1Factory.connect>;
+  nounsSeederV2Contract?: ReturnType<typeof NounsSeederV2Factory.connect>;
+  lilVRGDAContract?: ReturnType<typeof LilVRGDAFactory.connect>;
 }
 
 export enum ChainId {
@@ -33,5 +40,6 @@ export enum ChainId {
   Rinkeby = 4,
   Goerli = 5,
   Kovan = 42,
+  Sepolia = 11155111,
   Local = 31337,
 }

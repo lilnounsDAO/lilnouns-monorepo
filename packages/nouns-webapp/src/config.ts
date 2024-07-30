@@ -133,8 +133,10 @@ const app: Record<SupportedChains, AppConfig> = {
   [ChainId_Sepolia]: {
     jsonRpcUri: createNetworkHttpUrl('sepolia'),
     wsRpcUri: createNetworkWsUrl('sepolia'),
-    subgraphApiUri: 'https://api.goldsky.com/api/public/project_cldjvjgtylso13swq3dre13sf/subgraphs/lil-nouns-sepolia/0.1.4/gn',
-    nounsDAOSubgraphApiUri: 'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns-sepolia-the-burn/0.1.0/gn',
+    subgraphApiUri:
+      'https://api.goldsky.com/api/public/project_cldjvjgtylso13swq3dre13sf/subgraphs/lil-nouns-sepolia/0.1.4/gn',
+    nounsDAOSubgraphApiUri:
+      'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns-sepolia-the-burn/0.1.0/gn',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
@@ -143,8 +145,10 @@ const app: Record<SupportedChains, AppConfig> = {
   [ChainId.Mainnet]: {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
     wsRpcUri: createNetworkWsUrl('mainnet'),
-    subgraphApiUri: 'https://api.goldsky.com/api/public/project_cldjvjgtylso13swq3dre13sf/subgraphs/lil-nouns-subgraph/1.0.4/gn',
-    nounsDAOSubgraphApiUri: 'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns/prod/gn',
+    subgraphApiUri:
+      'https://api.goldsky.com/api/public/project_cldjvjgtylso13swq3dre13sf/subgraphs/lil-nouns-subgraph/1.0.5/gn',
+    nounsDAOSubgraphApiUri:
+      'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns/prod/gn',
     enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
     nounsApiUri: process.env[`REACT_APP_MAINNET_NOUNSAPI`] || '',
     enableRollbar: process.env.REACT_APP_ENABLE_ROLLBAR === 'true',
@@ -198,8 +202,8 @@ const getAddresses = (): ContractAddresses => {
   return { ...nounsAddresses, ...externalAddresses[CHAIN_ID] };
 };
 
-const getBigNounsAddresses = (): ContractAddresses => {
-  let bigNounsNounsAddresses = {} as NounsContractAddresses;
+const getBigNounsAddresses = (): Omit<ContractAddresses, 'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'> => {
+  let bigNounsNounsAddresses = {} as Omit<NounsContractAddresses, 'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'>;
   try {
     bigNounsNounsAddresses = getBigNounsContractAddressesForChainOrThrow(CHAIN_ID);
   } catch {}

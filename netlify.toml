@@ -8,8 +8,8 @@
   REACT_APP_ENABLE_HISTORY = "true"
 
 [context.deploy-preview.environment]
-  REACT_APP_CHAIN_ID = "1"
-  REACT_APP_MAINNET_NOUNSAPI = "https://lil-noun-api-staging.fly.dev"
+  REACT_APP_CHAIN_ID = "11155111"
+  # REACT_APP_MAINNET_NOUNSAPI = "https://lil-noun-api-staging.fly.dev"
   REACT_APP_ENABLE_HISTORY = "true"
   
 [context."master".environment]

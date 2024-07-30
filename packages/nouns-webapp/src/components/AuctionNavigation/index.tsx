@@ -1,22 +1,36 @@
-import React, { useCallback, useEffect } from 'react';
-import classes from './AuctionNavigation.module.css';
-import { useAppSelector } from '../../hooks';
+import { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import {
+  setNextOnDisplayAuctionNounId,
+  setPrevOnDisplayAuctionNounId,
+} from '../../state/slices/onDisplayAuction';
 import useOnDisplayAuction from '../../wrappers/onDisplayAuction';
+import classes from './AuctionNavigation.module.css';
 
-const AuctionNavigation: React.FC<{
-  isFirstAuction: boolean;
-  isLastAuction: boolean;
-  onPrevAuctionClick: () => void;
-  onNextAuctionClick: () => void;
-}> = props => {
-  const { isFirstAuction, isLastAuction, onPrevAuctionClick, onNextAuctionClick } = props;
+const AuctionNavigation = (props: { nounId: number }) => {
+  const { nounId } = props;
+
   const isCool = useAppSelector(state => state.application.stateBackgroundColor) === '#d5d7e1';
+  const lastNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
+  const dispatch = useAppDispatch();
 
   const history = useHistory();
   const onDisplayAuction = useOnDisplayAuction();
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
   const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
+
+  const prevAuctionHandler = () => {
+    dispatch(setPrevOnDisplayAuctionNounId());
+    history.push(`/lilnoun/${nounId - 1}`);
+  };
+  const nextAuctionHandler = () => {
+    dispatch(setNextOnDisplayAuctionNounId());
+    history.push(`/lilnoun/${nounId + 1}`);
+  };
+
+  const isFirstAuction = nounId === 0;
+  const isLastAuction = nounId === lastNounId;
 
   // Page through Nouns via keyboard
   // handle what happens on key press
@@ -30,24 +44,16 @@ const AuctionNavigation: React.FC<{
         }
 
         if (!isFirstAuction) {
-          onPrevAuctionClick();
+          prevAuctionHandler();
         }
       }
       if (event.key === 'ArrowRight') {
         if (!isLastAuction) {
-          onNextAuctionClick();
+          nextAuctionHandler();
         }
       }
     },
-    [
-      history,
-      isFirstAuction,
-      isLastAuction,
-      lastAuctionNounId,
-      onDisplayAuctionNounId,
-      onNextAuctionClick,
-      onPrevAuctionClick,
-    ],
+    [history, isFirstAuction, isLastAuction, lastAuctionNounId, onDisplayAuctionNounId],
   );
 
   useEffect(() => {
@@ -63,14 +69,14 @@ const AuctionNavigation: React.FC<{
   return (
     <div className={classes.navArrowsContainer}>
       <button
-        onClick={() => onPrevAuctionClick()}
+        onClick={() => prevAuctionHandler()}
         className={isCool ? classes.leftArrowCool : classes.leftArrowWarm}
         disabled={isFirstAuction}
       >
         ←
       </button>
       <button
-        onClick={() => onNextAuctionClick()}
+        onClick={() => nextAuctionHandler()}
         className={isCool ? classes.rightArrowCool : classes.rightArrowWarm}
         disabled={isLastAuction}
       >

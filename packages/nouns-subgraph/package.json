@@ -25,9 +25,9 @@
     "deploy:localnode": "graph deploy --debug --node http://localhost:8020/ --ipfs http://localhost:5001/",
     "deploy:hardhat": "yarn clean && yarn prepare:hardhat && yarn codegen && yarn create:localnode nounsdao/nouns-subgraph && yarn deploy:localnode nounsdao/nouns-subgraph",
     "deploy:rinkeby": "yarn clean && yarn prepare:rinkeby && yarn codegen && yarn deploy lilnounsdao/lil-nouns-subgraph-rinkeby",
-    "deploy:mainnet": "yarn clean && yarn prepare:mainnet && yarn codegen && yarn deploy lilnounsdao/lil-nouns-subgraph",
+    "deploy:mainnet": "yarn clean && yarn prepare:mainnet && yarn codegen && yarn graph build && goldsky subgraph deploy lil-nouns-subgraph/1.0.5",
     "deploy:goerli": "yarn clean && yarn prepare:goerli && yarn codegen && yarn deploy lilnounsdao/lil-nouns-subgraph-goerli",
-    "deploy:sepolia": "yarn clean && yarn prepare:sepolia && yarn codegen && yarn graph build && goldsky subgraph deploy lil-nouns-sepolia/0.1.0",
+    "deploy:sepolia": "yarn clean && yarn prepare:sepolia && yarn codegen && yarn graph build && goldsky subgraph deploy lil-nouns-sepolia/0.1.4",
     "mustache": "mustache"
   },
   "devDependencies": {

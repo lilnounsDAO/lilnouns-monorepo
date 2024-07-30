@@ -1,11 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { Button } from 'react-bootstrap';
+import { useAppSelector } from '../../hooks';
 import { Auction } from '../../wrappers/nounsAuction';
 import classes from './AuctionSettlementBtnGroup.module.css';
-import dayjs from 'dayjs';
-import { Button } from 'react-bootstrap';
-import { CHAIN_ID } from '../../config';
-import { useAppSelector } from '../../hooks';
-import { log } from 'console';
 
 const AuctionSettlementBtnGroup: React.FC<{
   settleAuctionHandler: () => void;
@@ -20,8 +16,10 @@ const AuctionSettlementBtnGroup: React.FC<{
 
   const activeAccount = useAppSelector(state => state.account.activeAccount);
 
-  const isNextAuctionNounderNoun = Number(auction.nounId) % 10 == 9
-  const isWinner = activeAccount !== undefined && activeAccount.toLocaleLowerCase() === auction.bidder.toLocaleLowerCase()
+  const isNextAuctionNounderNoun = Number(auction.nounId) % 10 == 9;
+  const isWinner =
+    activeAccount !== undefined &&
+    activeAccount.toLocaleLowerCase() === auction.bidder?.toLocaleLowerCase();
 
   return (
     <>

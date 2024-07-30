@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client';
 import { NounVoteHistory } from '../components/ProfileActivityFeed';
 import { useNounCanVoteTimestamp } from './nounsAuction';
-import {PartialProposal,  Proposal, ProposalState, useAllProposals } from './nounsDao';
+import { PartialProposal, Proposal, ProposalState, useAllProposals } from './nounsDao';
 import {
   createTimestampAllProposals,
   nounDelegationHistoryQuery,
@@ -281,7 +281,10 @@ export const useNounActivity = (nounId: number): NounProfileEventFetcherResponse
     .sort((a: NounProfileEvent, b: NounProfileEvent) => a.blockNumber - b.blockNumber)
     .reverse();
 
-  const postProcessedEvents = events.slice(0, events.length - (nounId % 10 === 0 || nounId % 10 === 1 ? 2 : 4));
+  const postProcessedEvents = events.slice(
+    0,
+    events.length - (nounId % 10 === 0 || nounId % 10 === 1 ? 2 : 4),
+  );
 
   // Wrap this line in a try-catch to prevent edge case
   // where excessive spamming to left / right keys can cause transfer

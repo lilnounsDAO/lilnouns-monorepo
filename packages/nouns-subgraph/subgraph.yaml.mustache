@@ -52,7 +52,7 @@ dataSources:
         - Noun
       abis:
         - name: NounsAuctionHouse
-          file: ../nouns-contracts/abi/contracts/NounsAuctionHouseV1.sol/NounsAuctionHouse.json
+          file: ../nouns-contracts/abi/contracts/NounsAuctionHouseV1.sol/NounsAuctionHouseV1.json
       eventHandlers:
         - event: AuctionCreated(indexed uint256,uint256,uint256)
           handler: handleAuctionCreatedV1
@@ -62,6 +62,31 @@ dataSources:
           handler: handleAuctionExtendedV1
         - event: AuctionSettled(indexed uint256,address,uint256)
           handler: handleAuctionSettledV1
+  - kind: ethereum/contract
+    name: LilVRGDA
+    network: {{network}}
+    source:
+      address: '{{lilVRGDA.address}}'
+      abi: LilVRGDA
+      startBlock: {{lilVRGDA.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/lil-vrgda.ts
+      entities:
+        - Account
+        - Auction  # Replace with actual entity names
+        - Bid
+        - Noun
+      abis:
+        - name: LilVRGDA
+          file: ../nouns-contracts/abi/contracts/LilVRGDA.sol/LilVRGDA.json
+      eventHandlers:
+        - event: AuctionReservePriceUpdated(uint256)
+          handler: handleAuctionReservePriceUpdated
+        - event: AuctionSettled(indexed uint256,address,uint256)
+          handler: handleAuctionSettled
   - kind: ethereum/contract
     name: NounsToken
     network: {{network}}
