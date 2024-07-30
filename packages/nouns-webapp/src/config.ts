@@ -7,6 +7,8 @@ import { ChainId } from '@usedapp/core';
 
 interface ExternalContractAddresses {
   lidoToken: string | undefined;
+  weth: string | undefined;
+  steth: string | undefined;
 }
 
 export type ContractAddresses = NounsContractAddresses & ExternalContractAddresses;
@@ -167,18 +169,28 @@ const app: Record<SupportedChains, AppConfig> = {
 const externalAddresses: Record<SupportedChains, ExternalContractAddresses> = {
   [ChainId.Rinkeby]: {
     lidoToken: '0xF4242f9d78DB7218Ad72Ee3aE14469DBDE8731eD',
+    weth: undefined,
+    steth: undefined,
   },
   [ChainId.Goerli]: {
     lidoToken: '0x2DD6530F136D2B56330792D46aF959D9EA62E276',
+    weth: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+    steth: '0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F',
   },
   [ChainId.Mainnet]: {
     lidoToken: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
+    weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    steth: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
   },
   [ChainId.Hardhat]: {
     lidoToken: undefined,
+    weth: undefined,
+    steth: undefined,
   },
   [ChainId_Sepolia]: {
     lidoToken: undefined,
+    weth: undefined,
+    steth: undefined,
   },
 };
 
