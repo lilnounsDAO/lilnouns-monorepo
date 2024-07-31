@@ -30,7 +30,7 @@
     "@fortawesome/react-fontawesome": "0.1.14",
     "@heroicons/react": "^1.0.6",
     "@lilnounsdao/assets": "^0.5.15",
-    "@lilnounsdao/sdk": "^0.3.15",
+    "@lilnounsdao/sdk": "^0.3.16",
     "@lingui/cli": "^3.9.0",
     "@lingui/core": "^3.9.0",
     "@lingui/detect-locale": "^3.13.2",

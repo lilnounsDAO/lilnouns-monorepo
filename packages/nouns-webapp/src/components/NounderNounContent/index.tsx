@@ -1,41 +1,29 @@
-/* eslint-disable react/jsx-no-comment-textnodes */
-import { Col, Row } from 'react-bootstrap';
 import { BigNumber } from 'ethers';
+import { Col, Row } from 'react-bootstrap';
+import { Link as DocLink } from 'react-router-dom';
+import { useAppSelector } from '../../hooks';
+import auctionActivityClasses from '../AuctionActivity/AuctionActivity.module.css';
+import auctionBidClasses from '../AuctionActivity/BidHistory.module.css';
+import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
+import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
 import AuctionActivityWrapper from '../AuctionActivityWrapper';
 import AuctionNavigation from '../AuctionNavigation';
-import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
-import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
 import AuctionTitleAndNavWrapper from '../AuctionTitleAndNavWrapper';
-import { Link as DocLink } from 'react-router-dom';
-import Link from '../Link';
-import nounContentClasses from './NounderNounContent.module.css';
-import auctionBidClasses from '../AuctionActivity/BidHistory.module.css';
 import bidBtnClasses from '../BidHistoryBtn/BidHistoryBtn.module.css';
-import auctionActivityClasses from '../AuctionActivity/AuctionActivity.module.css';
 import CurrentBid, { BID_N_A } from '../CurrentBid';
+import Link from '../Link';
 import Winner from '../Winner';
-
-import { useAppSelector } from '../../hooks';
-import { useCallback, useEffect } from 'react';
+import nounContentClasses from './NounderNounContent.module.css';
+import { isVrgdaNoun } from '../../utils/vrgdaAuction';
 
 const NounderNounContent: React.FC<{
   mintTimestamp: BigNumber;
   nounId: BigNumber;
-  isFirstAuction: boolean;
-  isLastAuction: boolean;
-  onPrevAuctionClick: () => void;
-  onNextAuctionClick: () => void;
 }> = props => {
-  const {
-    mintTimestamp,
-    nounId,
-    isFirstAuction,
-    isLastAuction,
-    onPrevAuctionClick,
-    onNextAuctionClick,
-  } = props;
+  const { mintTimestamp, nounId } = props;
 
   const isCool = useAppSelector(state => state.application.isCoolBackground);
+  const isVrgda = isVrgdaNoun(nounId.toNumber());
 
   const nounIdNumber: number = nounId.toNumber();
   let block: any;
@@ -89,42 +77,12 @@ const NounderNounContent: React.FC<{
     );
   }
 
-  // Page through Nouns via keyboard
-  // handle what happens on key press
-  const handleKeyPress = useCallback(
-    event => {
-      console.log(event);
-      if (event.key === 'ArrowLeft') {
-        onPrevAuctionClick();
-      }
-      if (event.key === 'ArrowRight') {
-        onNextAuctionClick();
-      }
-    },
-    [onNextAuctionClick, onPrevAuctionClick],
-  );
-
-  useEffect(() => {
-    // attach the event listener
-    document.addEventListener('keydown', handleKeyPress);
-
-    // remove the event listener
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleKeyPress]);
-
   return (
     <AuctionActivityWrapper>
       <div className={auctionActivityClasses.informationRow}>
         <Row className={auctionActivityClasses.activityRow}>
           <AuctionTitleAndNavWrapper>
-            <AuctionNavigation
-              isFirstAuction={isFirstAuction}
-              isLastAuction={isLastAuction}
-              onNextAuctionClick={onNextAuctionClick}
-              onPrevAuctionClick={onPrevAuctionClick}
-            />
+            <AuctionNavigation nounId={nounId.toNumber()} />
             <AuctionActivityDateHeadline startTime={mintTimestamp} />
           </AuctionTitleAndNavWrapper>
           <Col lg={12}>
@@ -133,7 +91,7 @@ const NounderNounContent: React.FC<{
         </Row>
         <Row className={auctionActivityClasses.activityRow}>
           <Col lg={4} className={auctionActivityClasses.currentBidCol}>
-            <CurrentBid currentBid={BID_N_A} auctionEnded={true} />
+            <CurrentBid currentBid={BID_N_A} auctionEnded={true} isVrgda={isVrgda} />
           </Col>
           <Col
             lg={5}

@@ -3,13 +3,17 @@
 /* eslint-disable */
 import type * as iNounsAuctionHouseV1Sol from "./INounsAuctionHouseV1.sol";
 export type { iNounsAuctionHouseV1Sol };
+export type { IERC1967Upgrade } from "./IERC1967Upgrade";
 export type { IInflator } from "./IInflator";
+export type { ILilVRGDA } from "./ILilVRGDA";
 export type { INounsArt } from "./INounsArt";
 export type { INounsAuctionHouse } from "./INounsAuctionHouse";
 export type { INounsDescriptor } from "./INounsDescriptor";
 export type { INounsDescriptorMinimal } from "./INounsDescriptorMinimal";
 export type { INounsDescriptorV2 } from "./INounsDescriptorV2";
 export type { INounsSeeder } from "./INounsSeeder";
+export type { INounsSeederV2 } from "./INounsSeederV2";
 export type { INounsToken } from "./INounsToken";
 export type { ISVGRenderer } from "./ISVGRenderer";
+export type { IUUPS } from "./IUUPS";
 export type { IWETH } from "./IWETH";
