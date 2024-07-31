@@ -1,62 +1,50 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { ChainId, DAppProvider } from '@usedapp/core';
-import { Web3ReactProvider } from '@web3-react/core';
-import { Web3Provider } from '@ethersproject/providers';
-import account from './state/slices/account';
-import application from './state/slices/application';
-import logs from './state/slices/logs';
-import auction, {
-  reduxSafeAuction,
-  reduxSafeNewAuction,
-  reduxSafeBid,
-  setActiveAuction,
-  setAuctionExtended,
-  setAuctionSettled,
-  setFullAuction,
-} from './state/slices/auction';
-import onDisplayAuction, {
-  setLastAuctionNounId,
-  setLastAuctionStartTime,
-  setOnDisplayAuctionNounId,
-  setOnDisplayAuctionStartTime,
-} from './state/slices/onDisplayAuction';
 import {
   ApolloClient,
   ApolloLink,
   ApolloProvider,
   HttpLink,
   InMemoryCache,
-  Operation,
   useQuery,
 } from '@apollo/client';
-import { clientFactory, latestAuctionsQuery, singularAuctionQuery } from './wrappers/subgraph';
-import { useEffect } from 'react';
+import { Web3Provider } from '@ethersproject/providers';
+import { Provider as RollbarProvider } from '@rollbar/react';
+import { Chain, ChainId, DAppProvider, DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
+import { Web3ReactProvider } from '@web3-react/core';
+import { ConnectedRouter, connectRouter, routerMiddleware } from 'connected-react-router';
+import dotenv from 'dotenv';
+import { BigNumber } from 'ethers';
+import { History, createBrowserHistory } from 'history';
+import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { PreloadedState, applyMiddleware, combineReducers, createStore } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import App from './App';
+import config, {
+  CHAIN_ID,
+  ChainId_Sepolia,
+  createNetworkHttpUrl,
+  multicallOnLocalhost,
+} from './config';
+import { useAppDispatch, useAppSelector } from './hooks';
+import { ErrorModalProvider } from './hooks/useApiError';
+import { AuthProvider } from './hooks/useAuth';
+import './index.css';
+import reportWebVitals from './reportWebVitals';
+import account from './state/slices/account';
+import application from './state/slices/application';
+import auction, { setActiveAuction, setConfig, setNouns } from './state/slices/auction';
+import logs from './state/slices/logs';
+import onDisplayAuction, {
+  setLastAuctionNounId,
+  setLastAuctionStartTime,
+  setOnDisplayAuctionStartTime,
+} from './state/slices/onDisplayAuction';
 import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
-import config, { CHAIN_ID, createNetworkHttpUrl, multicallOnLocalhost } from './config';
-import { WebSocketProvider } from '@ethersproject/providers';
-import { BigNumber, BigNumberish, providers } from 'ethers';
-import { NounsAuctionHouseFactory } from '@lilnounsdao/sdk';
-import dotenv from 'dotenv';
-import { useAppDispatch, useAppSelector } from './hooks';
-import { appendBid } from './state/slices/auction';
-import { ConnectedRouter, connectRouter } from 'connected-react-router';
-import { createBrowserHistory, History } from 'history';
-import { applyMiddleware, createStore, combineReducers, PreloadedState } from 'redux';
-import { routerMiddleware } from 'connected-react-router';
-import { Provider } from 'react-redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import { nounPath } from './utils/history';
-import { push } from 'connected-react-router';
-import { AuthProvider } from './hooks/useAuth';
-import { ErrorModalProvider } from './hooks/useApiError';
-
-import { Provider as RollbarProvider } from '@rollbar/react';
 import { isNounderNoun } from './utils/nounderNoun';
+import { getVrgdaAuctionConfig, getVrgdaAuctions, useBlockListener } from './utils/vrgdaAuction';
+import { latestAuctionsQuery, singularAuctionQuery } from './wrappers/subgraph';
 
 dotenv.config();
 
@@ -93,18 +81,35 @@ const store = configureStore({});
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
+const supportedChainURLs = {
+  [ChainId.Rinkeby]: createNetworkHttpUrl('rinkeby'),
+  [ChainId.Mainnet]: createNetworkHttpUrl('mainnet'),
+  [ChainId.Hardhat]: 'http://localhost:8545',
+  [ChainId.Goerli]: createNetworkHttpUrl('goerli'),
+  [ChainId_Sepolia]: createNetworkHttpUrl('sepolia'),
+};
+
+export const Sepolia: Chain = {
+  chainId: ChainId_Sepolia,
+  chainName: 'Sepolia',
+  isTestChain: true,
+  isLocalChain: false,
+  multicallAddress: '0x6a19Dbfc67233760E0fF235b29158bE45Cc53765',
+  getExplorerAddressLink: (address: string) => `https://sepolia.etherscan.io/address/${address}`,
+  getExplorerTransactionLink: (transactionHash: string) =>
+    `https://sepolia.etherscan.io/tx/${transactionHash}`,
+};
+
 // prettier-ignore
 const useDappConfig = {
   readOnlyChainId: CHAIN_ID,
   readOnlyUrls: {
-    [ChainId.Rinkeby]: createNetworkHttpUrl('rinkeby'),
-    [ChainId.Mainnet]: createNetworkHttpUrl('mainnet'),
-    [ChainId.Hardhat]: 'http://localhost:8545',
-    [ChainId.Goerli]:  createNetworkHttpUrl('goerli'),
+    [CHAIN_ID]: supportedChainURLs[CHAIN_ID],
   },
   multicallAddresses: {
     [ChainId.Hardhat]: multicallOnLocalhost,
-  }
+  },
+  networks: [...DEFAULT_SUPPORTED_CHAINS, Sepolia],
 };
 
 const defaultLink = new HttpLink({
@@ -161,95 +166,39 @@ const Updaters = () => {
   );
 };
 
-const BLOCKS_PER_DAY = 6_500;
-
 const ChainSubscriber: React.FC = () => {
   const dispatch = useAppDispatch();
+  const poolSize = useAppSelector(state => state.auction.config?.poolSize);
 
-  const loadState = async () => {
-    const wsProvider = new WebSocketProvider(config.app.wsRpcUri);
-    const nounsAuctionHouseContract = NounsAuctionHouseFactory.connect(
-      config.addresses.nounsAuctionHouseProxy,
-      wsProvider,
+  // Get the VRGDA auction settings
+  useEffect(() => {
+    getVrgdaAuctionConfig().then(config => {
+      if (config) dispatch(setConfig(config));
+    });
+  }, []);
+
+  // Refresh auction data on new blocks
+  useBlockListener(async blockNumber => {
+    if (typeof poolSize === 'undefined') return;
+
+    const data = await getVrgdaAuctions(poolSize);
+    if (!data) return;
+
+    dispatch(setLastAuctionStartTime(data.startTime.toNumber()));
+    dispatch(setLastAuctionNounId(Number(data.nextNoun.id)));
+
+    dispatch(
+      setActiveAuction({
+        nounId: BigNumber.from(data.nextNoun.id),
+        amount: data.currentPrice,
+        startTime: data.startTime,
+        settled: false,
+        blockNumber: data.nextNoun.blockNumber,
+      }),
     );
 
-    const bidFilter = nounsAuctionHouseContract.filters.AuctionBid(null, null, null, null, null);
-    const extendedFilter = nounsAuctionHouseContract.filters.AuctionExtended(null, null);
-    const createdFilter = nounsAuctionHouseContract.filters.AuctionCreated(null, null, null);
-    const settledFilter = nounsAuctionHouseContract.filters.AuctionSettled(null, null, null);
-    const processBidFilter = async (
-      nounId: BigNumberish,
-      sender: string,
-      value: BigNumberish,
-      extended: boolean,
-      comment: string,
-      event: any,
-    ) => {
-      const timestamp = (await event.getBlock()).timestamp;
-      const transactionHash = event.transactionHash;
-      // const comment = event.comment;
-      dispatch(
-        appendBid(
-          reduxSafeBid({ nounId, sender, value, extended, comment, transactionHash, timestamp }),
-        ),
-      );
-    };
-    const processAuctionCreated = (
-      nounId: BigNumberish,
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-    ) => {
-      dispatch(
-        setActiveAuction(reduxSafeNewAuction({ nounId, startTime, endTime, settled: false })),
-      );
-      const nounIdNumber = BigNumber.from(nounId).toNumber();
-      const startTimeNumber = BigNumber.from(startTime).toNumber();
-      dispatch(push(nounPath(nounIdNumber)));
-      dispatch(setOnDisplayAuctionNounId(nounIdNumber));
-      dispatch(setOnDisplayAuctionStartTime(startTimeNumber));
-
-      dispatch(setLastAuctionNounId(nounIdNumber));
-      dispatch(setLastAuctionStartTime(startTimeNumber));
-    };
-    const processAuctionExtended = (nounId: BigNumberish, endTime: BigNumberish) => {
-      dispatch(setAuctionExtended({ nounId, endTime }));
-    };
-    const processAuctionSettled = (nounId: BigNumberish, winner: string, amount: BigNumberish) => {
-      dispatch(setAuctionSettled({ nounId, amount, winner }));
-    };
-
-    // Fetch the current auction
-    const currentAuction = await nounsAuctionHouseContract.auction();
-    dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
-    dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
-
-    dispatch(setLastAuctionStartTime(currentAuction.startTime.toNumber()));
-
-    // Fetch the previous 24hours of  bids
-    const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
-    for (const event of previousBids) {
-      if (event.args === undefined) return;
-      // processBidFilter(...(event.args as [BigNumber, string, BigNumber, boolean]), event);
-      processBidFilter(
-        ...(event.args.slice(0, 5) as [BigNumber, string, BigNumber, boolean, string]),
-        event,
-      );
-    }
-
-    nounsAuctionHouseContract.on(bidFilter, (nounId, comment, sender, value, extended, event) =>
-      processBidFilter(nounId, comment, sender, value, extended, event),
-    );
-    nounsAuctionHouseContract.on(createdFilter, (nounId, startTime, endTime) =>
-      processAuctionCreated(nounId, startTime, endTime),
-    );
-    nounsAuctionHouseContract.on(extendedFilter, (nounId, endTime) =>
-      processAuctionExtended(nounId, endTime),
-    );
-    nounsAuctionHouseContract.on(settledFilter, (nounId, winner, amount) =>
-      processAuctionSettled(nounId, winner, amount),
-    );
-  };
-  loadState();
+    dispatch(setNouns({ next: data.nextNoun, previous: data.previousNouns }));
+  });
 
   return <></>;
 };
@@ -284,11 +233,14 @@ const PastAuctions: React.FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    data &&
-      auctionData &&
-      dispatch(setOnDisplayAuctionStartTime(auctionData?.auctions?.[0]?.startTime)) &&
-      dispatch(addPastAuctions({ data }));
-  }, [data, auctionData, latestAuctionId, latestAuctionStartTime, dispatch]);
+    if (!data) return;
+    dispatch(addPastAuctions({ data }));
+  }, [data]);
+
+  useEffect(() => {
+    if (!auctionData) return;
+    dispatch(setOnDisplayAuctionStartTime(auctionData?.auctions?.[0]?.startTime));
+  }, [auctionData]);
 
   return <></>;
 };

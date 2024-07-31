@@ -7,6 +7,7 @@ import { SupportedCurrency } from '../TransferFundsDetailsStep';
 import classes from './TransferFundsReviewStep.module.css';
 import ModalBottomButtonRow from '../../../ModalBottomButtonRow';
 import ModalTitle from '../../../ModalTitle';
+import config from '../../../../config';
 
 const handleActionAdd = (state: ProposalActionModalState, onActionAdd: (e?: any) => void) => {
   if (state.TransferFundsCurrency === SupportedCurrency.ETH) {
@@ -15,6 +16,15 @@ const handleActionAdd = (state: ProposalActionModalState, onActionAdd: (e?: any)
       value: state.amount ? utils.parseEther(state.amount.toString()).toString() : '0',
       signature: '',
       calldata: '0x',
+    });
+  }  else if (state.TransferFundsCurrency === SupportedCurrency.STETH) {
+    const values = [state.address, utils.parseEther((state.amount ?? 0).toString()).toString()];
+    onActionAdd({
+      address: config.addresses.steth,
+      value: '0',
+      signature: 'transfer(address,uint256)',
+      decodedCalldata: JSON.stringify(values),
+      calldata: utils.defaultAbiCoder.encode(['address', 'uint256'], values),
     });
   } else {
     // This should never happen

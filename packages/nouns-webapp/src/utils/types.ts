@@ -10,24 +10,6 @@ export interface BidEvent {
   timestamp: BigNumberish;
 }
 
-export interface AuctionCreateEvent {
-  nounId: BigNumberish;
-  startTime: BigNumberish;
-  endTime: BigNumberish;
-  settled: boolean;
-}
-
-export interface AuctionSettledEvent {
-  nounId: BigNumberish;
-  winner: string;
-  amount: BigNumberish;
-}
-
-export interface AuctionExtendedEvent {
-  nounId: BigNumberish;
-  endTime: BigNumberish;
-}
-
 export interface Bid {
   nounId: BigNumber;
   sender: string;
@@ -36,4 +18,11 @@ export interface Bid {
   comment: string;
   transactionHash: string;
   timestamp: BigNumber;
+}
+
+export interface AuctionVrgdaConfig {
+  reservePrice: BigNumber;
+  targetPrice: BigNumber;
+  updateInterval: number;
+  poolSize: number;
 }

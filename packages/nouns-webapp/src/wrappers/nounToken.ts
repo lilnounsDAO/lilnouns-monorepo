@@ -1,17 +1,11 @@
+import { useQuery } from '@apollo/client';
+import { NounsTokenABI, NounsTokenFactory } from '@lilnounsdao/contracts';
 import { useContractCall, useContractCalls, useContractFunction, useEthers } from '@usedapp/core';
 import { BigNumber as EthersBN, ethers, utils } from 'ethers';
-import { NounsTokenABI, NounsTokenFactory } from '@lilnounsdao/contracts';
-import config, { cache, cacheKey, CHAIN_ID } from '../config';
-import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
-import { seedsQuery, lilnounsSeedsQuery } from './subgraph';
-import { PartialProposal, Proposal } from './nounsDao';
-
-interface NounToken {
-  name: string;
-  description: string;
-  image: string;
-}
+import config, { CHAIN_ID, cache, cacheKey } from '../config';
+import { PartialProposal } from './nounsDao';
+import { lilnounsSeedsQuery, seedsQuery } from './subgraph';
 
 export interface INounSeed {
   accessory: number;
@@ -26,6 +20,7 @@ export enum NounsTokenContractFunction {
 }
 
 const abi = new utils.Interface(NounsTokenABI);
+
 const seedCacheKey = cacheKey(cache.seed, CHAIN_ID, config.addresses.nounsToken);
 const seedExpriyCacheKey = cacheKey(cache.seedExpriy, CHAIN_ID, config.addresses.nounsToken);
 const bigNounSeedCacheKey = cacheKey(
@@ -39,25 +34,6 @@ const isSeedValid = (seed: Record<string, any> | undefined) => {
   const hasExpectedKeys = expectedKeys.every(key => (seed || {}).hasOwnProperty(key));
   const hasValidValues = Object.values(seed || {}).some(v => v !== 0);
   return hasExpectedKeys && hasValidValues;
-};
-
-export const useNounToken = (nounId: EthersBN) => {
-  const [noun] =
-    useContractCall<[string]>({
-      abi,
-      address: config.addresses.nounsToken,
-      method: 'dataURI',
-      args: [nounId],
-    }) || [];
-
-  if (!noun) {
-    return;
-  }
-
-  const nounImgData = noun.split(';base64,').pop() as string;
-  const json: NounToken = JSON.parse(atob(nounImgData));
-
-  return json;
 };
 
 const seedArrayToObject = (seeds: (INounSeed & { id: string })[]) => {
@@ -113,7 +89,7 @@ const useNounSeeds = (nounId: EthersBN) => {
     }
   }, [data, cachedSeeds]);
 
-  return cachedSeeds;
+  return cachedSeeds as INounSeed[];
 };
 
 const useBigNounSeeds = () => {
@@ -134,16 +110,17 @@ const useBigNounSeeds = () => {
   return cachedSeeds;
 };
 
-export const useNounSeed = (nounId: EthersBN) => {
+export const useNounSeed = (nounId: EthersBN, initialSeed?: INounSeed) => {
   const seeds = useNounSeeds(nounId);
-  const seed = seeds?.[nounId.toString()];
-  // prettier-ignore
-  const request = seed ? false : {
-    abi,
-    address: config.addresses.nounsToken,
-    method: 'seeds',
-    args: [nounId],
-  };
+  const seed = initialSeed || seeds?.[nounId.toString() as any];
+  const request = seed
+    ? false
+    : {
+        abi,
+        address: config.addresses.nounsToken,
+        method: 'seeds',
+        args: [nounId],
+      };
   const response = useContractCall<INounSeed>(request);
   if (response) {
     const seedCache = localStorage.getItem(seedCacheKey);
@@ -233,7 +210,7 @@ export const useUserVotesAsOfBlock = (block: number | undefined): number | undef
       abi,
       address: config.addresses.nounsToken,
       method: 'getPriorVotes',
-      args: [account ?? "", block],
+      args: [account ?? '', block],
     }) || [];
   return votes?.toNumber();
 };
@@ -246,12 +223,12 @@ export const useUserVotesAsOfBlockByProp = (proposals: PartialProposal[]) => {
   const votes = useContractCalls(
     snapshotBlocks.map(
       (block: number) =>
-      ({
-        abi: abi,
-        address: config.addresses.nounsToken,
-        method: 'getPriorVotes',
-        args: [account, block],
-      } || []),
+        ({
+          abi: abi,
+          address: config.addresses.nounsToken,
+          method: 'getPriorVotes',
+          args: [account, block],
+        } || []),
     ),
   );
 
