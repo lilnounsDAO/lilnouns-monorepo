@@ -26,7 +26,7 @@ export function handleAuctionSettled(event: AuctionSettled): void {
   auction.noun = noun.id;
   auction.amount = event.params.amount;
   auction.bidder = bidder.id;
-  auction.startTime = BigInt.fromI32(0);
+  auction.startTime = event.block.timestamp;
   auction.endTime = BigInt.fromI32(0);
   auction.settled = true;
 
