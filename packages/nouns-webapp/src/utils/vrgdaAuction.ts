@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { INoun } from '../components/StandaloneNoun';
 import config from '../config';
 
-const FIRST_VRGDA_NOUN_ID = 3;
+const FIRST_VRGDA_NOUN_ID = 7983;
 
 const wsProvider = new ethers.providers.WebSocketProvider(config.app.wsRpcUri);
 
