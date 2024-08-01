@@ -84,7 +84,7 @@ export const createNetworkHttpUrl = (network: string): string => {
 
   if (network === 'rinkeby' || network === 'goerli') {
     return `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
-  } else if(network === 'sepolia') {
+  } else if (network === 'sepolia') {
     return `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_SEPOLIA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
@@ -98,7 +98,7 @@ export const createNetworkWsUrl = (network: string): string => {
 
   if (network === 'rinkeby' || network === 'goerli') {
     return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
-  }  else if(network === 'sepolia') {
+  } else if (network === 'sepolia') {
     return `wss://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_SEPOLIA_PROJECT_ID}`;
   } else {
     return custom || isLocalhost
@@ -202,8 +202,14 @@ const getAddresses = (): ContractAddresses => {
   return { ...nounsAddresses, ...externalAddresses[CHAIN_ID] };
 };
 
-const getBigNounsAddresses = (): Omit<ContractAddresses, 'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'> => {
-  let bigNounsNounsAddresses = {} as Omit<NounsContractAddresses, 'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'>;
+const getBigNounsAddresses = (): Omit<
+  ContractAddresses,
+  'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'
+> => {
+  let bigNounsNounsAddresses = {} as Omit<
+    NounsContractAddresses,
+    'lilVRGDA' | 'nounsSeederV2' | 'lilVRGDAProxy'
+  >;
   try {
     bigNounsNounsAddresses = getBigNounsContractAddressesForChainOrThrow(CHAIN_ID);
   } catch {}

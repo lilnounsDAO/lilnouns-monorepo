@@ -173,14 +173,19 @@ const ChainSubscriber: React.FC = () => {
   // Get the VRGDA auction settings
   useEffect(() => {
     getVrgdaAuctionConfig().then(config => {
-      if (config) dispatch(setConfig(config));
+      if (!config) return;
+      dispatch(setConfig(config));
+      getAndDispatchAuctionsData(config.poolSize);
     });
   }, []);
 
   // Refresh auction data on new blocks
-  useBlockListener(async blockNumber => {
+  useBlockListener(async () => {
     if (typeof poolSize === 'undefined') return;
+    getAndDispatchAuctionsData(poolSize);
+  });
 
+  async function getAndDispatchAuctionsData(poolSize: number) {
     const data = await getVrgdaAuctions(poolSize);
     if (!data) return;
 
@@ -198,7 +203,7 @@ const ChainSubscriber: React.FC = () => {
     );
 
     dispatch(setNouns({ next: data.nextNoun, previous: data.previousNouns }));
-  });
+  }
 
   return <></>;
 };
