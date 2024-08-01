@@ -5,6 +5,9 @@ type DelegationEvent @entity {
   "The Noun being delegated"
   noun: Noun!
 
+  "Current delegator address"
+  delegator: Account!
+
   "Previous delegate address"
   previousDelegate: Delegate!
 
@@ -259,6 +262,30 @@ type Proposal @entity {
 
   "Dynamic quorum param snapshot: the dynamic quorum coefficient"
   quorumCoefficient: BigInt!
+
+  "The block number at which this proposal was canceled"
+  canceledBlock: BigInt
+
+  "The timestamp when this proposal was canceled"
+  canceledTimestamp: BigInt
+
+  "The block number at which this proposal was executed"
+  executedBlock: BigInt
+
+  "The timestamp when this proposal was executed"
+  executedTimestamp: BigInt
+
+  "The block number at which this proposal was vetoed"
+  vetoedBlock: BigInt
+
+  "The timestamp when this proposal was vetoed"
+  vetoedTimestamp: BigInt
+
+  "The block number at which this proposal was queued"
+  queuedBlock: BigInt
+
+  "The timestamp when this proposal was queued"
+  queuedTimestamp: BigInt
 }
 
 type Vote @entity {
@@ -291,6 +318,9 @@ type Vote @entity {
 
   "Block number of vote"
   blockNumber: BigInt!
+
+  "The timestamp of the block the vote is in"
+  blockTimestamp: BigInt!
 }
 
 type Governance @entity {
