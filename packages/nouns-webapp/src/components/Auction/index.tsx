@@ -1,75 +1,72 @@
-import { BigNumber } from 'ethers';
-import { Col, Container, Row } from 'react-bootstrap';
+import { push } from 'connected-react-router';
+import { useEffect } from 'react';
+import Auction from '../../components/Auction';
+import { AuctionPreviousNouns } from '../../components/AuctionPreviousNouns/AuctionPreviousNouns';
+import Banner from '../../components/Banner';
+import Documentation from '../../components/Documentation';
+import ProfileActivityFeed from '../../components/ProfileActivityFeed';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { setStateBackgroundColor } from '../../state/slices/application';
-import { beige, grey } from '../../utils/nounBgColors';
-import { isNounderNoun, isNounsDAONoun } from '../../utils/nounderNoun';
-import { INounSeed } from '../../wrappers/nounToken';
-import { Auction as IAuction } from '../../wrappers/nounsAuction';
-import AuctionActivity from '../AuctionActivity';
-import { AuctionNextNoun } from '../AuctionNextNoun/AuctionNextNoun';
-import { LoadingNoun } from '../Noun';
-import NounderNounContent from '../NounderNounContent';
-import { StandaloneNounWithSeed } from '../StandaloneNoun';
-import classes from './Auction.module.css';
+import {
+  setOnDisplayAuctionNounId,
+  setOnDisplayAuctionStartTime,
+} from '../../state/slices/onDisplayAuction';
+import { nounPath } from '../../utils/history';
+import useOnDisplayAuction from '../../wrappers/onDisplayAuction';
 
-interface AuctionProps {
-  auction?: IAuction;
-  isActive?: boolean;
+interface AuctionPageProps {
+  initialAuctionId?: number;
 }
 
-const Auction = (props: AuctionProps) => {
-  const { auction, isActive = false } = props;
+const AuctionPage: React.FC<AuctionPageProps> = props => {
+  const { initialAuctionId } = props;
+  const onDisplayAuction = useOnDisplayAuction();
+  const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
+  const lastAuctionStartTime = useAppSelector(state => state.onDisplayAuction.lastAuctionStartTime);
+  const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
 
   const dispatch = useAppDispatch();
-  const stateBgColor = useAppSelector(state => state.application.stateBackgroundColor);
-  const nextNoun = useAppSelector(state => state.auction.nouns?.next);
 
-  const loadedNounHandler = (seed: INounSeed) => {
-    dispatch(setStateBackgroundColor(seed.background === 0 ? grey : beige));
-  };
+  useEffect(() => {
+    if (!lastAuctionNounId) return;
+    if (!lastAuctionStartTime) return;
+
+    if (initialAuctionId !== undefined && lastAuctionStartTime !== undefined) {
+      // handle out  of bounds noun path ids
+      if (initialAuctionId > lastAuctionNounId || initialAuctionId < 0) {
+        dispatch(setOnDisplayAuctionNounId(lastAuctionNounId));
+        dispatch(setOnDisplayAuctionStartTime(lastAuctionStartTime!));
+        dispatch(push(nounPath(lastAuctionNounId)));
+      } else {
+        if (onDisplayAuction === undefined) {
+          // handle regular noun path ids on first load
+          dispatch(setOnDisplayAuctionNounId(initialAuctionId));
+        }
+      }
+    } else {
+      // no noun path id set
+      if (lastAuctionNounId && lastAuctionStartTime) {
+        dispatch(setOnDisplayAuctionNounId(lastAuctionNounId));
+        dispatch(setOnDisplayAuctionStartTime(lastAuctionStartTime!));
+      }
+    }
+  }, [lastAuctionNounId, lastAuctionStartTime, dispatch, initialAuctionId, onDisplayAuction]);
+
+  const latestId = lastAuctionNounId != undefined ? lastAuctionNounId : 0;
+
+  const isActiveAuction =
+    onDisplayAuctionNounId === lastAuctionNounId ||
+    typeof onDisplayAuctionNounId === 'undefined' || onDisplayAuctionNounId === latestId - 1 || onDisplayAuctionNounId === latestId - 2;
 
   return (
-    <div style={{ backgroundColor: stateBgColor }} className={classes.wrapper}>
-      <Container fluid="xl">
-        <Row>
-          <Col lg={{ span: 6 }} className={classes.nounContentCol}>
-            {auction ? (
-              <div className={classes.nounWrapper}>
-                <StandaloneNounWithSeed
-                  nounId={auction.nounId}
-                  onLoadSeed={loadedNounHandler}
-                  shouldLinkToProfile={false}
-                  seed={isActive && nextNoun ? nextNoun.seed : undefined}
-                />
-              </div>
-            ) : (
-              <div className={classes.nounWrapper}>
-                <LoadingNoun />
-              </div>
-            )}
-          </Col>
-          {auction && (
-            <Col lg={{ span: 6 }} className={classes.auctionActivityCol}>
-              {isActive && 
-              (isNounderNoun(auction.nounId) || isNounsDAONoun(auction.nounId) ? (
-                <NounderNounContent mintTimestamp={auction.startTime} nounId={auction.nounId} />
-              ) : (
-              <AuctionNextNoun auction={auction} />
-              ))}
-              
-              {!isActive &&
-                (isNounderNoun(auction.nounId) || isNounsDAONoun(auction.nounId) ? (
-                  <NounderNounContent mintTimestamp={auction.startTime} nounId={auction.nounId} />
-                ) : (
-                  <AuctionActivity auction={auction} displayGraphDepComps={true} />
-                ))}
-            </Col>
-          )}
-        </Row>
-      </Container>
-    </div>
+    <>
+      <Auction auction={onDisplayAuction} isActive={isActiveAuction} />
+
+      {isActiveAuction && <AuctionPreviousNouns />}
+
+      {isActiveAuction ? <Banner /> : <ProfileActivityFeed nounId={onDisplayAuctionNounId} />}
+
+      <Documentation />
+    </>
   );
 };
-
-export default Auction;
+export default AuctionPage;
