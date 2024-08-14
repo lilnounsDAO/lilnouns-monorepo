@@ -51,13 +51,13 @@ const Auction = (props: AuctionProps) => {
           </Col>
           {auction && (
             <Col lg={{ span: 6 }} className={classes.auctionActivityCol}>
-              {isActive && 
-              (isNounderNoun(auction.nounId) || isNounsDAONoun(auction.nounId) ? (
-                <NounderNounContent mintTimestamp={auction.startTime} nounId={auction.nounId} />
-              ) : (
-              <AuctionNextNoun auction={auction} />
-              ))}
-              
+              {isActive &&
+                (isNounderNoun(auction.nounId) || isNounsDAONoun(auction.nounId) ? (
+                  <NounderNounContent mintTimestamp={auction.startTime} nounId={auction.nounId} />
+                ) : (
+                  <AuctionNextNoun auction={auction} />
+                ))}
+
               {!isActive &&
                 (isNounderNoun(auction.nounId) || isNounsDAONoun(auction.nounId) ? (
                   <NounderNounContent mintTimestamp={auction.startTime} nounId={auction.nounId} />
