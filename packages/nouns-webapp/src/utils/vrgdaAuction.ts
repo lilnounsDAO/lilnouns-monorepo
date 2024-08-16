@@ -46,9 +46,8 @@ export async function getVrgdaAuctions(poolSize: number) {
   try {
     const nextNoun = await contract.fetchNextNoun();
 
-    const [currentPrice, startTime, ...previousNouns] = await Promise.all([
+    const [currentPrice, ...previousNouns] = await Promise.all([
       contract.getCurrentVRGDAPrice(),
-      contract.startTime(),
       ...Array.from({ length: poolSize - 1 }, (_, i) => {
         return contract.fetchNoun(nextNoun.blockNumber.toNumber() - 1 - i);
       }),
@@ -60,7 +59,6 @@ export async function getVrgdaAuctions(poolSize: number) {
       previousNouns: previousNouns
         .map((noun, i) => ({ ...noun, blockNumber: nextNoun.blockNumber.toNumber() - 1 - i }))
         .map(normalizeVrgdaNoun),
-      startTime: startTime as BigNumber,
     };
   } catch (error) {
     console.debug('Error in getVrgdaAuctions() call', error);
