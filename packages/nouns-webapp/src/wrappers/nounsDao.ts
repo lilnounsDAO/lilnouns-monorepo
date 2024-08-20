@@ -160,6 +160,7 @@ export interface ProposalTransaction {
   decodedCalldata?: string;
   abi?: utils.Interface | undefined;
   simulationStatus?: boolean;
+  usdcValue?: number;
 }
 
 export interface DynamicQuorumParams {

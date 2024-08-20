@@ -129,3 +129,42 @@
   color: #14161b;
   border: 2px solid var(--brand-color-blue);
 }
+
+.m-0 {
+  margin: 0;
+}
+
+.txnInfoText {
+  color: var(--brand-gray-light-text);
+  margin-left: -0.1rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.txnInfoIconWrapper {
+  width: 25px;
+  display: flex;
+  align-items: center;
+}
+
+.txnInfoIcon {
+  height: 18px;
+  width: 18px;
+  opacity: 0.5;
+}
+
+@media (max-width: 992px) {
+  .txnInfoText {
+    align-items: flex-start;
+    margin-top: 1rem;
+  }
+
+  .txnInfoIcon {
+    margin-top: 0.25rem;
+    margin-right: 0.5rem;
+  }
+}

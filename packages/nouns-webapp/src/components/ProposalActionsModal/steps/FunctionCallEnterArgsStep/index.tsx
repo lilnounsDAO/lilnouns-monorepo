@@ -9,7 +9,8 @@ import ModalBottomButtonRow from '../../../ModalBottomButtonRow';
 import { Interface } from 'ethers/lib/utils';
 
 export enum SupportedCurrencies {
-  ETH = 'ETH'
+  ETH = 'ETH',
+  USDC = 'USDC'
 }
 
 const parseArguments = (abi: Interface | undefined, func: string, args: string[]) => {

@@ -38,6 +38,10 @@ import ReactTooltip from 'react-tooltip';
 import { SearchIcon } from '@heroicons/react/solid';
 import DynamicQuorumInfoModal from '../../components/DynamicQuorumInfoModal';
 import config from '../../config';
+import StreamWithdrawModal from '../../components/StreamWithdrawModal';
+import { parseStreamCreationCallData } from '../../utils/streamingPaymentUtils/streamingPaymentUtils';
+import ShortAddress from '../../components/ShortAddress';
+
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -58,6 +62,15 @@ const VotePage = ({
   const [isQueuePending, setQueuePending] = useState<boolean>(false);
   const [isExecutePending, setExecutePending] = useState<boolean>(false);
   const [isCancelPending, setCancelPending] = useState<boolean>(false);
+
+  const [showStreamWithdrawModal, setShowStreamWithdrawModal] = useState<boolean>(false);
+  const [streamWithdrawInfo, setStreamWithdrawInfo] = useState<{
+    streamAddress: string;
+    startTime: number;
+    endTime: number;
+    streamAmount: number;
+    tokenAddress: string;
+  } | null>(null);
 
   const dispatch = useAppDispatch();
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
@@ -130,7 +143,7 @@ const VotePage = ({
     return false;
   };
 
-  const isAwaitingDesctructiveStateChange = () => {
+  const isAwaitingDestructiveStateChange = () => {
     if (isCancellable) {
       return true;
     }
@@ -170,8 +183,8 @@ const VotePage = ({
     };
   })();
 
-  const desctructiveStateButtonAction = isCancellable ? 'Cancel' : '';
-  const desctructiveStateAction = (() => {
+  const destructiveStateButtonAction = isCancellable ? 'Cancel' : '';
+  const destructiveStateAction = (() => {
     if (isCancellable) {
       return () => {
         if (proposal?.id) {
@@ -323,7 +336,10 @@ const VotePage = ({
   }
 
   const isWalletConnected = !(activeAccount === undefined);
-  const isActiveForVoting = proposal?.status === ProposalState.ACTIVE ? startDate?.isBefore(now) && endDate?.isAfter(now) : false;
+  const isActiveForVoting =
+    proposal?.status === ProposalState.ACTIVE
+      ? startDate?.isBefore(now) && endDate?.isAfter(now)
+      : false;
 
   const forNouns = getNounVotes(data, 1);
   const againstNouns = getNounVotes(data, 0);
@@ -344,6 +360,11 @@ const VotePage = ({
           onDismiss={() => setShowDynamicQuorumInfoModal(false)}
         />
       )}
+      <StreamWithdrawModal
+        show={showStreamWithdrawModal}
+        onDismiss={() => setShowStreamWithdrawModal(false)}
+        {...streamWithdrawInfo}
+      />
       <VoteModal
         show={showVoteModal}
         onHide={() => setShowVoteModal(false)}
@@ -362,27 +383,59 @@ const VotePage = ({
         )}
       </Col>
       <Col lg={10} className={clsx(classes.proposal, classes.wrapper)}>
-        {(isAwaitingStateChange() || isAwaitingDesctructiveStateChange()) && (
+        {(isAwaitingStateChange() || isAwaitingDestructiveStateChange()) && (
           <Row className={clsx(classes.section, classes.transitionStateButtonSection)}>
             <Col className="d-grid gap-4">
               {isAwaitingStateChange() && (
-                <Button
-                  onClick={moveStateAction}
-                  disabled={isQueuePending || isExecutePending}
-                  variant="dark"
-                  className={classes.transitionStateButton}
-                >
-                  {isQueuePending || isExecutePending ? (
-                    <Spinner animation="border" />
-                  ) : (
-                    `${moveStateButtonAction} Proposal ⌐◧-◧`
-                  )}
-                </Button>
+                <Col className="d-grid gap-4">
+                  <Button
+                    onClick={moveStateAction}
+                    disabled={isQueuePending || isExecutePending}
+                    variant="dark"
+                    className={classes.transitionStateButton}
+                  >
+                    {isQueuePending || isExecutePending ? (
+                      <Spinner animation="border" />
+                    ) : (
+                      `${moveStateButtonAction} Proposal ⌐◧-◧`
+                    )}
+                  </Button>
+                  {proposal.status === ProposalState.EXECUTED &&
+                    proposal.details
+                      .filter(txn => txn?.functionSig?.includes('createStream'))
+                      .map(txn => {
+                        const parsedCallData = parseStreamCreationCallData(txn.callData);
+                        if (parsedCallData.recipient.toLowerCase() !== account?.toLowerCase()) {
+                          return <></>;
+                        }
+                        return (
+                          <Button
+                            onClick={() => {
+                              setShowStreamWithdrawModal(true);
+                              setStreamWithdrawInfo({
+                                streamAddress: parsedCallData.streamAddress,
+                                startTime: parsedCallData.startTime,
+                                endTime: parsedCallData.endTime,
+                                streamAmount: parsedCallData.streamAmount,
+                                tokenAddress: parsedCallData.tokenAddress,
+                              });
+                            }}
+                            variant="primary"
+                            className={classes.transitionStateButton}
+                          >
+                            <>
+                              Withdraw from Stream{' '}
+                              <ShortAddress address={parsedCallData.streamAddress ?? ''} />
+                            </>
+                          </Button>
+                        );
+                      })}
+                </Col>
               )}
 
-              {isAwaitingDesctructiveStateChange() && (
+              {isAwaitingDestructiveStateChange() && (
                 <Button
-                  onClick={desctructiveStateAction}
+                  onClick={destructiveStateAction}
                   disabled={isCancelPending}
                   variant="danger"
                   className={classes.destructiveTransitionStateButton}
@@ -390,7 +443,7 @@ const VotePage = ({
                   {isCancelPending ? (
                     <Spinner animation="border" />
                   ) : (
-                    `${desctructiveStateButtonAction} Proposal ⌐◧-◧`
+                    `${destructiveStateButtonAction} Proposal ⌐◧-◧`
                   )}
                 </Button>
               )}

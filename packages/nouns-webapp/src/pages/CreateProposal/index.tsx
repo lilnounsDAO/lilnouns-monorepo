@@ -21,6 +21,8 @@ import { withStepProgress } from 'react-stepz';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '../../hooks';
 import ProposalActionModal from '../../components/ProposalActionsModal';
+import { useEthNeeded } from '../../utils/tokenBuyerContractUtils/tokenBuyer';
+import config from '../../config';
 
 const CreateProposalPage = () => {
   const { account } = useEthers();
@@ -35,26 +37,99 @@ const CreateProposalPage = () => {
   const [titleValue, setTitleValue] = useState('');
   const [bodyValue, setBodyValue] = useState('');
 
+  const [totalUSDCPayment, setTotalUSDCPayment] = useState<number>(0);
+  const [tokenBuyerTopUpEth, setTokenBuyerTopUpETH] = useState<string>('0');
+  const [previousProposalId, setPreviousProposalId] = useState<number | undefined>(undefined);
+
+  const ethNeeded = useEthNeeded(
+    config.addresses.tokenBuyer ?? '',
+    totalUSDCPayment,
+    config.addresses.tokenBuyer === undefined || totalUSDCPayment === 0,
+  );
+
   const handleAddProposalAction = useCallback(
-    (transaction: ProposalTransaction) => {
-      if (!transaction.address.startsWith('0x')) {
-        transaction.address = `0x${transaction.address}`;
-      }
-      if (!transaction.calldata.startsWith('0x')) {
-        transaction.calldata = `0x${transaction.calldata}`;
-      }
-      setProposalTransactions([...proposalTransactions, transaction]);
+    (transactions: ProposalTransaction | ProposalTransaction[]) => {
+      const transactionsArray = Array.isArray(transactions) ? transactions : [transactions];
+      transactionsArray.forEach(transaction => {
+        if (!transaction.address.startsWith('0x')) {
+          transaction.address = `0x${transaction.address}`;
+        }
+        if (!transaction.calldata.startsWith('0x')) {
+          transaction.calldata = `0x${transaction.calldata}`;
+        }
+
+        if (transaction.usdcValue) {
+          setTotalUSDCPayment(totalUSDCPayment + transaction.usdcValue);
+        }
+      });
+      setProposalTransactions([...proposalTransactions, ...transactionsArray]);
+
       setShowTransactionFormModal(false);
     },
-    [proposalTransactions],
+    [proposalTransactions, totalUSDCPayment],
   );
 
   const handleRemoveProposalAction = useCallback(
     (index: number) => {
+      setTotalUSDCPayment(totalUSDCPayment - (proposalTransactions[index].usdcValue ?? 0));
       setProposalTransactions(proposalTransactions.filter((_, i) => i !== index));
     },
-    [proposalTransactions],
+    [proposalTransactions, totalUSDCPayment],
   );
+
+  useEffect(() => {
+    // only set this once
+    if (latestProposalId !== undefined && !previousProposalId) {
+      setPreviousProposalId(latestProposalId);
+    }
+  }, [latestProposalId, previousProposalId]);
+
+  useEffect(() => {
+    if (ethNeeded !== undefined && ethNeeded !== tokenBuyerTopUpEth && totalUSDCPayment > 0) {
+      const hasTokenBuyterTopTop =
+        proposalTransactions.filter(txn => txn.address === config.addresses.tokenBuyer).length > 0;
+
+      // Add a new top up txn if one isn't there already, else add to the existing one
+      if (parseInt(ethNeeded) > 0 && !hasTokenBuyterTopTop) {
+        handleAddProposalAction({
+          address: config.addresses.tokenBuyer ?? '',
+          value: ethNeeded ?? '0',
+          calldata: '0x',
+          signature: '',
+        });
+      } else {
+        if (parseInt(ethNeeded) > 0) {
+          const indexOfTokenBuyerTopUp =
+            proposalTransactions
+              .map((txn, index: number) => {
+                if (txn.address === config.addresses.tokenBuyer) {
+                  return index;
+                } else {
+                  return -1;
+                }
+              })
+              .filter(n => n >= 0) ?? new Array<number>();
+
+          const txns = proposalTransactions;
+          if (indexOfTokenBuyerTopUp.length > 0) {
+            txns[indexOfTokenBuyerTopUp[0]].value = ethNeeded;
+            setProposalTransactions(txns);
+          }
+        }
+      }
+
+      setTokenBuyerTopUpETH(ethNeeded ?? '0');
+    }
+  }, [
+    ethNeeded,
+    handleAddProposalAction,
+    handleRemoveProposalAction,
+    proposalTransactions,
+    tokenBuyerTopUpEth,
+    totalUSDCPayment,
+  ]);
+
+  //---
 
   const handleSimulateTxn = useCallback((index: number, status: boolean) => {
     setProposalTransactions(prevProposalTransactions =>
@@ -66,7 +141,7 @@ const CreateProposalPage = () => {
       }),
     );
   }, []);
-
+  
   const handleTitleInput = useCallback(
     (title: string) => {
       setTitleValue(title);
@@ -187,6 +262,18 @@ const CreateProposalPage = () => {
           onRemoveProposalTransaction={handleRemoveProposalAction} 
           onSimulateProposalTransaction={handleSimulateTxn}     
           />
+
+        {totalUSDCPayment > 0 && tokenBuyerTopUpEth !== '0' && (
+          <Alert variant="secondary" className={classes.tokenBuyerNotif}>
+            <b>
+              Note
+            </b>
+            :{' '}
+              Because this proposal contains a USDC fund transfer action we've added an additional
+              ETH transaction to refill the TokenBuyer contract. This action allows to DAO to
+              continue to trustlessly acquire USDC to fund proposals like this.
+          </Alert>
+        )}
         <ProposalEditor
           title={titleValue}
           body={bodyValue}

@@ -7,8 +7,13 @@ import { ChainId } from '@usedapp/core';
 
 interface ExternalContractAddresses {
   lidoToken: string | undefined;
+  usdcToken: string | undefined;
   weth: string | undefined;
   steth: string | undefined;
+  chainlinkEthUsdc: string | undefined;
+  payerContract: string | undefined;
+  tokenBuyer: string | undefined;
+  nounsStreamFactory: string | undefined;
 }
 
 export type ContractAddresses = NounsContractAddresses & ExternalContractAddresses;
@@ -169,28 +174,53 @@ const app: Record<SupportedChains, AppConfig> = {
 const externalAddresses: Record<SupportedChains, ExternalContractAddresses> = {
   [ChainId.Rinkeby]: {
     lidoToken: '0xF4242f9d78DB7218Ad72Ee3aE14469DBDE8731eD',
+    usdcToken: undefined,
     weth: undefined,
     steth: undefined,
+    chainlinkEthUsdc: undefined,
+    payerContract: undefined,
+    tokenBuyer: undefined,
+    nounsStreamFactory: undefined,
   },
   [ChainId.Goerli]: {
     lidoToken: '0x2DD6530F136D2B56330792D46aF959D9EA62E276',
+    usdcToken: '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
     weth: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
     steth: '0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F',
+    chainlinkEthUsdc: '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e',
+    payerContract: '0x63F8445C4549d17DB181f9ADe1a126EfF8Ee72D6',
+    tokenBuyer: '0x7Ee1fE5973c2F6e42D2D40c93f0FDed078c85770',
+    nounsStreamFactory: '0xc08a287eCB16CeD801f28Bb011924f7DE5Cc53a3',
   },
   [ChainId.Mainnet]: {
     lidoToken: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
+    usdcToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
     weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     steth: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
+    chainlinkEthUsdc: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
+    payerContract: '0xF62387d21153fdcbB06Ab3026c2089e418688164',
+    tokenBuyer: '0x387140cD0132ff750263f08aCfdFbEc7b0Cf63c0',
+    nounsStreamFactory: '0xb2fFEEF1F68CfacDeFdAFe6F1a9D30Ff47C7cB5e',
   },
   [ChainId.Hardhat]: {
     lidoToken: undefined,
+    usdcToken: undefined,
     weth: undefined,
     steth: undefined,
+    chainlinkEthUsdc: undefined,
+    payerContract: undefined,
+    tokenBuyer: undefined,
+    nounsStreamFactory: undefined,
   },
   [ChainId_Sepolia]: {
     lidoToken: undefined,
-    weth: undefined,
+    usdcToken: '0xEbCC972B6B3eB15C0592BE1871838963d0B94278',
+    weth: '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14',
     steth: undefined,
+    chainlinkEthUsdc: '0x694AA1769357215DE4FAC081bf1f309aDC325306',
+    payerContract: '0x5a2A0951C6b3479DBEe1D5909Aac7B325d300D94',
+    tokenBuyer: '0x821176470cFeF1dB78F1e2dbae136f73c36ddd48',
+    nounsStreamFactory: '0xb78ccF3BD015f209fb9B2d3d132FD8784Df78DF5',
   },
 };
 

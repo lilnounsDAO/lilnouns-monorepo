@@ -8,6 +8,7 @@ import classes from './TransferFundsReviewStep.module.css';
 import ModalBottomButtonRow from '../../../ModalBottomButtonRow';
 import ModalTitle from '../../../ModalTitle';
 import config from '../../../../config';
+import payerABI from "../../../../utils/payerContractUtils/payerABI.json"
 
 const handleActionAdd = (state: ProposalActionModalState, onActionAdd: (e?: any) => void) => {
   if (state.TransferFundsCurrency === SupportedCurrency.ETH) {
@@ -26,7 +27,27 @@ const handleActionAdd = (state: ProposalActionModalState, onActionAdd: (e?: any)
       decodedCalldata: JSON.stringify(values),
       calldata: utils.defaultAbiCoder.encode(['address', 'uint256'], values),
     });
-  } else {
+  } else if (state.TransferFundsCurrency === SupportedCurrency.USDC) {
+    const signature = 'sendOrRegisterDebt(address,uint256)';
+    const abi = new utils.Interface(payerABI);
+
+    onActionAdd({
+      address: config.addresses.payerContract,
+      value: '0',
+      usdcValue: Math.round(parseFloat(state.amount ?? '0') * 1_000_000),
+      signature,
+      decodedCalldata: JSON.stringify([
+        state.address,
+        // USDC has 6 decimals so we convert from human readable format to contract input format here
+        Math.round(parseFloat(state.amount ?? '0') * 1_000_000).toString(),
+      ]),
+      calldata: abi?._encodeParams(abi?.functions[signature]?.inputs, [
+        state.address,
+        // USDC has 6 decimals so we convert from human readable format to contract input format here
+        Math.round(parseFloat(state.amount ?? '0') * 1_000_000).toString(),
+      ]),
+    });
+  }  else {
     // This should never happen
     alert('Unsupported currency selected');
   }

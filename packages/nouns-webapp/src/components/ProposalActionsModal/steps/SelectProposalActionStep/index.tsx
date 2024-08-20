@@ -8,54 +8,66 @@ import BrandDropdown from '../../../BrandDropdown';
 import ModalSubTitle from '../../../ModalSubtitle';
 import ModalBottomButtonRow from '../../../ModalBottomButtonRow';
 import ModalTitle from '../../../ModalTitle';
-import Link from '../../../Link';
-import classes from './SelectProposalActionStep.module.css';
+
+const proposalActionTypeToProposalActionCreationStep = (actionTypeString: string) => {
+  if (actionTypeString === ProposalActionType.LUMP_SUM.toString()) {
+    return ProposalActionCreationStep.LUMP_SUM_DETAILS;
+  } else if (actionTypeString === ProposalActionType.STREAM.toString()) {
+    return ProposalActionCreationStep.STREAM_PAYMENT_PAYMENT_DETAILS;
+  } else {
+    return ProposalActionCreationStep.FUNCTION_CALL_SELECT_FUNCTION;
+  }
+};
 
 const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props => {
   const { onPrevBtnClick, onNextBtnClick, state, setState } = props;
-  const [nextStep, setNextStep] = useState<ProposalActionCreationStep>(
-    state.actionType === ProposalActionType.FUNCTION_CALL
-      ? ProposalActionCreationStep.FUNCTION_CALL_SELECT_FUNCTION
-      : ProposalActionCreationStep.LUMP_SUM_DETAILS,
-  );
 
-  const nounsConnectLink = (
-    <Link text="Nouns Connect" url="https://www.nounsconnect.wtf/" leavesPage={true} />
+  const [nextStep, setNextStep] = useState<ProposalActionCreationStep>(
+    proposalActionTypeToProposalActionCreationStep(state.actionType?.toString() ?? ''),
   );
 
   return (
     <div>
-      <ModalTitle>Add Proposal Action</ModalTitle>
+      <ModalTitle>
+        Add Proposal Action
+      </ModalTitle>
+
       <ModalSubTitle>
-        <b>Supported Action Types:</b>
-        <hr />
-        <b>• Transfer Funds: </b>Send a fixed amount of ETH or stETH
-        <br />
-        <b>• Function Call: </b>Call a contract function.
+          <hr />
+          <b>Guidelines</b>
+          <hr />• Do <b>NOT</b> request ETH to trade into USDC. Instead, request USDC directly.
+          <br />• Do <b>NOT</b> transfer funds externally to create an ETH or USDC stream. Instead,
+          use the "Stream Funds" action.
+          <hr />
+          <b>Supported Action Types</b>
+          <hr />
+          <b>• Transfer Funds: </b>Send USDC, ETH, or stETH.
+          <br />
+          <b>• Stream Funds: </b>Stream USDC or WETH over time.
+          <br />
+          <b>• Function Call: </b>Call a contract function.
       </ModalSubTitle>
+
       <BrandDropdown
-        value={
-          state.actionType === ProposalActionType.LUMP_SUM ? 'Transfer Funds' : 'Function Call'
-        }
+        value={state.actionType.toString()}
         onChange={e => {
+          const actionType = Object.entries(ProposalActionType).find(entry => {
+            return entry[1] === e.target.value;
+          });
+
           setState(x => ({
             ...x,
-            actionType:
-              e.target.value === 'Transfer Funds'
-                ? ProposalActionType.LUMP_SUM
-                : ProposalActionType.FUNCTION_CALL,
+            actionType: actionType ? actionType[1] : ProposalActionType.LUMP_SUM,
           }));
 
-          if (e.target.value === 'Transfer Funds') {
-            setNextStep(ProposalActionCreationStep.LUMP_SUM_DETAILS);
-          } else {
-            setNextStep(ProposalActionCreationStep.FUNCTION_CALL_SELECT_FUNCTION);
-          }
+          setNextStep(proposalActionTypeToProposalActionCreationStep(e.target.value));
         }}
       >
         <option value={'Transfer Funds'}>Transfer Funds</option>
+        <option value={'Stream Funds'}>Stream Funds</option>
         <option value={'Function Call'}>Function Call</option>
       </BrandDropdown>
+
       <ModalBottomButtonRow
         prevBtnText={'Close'}
         onPrevBtnClick={onPrevBtnClick}
@@ -64,11 +76,6 @@ const SelectProposalActionStep: React.FC<ProposalActionModalStepProps> = props =
           onNextBtnClick(nextStep);
         }}
       />
-      <div className={classes.nounsConnectWrapper}>
-        <span className={classes.nounsConnectCopy}>
-          Alternativley, build proposal actions through {nounsConnectLink}.
-        </span>
-      </div>
     </div>
   );
 };
