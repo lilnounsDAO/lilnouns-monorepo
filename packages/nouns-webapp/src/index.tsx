@@ -186,17 +186,19 @@ const ChainSubscriber: React.FC = () => {
   });
 
   async function getAndDispatchAuctionsData(poolSize: number) {
-    const data = await getVrgdaAuctions(poolSize);
+    const data = await getVrgdaAuctions(4);//TODO: poolSize
     if (!data) return;
 
-    dispatch(setLastAuctionStartTime(data.startTime.toNumber()));
+    const startTime = Math.round(new Date().getTime() / 1000);
+
+    dispatch(setLastAuctionStartTime(startTime));
     dispatch(setLastAuctionNounId(Number(data.nextNoun.id)));
 
     dispatch(
       setActiveAuction({
         nounId: BigNumber.from(data.nextNoun.id),
         amount: data.currentPrice,
-        startTime: data.startTime,
+        startTime: BigNumber.from(startTime),
         settled: false,
         blockNumber: data.nextNoun.blockNumber,
       }),
