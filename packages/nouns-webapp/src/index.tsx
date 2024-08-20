@@ -186,7 +186,8 @@ const ChainSubscriber: React.FC = () => {
   });
 
   async function getAndDispatchAuctionsData(poolSize: number) {
-    const data = await getVrgdaAuctions(4);//TODO: poolSize
+    const data = await getVrgdaAuctions(4); //TODO: poolSize
+    
     if (!data) return;
 
     const startTime = Math.round(new Date().getTime() / 1000);
