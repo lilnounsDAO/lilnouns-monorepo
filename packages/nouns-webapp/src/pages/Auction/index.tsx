@@ -53,10 +53,16 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
 
   const latestId = lastAuctionNounId != undefined ? lastAuctionNounId : 0;
 
+  const isReward = onDisplayAuctionNounId && (
+    (onDisplayAuctionNounId % 10 === 0 && onDisplayAuctionNounId === latestId - 2) || 
+    (onDisplayAuctionNounId % 10 === 1 && onDisplayAuctionNounId === latestId - 1)
+  );
+
   const isActiveAuction =
     onDisplayAuctionNounId === lastAuctionNounId ||
-    typeof onDisplayAuctionNounId === 'undefined' || onDisplayAuctionNounId % 10 === 0 && onDisplayAuctionNounId === latestId - 1 || onDisplayAuctionNounId % 11 === 0 && onDisplayAuctionNounId === latestId - 2
-
+    typeof onDisplayAuctionNounId === 'undefined' ||
+    isReward == true
+  
   return (
     <>
       <Auction auction={onDisplayAuction} isActive={isActiveAuction} />
