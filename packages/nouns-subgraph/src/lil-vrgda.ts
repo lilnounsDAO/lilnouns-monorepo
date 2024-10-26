@@ -18,11 +18,15 @@ export function handleAuctionSettled(event: AuctionSettled): void {
     return;
   }
 
+  const prevNounId = BigInt.fromString(nounId).minus(BigInt.fromI32(1)).toString();
+  const prevAuction = Auction.load(prevNounId);
+  const prevEndTime = prevAuction  ? prevAuction.endTime: event.block.timestamp;
+
   const auction = new Auction(nounId);
   auction.noun = noun.id;
   auction.amount = event.params.amount;
   auction.bidder = bidder.id;
-  auction.startTime = event.block.timestamp;
+  auction.startTime = prevEndTime;
   auction.endTime = event.block.timestamp;
   auction.settled = true;
   auction.vrgda = true;
