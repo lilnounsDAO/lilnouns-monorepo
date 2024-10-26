@@ -3,17 +3,13 @@ import { Auction, Noun, Bid } from './types/schema';
 import { getOrCreateAccount } from './utils/helpers';
 import { AuctionSettled } from './types/LilVRGDA/LilVRGDA';
 
-// export function handleAuctionReservePriceUpdated(event: AuctionReservePriceUpdated): void {
-// event.params.reservePrice
-// }
-
 export function handleAuctionSettled(event: AuctionSettled): void {
-  let nounId = event.params.nounId.toString();
-  let bidderAddress = event.params.winner.toHex();
+  const nounId = event.params.nounId.toString();
+  const bidderAddress = event.params.winner.toHex();
 
-  let bidder = getOrCreateAccount(bidderAddress);
+  const bidder = getOrCreateAccount(bidderAddress);
 
-  let noun = Noun.load(nounId);
+  const noun = Noun.load(nounId);
   if (noun == null) {
     log.error('[handleAuctionCreated] Noun #{} not found. Hash: {}', [
       nounId,
@@ -22,7 +18,7 @@ export function handleAuctionSettled(event: AuctionSettled): void {
     return;
   }
 
-  let auction = new Auction(nounId); //VRGDA(nounId);
+  const auction = new Auction(nounId);
   auction.noun = noun.id;
   auction.amount = event.params.amount;
   auction.bidder = bidder.id;
@@ -30,11 +26,10 @@ export function handleAuctionSettled(event: AuctionSettled): void {
   auction.endTime = BigInt.fromI32(0);
   auction.settled = true;
   auction.vrgda = true;
-
   auction.save();
 
   // Save Bid (Buy)
-  let bid = new Bid(event.transaction.hash.toHex());
+  const bid = new Bid(event.transaction.hash.toHex());
   bid.bidder = bidder.id;
   bid.amount = auction.amount;
   bid.noun = auction.noun;
@@ -43,13 +38,7 @@ export function handleAuctionSettled(event: AuctionSettled): void {
   bid.blockNumber = event.block.number;
   bid.blockTimestamp = event.block.timestamp;
   bid.auction = auction.id;
-
-  // if (event.params.comment != '') {
-  //   bid.comment = event.params.comment;
-  // } else {
-    bid.comment = '';
-  // }
-
+  bid.comment = '';
   bid.save();
 }
 

@@ -37,7 +37,7 @@ import { dynamicQuorumVotes } from './utils/dynamicQuorum';
  */
 function extractTitle(description: string): string {
   // Extract a markdown title from a proposal body that uses the `# Title` or `Title\n===` formats
-  let splitDescription = description.split('#', 3);
+  const splitDescription = description.split('#', 3);
   if (splitDescription.length > 1) {
     splitDescription.shift(); // Remove any characters before `#`
   }
@@ -55,7 +55,7 @@ function extractTitle(description: string): string {
 export function handleProposalCreatedWithRequirements(
   event: ProposalCreatedWithRequirements,
 ): void {
-  let proposal = getOrCreateProposal(event.params.id.toString());
+  const proposal = getOrCreateProposal(event.params.id.toString());
   let proposer = getOrCreateDelegateWithNullOption(event.params.proposer.toHexString(), false);
 
   // Check if the proposer was a delegate already accounted for, if not we should log an error
@@ -101,7 +101,7 @@ export function handleProposalCreatedWithRequirements(
 }
 
 export function handleProposalCanceled(event: ProposalCanceled): void {
-  let proposal = getOrCreateProposal(event.params.id.toString());
+  const proposal = getOrCreateProposal(event.params.id.toString());
 
   proposal.status = STATUS_CANCELLED;
   proposal.canceledBlock = event.block.number;
@@ -111,7 +111,7 @@ export function handleProposalCanceled(event: ProposalCanceled): void {
 }
 
 export function handleProposalVetoed(event: ProposalVetoed): void {
-  let proposal = getOrCreateProposal(event.params.id.toString());
+  const proposal = getOrCreateProposal(event.params.id.toString());
 
   proposal.status = STATUS_VETOED;
   proposal.vetoedBlock = event.block.number;
@@ -121,8 +121,8 @@ export function handleProposalVetoed(event: ProposalVetoed): void {
 }
 
 export function handleProposalQueued(event: ProposalQueued): void {
-  let governance = getGovernanceEntity();
-  let proposal = getOrCreateProposal(event.params.id.toString());
+  const governance = getGovernanceEntity();
+  const proposal = getOrCreateProposal(event.params.id.toString());
 
   proposal.status = STATUS_QUEUED;
   proposal.executionETA = event.params.eta;
@@ -136,8 +136,8 @@ export function handleProposalQueued(event: ProposalQueued): void {
 }
 
 export function handleProposalExecuted(event: ProposalExecuted): void {
-  let governance = getGovernanceEntity();
-  let proposal = getOrCreateProposal(event.params.id.toString());
+  const governance = getGovernanceEntity();
+  const proposal = getOrCreateProposal(event.params.id.toString());
 
   proposal.status = STATUS_EXECUTED;
   proposal.executionETA = null;
@@ -151,12 +151,12 @@ export function handleProposalExecuted(event: ProposalExecuted): void {
 }
 
 export function handleVoteCast(event: VoteCast): void {
-  let proposal = getOrCreateProposal(event.params.proposalId.toString());
-  let voteId = event.params.voter
+  const proposal = getOrCreateProposal(event.params.proposalId.toString());
+  const voteId = event.params.voter
     .toHexString()
     .concat('-')
     .concat(event.params.proposalId.toString());
-  let vote = getOrCreateVote(voteId);
+  const vote = getOrCreateVote(voteId);
   let voter = getOrCreateDelegateWithNullOption(event.params.voter.toHexString(), false);
 
   // Check if the voter was a delegate already accounted for, if not we should log an error
