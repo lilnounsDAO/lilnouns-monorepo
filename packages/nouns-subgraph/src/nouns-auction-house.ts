@@ -26,6 +26,7 @@ export function handleAuctionCreated(event: AuctionCreated): void {
   auction.startTime = event.params.startTime;
   auction.endTime = event.params.endTime;
   auction.settled = false;
+  auction.vrgda = false;
   auction.save();
 }
 

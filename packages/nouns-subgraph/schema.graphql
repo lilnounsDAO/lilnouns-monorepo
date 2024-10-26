@@ -131,6 +131,9 @@ type Auction @entity {
 
   "The auction bids"
   bids: [Bid!]! @derivedFrom(field: "auction")
+
+  "Whether the auction uses VRGDA"
+  vrgda: Boolean!
 }
 
 enum ProposalStatus {

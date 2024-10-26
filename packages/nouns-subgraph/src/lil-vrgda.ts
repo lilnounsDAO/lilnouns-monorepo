@@ -29,8 +29,7 @@ export function handleAuctionSettled(event: AuctionSettled): void {
   auction.startTime = BigInt.fromI32(0);
   auction.endTime = BigInt.fromI32(0);
   auction.settled = true;
-
-  // auction.vrgda = true; set to false at nouns-auction-house.ts
+  auction.vrgda = true;
 
   auction.save();
 
