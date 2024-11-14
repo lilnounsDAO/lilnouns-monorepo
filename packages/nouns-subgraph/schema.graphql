@@ -80,7 +80,7 @@ type Bid @entity {
   id: ID!
 
   "The Noun being bid on"
-  noun: Noun!
+  noun: Noun
 
   "Bid amount"
   amount: BigInt!
@@ -112,7 +112,7 @@ type Auction @entity {
   id: ID!
 
   "The Noun"
-  noun: Noun!
+  noun: Noun
 
   "The current highest bid amount"
   amount: BigInt!

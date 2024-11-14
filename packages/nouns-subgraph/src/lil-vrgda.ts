@@ -20,12 +20,12 @@ export function handleAuctionSettled(event: AuctionSettled): void {
   let settledAuction = Auction.load(nounId);
   if (!settledAuction) {
     settledAuction = new Auction(nounId);
-    settledAuction.noun = noun.id;
     settledAuction.startTime = event.block.timestamp;
     settledAuction.amount = BigInt.zero();
     settledAuction.settled = true;
     settledAuction.vrgda = true;
   }
+  settledAuction.noun = noun.id;
   settledAuction.amount = event.params.amount;
   settledAuction.bidder = bidder.id;
   settledAuction.endTime = event.block.timestamp;
@@ -50,7 +50,7 @@ export function handleAuctionSettled(event: AuctionSettled): void {
 
   // Create and save the new auction
   const newAuction = new Auction(newAuctionId);
-  newAuction.noun = noun.id;
+  newAuction.noun = null;
   newAuction.startTime = event.block.timestamp.plus(BigInt.fromI32(1));
   newAuction.endTime = BigInt.zero()
   newAuction.amount = BigInt.zero()
