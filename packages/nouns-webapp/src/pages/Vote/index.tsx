@@ -126,11 +126,13 @@ const VotePage = ({
   const hasSucceeded = proposal?.status === ProposalState.SUCCEEDED;
 
   const isQueued = proposal?.status === ProposalState.QUEUED;
+  const isSucceeded = proposal?.status === ProposalState.SUCCEEDED;
+  const isExecuted = proposal?.status === ProposalState.EXECUTED;
   const isActive = proposal?.status === ProposalState.ACTIVE;
   const isPending = proposal?.status === ProposalState.PENDING;
 
   const isCancellable =
-    (isQueued || isActive || isPending) &&
+    (isQueued || isActive || isPending || isSucceeded && !isExecuted) &&
     proposal?.proposer?.toLowerCase() === account?.toLowerCase();
 
   const isAwaitingStateChange = () => {
