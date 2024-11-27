@@ -7,15 +7,19 @@ interface BrandNumericEntryProps {
   value?: string | number;
   placeholder?: string;
   label?: string;
+  sublabel?: string;
   isInvalid?: boolean;
 }
 
 const BrandNumericEntry: React.FC<BrandNumericEntryProps> = props => {
-  const { onValueChange, value, placeholder, label, isInvalid = false } = props;
+  const { onValueChange, value, placeholder, label, sublabel, isInvalid = false } = props;
 
   return (
     <div className={classes.container}>
-      {label && <span className={classes.label}>{label}</span>}
+      <div className={classes.labelContainer}>
+        {label && <span className={classes.label}>{label}</span>}
+        {sublabel && <span className={classes.sublabel}>{sublabel}</span>}
+      </div>
       <NumericFormat
         onValueChange={onValueChange}
         value={value}

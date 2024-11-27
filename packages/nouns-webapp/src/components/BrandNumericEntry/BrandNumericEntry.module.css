@@ -4,8 +4,19 @@
   position: relative;
 }
 
+.labelContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .label {
   opacity: 0.5;
+}
+
+.sublabel {
+  opacity: 0.5;
+  font-size: 0.8em;
 }
 
 .entry {

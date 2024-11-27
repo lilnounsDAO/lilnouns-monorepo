@@ -6,10 +6,12 @@ import ModalBottomButtonRow from '../../../ModalBottomButtonRow';
 import ModalTitle from '../../../ModalTitle';
 import { SupportedCurrency } from '../TransferFundsDetailsStep';
 import BigNumber from 'bignumber.js';
-import { utils } from 'ethers';
+import { utils, BigNumber as EthersBigNumber } from 'ethers';
 import ModalSubTitle from '../../../ModalSubtitle';
 import BrandDropdown from '../../../BrandDropdown';
-
+import useUSDCBalance from '../../../../hooks/useUSDCBalance';
+import config from '../../../../config';
+import useWETHBalance from '../../../../hooks/useWETHBalance';
 const StreamPaymentsDetailsStep: React.FC<ProposalActionModalStepProps> = props => {
   const { onPrevBtnClick, onNextBtnClick, state, setState } = props;
 
@@ -21,6 +23,26 @@ const StreamPaymentsDetailsStep: React.FC<ProposalActionModalStepProps> = props 
   const [address, setAddress] = useState(state.address ?? '');
 
   const [isValidForNextStage, setIsValidForNextStage] = useState(false);
+
+  // Get balances
+  const wethBalance = useWETHBalance();
+  const usdcBalance = useUSDCBalance();
+  
+  const formatBalance = (balance?: EthersBigNumber): string => {
+    if (!balance) return '0';
+    return utils.formatEther(balance);
+  };
+
+  const getCurrencyWithBalance = (currencyType: SupportedCurrency): string => {
+    switch (currencyType) {
+        case SupportedCurrency.WETH:
+          return `${formatBalance(wethBalance)}`;
+      case SupportedCurrency.USDC:
+        return `${usdcBalance}`;
+      default:
+        return currencyType;
+    }
+  };
 
   useEffect(() => {
     if (utils.isAddress(address) && parseFloat(amount) > 0 && !isValidForNextStage) {
@@ -56,6 +78,7 @@ const StreamPaymentsDetailsStep: React.FC<ProposalActionModalStepProps> = props 
 
       <BrandNumericEntry
         label={'Amount'}
+        sublabel={`Available ${getCurrencyWithBalance(currency)}`}
         value={formattedAmount}
         onValueChange={e => {
           setAmount(e.value);

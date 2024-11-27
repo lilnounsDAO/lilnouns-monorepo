@@ -1,13 +1,17 @@
 import { Trans } from '@lingui/macro';
 import BigNumber from 'bignumber.js';
-import { utils } from 'ethers';
+import { utils, BigNumber as EthersBigNumber } from 'ethers';
 import React, { useEffect, useState } from 'react';
+import { useEtherBalance } from '@usedapp/core';
 import { ProposalActionModalStepProps } from '../..';
 import BrandDropdown from '../../../BrandDropdown';
 import BrandTextEntry from '../../../BrandTextEntry';
 import BrandNumericEntry from '../../../BrandNumericEntry';
 import ModalBottomButtonRow from '../../../ModalBottomButtonRow';
 import ModalTitle from '../../../ModalTitle';
+import useLidoBalance from '../../../../hooks/useLidoBalance';
+import config from '../../../../config';
+import useUSDCBalance from '../../../../hooks/useUSDCBalance';
 
 export enum SupportedCurrency {
   ETH = 'ETH',
@@ -18,6 +22,29 @@ export enum SupportedCurrency {
 
 const TransferFundsDetailsStep: React.FC<ProposalActionModalStepProps> = props => {
   const { onNextBtnClick, onPrevBtnClick, state, setState } = props;
+
+  // Get balances
+  const ethBalance = useEtherBalance(config.addresses.nounsDaoExecutor);
+  const stethBalance = useLidoBalance();
+  const usdcBalance = useUSDCBalance();
+
+  const formatBalance = (balance?: EthersBigNumber): string => {
+    if (!balance) return '0';
+    return utils.formatEther(balance);
+  };
+
+  const getCurrencyWithBalance = (currencyType: SupportedCurrency): string => {
+    switch (currencyType) {
+      case SupportedCurrency.ETH:
+        return `${formatBalance(ethBalance)}`;
+      case SupportedCurrency.STETH:
+        return `${formatBalance(stethBalance)}`;
+      case SupportedCurrency.USDC:
+        return `${usdcBalance}`;
+      default:
+        return currencyType;
+    }
+  };
 
   const [currency, setCurrency] = useState<SupportedCurrency>(
     state.TransferFundsCurrency ?? SupportedCurrency.ETH,
@@ -51,7 +78,8 @@ const TransferFundsDetailsStep: React.FC<ProposalActionModalStepProps> = props =
       </BrandDropdown>
 
       <BrandNumericEntry
-        label={'Amount'}
+        label={`Amount`}
+        sublabel={`Available ${getCurrencyWithBalance(currency)}`}
         value={formattedAmount}
         onValueChange={e => {
           setAmount(e.value);
