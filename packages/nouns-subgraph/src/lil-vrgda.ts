@@ -22,9 +22,9 @@ export function handleAuctionSettled(event: AuctionSettled): void {
     settledAuction = new Auction(nounId);
     settledAuction.startTime = event.block.timestamp;
     settledAuction.amount = BigInt.zero();
-    settledAuction.settled = true;
     settledAuction.vrgda = true;
   }
+  settledAuction.settled = true;
   settledAuction.noun = noun.id;
   settledAuction.amount = event.params.amount;
   settledAuction.bidder = bidder.id;
