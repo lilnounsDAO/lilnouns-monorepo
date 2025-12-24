@@ -1,11 +1,17 @@
 import { getNounData } from '@lilnounsdao/assets';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import { isLilNounSeedValid } from '../../utils/nounSeedValidation';
 import { INounSeed } from '../../wrappers/nounToken';
 import classes from './NounTraitsOverlay.module.css';
 
 const NounTraitsOverlay: React.FC<{ seed: INounSeed }> = props => {
   const { seed } = props;
+
+  // If seed is invalid (has traits not in assets), don't render traits
+  if (!isLilNounSeedValid(seed)) {
+    return null;
+  }
 
   const { parts } = getNounData(seed);
 
@@ -23,10 +29,10 @@ const NounTraitsOverlay: React.FC<{ seed: INounSeed }> = props => {
       textColor="black"
     >
       <ul className={classes.traitList}>
-        {parts.map(part => {
+        {parts.map((part, index) => {
           const { trait, value } = getNounTrait(part);
           return (
-            <li key={trait}>
+            <li key={`${trait}-${index}-${part.filename}`}>
               {trait}: {value}
             </li>
           );

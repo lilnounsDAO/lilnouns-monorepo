@@ -41,6 +41,7 @@ const Auction = (props: AuctionProps) => {
                   onLoadSeed={loadedNounHandler}
                   shouldLinkToProfile={false}
                   seed={isActive && nextNoun ? nextNoun.seed : undefined}
+                  fallbackImage={isActive && nextNoun ? nextNoun.image : undefined}
                 />
               </div>
             ) : (

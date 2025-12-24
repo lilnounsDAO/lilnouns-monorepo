@@ -21,6 +21,9 @@ const TightStackedCircleNoun: React.FC<TightStackedCircleNounProps> = props => {
   }
 
   const nounData = isNounsDAOProp ? getBigNoun(BigNumber.from(nounId), seed): getNoun(BigNumber.from(nounId), seed);
+  if (!nounData) {
+    return <LoadingNoun />;
+  }
   const image = nounData.image;
 
   return (
@@ -62,6 +65,9 @@ export const TightStackedCircleNounCell: React.FC<TightStackedCircleNounProps> =
   }
 
   const nounData = isNounsDAOProp ? getBigNoun(BigNumber.from(nounId), seed): getNoun(BigNumber.from(nounId), seed);
+  if (!nounData) {
+    return <LoadingNoun />;
+  }
   const image = nounData.image;
 
   return (
